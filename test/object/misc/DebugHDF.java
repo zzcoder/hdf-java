@@ -130,7 +130,7 @@ public class DebugHDF {
 //        try {testH5Core("G:\\temp\\test.h5"); } catch (Exception ex) {ex.printStackTrace();} 
 //        try {test1Dstrings("G:\\temp\\test.h5"); } catch (Exception ex) {ex.printStackTrace();} 
 //        try {testUpdateAttr("G:\\temp\\test.h5"); } catch (Exception ex) {ex.printStackTrace();} 
-//        try {testCreateVlenStr("G:\\temp\\test.h5"); } catch (Exception ex) {ex.printStackTrace();} 
+        try {testCreateVlenStr("G:\\temp\\test.h5"); } catch (Exception ex) {ex.printStackTrace();} 
 //        try {testH5TconvertStr(); } catch (Exception ex) {ex.printStackTrace();} 
 //        try {testH5DeleteDS("g:\\temp\\strs.h5"); } catch (Exception ex) {ex.printStackTrace();} 
 //        try {testExtendData("g:\\temp\\extended.h5", "dset", 1000, 1500); } catch (Exception ex) {ex.printStackTrace();} 
@@ -139,7 +139,7 @@ public class DebugHDF {
 //        try {  testH5VlenObj("G:\\temp\\str2.h5") ; } catch (Exception ex) {ex.printStackTrace();}
 //        try {  testH5VlenAttr("G:\\temp\\vlen_str_attr.h5") ; } catch (Exception ex) {ex.printStackTrace();}
 //        try {testRefData("g:\\temp\\refs.h5", "refs"); } catch (Exception ex) {ex.printStackTrace();}
-      try {testH5WriteDouble("g:\\temp\\double.h5"); } catch (Exception ex) {ex.printStackTrace();}
+//      try {testH5WriteDouble("g:\\temp\\double.h5"); } catch (Exception ex) {ex.printStackTrace();}
     }
     
     public static void testRefData(String fname, String dname)throws Exception
@@ -489,6 +489,22 @@ public class DebugHDF {
     	catch (Exception e) {
     		e.printStackTrace();
     	}
+    	
+    	// Write the data to the dataset.
+    	try {
+    		if ((dataset_id >= 0) && (type_id >= 0)) {
+    			String[] buf = new String[strData.length];
+    			H5.H5Dread(dataset_id, H5.H5Dget_type(dataset_id), HDF5Constants.H5S_ALL,
+    					HDF5Constants.H5S_ALL, HDF5Constants.H5P_DEFAULT, buf);
+    			
+     			for (int i =0; i<strData.length; i++)
+    			System.out.println(buf[i]);
+    		}
+    	}
+    	catch (Exception e) {
+    		e.printStackTrace();
+    	}
+
 
     	// End access to the dataset and release resources used by it.
     	try {

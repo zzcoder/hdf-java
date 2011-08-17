@@ -50,7 +50,10 @@ import java.awt.image.PixelGrabber;
 import java.awt.image.RGBImageFilter;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.PrintWriter;
+import java.io.FileWriter;
 import java.io.RandomAccessFile;
 import java.lang.reflect.Array;
 import java.text.DecimalFormat;
@@ -85,6 +88,7 @@ import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.NumberFormatter;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
@@ -236,7 +240,6 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
     private int indexBase = 0;
 
     /**
-     * gainBias[0] = gain, gainBias[1] = bias. gain equates to contrast and bias
      * equates to brightness
      */
     private double[] gainBias;
@@ -509,12 +512,18 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
         item.setEnabled(!isTrueColor);
         menu.add(item);
 
-        item = new JMenuItem("Add Palette from File");
+        item = new JMenuItem("Import Palette");
         item.addActionListener(this);
         item.setActionCommand("Import palette");
         item.setEnabled(!isTrueColor);
         menu.add(item);
 
+        item = new JMenuItem("Export Palette");
+        item.addActionListener(this);
+        item.setActionCommand("Export palette");
+        item.setEnabled(!isTrueColor);
+        menu.add(item);
+        
         menu.addSeparator();
 
         item = new JMenuItem("Set Value Range");
@@ -1515,6 +1524,66 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
                 String palPath = choosedFile.getAbsolutePath();
                 if(!palList.contains(palList))
                 	palList.addElement(palPath);
+            }
+            else if (cmd.equals("Export palette")) {
+            	if (imagePalette == null)
+            		return;
+            	
+            	String wd =ViewProperties.getWorkDir()+File.separator;
+                JFileChooser fchooser = new JFileChooser(wd);
+                FileNameExtensionFilter filter = new FileNameExtensionFilter("Color lookup table", "lut");
+                File pfile = Tools.checkNewFile(wd, ".lut");
+                fchooser.setSelectedFile(pfile);
+                fchooser.setFileFilter(filter);
+                int returnVal = fchooser.showOpenDialog(this);
+
+                if (returnVal != JFileChooser.APPROVE_OPTION) {
+                    return;
+                }
+
+                File choosedFile = fchooser.getSelectedFile();
+                if (choosedFile == null || choosedFile.isDirectory()) {
+                    return;
+                }
+                
+                if (choosedFile.exists())
+                {
+                    int newFileFlag = JOptionPane.showConfirmDialog(this,
+                        "File exists. Do you want to replace it ?",
+                        this.getTitle(),
+                        JOptionPane.YES_NO_OPTION);
+                    if (newFileFlag == JOptionPane.NO_OPTION) {
+                        return;
+                    }
+                }
+
+                PrintWriter out = null;
+                
+                try {
+                	out = new PrintWriter(new BufferedWriter(new FileWriter(choosedFile)));
+                } catch (Exception ex) { out = null; }
+                
+                if (out == null)
+                	return;
+
+                int cols = 3;
+                int rows = 256;
+                int rgb = 0;
+                for (int i=0; i<rows; i++)
+                {
+                	out.print(i);
+                	for (int j=0; j<cols; j++)
+                	{
+                		out.print(' ');
+                		rgb = imagePalette[j][i];
+                		if (rgb<0) rgb += 256;
+                		out.print(rgb);
+                	}
+                	out.println();
+                }
+
+                out.flush();
+                out.close();
             }
             else if (cmd.equals("Set data range")) {
                 DataRangeDialog drd = new DataRangeDialog((JFrame) viewer,

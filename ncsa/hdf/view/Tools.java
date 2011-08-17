@@ -2038,4 +2038,21 @@ public final class Tools {
         }
     } /* public static final void launchBrowser(String url) */
 
+    /**
+     * Check and find a non-exist file.
+     * @param path -- the path that the new file will be checked.
+     * @param ext -- the extention of the new file.
+     * @return -- the new file.
+     */
+    public static final File checkNewFile(String path, String ext) {
+        File file = new File(path+"new"+ext);
+        int i = 1;
+
+        while (file.exists()) {
+        	file = new File(path+"new"+i+ext);
+        	i++;
+        }
+        
+        return file;
+    }
 }
