@@ -343,6 +343,20 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Dget_1create_1plist
     return (jint)retVal;
 }
 
+htri_t H5Tdetect_variable_str(hid_t tid) {
+    htri_t ret_val = 0;
+
+    if (H5Tget_class(tid) == H5T_COMPOUND) {
+        hid_t mtid = H5Tget_member_type(tid, 0);
+        ret_val = H5Tdetect_variable_str(mtid);
+        H5Tclose (mtid);
+    }
+    else
+        ret_val = H5Tis_variable_str(tid);
+
+    return ret_val;
+}
+
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Dread
@@ -355,6 +369,20 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dread
     herr_t   status;
     jbyte   *buffP;
     jboolean isCopy;
+    htri_t data_class;
+
+    /* recursive detect any vlen data values in type (compound, array ...) */
+    data_class = H5Tdetect_class(mem_type_id, H5T_VLEN);
+    if((data_class == 1) || (data_class < 0)) {
+        h5badArgument( env, "H5Dread:  buf does not support variable length type");
+        return -1;
+    }
+    /* recursive detect any vlen string in type (compound, array ...) */
+    data_class = H5Tdetect_variable_str(mem_type_id);
+    if((data_class == 1) || (data_class < 0)) {
+        h5badArgument( env, "H5Dread:  buf does not support variable length string type");
+        return -1;
+    }
 
     if ( buf == NULL ) {
         h5nullArgument( env, "H5Dread:  buf is NULL");
@@ -721,6 +749,20 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dread_1short
     herr_t   status;
     jshort  *buffP;
     jboolean isCopy;
+    htri_t data_class;
+
+    /* recursive detect any vlen data values in type (compound, array ...) */
+    data_class = H5Tdetect_class(mem_type_id, H5T_VLEN);
+    if((data_class == 1) || (data_class < 0)) {
+        h5badArgument( env, "H5Dread:  buf does not support variable length type");
+        return -1;
+    }
+    /* recursive detect any vlen string in type (compound, array ...) */
+    data_class = H5Tdetect_variable_str(mem_type_id);
+    if((data_class == 1) || (data_class < 0)) {
+        h5badArgument( env, "H5Dread:  buf does not support variable length string type");
+        return -1;
+    }
 
     if (buf == NULL) {
         h5nullArgument(env, "H5Dread:  buf is NULL");
@@ -759,6 +801,20 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dread_1int
     herr_t   status;
     jint    *buffP;
     jboolean isCopy;
+    htri_t data_class;
+
+    /* recursive detect any vlen data values in type (compound, array ...) */
+    data_class = H5Tdetect_class(mem_type_id, H5T_VLEN);
+    if((data_class == 1) || (data_class < 0)) {
+        h5badArgument( env, "H5Dread:  buf does not support variable length type");
+        return -1;
+    }
+    /* recursive detect any vlen string in type (compound, array ...) */
+    data_class = H5Tdetect_variable_str(mem_type_id);
+    if((data_class == 1) || (data_class < 0)) {
+        h5badArgument( env, "H5Dread:  buf does not support variable length string type");
+        return -1;
+    }
 
     if (buf == NULL) {
         h5nullArgument(env, "H5Dread:  buf is NULL");
@@ -797,6 +853,20 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dread_1long
     herr_t   status;
     jlong   *buffP;
     jboolean isCopy;
+    htri_t data_class;
+
+    /* recursive detect any vlen data values in type (compound, array ...) */
+    data_class = H5Tdetect_class(mem_type_id, H5T_VLEN);
+    if((data_class == 1) || (data_class < 0)) {
+        h5badArgument( env, "H5Dread:  buf does not support variable length type");
+        return -1;
+    }
+    /* recursive detect any vlen string in type (compound, array ...) */
+    data_class = H5Tdetect_variable_str(mem_type_id);
+    if((data_class == 1) || (data_class < 0)) {
+        h5badArgument( env, "H5Dread:  buf does not support variable length string type");
+        return -1;
+    }
 
     if (buf == NULL) {
         h5nullArgument(env, "H5Dread:  buf is NULL");
@@ -835,6 +905,20 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dread_1float
     herr_t   status;
     jfloat  *buffP;
     jboolean isCopy;
+    htri_t data_class;
+
+    /* recursive detect any vlen data values in type (compound, array ...) */
+    data_class = H5Tdetect_class(mem_type_id, H5T_VLEN);
+    if((data_class == 1) || (data_class < 0)) {
+        h5badArgument( env, "H5Dread:  buf does not support variable length type");
+        return -1;
+    }
+    /* recursive detect any vlen string in type (compound, array ...) */
+    data_class = H5Tdetect_variable_str(mem_type_id);
+    if((data_class == 1) || (data_class < 0)) {
+        h5badArgument( env, "H5Dread:  buf does not support variable length string type");
+        return -1;
+    }
 
     if (buf == NULL) {
         h5nullArgument(env, "H5Dread:  buf is NULL");
@@ -873,6 +957,20 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dread_1double
     herr_t   status;
     jdouble *buffP;
     jboolean isCopy;
+    htri_t data_class;
+
+    /* recursive detect any vlen data values in type (compound, array ...) */
+    data_class = H5Tdetect_class(mem_type_id, H5T_VLEN);
+    if((data_class == 1) || (data_class < 0)) {
+        h5badArgument( env, "H5Dread:  buf does not support variable length type");
+        return -1;
+    }
+    /* recursive detect any vlen string in type (compound, array ...) */
+    data_class = H5Tdetect_variable_str(mem_type_id);
+    if((data_class == 1) || (data_class < 0)) {
+        h5badArgument( env, "H5Dread:  buf does not support variable length string type");
+        return -1;
+    }
 
     if (buf == NULL) {
         h5nullArgument(env, "H5Dread:  buf is NULL");
@@ -976,20 +1074,6 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dread_1string
         free (cstr);
 
     return (jint)status;
-}
-
-htri_t H5Tdetect_variable_str(hid_t tid) {
-    htri_t ret_val = 0;
-
-    if (H5Tget_class(tid) == H5T_COMPOUND) {
-        hid_t mtid = H5Tget_member_type(tid, 0);
-        ret_val = H5Tdetect_variable_str(mtid);
-        H5Tclose (mtid);
-    }
-    else
-        ret_val = H5Tis_variable_str(tid);
-
-    return ret_val;
 }
 
 /*

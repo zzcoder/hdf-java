@@ -236,7 +236,12 @@ import ncsa.hdf.hdf5lib.structs.H5O_info_t;
  *          <a href="http://hdfgroup.org/HDF5/">
  *          http://hdfgroup.org/HDF5"</a>
  **/
-public class H5 {
+public class H5 implements java.io.Serializable {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 6129888282117053288L;
+
     /**
      * The version number of the HDF5 library: <br />
      * LIB_VERSION[0]: The major version of the library.<br />
@@ -7815,7 +7820,7 @@ throws HDF5LibraryException;
  *  @exception HDF5LibraryException - Error from the HDF-5 Library.
  *  @exception NullPointerException - buf is null.
  **/
-public synchronized static native long H5Dvlen_get_buf_size(int dset_id, int type_id, int space_id)
+public synchronized static native long H5Dvlen_get_buf_size_long(int dset_id, int type_id, int space_id)
 throws HDF5LibraryException;
 //int H5Dvlen_get_buf_size(int dset_id, int type_id, int space_id, LongByReference size);
 
