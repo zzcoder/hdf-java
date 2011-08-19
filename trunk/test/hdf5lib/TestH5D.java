@@ -796,9 +796,7 @@ public class TestH5D {
         catch (Exception e) {
             e.printStackTrace();
         }
-        byte[] buf_array = HDFNativeData.intToByte(0, 2, size);
-        vl_size = HDFNativeData.byteToLong(buf_array, 0);
-        assertTrue("H5Dvlen_get_buf_size {"+ size[0] + "," + size[1] + "} " + vl_size + " == " + str_data_bytes, vl_size == str_data_bytes);
+        assertTrue("H5Dvlen_get_buf_size "+ size[0] + " == " + str_data_bytes, size[0] == str_data_bytes);
     }
 
     @Test
