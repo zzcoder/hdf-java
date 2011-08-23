@@ -49,7 +49,6 @@ public class TestHDFViewMenu {
         fileMenuItem.click();
 
         JFileChooserFixture fileChooser = JFileChooserFinder.findFileChooser().using(mainFrameFixture.robot);
-        fileChooser.fileNameTextBox().requireText("*" + file_ext);
         fileChooser.fileNameTextBox().setText(name + file_ext);
         fileChooser.approve();
 
@@ -309,7 +308,6 @@ public class TestHDFViewMenu {
                 hdf_file.delete();
 
             JFileChooserFixture fileChooser = JFileChooserFinder.findFileChooser().using(mainFrameFixture.robot);
-            fileChooser.fileNameTextBox().requireText("*.hdf");
             fileChooser.fileNameTextBox().setText("testfile.hdf");
             fileChooser.approve();
 
@@ -338,7 +336,6 @@ public class TestHDFViewMenu {
                 hdf_file.delete();
 
             JFileChooserFixture fileChooser = JFileChooserFinder.findFileChooser().using(mainFrameFixture.robot);
-            fileChooser.fileNameTextBox().requireText("*.h5");
             fileChooser.fileNameTextBox().setText("testfile.h5");
             fileChooser.approve();
 

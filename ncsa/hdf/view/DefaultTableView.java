@@ -129,7 +129,7 @@ import ncsa.hdf.object.ScalarDS;
 public class DefaultTableView extends JInternalFrame
 implements TableView, ActionListener, MouseListener
 {
-	private static final long serialVersionUID = HObject.serialVersionUID;
+    private static final long serialVersionUID = HObject.serialVersionUID;
 
     /**
      * The main HDFView.
@@ -256,7 +256,7 @@ implements TableView, ActionListener, MouseListener
         bitmask = null;
         
         if (ViewProperties.isIndexBase1())
-        	indexBase = 1;
+            indexBase = 1;
         
         checkFixedDataLength = new JCheckBoxMenuItem("Fixed Data Length", false);
         checkScientificNotation = new JCheckBoxMenuItem("Show Scientific Notation", false);
@@ -287,14 +287,14 @@ implements TableView, ActionListener, MouseListener
         dataset = (Dataset)hobject;
         isReadOnly = dataset.getFileFormat().isReadOnly();
         
-		long[] dims = dataset.getDims();
-		long tsize = 1;
-		
-		for (int i=0; i<dims.length; i++)
-			tsize *= dims[i];
-		
+        long[] dims = dataset.getDims();
+        long tsize = 1;
+        
+        for (int i=0; i<dims.length; i++)
+            tsize *= dims[i];
+        
         if (dataset.getHeight() <=0 || dataset.getWidth()<=0 || tsize<=0)
-        	return;
+            return;
 
         // cannot edit hdf4 vdata
         if (dataset.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF4)) &&
@@ -353,6 +353,7 @@ implements TableView, ActionListener, MouseListener
             dataset = null;
             return;
         }
+        table.setName("data");
         
         ColumnHeader columnHeaders = new ColumnHeader(table);
         table.setTableHeader(columnHeaders);
@@ -459,7 +460,7 @@ implements TableView, ActionListener, MouseListener
         viewer.showStatus(sb.toString());
 
         // set cell height for large fonts
-		int cellRowHeight = table.getFontMetrics(table.getFont()).getHeight();
+        int cellRowHeight = table.getFontMetrics(table.getFont()).getHeight();
         rowHeaders.setRowHeight(cellRowHeight);
         table.setRowHeight(cellRowHeight);
         
@@ -485,7 +486,7 @@ implements TableView, ActionListener, MouseListener
         
         JMenu exportAsBinaryMenu = new JMenu("Export Data to Binary File");
         if ( (dataset instanceof ScalarDS)  ) {  
-        	menu.add(exportAsBinaryMenu);
+            menu.add(exportAsBinaryMenu);
         }
         item = new JMenuItem("Native Order");
         item.addActionListener(this);
@@ -517,7 +518,7 @@ implements TableView, ActionListener, MouseListener
         
         JMenu importFromBinaryMenu = new JMenu( "Import Data from Binary File");
         if ( (dataset instanceof ScalarDS)  ) {  
-        	menu.add(importFromBinaryMenu);
+            menu.add(importFromBinaryMenu);
         }
         item = new JMenuItem("Native Order");
         item.addActionListener(this);
@@ -707,22 +708,22 @@ implements TableView, ActionListener, MouseListener
                 }
             }
             else if (cmd.startsWith("Save table as binary")) {
-            	if(cmd.equals("Save table as binary Native Order"))
-            		binaryOrder = 1;
-            	if(cmd.equals("Save table as binary Little Endian"))
-            		binaryOrder = 2;
-            	if(cmd.equals("Save table as binary Big Endian"))
-            		binaryOrder = 3;
-            	try { 
-            		saveAsBinary();
-            	}
-            	catch (Exception ex) {
-            		toolkit.beep();
-            		JOptionPane.showMessageDialog((JFrame)viewer,
-            				ex,
-            				getTitle(),
-            				JOptionPane.ERROR_MESSAGE);
-            	}
+                if(cmd.equals("Save table as binary Native Order"))
+                    binaryOrder = 1;
+                if(cmd.equals("Save table as binary Little Endian"))
+                    binaryOrder = 2;
+                if(cmd.equals("Save table as binary Big Endian"))
+                    binaryOrder = 3;
+                try { 
+                    saveAsBinary();
+                }
+                catch (Exception ex) {
+                    toolkit.beep();
+                    JOptionPane.showMessageDialog((JFrame)viewer,
+                            ex,
+                            getTitle(),
+                            JOptionPane.ERROR_MESSAGE);
+                }
             }
             else if (cmd.equals("Copy data")) {
                 copyData();
@@ -749,13 +750,13 @@ implements TableView, ActionListener, MouseListener
                 importTextData(txtFile);
             }
             else if (cmd.startsWith("Order as")) {
-            	if(cmd.equals("Order as Native Order"))
-            		binaryOrder = 1;
-            	if(cmd.equals("Order as Little Endian"))
-            		binaryOrder = 2;
-            	if(cmd.equals("Order as Big Endian"))
-            		binaryOrder = 3;
-            	        
+                if(cmd.equals("Order as Native Order"))
+                    binaryOrder = 1;
+                if(cmd.equals("Order as Little Endian"))
+                    binaryOrder = 2;
+                if(cmd.equals("Order as Big Endian"))
+                    binaryOrder = 3;
+                        
                 importBinaryData();
             }
             else if (cmd.equals("Write selection to dataset"))
@@ -1580,7 +1581,7 @@ implements TableView, ActionListener, MouseListener
 
         AbstractTableModel tm =  new AbstractTableModel()
         {
-        	private static final long serialVersionUID = HObject.serialVersionUID;
+            private static final long serialVersionUID = HObject.serialVersionUID;
             private final StringBuffer stringBuffer = new StringBuffer();
             private final Datatype dtype = dataset.getDatatype();
             private final Datatype btype = dtype.getBasetype();
@@ -1592,22 +1593,22 @@ implements TableView, ActionListener, MouseListener
             private Object theValue;
             
             public int getColumnCount() {
-            	return columnNames.length;
+                return columnNames.length;
             }
 
             public int getRowCount() {
-            	return rowCount;
+                return rowCount;
             }
 
             public String getColumnName(int col) {
-            	return columnNames[col];
+                return columnNames[col];
             }
 
             public Object getValueAt(int row, int column)
             {
-            	if (startEditing[0])
-            		return "";
-            	
+                if (startEditing[0])
+                    return "";
+                
                 if (isArray) {
                     // ARRAY dataset
                     int arraySize = dtype.getDatatypeSize()/btype.getDatatypeSize();
@@ -1630,18 +1631,18 @@ implements TableView, ActionListener, MouseListener
                     }
                     theValue = stringBuffer;
                } else {
-            	    int selectedIndex[] = dataset.getSelectedIndex();
-            	    int index = column*rowCount+row;
-            	    
-            	    if (dataset.getRank()>1) {
-            	    	boolean isNaturalOrder = (selectedIndex[0] < selectedIndex[1]);
-            	    	if ( (isDataTransposed && isNaturalOrder) || (!isDataTransposed && !isNaturalOrder))
-            	    		index = column*rowCount+row;
-            	    	else
-            	    		index = row*colCount+column;
-            	    }
-            	    theValue = Array.get(dataValue, index);
-            	    
+                    int selectedIndex[] = dataset.getSelectedIndex();
+                    int index = column*rowCount+row;
+                    
+                    if (dataset.getRank()>1) {
+                        boolean isNaturalOrder = (selectedIndex[0] < selectedIndex[1]);
+                        if ( (isDataTransposed && isNaturalOrder) || (!isDataTransposed && !isNaturalOrder))
+                            index = column*rowCount+row;
+                        else
+                            index = row*colCount+column;
+                    }
+                    theValue = Array.get(dataValue, index);
+                    
 //                    if (isDataTransposed) {
 //                        theValue = Array.get(dataValue, column*rowCount+row);
 //                     } else {
@@ -1680,40 +1681,40 @@ implements TableView, ActionListener, MouseListener
         
         theTable = new JTable(tm)
         {
-        	private static final long serialVersionUID = HObject.serialVersionUID;
-        	private final Datatype dtype = dataset.getDatatype();
-        	private final boolean isArray = (dtype.getDatatypeClass()==Datatype.CLASS_ARRAY);
+            private static final long serialVersionUID = HObject.serialVersionUID;
+            private final Datatype dtype = dataset.getDatatype();
+            private final boolean isArray = (dtype.getDatatypeClass()==Datatype.CLASS_ARRAY);
 
-        	public boolean isCellEditable( int row, int col )
-        	{
-        		if (isReadOnly || isDisplayTypeChar || isArray || showAsBin || showAsHex) {
-        			return false;
-        		} else {
-        			return true;
-        		}
-        	}
+            public boolean isCellEditable( int row, int col )
+            {
+                if (isReadOnly || isDisplayTypeChar || isArray || showAsBin || showAsHex) {
+                    return false;
+                } else {
+                    return true;
+                }
+            }
 
-        	public boolean editCellAt(int row, int column, java.util.EventObject e) 
-        	{
+            public boolean editCellAt(int row, int column, java.util.EventObject e) 
+            {
                 if (!isCellEditable(row, column)) {
                     return super.editCellAt(row, column, e);
                 }
                 
-				if (e instanceof KeyEvent) {
-					KeyEvent ke = (KeyEvent)e;
-					if (ke.getID()==KeyEvent.KEY_PRESSED)  {
-						startEditing[0] = true;
-					}
-				}
-				else if (e instanceof MouseEvent) {
-					MouseEvent me = (MouseEvent) e;
-					int mc = me.getClickCount();
-					if (mc > 1) {
-						currentEditingCellValue = getValueAt(row, column);
-					}
-				}
+                if (e instanceof KeyEvent) {
+                    KeyEvent ke = (KeyEvent)e;
+                    if (ke.getID()==KeyEvent.KEY_PRESSED)  {
+                        startEditing[0] = true;
+                    }
+                }
+                else if (e instanceof MouseEvent) {
+                    MouseEvent me = (MouseEvent) e;
+                    int mc = me.getClickCount();
+                    if (mc > 1) {
+                        currentEditingCellValue = getValueAt(row, column);
+                    }
+                }
 
-				return super.editCellAt(row, column, e);
+                return super.editCellAt(row, column, e);
             }
             
             public void editingStopped(ChangeEvent e)
@@ -1721,7 +1722,7 @@ implements TableView, ActionListener, MouseListener
                 int row = getEditingRow();
                 int col = getEditingColumn();
                 super.editingStopped(e);
- 				startEditing[0] = false;
+                 startEditing[0] = false;
  
                 Object source = e.getSource();
 
@@ -1872,80 +1873,80 @@ implements TableView, ActionListener, MouseListener
         final String[] allColumnNames = subColumnNames;
         AbstractTableModel tm =  new AbstractTableModel()
         {
-        	private static final long serialVersionUID = HObject.serialVersionUID;
+            private static final long serialVersionUID = HObject.serialVersionUID;
 
-        	CompoundDS compound = (CompoundDS)dataset;
-        	int orders[] = compound.getSelectedMemberOrders();
-        	Datatype types[] = compound.getSelectedMemberTypes();
-        	StringBuffer stringBuffer = new StringBuffer();
-        	int nFields = ((List)dataValue).size();
-        	int nRows = getRowCount();
-        	int nSubColumns = (nFields>0) ? getColumnCount()/nFields : 0;
+            CompoundDS compound = (CompoundDS)dataset;
+            int orders[] = compound.getSelectedMemberOrders();
+            Datatype types[] = compound.getSelectedMemberTypes();
+            StringBuffer stringBuffer = new StringBuffer();
+            int nFields = ((List)dataValue).size();
+            int nRows = getRowCount();
+            int nSubColumns = (nFields>0) ? getColumnCount()/nFields : 0;
 
-        	public int getColumnCount() {
-        		return allColumnNames.length;
-        	}
+            public int getColumnCount() {
+                return allColumnNames.length;
+            }
 
-        	public int getRowCount() {
-        		return rows;
-        	}
+            public int getRowCount() {
+                return rows;
+            }
 
-        	public String getColumnName(int col) {
-        		return allColumnNames[col];
-        	}
+            public String getColumnName(int col) {
+                return allColumnNames[col];
+            }
 
-        	public Object getValueAt(int row, int col)
-        	{
-        		if (startEditing[0])
-        			return "";
+            public Object getValueAt(int row, int col)
+            {
+                if (startEditing[0])
+                    return "";
 
-        		int fieldIdx = col;
-        		int rowIdx = row;
+                int fieldIdx = col;
+                int rowIdx = row;
 
-        		if (nSubColumns > 1) // multi-dimension compound dataset
-        		{
-        			int colIdx = col/nFields;
-        			fieldIdx = col - colIdx*nFields;
-        			//BUG 573: rowIdx = row*orders[fieldIdx] + colIdx*nRows*orders[fieldIdx];
-        			rowIdx = row*orders[fieldIdx]*nSubColumns+colIdx*orders[fieldIdx];;
-        		}
-        		else {
-        			rowIdx = row*orders[fieldIdx];
-        		}
+                if (nSubColumns > 1) // multi-dimension compound dataset
+                {
+                    int colIdx = col/nFields;
+                    fieldIdx = col - colIdx*nFields;
+                    //BUG 573: rowIdx = row*orders[fieldIdx] + colIdx*nRows*orders[fieldIdx];
+                    rowIdx = row*orders[fieldIdx]*nSubColumns+colIdx*orders[fieldIdx];;
+                }
+                else {
+                    rowIdx = row*orders[fieldIdx];
+                }
 
-        		Object colValue = ((List)dataValue).get(fieldIdx);
-        		if (colValue == null) {
-        			return "Null";
-        		}
+                Object colValue = ((List)dataValue).get(fieldIdx);
+                if (colValue == null) {
+                    return "Null";
+                }
 
-        		stringBuffer.setLength(0); // clear the old string
-        		boolean isString = (types[fieldIdx].getDatatypeClass() == Datatype.CLASS_STRING);
-        		if (isString && !compound.getConvertByteToString())
-        		{
-        			// strings
-        			int strlen = types[fieldIdx].getDatatypeSize();
-        			String str = new String(((byte[])colValue), rowIdx*strlen, strlen);
-        			int idx = str.indexOf('\0');
-        			if (idx > 0) {
-        				str = str.substring(0, idx);
-        			}
-        			stringBuffer.append(str.trim());
-        		} 
-        		else {
-        			// numerical values
-        			Datatype dtype = types[fieldIdx];
-        			boolean isUINT64 = false;
-        			
-        			if (dtype.isUnsigned()) {
-        				
-        		        String cName = colValue.getClass().getName();
-            	        int cIndex = cName.lastIndexOf("[");
-            	        if (cIndex >= 0 ) {
-            	        	isUINT64 = (cName.charAt(cIndex+1) == 'J');
-            	        }
-        			}
-        			
-           			for (int i=0; i<orders[fieldIdx]; i++) {
+                stringBuffer.setLength(0); // clear the old string
+                boolean isString = (types[fieldIdx].getDatatypeClass() == Datatype.CLASS_STRING);
+                if (isString && !compound.getConvertByteToString())
+                {
+                    // strings
+                    int strlen = types[fieldIdx].getDatatypeSize();
+                    String str = new String(((byte[])colValue), rowIdx*strlen, strlen);
+                    int idx = str.indexOf('\0');
+                    if (idx > 0) {
+                        str = str.substring(0, idx);
+                    }
+                    stringBuffer.append(str.trim());
+                } 
+                else {
+                    // numerical values
+                    Datatype dtype = types[fieldIdx];
+                    boolean isUINT64 = false;
+                    
+                    if (dtype.isUnsigned()) {
+                        
+                        String cName = colValue.getClass().getName();
+                        int cIndex = cName.lastIndexOf("[");
+                        if (cIndex >= 0 ) {
+                            isUINT64 = (cName.charAt(cIndex+1) == 'J');
+                        }
+                    }
+                    
+                       for (int i=0; i<orders[fieldIdx]; i++) {
                         Object theValue = Array.get(colValue, rowIdx+i);
                        if (isUINT64) {
                             Long l = (Long)theValue;
@@ -1958,13 +1959,13 @@ implements TableView, ActionListener, MouseListener
                             }
                         } 
                        if (i>0)
-                    	   stringBuffer.append(", ");
+                           stringBuffer.append(", ");
                        stringBuffer.append(theValue);
-           			}
-        		} // end of else {
+                       }
+                } // end of else {
 
-        		return stringBuffer;
-        	}
+                return stringBuffer;
+            }
         };
 
         theTable = new JTable(tm)
@@ -1981,24 +1982,24 @@ implements TableView, ActionListener, MouseListener
 
             public boolean editCellAt(int row, int column, java.util.EventObject e) 
             {
-            	
+                
                 if (!isCellEditable(row, column)) {
                     return super.editCellAt(row, column, e);
                 }
                 
-				if (e instanceof KeyEvent) {
-					KeyEvent ke = (KeyEvent)e;
-					if (ke.getID()==KeyEvent.KEY_PRESSED) 
-						startEditing[0] = true;
-				}
-				else if (e instanceof MouseEvent) {
-					MouseEvent me = (MouseEvent) e;
-					int mc = me.getClickCount();
-					if (mc > 1) {
-						currentEditingCellValue = getValueAt(row, column);
-					}
-				}
-				
+                if (e instanceof KeyEvent) {
+                    KeyEvent ke = (KeyEvent)e;
+                    if (ke.getID()==KeyEvent.KEY_PRESSED) 
+                        startEditing[0] = true;
+                }
+                else if (e instanceof MouseEvent) {
+                    MouseEvent me = (MouseEvent) e;
+                    int mc = me.getClickCount();
+                    if (mc > 1) {
+                        currentEditingCellValue = getValueAt(row, column);
+                    }
+                }
+                
                 return super.editCellAt(row, column, e);
             }
 
@@ -2007,7 +2008,7 @@ implements TableView, ActionListener, MouseListener
                 int row = getEditingRow();
                 int col = getEditingColumn();
                 super.editingStopped(e);
-            	startEditing[0] = false;
+                startEditing[0] = false;
  
                 Object source = e.getSource();
 
@@ -2017,7 +2018,7 @@ implements TableView, ActionListener, MouseListener
                     String cellValue = (String)editor.getCellEditorValue();
 
                     try { 
-                    	updateValueInMemory(cellValue, row, col); 
+                        updateValueInMemory(cellValue, row, col); 
                     }
                     catch (Exception ex)
                     {
@@ -2070,7 +2071,7 @@ implements TableView, ActionListener, MouseListener
     private void gotoPage(long idx)
     {
         if (dataset.getRank() < 3 ||
-        		idx == (curFrame-indexBase)) {
+                idx == (curFrame-indexBase)) {
             return;
         }
 
@@ -2107,13 +2108,13 @@ implements TableView, ActionListener, MouseListener
         }
         catch (Exception ex)
         {
-        	setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+            setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
             dataValue = null;
             JOptionPane.showMessageDialog(this, ex, getTitle(), JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-    	setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+        setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         
         frameField.setText(String.valueOf(curFrame));
         updateUI();
@@ -2227,7 +2228,7 @@ implements TableView, ActionListener, MouseListener
                     }
                 }
             }
-        }	catch (Throwable ex) {
+        }    catch (Throwable ex) {
             toolkit.beep();
             JOptionPane.showMessageDialog(
                 this,
@@ -2286,10 +2287,10 @@ implements TableView, ActionListener, MouseListener
 
         // delimiter must include a tab to be consistent with copy/paste for compound fields 
         if (dataset instanceof CompoundDS)
-        	delimiter = "\t";
+            delimiter = "\t";
         else {
             
-        	if (delName.equalsIgnoreCase(ViewProperties.DELIMITER_TAB)) {
+            if (delName.equalsIgnoreCase(ViewProperties.DELIMITER_TAB)) {
                 delimiter = "\t";
             } else if (delName.equalsIgnoreCase(ViewProperties.DELIMITER_SPACE)) {
                 delimiter = " "+delimiter;
@@ -2359,7 +2360,7 @@ implements TableView, ActionListener, MouseListener
      *  import data values from binary file.
      */
     private void importBinaryData() {   
-    	String currentDir = dataset.getFileFormat().getParent();
+        String currentDir = dataset.getFileFormat().getParent();
         JFileChooser fchooser = new JFileChooser(currentDir);
         fchooser.setFileFilter(DefaultFileFilter.getFileFilterBinary());
         int returnVal = fchooser.showOpenDialog(this);
@@ -2373,262 +2374,262 @@ implements TableView, ActionListener, MouseListener
         }
         String fname = choosedFile.getAbsolutePath();
         
-    	int pasteDataFlag = JOptionPane.showConfirmDialog(this,
-    			"Do you want to paste selected data ?",
-    			this.getTitle(),
-    			JOptionPane.YES_NO_OPTION);
-    	if (pasteDataFlag == JOptionPane.NO_OPTION) {
-    		return;
-    	}
+        int pasteDataFlag = JOptionPane.showConfirmDialog(this,
+                "Do you want to paste selected data ?",
+                this.getTitle(),
+                JOptionPane.YES_NO_OPTION);
+        if (pasteDataFlag == JOptionPane.NO_OPTION) {
+            return;
+        }
 
-    	getBinaryDatafromFile(fname); 
-    	
-	 
+        getBinaryDatafromFile(fname); 
+        
+     
     }
     
     /** Reads data from a binary file into a buffer and updates table. */
     private void getBinaryDatafromFile(String fileName){
 
-    	String fname = fileName;
-    	FileInputStream inputFile = null;
-    	BufferedInputStream in = null;
-    	ByteBuffer byteBuffer = null; 
-    	try {
-    		inputFile = new FileInputStream(fname);    
-    		long fileSize = inputFile.getChannel().size();
-    		in = new BufferedInputStream(inputFile);
+        String fname = fileName;
+        FileInputStream inputFile = null;
+        BufferedInputStream in = null;
+        ByteBuffer byteBuffer = null; 
+        try {
+            inputFile = new FileInputStream(fname);    
+            long fileSize = inputFile.getChannel().size();
+            in = new BufferedInputStream(inputFile);
 
-    		Object data = dataset.getData();
-    		int datasetSize = Array.getLength(data);
-    		String cname = data.getClass().getName();
-    		char dname = cname.charAt(cname.lastIndexOf("[")+1);
-    		
+            Object data = dataset.getData();
+            int datasetSize = Array.getLength(data);
+            String cname = data.getClass().getName();
+            char dname = cname.charAt(cname.lastIndexOf("[")+1);
+            
   
 
-  		if (dname == 'B') { 
-    			long datasetByteSize = datasetSize;
-    			byteBuffer = ByteBuffer.allocate(BYTE_BUFFER_SIZE);
-    			if(binaryOrder==1)
-    				byteBuffer.order(ByteOrder.nativeOrder());
-    			else if (binaryOrder==2)
-    				byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
-    			else if(binaryOrder==3)
-    				byteBuffer.order(ByteOrder.BIG_ENDIAN);  
-    			
-    			int bufferSize = (int) Math.min(fileSize, datasetByteSize);
+          if (dname == 'B') { 
+                long datasetByteSize = datasetSize;
+                byteBuffer = ByteBuffer.allocate(BYTE_BUFFER_SIZE);
+                if(binaryOrder==1)
+                    byteBuffer.order(ByteOrder.nativeOrder());
+                else if (binaryOrder==2)
+                    byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+                else if(binaryOrder==3)
+                    byteBuffer.order(ByteOrder.BIG_ENDIAN);  
+                
+                int bufferSize = (int) Math.min(fileSize, datasetByteSize);
 
-    			int remainingSize = (int)bufferSize - (BYTE_BUFFER_SIZE);
-    			int allocValue = 0;
-    			int iterationNumber = 0;     
-    			byte[] byteArray =new byte[BYTE_BUFFER_SIZE];
-    			do {
-    				if(remainingSize<=0) {
-    					allocValue=remainingSize+(BYTE_BUFFER_SIZE) ;
-    				} else {
-    					allocValue=(BYTE_BUFFER_SIZE);
-    				}
+                int remainingSize = (int)bufferSize - (BYTE_BUFFER_SIZE);
+                int allocValue = 0;
+                int iterationNumber = 0;     
+                byte[] byteArray =new byte[BYTE_BUFFER_SIZE];
+                do {
+                    if(remainingSize<=0) {
+                        allocValue=remainingSize+(BYTE_BUFFER_SIZE) ;
+                    } else {
+                        allocValue=(BYTE_BUFFER_SIZE);
+                    }
 
-    				in.read(byteBuffer.array(),0,allocValue); 
-    				
-    				byteBuffer.get(byteArray, 0, allocValue);
-    				System.arraycopy(byteArray, 0, dataValue, (iterationNumber * BYTE_BUFFER_SIZE),allocValue);
-    				byteBuffer.clear();
-    				remainingSize = remainingSize - (BYTE_BUFFER_SIZE);
-    				iterationNumber++;
-    			} while (remainingSize > -(BYTE_BUFFER_SIZE));
-    			
-    			isValueChanged = true; 	
-    		}
-    		
-    		else if (dname == 'S') {
-    			long datasetShortSize = datasetSize * 2;    			
-    			byteBuffer = ByteBuffer.allocate(SHORT_BUFFER_SIZE * 2);
-    			if(binaryOrder==1)
-    				byteBuffer.order(ByteOrder.nativeOrder());
-    			else if (binaryOrder==2)
-    				byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
-    			else if(binaryOrder==3)
-    				byteBuffer.order(ByteOrder.BIG_ENDIAN);
+                    in.read(byteBuffer.array(),0,allocValue); 
+                    
+                    byteBuffer.get(byteArray, 0, allocValue);
+                    System.arraycopy(byteArray, 0, dataValue, (iterationNumber * BYTE_BUFFER_SIZE),allocValue);
+                    byteBuffer.clear();
+                    remainingSize = remainingSize - (BYTE_BUFFER_SIZE);
+                    iterationNumber++;
+                } while (remainingSize > -(BYTE_BUFFER_SIZE));
+                
+                isValueChanged = true;     
+            }
+            
+            else if (dname == 'S') {
+                long datasetShortSize = datasetSize * 2;                
+                byteBuffer = ByteBuffer.allocate(SHORT_BUFFER_SIZE * 2);
+                if(binaryOrder==1)
+                    byteBuffer.order(ByteOrder.nativeOrder());
+                else if (binaryOrder==2)
+                    byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+                else if(binaryOrder==3)
+                    byteBuffer.order(ByteOrder.BIG_ENDIAN);
 
-    			int bufferSize = (int) Math.min(fileSize, datasetShortSize);
-    			int remainingSize = (int)bufferSize - (SHORT_BUFFER_SIZE * 2);
-    			int allocValue = 0;
-    			int iterationNumber = 0;  
-    			ShortBuffer sb = byteBuffer.asShortBuffer(); 
-    			short[] shortArray =new short[SHORT_BUFFER_SIZE];
-    			
-    			do {
-    				if(remainingSize<=0) {
-    					allocValue=remainingSize+(SHORT_BUFFER_SIZE * 2) ;
-    				} else {
-    					allocValue=(SHORT_BUFFER_SIZE * 2);
-    				}
-    				in.read(byteBuffer.array(),0,allocValue); 	
-    				sb.get(shortArray, 0, allocValue/2);
-    				System.arraycopy(shortArray, 0, dataValue, (iterationNumber * SHORT_BUFFER_SIZE),allocValue/2);
-    				byteBuffer.clear();
-    				sb.clear();
-    				remainingSize = remainingSize - (SHORT_BUFFER_SIZE * 2);
-    				iterationNumber++;
-    			} while (remainingSize > -(SHORT_BUFFER_SIZE * 2));
-    			
-    			isValueChanged = true; 		
-    		}
-    		
-    		else if (dname == 'I') {
-    			long datasetIntSize = datasetSize * 4;
-    			byteBuffer = ByteBuffer.allocate(INT_BUFFER_SIZE * 4);
-    			if(binaryOrder==1)
-    				byteBuffer.order(ByteOrder.nativeOrder());
-    			else if (binaryOrder==2)
-    				byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
-    			else if(binaryOrder==3)
-    				byteBuffer.order(ByteOrder.BIG_ENDIAN);
+                int bufferSize = (int) Math.min(fileSize, datasetShortSize);
+                int remainingSize = (int)bufferSize - (SHORT_BUFFER_SIZE * 2);
+                int allocValue = 0;
+                int iterationNumber = 0;  
+                ShortBuffer sb = byteBuffer.asShortBuffer(); 
+                short[] shortArray =new short[SHORT_BUFFER_SIZE];
+                
+                do {
+                    if(remainingSize<=0) {
+                        allocValue=remainingSize+(SHORT_BUFFER_SIZE * 2) ;
+                    } else {
+                        allocValue=(SHORT_BUFFER_SIZE * 2);
+                    }
+                    in.read(byteBuffer.array(),0,allocValue);     
+                    sb.get(shortArray, 0, allocValue/2);
+                    System.arraycopy(shortArray, 0, dataValue, (iterationNumber * SHORT_BUFFER_SIZE),allocValue/2);
+                    byteBuffer.clear();
+                    sb.clear();
+                    remainingSize = remainingSize - (SHORT_BUFFER_SIZE * 2);
+                    iterationNumber++;
+                } while (remainingSize > -(SHORT_BUFFER_SIZE * 2));
+                
+                isValueChanged = true;         
+            }
+            
+            else if (dname == 'I') {
+                long datasetIntSize = datasetSize * 4;
+                byteBuffer = ByteBuffer.allocate(INT_BUFFER_SIZE * 4);
+                if(binaryOrder==1)
+                    byteBuffer.order(ByteOrder.nativeOrder());
+                else if (binaryOrder==2)
+                    byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+                else if(binaryOrder==3)
+                    byteBuffer.order(ByteOrder.BIG_ENDIAN);
 
-    			int bufferSize = (int) Math.min(fileSize, datasetIntSize);
-    			int remainingSize = (int)bufferSize - (INT_BUFFER_SIZE * 4);
-    			int allocValue = 0;
-    			int iterationNumber = 0;     
-    			int[] intArray =new int[INT_BUFFER_SIZE];
-    			byte[] tmpBuf = byteBuffer.array();
-    			IntBuffer ib = byteBuffer.asIntBuffer(); 
+                int bufferSize = (int) Math.min(fileSize, datasetIntSize);
+                int remainingSize = (int)bufferSize - (INT_BUFFER_SIZE * 4);
+                int allocValue = 0;
+                int iterationNumber = 0;     
+                int[] intArray =new int[INT_BUFFER_SIZE];
+                byte[] tmpBuf = byteBuffer.array();
+                IntBuffer ib = byteBuffer.asIntBuffer(); 
 
-    			do {
-    				if(remainingSize<=0) {
-    					allocValue=remainingSize+(INT_BUFFER_SIZE * 4) ;
-    				} else {
-    					allocValue=(INT_BUFFER_SIZE * 4);
-    				}    				
-    				in.read(tmpBuf,0,allocValue); 	
-    				ib.get(intArray, 0, allocValue/4);
-    				System.arraycopy(intArray, 0, dataValue, (iterationNumber * INT_BUFFER_SIZE),allocValue/4);
-    				byteBuffer.clear();
-    				ib.clear();
-    				remainingSize = remainingSize - (INT_BUFFER_SIZE * 4);
-    				iterationNumber++;
-    			} while (remainingSize > -(INT_BUFFER_SIZE * 4));
+                do {
+                    if(remainingSize<=0) {
+                        allocValue=remainingSize+(INT_BUFFER_SIZE * 4) ;
+                    } else {
+                        allocValue=(INT_BUFFER_SIZE * 4);
+                    }                    
+                    in.read(tmpBuf,0,allocValue);     
+                    ib.get(intArray, 0, allocValue/4);
+                    System.arraycopy(intArray, 0, dataValue, (iterationNumber * INT_BUFFER_SIZE),allocValue/4);
+                    byteBuffer.clear();
+                    ib.clear();
+                    remainingSize = remainingSize - (INT_BUFFER_SIZE * 4);
+                    iterationNumber++;
+                } while (remainingSize > -(INT_BUFFER_SIZE * 4));
 
-    			
-    			isValueChanged = true; 		
-    		}
-    		
-    		else if (dname == 'J') {
-    			long datasetLongSize = datasetSize * 8;	
-    			byteBuffer = ByteBuffer.allocate(LONG_BUFFER_SIZE * 8);
+                
+                isValueChanged = true;         
+            }
+            
+            else if (dname == 'J') {
+                long datasetLongSize = datasetSize * 8;    
+                byteBuffer = ByteBuffer.allocate(LONG_BUFFER_SIZE * 8);
 
-    			if(binaryOrder==1)
-    				byteBuffer.order(ByteOrder.nativeOrder());
-    			else if (binaryOrder==2)
-    				byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
-    			else if(binaryOrder==3)
-    				byteBuffer.order(ByteOrder.BIG_ENDIAN);
+                if(binaryOrder==1)
+                    byteBuffer.order(ByteOrder.nativeOrder());
+                else if (binaryOrder==2)
+                    byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+                else if(binaryOrder==3)
+                    byteBuffer.order(ByteOrder.BIG_ENDIAN);
 
-    			int bufferSize = (int) Math.min(fileSize, datasetLongSize);
-    			int remainingSize = (int)bufferSize - (LONG_BUFFER_SIZE * 8);
-    			int allocValue = 0;
-    			int iterationNumber = 0;      
-    			long[] longArray =new long[LONG_BUFFER_SIZE];
-    			LongBuffer lb = byteBuffer.asLongBuffer(); 
-    			
-    			do {
-    				if(remainingSize<=0) {
-    					allocValue=remainingSize+(LONG_BUFFER_SIZE * 8) ;
-    				} else {
-    					allocValue=(LONG_BUFFER_SIZE * 8);
-    				}
+                int bufferSize = (int) Math.min(fileSize, datasetLongSize);
+                int remainingSize = (int)bufferSize - (LONG_BUFFER_SIZE * 8);
+                int allocValue = 0;
+                int iterationNumber = 0;      
+                long[] longArray =new long[LONG_BUFFER_SIZE];
+                LongBuffer lb = byteBuffer.asLongBuffer(); 
+                
+                do {
+                    if(remainingSize<=0) {
+                        allocValue=remainingSize+(LONG_BUFFER_SIZE * 8) ;
+                    } else {
+                        allocValue=(LONG_BUFFER_SIZE * 8);
+                    }
 
-    				in.read(byteBuffer.array(),0,allocValue); 	
-    				lb.get(longArray, 0, allocValue/8);
-    				System.arraycopy(longArray, 0, dataValue, (iterationNumber * LONG_BUFFER_SIZE),allocValue/8);
-    				byteBuffer.clear();
-    				lb.clear();
-    				remainingSize = remainingSize - (LONG_BUFFER_SIZE * 8);
-    				iterationNumber++;
-    			} while (remainingSize > -(LONG_BUFFER_SIZE * 8));
-    			
-    			isValueChanged = true; 	
-    		}
-  		
-    		else if (dname == 'F') {   			
-    			long datasetFloatSize = datasetSize * 4;
-    			byteBuffer = ByteBuffer.allocate(FLOAT_BUFFER_SIZE * 4);
-    			if(binaryOrder==1)
-    				byteBuffer.order(ByteOrder.nativeOrder());
-    			else if (binaryOrder==2)
-    				byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
-    			else if(binaryOrder==3)
-    				byteBuffer.order(ByteOrder.BIG_ENDIAN);
+                    in.read(byteBuffer.array(),0,allocValue);     
+                    lb.get(longArray, 0, allocValue/8);
+                    System.arraycopy(longArray, 0, dataValue, (iterationNumber * LONG_BUFFER_SIZE),allocValue/8);
+                    byteBuffer.clear();
+                    lb.clear();
+                    remainingSize = remainingSize - (LONG_BUFFER_SIZE * 8);
+                    iterationNumber++;
+                } while (remainingSize > -(LONG_BUFFER_SIZE * 8));
+                
+                isValueChanged = true;     
+            }
+          
+            else if (dname == 'F') {               
+                long datasetFloatSize = datasetSize * 4;
+                byteBuffer = ByteBuffer.allocate(FLOAT_BUFFER_SIZE * 4);
+                if(binaryOrder==1)
+                    byteBuffer.order(ByteOrder.nativeOrder());
+                else if (binaryOrder==2)
+                    byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+                else if(binaryOrder==3)
+                    byteBuffer.order(ByteOrder.BIG_ENDIAN);
 
-    			int bufferSize = (int) Math.min(fileSize, datasetFloatSize);
-    			int remainingSize = (int)bufferSize - (FLOAT_BUFFER_SIZE * 4);
-    			int allocValue = 0;
-    			int iterationNumber = 0;    
-    			FloatBuffer fb = byteBuffer.asFloatBuffer(); 
-    			float[] floatArray =new float[FLOAT_BUFFER_SIZE];
-    			do {
-    				if(remainingSize<=0) {
-    					allocValue=remainingSize+(FLOAT_BUFFER_SIZE * 4) ;
-    				} else {
-    					allocValue=(FLOAT_BUFFER_SIZE * 4);
-    				}
+                int bufferSize = (int) Math.min(fileSize, datasetFloatSize);
+                int remainingSize = (int)bufferSize - (FLOAT_BUFFER_SIZE * 4);
+                int allocValue = 0;
+                int iterationNumber = 0;    
+                FloatBuffer fb = byteBuffer.asFloatBuffer(); 
+                float[] floatArray =new float[FLOAT_BUFFER_SIZE];
+                do {
+                    if(remainingSize<=0) {
+                        allocValue=remainingSize+(FLOAT_BUFFER_SIZE * 4) ;
+                    } else {
+                        allocValue=(FLOAT_BUFFER_SIZE * 4);
+                    }
 
-    				in.read(byteBuffer.array(),0,allocValue);  				
-    				fb.get(floatArray, 0, allocValue/4);
-    				System.arraycopy(floatArray, 0, dataValue, (iterationNumber * FLOAT_BUFFER_SIZE),allocValue/4);
-    				byteBuffer.clear();
-    				fb.clear();
-    				remainingSize = remainingSize - (FLOAT_BUFFER_SIZE * 4);
-    				iterationNumber++;
-    			} while (remainingSize > -(FLOAT_BUFFER_SIZE * 4));
-    			
-    			isValueChanged = true; 
-    		}
-    		else if (dname == 'D') {
-    			long datasetDoubleSize = datasetSize * 8;  					
-    			byteBuffer = ByteBuffer.allocate(DOUBLE_BUFFER_SIZE * 8);
-    			if(binaryOrder==1)
-    				byteBuffer.order(ByteOrder.nativeOrder());
-    			else if (binaryOrder==2)
-    				byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
-    			else if(binaryOrder==3)
-    				byteBuffer.order(ByteOrder.BIG_ENDIAN);
+                    in.read(byteBuffer.array(),0,allocValue);                  
+                    fb.get(floatArray, 0, allocValue/4);
+                    System.arraycopy(floatArray, 0, dataValue, (iterationNumber * FLOAT_BUFFER_SIZE),allocValue/4);
+                    byteBuffer.clear();
+                    fb.clear();
+                    remainingSize = remainingSize - (FLOAT_BUFFER_SIZE * 4);
+                    iterationNumber++;
+                } while (remainingSize > -(FLOAT_BUFFER_SIZE * 4));
+                
+                isValueChanged = true; 
+            }
+            else if (dname == 'D') {
+                long datasetDoubleSize = datasetSize * 8;                      
+                byteBuffer = ByteBuffer.allocate(DOUBLE_BUFFER_SIZE * 8);
+                if(binaryOrder==1)
+                    byteBuffer.order(ByteOrder.nativeOrder());
+                else if (binaryOrder==2)
+                    byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+                else if(binaryOrder==3)
+                    byteBuffer.order(ByteOrder.BIG_ENDIAN);
 
-    			int bufferSize = (int) Math.min(fileSize, datasetDoubleSize);
-    			int remainingSize = (int)bufferSize - (DOUBLE_BUFFER_SIZE * 8);
-    			int allocValue = 0;
-    			int iterationNumber = 0;   
-    			DoubleBuffer db = byteBuffer.asDoubleBuffer(); 
-    			double[] doubleArray =new double[DOUBLE_BUFFER_SIZE];
-    			
-    			do {
-    				if(remainingSize<=0) {
-    					allocValue=remainingSize+(DOUBLE_BUFFER_SIZE * 8) ;
-    				} else {
-    					allocValue=(DOUBLE_BUFFER_SIZE * 8);
-    				}
+                int bufferSize = (int) Math.min(fileSize, datasetDoubleSize);
+                int remainingSize = (int)bufferSize - (DOUBLE_BUFFER_SIZE * 8);
+                int allocValue = 0;
+                int iterationNumber = 0;   
+                DoubleBuffer db = byteBuffer.asDoubleBuffer(); 
+                double[] doubleArray =new double[DOUBLE_BUFFER_SIZE];
+                
+                do {
+                    if(remainingSize<=0) {
+                        allocValue=remainingSize+(DOUBLE_BUFFER_SIZE * 8) ;
+                    } else {
+                        allocValue=(DOUBLE_BUFFER_SIZE * 8);
+                    }
 
-    				in.read(byteBuffer.array(),0,allocValue); 
-    				db.get(doubleArray, 0, allocValue/8);
-    				System.arraycopy(doubleArray, 0, dataValue, (iterationNumber * DOUBLE_BUFFER_SIZE),allocValue/8);
-    				byteBuffer.clear();
-    				db.clear();
-    				remainingSize = remainingSize - (DOUBLE_BUFFER_SIZE * 8);
-    				iterationNumber++;
-    			} while (remainingSize > -(DOUBLE_BUFFER_SIZE * 8));
-    			
-    			isValueChanged = true; 
-    			
-    		}
+                    in.read(byteBuffer.array(),0,allocValue); 
+                    db.get(doubleArray, 0, allocValue/8);
+                    System.arraycopy(doubleArray, 0, dataValue, (iterationNumber * DOUBLE_BUFFER_SIZE),allocValue/8);
+                    byteBuffer.clear();
+                    db.clear();
+                    remainingSize = remainingSize - (DOUBLE_BUFFER_SIZE * 8);
+                    iterationNumber++;
+                } while (remainingSize > -(DOUBLE_BUFFER_SIZE * 8));
+                
+                isValueChanged = true; 
+                
+            }
 
-    	}catch(Exception es){
-    		es.printStackTrace();
-    	}
-    	finally {
-    		try { in.close(); 
-    		inputFile.close();
-    		} catch (IOException ex) {}
-    	}
-    	table.updateUI();
+        }catch(Exception es){
+            es.printStackTrace();
+        }
+        finally {
+            try { in.close(); 
+            inputFile.close();
+            } catch (IOException ex) {}
+        }
+        table.updateUI();
 
 }
 
@@ -2788,212 +2789,212 @@ implements TableView, ActionListener, MouseListener
         
         if (dataset instanceof ScalarDS)
         {
-        	Object data = dataset.getData();
-        	String cname = data.getClass().getName();
+            Object data = dataset.getData();
+            String cname = data.getClass().getName();
             char dname = cname.charAt(cname.lastIndexOf("[")+1);
-        	ByteBuffer bb = null;  
+            ByteBuffer bb = null;  
 
-        	int size = Array.getLength(data);
-        	        	
-        	if (dname == 'B') { 	
-           		byte[] bdata = new byte[size];
-           		bdata = (byte[])data;
-           		
-           		bb = ByteBuffer.allocate(BYTE_BUFFER_SIZE);
-        		if(binaryOrder==1)
-        			bb.order(ByteOrder.nativeOrder());
-        		else if (binaryOrder==2)
-        			bb.order(ByteOrder.LITTLE_ENDIAN);
-        		else if(binaryOrder==3)
-        			bb.order(ByteOrder.BIG_ENDIAN);
-        		
-        		int remainingSize = size - BYTE_BUFFER_SIZE;
-        		int allocValue = 0;
-        		int iterationNumber = 0;            	 
-        		do	{
-        			if(remainingSize<=0){
-        				allocValue=remainingSize+BYTE_BUFFER_SIZE;
-        			} else {
-        				allocValue=BYTE_BUFFER_SIZE;
-        			}
-        			bb.clear();           		
-        			bb.put(bdata, (iterationNumber * BYTE_BUFFER_SIZE), allocValue);
-        			out.write(bb.array(), 0, allocValue);
-        			remainingSize = remainingSize - BYTE_BUFFER_SIZE;
-        			iterationNumber++;
-        		} while (remainingSize > -BYTE_BUFFER_SIZE);
-        		
-           	 	out.flush();
-           	 	out.close();
+            int size = Array.getLength(data);
+                        
+            if (dname == 'B') {     
+                   byte[] bdata = new byte[size];
+                   bdata = (byte[])data;
+                   
+                   bb = ByteBuffer.allocate(BYTE_BUFFER_SIZE);
+                if(binaryOrder==1)
+                    bb.order(ByteOrder.nativeOrder());
+                else if (binaryOrder==2)
+                    bb.order(ByteOrder.LITTLE_ENDIAN);
+                else if(binaryOrder==3)
+                    bb.order(ByteOrder.BIG_ENDIAN);
+                
+                int remainingSize = size - BYTE_BUFFER_SIZE;
+                int allocValue = 0;
+                int iterationNumber = 0;                 
+                do    {
+                    if(remainingSize<=0){
+                        allocValue=remainingSize+BYTE_BUFFER_SIZE;
+                    } else {
+                        allocValue=BYTE_BUFFER_SIZE;
+                    }
+                    bb.clear();                   
+                    bb.put(bdata, (iterationNumber * BYTE_BUFFER_SIZE), allocValue);
+                    out.write(bb.array(), 0, allocValue);
+                    remainingSize = remainingSize - BYTE_BUFFER_SIZE;
+                    iterationNumber++;
+                } while (remainingSize > -BYTE_BUFFER_SIZE);
+                
+                    out.flush();
+                    out.close();
                 
             }
-        	
-        	else if (dname == 'S') {
-        		short[] sdata = new short[size];
-        		sdata = (short[])data;
-        		bb = ByteBuffer.allocate(SHORT_BUFFER_SIZE * 2);
-        		if(binaryOrder==1)
-        			bb.order(ByteOrder.nativeOrder());
-        		else if (binaryOrder==2)
-        			bb.order(ByteOrder.LITTLE_ENDIAN);
-        		else if(binaryOrder==3)
-        			bb.order(ByteOrder.BIG_ENDIAN);
+            
+            else if (dname == 'S') {
+                short[] sdata = new short[size];
+                sdata = (short[])data;
+                bb = ByteBuffer.allocate(SHORT_BUFFER_SIZE * 2);
+                if(binaryOrder==1)
+                    bb.order(ByteOrder.nativeOrder());
+                else if (binaryOrder==2)
+                    bb.order(ByteOrder.LITTLE_ENDIAN);
+                else if(binaryOrder==3)
+                    bb.order(ByteOrder.BIG_ENDIAN);
 
-        		ShortBuffer sb = bb.asShortBuffer();
-        		int remainingSize = size - SHORT_BUFFER_SIZE;
-        		int allocValue = 0;
-        		int iterationNumber = 0;            	 
-        		do	{
-        			if(remainingSize<=0){
-        				allocValue=remainingSize+SHORT_BUFFER_SIZE;
-        			} else {
-        				allocValue=SHORT_BUFFER_SIZE;
-        			}
-        			bb.clear();           		
-        			sb.clear();
-        			sb.put(sdata, (iterationNumber * SHORT_BUFFER_SIZE), allocValue);
-        			out.write(bb.array(), 0, allocValue * 2);
-        			remainingSize = remainingSize - SHORT_BUFFER_SIZE;
-        			iterationNumber++;
-        		} while (remainingSize > -SHORT_BUFFER_SIZE);
+                ShortBuffer sb = bb.asShortBuffer();
+                int remainingSize = size - SHORT_BUFFER_SIZE;
+                int allocValue = 0;
+                int iterationNumber = 0;                 
+                do    {
+                    if(remainingSize<=0){
+                        allocValue=remainingSize+SHORT_BUFFER_SIZE;
+                    } else {
+                        allocValue=SHORT_BUFFER_SIZE;
+                    }
+                    bb.clear();                   
+                    sb.clear();
+                    sb.put(sdata, (iterationNumber * SHORT_BUFFER_SIZE), allocValue);
+                    out.write(bb.array(), 0, allocValue * 2);
+                    remainingSize = remainingSize - SHORT_BUFFER_SIZE;
+                    iterationNumber++;
+                } while (remainingSize > -SHORT_BUFFER_SIZE);
 
-        		out.flush();
-        		out.close();
-        	}
-        	
+                out.flush();
+                out.close();
+            }
+            
             else if (dname == 'I') {
-            	 int[] idata = new int[size];
-            	 idata = (int[]) data;
-            	 bb = ByteBuffer.allocate(INT_BUFFER_SIZE * 4);
-            	 if(binaryOrder==1)
-            		 bb.order(ByteOrder.nativeOrder());
-            	 else if (binaryOrder==2)
-            		 bb.order(ByteOrder.LITTLE_ENDIAN);
-            	 else if(binaryOrder==3)
-            		 bb.order(ByteOrder.BIG_ENDIAN);
-            	 
-              	 IntBuffer ib = bb.asIntBuffer(); 
-              	 int remainingSize = size - INT_BUFFER_SIZE;
-            	 int allocValue = 0;
-            	 int iterationNumber = 0;            	 
-            	 do {
-            		 if(remainingSize<=0){
-            			 allocValue=remainingSize+INT_BUFFER_SIZE;
-            		 } else {
-            			 allocValue=INT_BUFFER_SIZE;
-            		 }
-            		 bb.clear();           		
-            		 ib.clear();
-            		 ib.put(idata, (iterationNumber * INT_BUFFER_SIZE), allocValue);
-            		 out.write(bb.array(), 0, allocValue * 4);
-            		 remainingSize = remainingSize - INT_BUFFER_SIZE;
-            		 iterationNumber++;
-            	 } while (remainingSize > -INT_BUFFER_SIZE);
+                 int[] idata = new int[size];
+                 idata = (int[]) data;
+                 bb = ByteBuffer.allocate(INT_BUFFER_SIZE * 4);
+                 if(binaryOrder==1)
+                     bb.order(ByteOrder.nativeOrder());
+                 else if (binaryOrder==2)
+                     bb.order(ByteOrder.LITTLE_ENDIAN);
+                 else if(binaryOrder==3)
+                     bb.order(ByteOrder.BIG_ENDIAN);
+                 
+                   IntBuffer ib = bb.asIntBuffer(); 
+                   int remainingSize = size - INT_BUFFER_SIZE;
+                 int allocValue = 0;
+                 int iterationNumber = 0;                 
+                 do {
+                     if(remainingSize<=0){
+                         allocValue=remainingSize+INT_BUFFER_SIZE;
+                     } else {
+                         allocValue=INT_BUFFER_SIZE;
+                     }
+                     bb.clear();                   
+                     ib.clear();
+                     ib.put(idata, (iterationNumber * INT_BUFFER_SIZE), allocValue);
+                     out.write(bb.array(), 0, allocValue * 4);
+                     remainingSize = remainingSize - INT_BUFFER_SIZE;
+                     iterationNumber++;
+                 } while (remainingSize > -INT_BUFFER_SIZE);
               
-            	 out.flush();
-            	 out.close();
+                 out.flush();
+                 out.close();
             }
-        	
+            
             else if (dname == 'J') {
-            	long[] ldata = new long[size];
-            	ldata =(long[])data;
+                long[] ldata = new long[size];
+                ldata =(long[])data;
 
-            	bb = ByteBuffer.allocate(LONG_BUFFER_SIZE * 8);
-            	if(binaryOrder==1)
-            		bb.order(ByteOrder.nativeOrder());
-            	else if (binaryOrder==2)
-            		bb.order(ByteOrder.LITTLE_ENDIAN);
-            	else if(binaryOrder==3)
-            		bb.order(ByteOrder.BIG_ENDIAN);
+                bb = ByteBuffer.allocate(LONG_BUFFER_SIZE * 8);
+                if(binaryOrder==1)
+                    bb.order(ByteOrder.nativeOrder());
+                else if (binaryOrder==2)
+                    bb.order(ByteOrder.LITTLE_ENDIAN);
+                else if(binaryOrder==3)
+                    bb.order(ByteOrder.BIG_ENDIAN);
 
-            	LongBuffer lb = bb.asLongBuffer();
-            	int remainingSize = size - LONG_BUFFER_SIZE;
-            	int allocValue = 0;
-            	int iterationNumber = 0;            	 
-            	do {
-            		if(remainingSize<=0){
-            			allocValue=remainingSize+LONG_BUFFER_SIZE;
-            		} else {
-            			allocValue=LONG_BUFFER_SIZE;
-            		}
-            		bb.clear();           		
-            		lb.clear();
-            		lb.put(ldata, (iterationNumber * LONG_BUFFER_SIZE), allocValue);
-            		out.write(bb.array(), 0, allocValue * 8);
-            		remainingSize = remainingSize - LONG_BUFFER_SIZE;
-            		iterationNumber++;
-            	} while (remainingSize > -LONG_BUFFER_SIZE);
+                LongBuffer lb = bb.asLongBuffer();
+                int remainingSize = size - LONG_BUFFER_SIZE;
+                int allocValue = 0;
+                int iterationNumber = 0;                 
+                do {
+                    if(remainingSize<=0){
+                        allocValue=remainingSize+LONG_BUFFER_SIZE;
+                    } else {
+                        allocValue=LONG_BUFFER_SIZE;
+                    }
+                    bb.clear();                   
+                    lb.clear();
+                    lb.put(ldata, (iterationNumber * LONG_BUFFER_SIZE), allocValue);
+                    out.write(bb.array(), 0, allocValue * 8);
+                    remainingSize = remainingSize - LONG_BUFFER_SIZE;
+                    iterationNumber++;
+                } while (remainingSize > -LONG_BUFFER_SIZE);
 
-            	out.flush();
-            	out.close();            	
+                out.flush();
+                out.close();                
             }
-        	
-             else if (dname == 'F') { 	
-            	 float[] fdata = new float[size];
-            	 fdata = (float[]) data;
-            	 
-            	 bb = ByteBuffer.allocate(FLOAT_BUFFER_SIZE * 4);
-            	 if(binaryOrder==1)
-            		 bb.order(ByteOrder.nativeOrder());
-            	 else if (binaryOrder==2)
-            		 bb.order(ByteOrder.LITTLE_ENDIAN);
-            	 else if(binaryOrder==3)
-            		 bb.order(ByteOrder.BIG_ENDIAN);
-            	 
-            	 FloatBuffer fb = bb.asFloatBuffer();           	 
-            	 int remainingSize = size - FLOAT_BUFFER_SIZE;
-            	 int allocValue = 0;
-            	 int iterationNumber = 0;            	 
-            	 do {
-            		 if(remainingSize<=0) {
-            			 allocValue=remainingSize+FLOAT_BUFFER_SIZE;
-            		 } else {
-            			 allocValue=FLOAT_BUFFER_SIZE;
-            		 }
-            		 bb.clear();
-            		 fb.clear();
-            		 fb.put(fdata, (iterationNumber * FLOAT_BUFFER_SIZE), allocValue);
-            		 out.write(bb.array(), 0, allocValue * 4);
-            		 remainingSize = remainingSize - FLOAT_BUFFER_SIZE;
-            		 iterationNumber++;
-            	 } while (remainingSize > -FLOAT_BUFFER_SIZE);
-            	 
-            	 out.flush();
-            	 out.close();
+            
+             else if (dname == 'F') {     
+                 float[] fdata = new float[size];
+                 fdata = (float[]) data;
+                 
+                 bb = ByteBuffer.allocate(FLOAT_BUFFER_SIZE * 4);
+                 if(binaryOrder==1)
+                     bb.order(ByteOrder.nativeOrder());
+                 else if (binaryOrder==2)
+                     bb.order(ByteOrder.LITTLE_ENDIAN);
+                 else if(binaryOrder==3)
+                     bb.order(ByteOrder.BIG_ENDIAN);
+                 
+                 FloatBuffer fb = bb.asFloatBuffer();                
+                 int remainingSize = size - FLOAT_BUFFER_SIZE;
+                 int allocValue = 0;
+                 int iterationNumber = 0;                 
+                 do {
+                     if(remainingSize<=0) {
+                         allocValue=remainingSize+FLOAT_BUFFER_SIZE;
+                     } else {
+                         allocValue=FLOAT_BUFFER_SIZE;
+                     }
+                     bb.clear();
+                     fb.clear();
+                     fb.put(fdata, (iterationNumber * FLOAT_BUFFER_SIZE), allocValue);
+                     out.write(bb.array(), 0, allocValue * 4);
+                     remainingSize = remainingSize - FLOAT_BUFFER_SIZE;
+                     iterationNumber++;
+                 } while (remainingSize > -FLOAT_BUFFER_SIZE);
+                 
+                 out.flush();
+                 out.close();
              }
-        	
+            
              else if (dname == 'D') {
-            	 double[] ddata = new double[size];
-            	 ddata = (double[])data;
+                 double[] ddata = new double[size];
+                 ddata = (double[])data;
 
-            	 bb = ByteBuffer.allocate(DOUBLE_BUFFER_SIZE * 8);
-            	 if(binaryOrder==1)
-            		 bb.order(ByteOrder.nativeOrder());
-            	 else if (binaryOrder==2)
-            		 bb.order(ByteOrder.LITTLE_ENDIAN);
-            	 else if(binaryOrder==3)
-            		 bb.order(ByteOrder.BIG_ENDIAN);
+                 bb = ByteBuffer.allocate(DOUBLE_BUFFER_SIZE * 8);
+                 if(binaryOrder==1)
+                     bb.order(ByteOrder.nativeOrder());
+                 else if (binaryOrder==2)
+                     bb.order(ByteOrder.LITTLE_ENDIAN);
+                 else if(binaryOrder==3)
+                     bb.order(ByteOrder.BIG_ENDIAN);
 
-            	 DoubleBuffer db = bb.asDoubleBuffer();
-            	 int remainingSize = size - DOUBLE_BUFFER_SIZE;
-            	 int allocValue = 0;
-            	 int iterationNumber = 0;            	 
-            	 do {
-            		 if(remainingSize<=0){
-            			 allocValue=remainingSize + DOUBLE_BUFFER_SIZE;
-            		 } else {
-            			 allocValue=DOUBLE_BUFFER_SIZE;
-            		 }
-            		 bb.clear();           		
-            		 db.clear();
-            		 db.put(ddata, (iterationNumber * DOUBLE_BUFFER_SIZE), allocValue);
-            		 out.write(bb.array(), 0, allocValue * 8);
-            		 remainingSize = remainingSize - DOUBLE_BUFFER_SIZE;
-            		 iterationNumber++;
-            	 } while (remainingSize > -DOUBLE_BUFFER_SIZE);
+                 DoubleBuffer db = bb.asDoubleBuffer();
+                 int remainingSize = size - DOUBLE_BUFFER_SIZE;
+                 int allocValue = 0;
+                 int iterationNumber = 0;                 
+                 do {
+                     if(remainingSize<=0){
+                         allocValue=remainingSize + DOUBLE_BUFFER_SIZE;
+                     } else {
+                         allocValue=DOUBLE_BUFFER_SIZE;
+                     }
+                     bb.clear();                   
+                     db.clear();
+                     db.put(ddata, (iterationNumber * DOUBLE_BUFFER_SIZE), allocValue);
+                     out.write(bb.array(), 0, allocValue * 8);
+                     remainingSize = remainingSize - DOUBLE_BUFFER_SIZE;
+                     iterationNumber++;
+                 } while (remainingSize > -DOUBLE_BUFFER_SIZE);
 
-            	 out.flush();
-            	 out.close();      	            	
+                 out.flush();
+                 out.close();                          
              }          
         }
         
@@ -3119,12 +3120,12 @@ implements TableView, ActionListener, MouseListener
     private void updateValueInMemory(String cellValue, int row, int col)
     throws Exception
     {
-    	if (currentEditingCellValue!=null) {
-    		// data values are the same, no need to change the data
-    		if (currentEditingCellValue.toString().equals(cellValue))
-    			return;
-    	}
-    	
+        if (currentEditingCellValue!=null) {
+            // data values are the same, no need to change the data
+            if (currentEditingCellValue.toString().equals(cellValue))
+                return;
+        }
+        
         if (dataset instanceof ScalarDS) {
             updateScalarData(cellValue, row, col);
         } else if (dataset instanceof CompoundDS) {
@@ -3217,7 +3218,7 @@ implements TableView, ActionListener, MouseListener
             Array.setDouble(dataValue, i, dvalue);
             break;
          default:
-        	 Array.set(dataValue, i, cellValue); 
+             Array.set(dataValue, i, cellValue); 
              break;
         }
         
@@ -3367,7 +3368,7 @@ implements TableView, ActionListener, MouseListener
 
     private class LineplotOption extends JDialog implements ActionListener, ItemListener
     {
-    	private static final long serialVersionUID = HObject.serialVersionUID;
+        private static final long serialVersionUID = HObject.serialVersionUID;
 
         public static final int NO_PLOT = -1;
         public static final int ROW_PLOT = 0;
@@ -3507,7 +3508,7 @@ implements TableView, ActionListener, MouseListener
 
     private class ColumnHeader extends JTableHeader
     {
-    	private static final long serialVersionUID = HObject.serialVersionUID;
+        private static final long serialVersionUID = HObject.serialVersionUID;
 
         private int currentColumnIndex = -1;
         private int lastColumnIndex = -1;
@@ -3600,7 +3601,7 @@ implements TableView, ActionListener, MouseListener
     /** RowHeader defines the row header component of the Spreadsheet. */
     private class RowHeader extends JTable
     {
-    	private static final long serialVersionUID = HObject.serialVersionUID;
+        private static final long serialVersionUID = HObject.serialVersionUID;
 
         private int currentRowIndex = -1;
         private int lastRowIndex = -1;
@@ -3623,19 +3624,19 @@ implements TableView, ActionListener, MouseListener
             AbstractTableModel tm =  new AbstractTableModel()
             {
                 public int getColumnCount() {
-                	return 1;
+                    return 1;
                 }
 
                 public int getRowCount() {
-                	return rowCount;
+                    return rowCount;
                 }
 
                 public String getColumnName(int col) {
-                	return " ";
+                    return " ";
                 }
-				public Object getValueAt(int row, int column)
+                public Object getValueAt(int row, int column)
                 {
-                	return String.valueOf(start+indexBase+row*stride);
+                    return String.valueOf(start+indexBase+row*stride);
                 }
             };
            
@@ -3743,7 +3744,7 @@ implements TableView, ActionListener, MouseListener
     /** RowHeaderRenderer is a custom cell renderer that displays cells as buttons. */
     private class RowHeaderRenderer extends JLabel implements TableCellRenderer
     {
-    	private static final long serialVersionUID = HObject.serialVersionUID;
+        private static final long serialVersionUID = HObject.serialVersionUID;
 
         public RowHeaderRenderer()
         {
@@ -3776,7 +3777,7 @@ implements TableView, ActionListener, MouseListener
 
     private class MultiLineHeaderRenderer extends JList implements TableCellRenderer
     {
-    	private static final long serialVersionUID = HObject.serialVersionUID;
+        private static final long serialVersionUID = HObject.serialVersionUID;
 
         private final CompoundBorder subBorder = new CompoundBorder(
                 new MatteBorder(1, 0, 1, 0, java.awt.Color.darkGray),
