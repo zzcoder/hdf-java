@@ -4,10 +4,8 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses( { 
-    TestHDFViewMenu.class,
-    TestHDFView.class
-//    TestXXX.class
+@Suite.SuiteClasses( { TestHDFView.class,
+    TestHDFViewMenu.class
 })
 
 public class AllTests {

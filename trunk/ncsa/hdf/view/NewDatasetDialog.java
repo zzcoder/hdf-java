@@ -255,6 +255,7 @@ public class NewDatasetDialog extends JDialog implements ActionListener,
         rankChoice.setSelectedIndex(1);
 
         currentSizeField = new JTextField("1 x 1");
+        currentSizeField.setName("currentsize");
         maxSizeField = new JTextField("");
         spacePanel.add(new JLabel("No. of dimensions"));
         spacePanel.add(new JLabel("Current size"));
@@ -483,10 +484,10 @@ public class NewDatasetDialog extends JDialog implements ActionListener,
             }
         }
         else if (cmd.equals("Set max size")) {
-        	String strMax = maxSizeField.getText();
-        	if (strMax == null || strMax.length() < 1)
-        		strMax = currentSizeField.getText();
-        	
+            String strMax = maxSizeField.getText();
+            if (strMax == null || strMax.length() < 1)
+                strMax = currentSizeField.getText();
+            
             String msg = JOptionPane
                     .showInputDialog(
                             this,
@@ -499,7 +500,7 @@ public class NewDatasetDialog extends JDialog implements ActionListener,
             if (msg == null || msg.length() < 1)
                 maxSizeField.setText(currentSizeField.getText());
             else
-            	maxSizeField.setText(msg);
+                maxSizeField.setText(msg);
             
             checkMaxSize();
         }
@@ -673,97 +674,97 @@ public class NewDatasetDialog extends JDialog implements ActionListener,
     
     /** check is the max size is valid */
     private void checkMaxSize() {
-    	boolean isChunkNeeded = false;
-    	String dimStr = currentSizeField.getText();
-    	String maxStr = maxSizeField.getText();
-    	StringTokenizer stMax = new StringTokenizer(maxStr, "x");
-    	StringTokenizer stDim = new StringTokenizer(dimStr, "x");
+        boolean isChunkNeeded = false;
+        String dimStr = currentSizeField.getText();
+        String maxStr = maxSizeField.getText();
+        StringTokenizer stMax = new StringTokenizer(maxStr, "x");
+        StringTokenizer stDim = new StringTokenizer(dimStr, "x");
 
-    	if (stMax.countTokens() != stDim.countTokens()) {
-    		toolkit.beep();
-    		JOptionPane.showMessageDialog(this,
-    				"Wrong number of values in the max dimension size "+maxStr,
-    				getTitle(), JOptionPane.ERROR_MESSAGE);
-    		maxSizeField.setText(null);
-    		return;
-    	}
+        if (stMax.countTokens() != stDim.countTokens()) {
+            toolkit.beep();
+            JOptionPane.showMessageDialog(this,
+                    "Wrong number of values in the max dimension size "+maxStr,
+                    getTitle(), JOptionPane.ERROR_MESSAGE);
+            maxSizeField.setText(null);
+            return;
+        }
 
-    	int rank = stDim.countTokens();
-    	long max=0, dim=0;
-    	long[] maxdims = new long[rank];
-    	for (int i = 0; i < rank; i++) {
-    		String token = stMax.nextToken().trim();
+        int rank = stDim.countTokens();
+        long max=0, dim=0;
+        long[] maxdims = new long[rank];
+        for (int i = 0; i < rank; i++) {
+            String token = stMax.nextToken().trim();
 
-    		token = token.toLowerCase();
-    		if (token.startsWith("u")) {
-    			max = -1;
-    			isChunkNeeded = true;
-    		} else {
-    			try {
-    				max = Long.parseLong(token);
-    			}
-    			catch (NumberFormatException ex) {
-    				toolkit.beep();
-    				JOptionPane.showMessageDialog(this,
-    						"Invalid max dimension size: "
-    						+ maxStr, getTitle(),
-    						JOptionPane.ERROR_MESSAGE);
-    				maxSizeField.setText(null);;
-    				return;
-    			}
-    		}
-    		
-    		token = stDim.nextToken().trim();
-    		try {
-    			dim = Long.parseLong(token);
-    		}
-    		catch (NumberFormatException ex) {
-    			toolkit.beep();
-    			JOptionPane.showMessageDialog(this,
-    					"Invalid dimension size: "
-    					+ dimStr, getTitle(),
-    					JOptionPane.ERROR_MESSAGE);
-     			return;
-    		}
+            token = token.toLowerCase();
+            if (token.startsWith("u")) {
+                max = -1;
+                isChunkNeeded = true;
+            } else {
+                try {
+                    max = Long.parseLong(token);
+                }
+                catch (NumberFormatException ex) {
+                    toolkit.beep();
+                    JOptionPane.showMessageDialog(this,
+                            "Invalid max dimension size: "
+                            + maxStr, getTitle(),
+                            JOptionPane.ERROR_MESSAGE);
+                    maxSizeField.setText(null);;
+                    return;
+                }
+            }
+            
+            token = stDim.nextToken().trim();
+            try {
+                dim = Long.parseLong(token);
+            }
+            catch (NumberFormatException ex) {
+                toolkit.beep();
+                JOptionPane.showMessageDialog(this,
+                        "Invalid dimension size: "
+                        + dimStr, getTitle(),
+                        JOptionPane.ERROR_MESSAGE);
+                 return;
+            }
 
-    		if (max != -1 && max<dim) {
-				toolkit.beep();
-				JOptionPane.showMessageDialog(this,
-						"Invalid max dimension size: "
-						+ maxStr, getTitle(),
-						JOptionPane.ERROR_MESSAGE);
-				maxSizeField.setText(null);
-				return;
-    		} else if (max>dim) {
-    			isChunkNeeded = true;
-    		}
-    		
-    		maxdims[i] = max;
-    	} // for (int i = 0; i < rank; i++)
-    	
-    	if (isH5) {
-        	if (isChunkNeeded && !checkChunked.isSelected()) {
-    			toolkit.beep();
-    			JOptionPane.showMessageDialog(this,
-    					"Chunking is required for the max dimensions of "
-    					+ maxStr, getTitle(),
-    					JOptionPane.ERROR_MESSAGE);
-    			checkChunked.setSelected(true);
-        	}
-    	} else {
-    		for (int i=1; i<rank; i++) {
-    			if (maxdims[i] <=0) {
-    				maxSizeField.setText(currentSizeField.getText());
-        			toolkit.beep();
-        			JOptionPane.showMessageDialog(this,
-        					"Only dim[0] can be unlimited."
-        					+ maxStr, getTitle(),
-        					JOptionPane.ERROR_MESSAGE);
+            if (max != -1 && max<dim) {
+                toolkit.beep();
+                JOptionPane.showMessageDialog(this,
+                        "Invalid max dimension size: "
+                        + maxStr, getTitle(),
+                        JOptionPane.ERROR_MESSAGE);
+                maxSizeField.setText(null);
+                return;
+            } else if (max>dim) {
+                isChunkNeeded = true;
+            }
+            
+            maxdims[i] = max;
+        } // for (int i = 0; i < rank; i++)
+        
+        if (isH5) {
+            if (isChunkNeeded && !checkChunked.isSelected()) {
+                toolkit.beep();
+                JOptionPane.showMessageDialog(this,
+                        "Chunking is required for the max dimensions of "
+                        + maxStr, getTitle(),
+                        JOptionPane.ERROR_MESSAGE);
+                checkChunked.setSelected(true);
+            }
+        } else {
+            for (int i=1; i<rank; i++) {
+                if (maxdims[i] <=0) {
+                    maxSizeField.setText(currentSizeField.getText());
+                    toolkit.beep();
+                    JOptionPane.showMessageDialog(this,
+                            "Only dim[0] can be unlimited."
+                            + maxStr, getTitle(),
+                            JOptionPane.ERROR_MESSAGE);
 
-    				return;
-    			}
-    		}
-    	}
+                    return;
+                }
+            }
+        }
     }
 
     /** Creates a dialog to show the help information. */
@@ -1022,50 +1023,50 @@ public class NewDatasetDialog extends JDialog implements ActionListener,
 
         String maxFieldStr = maxSizeField.getText();
         if (maxFieldStr!=null && maxFieldStr.length()>1) {
-        	st = new StringTokenizer(maxFieldStr, "x");
-        	if (st.countTokens() < rank) {
-        		toolkit.beep();
-        		JOptionPane.showMessageDialog(this,
-        				"Number of values in the max dimension size is less than "
-        				+ rank, getTitle(), JOptionPane.ERROR_MESSAGE);
-        		return null;
-        	}
+            st = new StringTokenizer(maxFieldStr, "x");
+            if (st.countTokens() < rank) {
+                toolkit.beep();
+                JOptionPane.showMessageDialog(this,
+                        "Number of values in the max dimension size is less than "
+                        + rank, getTitle(), JOptionPane.ERROR_MESSAGE);
+                return null;
+            }
 
-        	l = 0;
-        	maxdims = new long[rank];
-        	for (int i = 0; i < rank; i++) {
-        		token = st.nextToken().trim();
+            l = 0;
+            maxdims = new long[rank];
+            for (int i = 0; i < rank; i++) {
+                token = st.nextToken().trim();
 
-        		token = token.toLowerCase();
-        		if (token.startsWith("u"))
-        			l = -1;
-        		else {
-        			try {
-        				l = Long.parseLong(token);
-        			}
-        			catch (NumberFormatException ex) {
-        				toolkit.beep();
-        				JOptionPane.showMessageDialog(this,
-        						"Invalid max dimension size: "
-        						+ maxSizeField.getText(), getTitle(),
-        						JOptionPane.ERROR_MESSAGE);
-        				return null;
-        			}
-        		}
+                token = token.toLowerCase();
+                if (token.startsWith("u"))
+                    l = -1;
+                else {
+                    try {
+                        l = Long.parseLong(token);
+                    }
+                    catch (NumberFormatException ex) {
+                        toolkit.beep();
+                        JOptionPane.showMessageDialog(this,
+                                "Invalid max dimension size: "
+                                + maxSizeField.getText(), getTitle(),
+                                JOptionPane.ERROR_MESSAGE);
+                        return null;
+                    }
+                }
 
-        		if (l < -1) {
-        			toolkit.beep();
-        			JOptionPane.showMessageDialog(this,
-        					"Dimension size cannot be less than -1.", getTitle(),
-        					JOptionPane.ERROR_MESSAGE);
-        			return null;
-        		}
-        		else if (l == 0) {
-        			l = dims[i];
-        		}
+                if (l < -1) {
+                    toolkit.beep();
+                    JOptionPane.showMessageDialog(this,
+                            "Dimension size cannot be less than -1.", getTitle(),
+                            JOptionPane.ERROR_MESSAGE);
+                    return null;
+                }
+                else if (l == 0) {
+                    l = dims[i];
+                }
 
-        		maxdims[i] = l;
-        	}
+                maxdims[i] = l;
+            }
         }
 
         chunks = null;

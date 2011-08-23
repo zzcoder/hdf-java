@@ -9,6 +9,7 @@ import java.io.File;
 
 import javax.swing.JFrame;
 
+import static org.fest.swing.data.TableCell.row;
 import org.fest.swing.core.BasicRobot;
 import org.fest.swing.core.GenericTypeMatcher;
 import org.fest.swing.core.Robot;
@@ -17,11 +18,12 @@ import org.fest.swing.finder.JFileChooserFinder;
 import org.fest.swing.fixture.FrameFixture;
 import org.fest.swing.fixture.JFileChooserFixture;
 import org.fest.swing.fixture.JMenuItemFixture;
+import org.fest.swing.fixture.JTableCellFixture;
+import org.fest.swing.fixture.JTableFixture;
 import org.fest.swing.fixture.JTreeFixture;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.Ignore;
 
 
 public class TestHDFView {
@@ -38,7 +40,6 @@ public class TestHDFView {
         fileMenuItem.click();
 
         JFileChooserFixture fileChooser = JFileChooserFinder.findFileChooser().using(mainFrameFixture.robot);
-        fileChooser.fileNameTextBox().requireText("*.h5");
         fileChooser.fileNameTextBox().setText(name+".h5");
         fileChooser.approve();
 
@@ -109,14 +110,51 @@ public class TestHDFView {
             datasetMenuItem.click();
 
             mainFrameFixture.dialog().textBox("datasetname").setText("testdatasetname");
+            mainFrameFixture.dialog().textBox("currentsize").setText("4 x 4");
             mainFrameFixture.dialog().button("OK").click();
 
             filetree = mainFrameFixture.tree().focus();
-            assertTrue("File-Dataset-HDF5 filetree shows:", filetree.target.getRowCount()==3);
+            assertTrue("File-Dataset-HDF5 filetree shows:"+filetree.target.getRowCount(), filetree.target.getRowCount()==2);
+
+            JMenuItemFixture expandMenuItem = filetree.showPopupMenuAt(1).menuItemWithPath("Expand All");
+            expandMenuItem.robot.waitForIdle();
+            expandMenuItem.requireVisible();
+            expandMenuItem.click();
+
+            filetree = mainFrameFixture.tree().focus();
+            assertTrue("File-Dataset-HDF5 filetree shows:"+filetree.target.getRowCount(), filetree.target.getRowCount()==3);
             assertTrue("File-Dataset-HDF5 filetree has file", (filetree.valueAt(0)).compareTo("testds.h5")==0);
             assertTrue("File-Dataset-HDF5 filetree has group", (filetree.valueAt(1)).compareTo("testgroupname")==0);
             assertTrue("File-Dataset-HDF5 filetree has dataset", (filetree.valueAt(2)).compareTo("testdatasetname")==0);
 
+            JMenuItemFixture dataset2MenuItem = filetree.showPopupMenuAt(2).menuItemWithPath("Open");
+            dataset2MenuItem.robot.waitForIdle();
+            dataset2MenuItem.requireVisible();
+            dataset2MenuItem.click();
+            
+            JTableFixture dataset2table = mainFrameFixture.table("data");
+            JTableCellFixture cell = dataset2table.cell(row(0).column(0));
+            cell.enterValue("1");
+            cell = dataset2table.cell(row(0).column(1));
+            cell.enterValue("2");
+            cell = dataset2table.cell(row(0).column(2));
+            cell.enterValue("3");
+            cell = dataset2table.cell(row(0).column(3));
+            cell.enterValue("4");
+            dataset2table.requireContents(
+              new String[][] {
+                  { "1", "2", "3", "4" }, 
+                  { "0", "0", "0", "0" },
+                  { "0", "0", "0", "0" },
+                  { "0", "0", "0", "0" }
+              }
+            );
+
+            JMenuItemFixture fileMenuItem = mainFrameFixture.menuItemWithPath("File", "Save");
+            fileMenuItem.robot.waitForIdle();
+            fileMenuItem.requireVisible();
+            fileMenuItem.click();
+            
             closeFile(hdf_file, true);
         }
         catch (Exception ex) {
