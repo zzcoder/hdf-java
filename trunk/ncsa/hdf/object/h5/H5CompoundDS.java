@@ -328,8 +328,20 @@ public class H5CompoundDS extends CompoundDS {
             // it into its type such, int, long, float, etc.
             int n = flatNameList.size();
             tid = H5.H5Dget_type(did);
+            int tclass = H5.H5Tget_class(tid);
+            if (tclass == HDF5Constants.H5T_ARRAY) {
+                // array of compound
+                int tmptid = tid;
+                tid = H5.H5Tget_super(tmptid);
+                try {
+                    H5.H5Tclose(tmptid);
+                }
+                catch (HDF5Exception ex) {
+                }
+            }
+            
             extractCompoundInfo(tid, null, null, atomicList);
-
+            
             for (int i = 0; i < n; i++) {
                 boolean isVL = false;
 
@@ -339,6 +351,7 @@ public class H5CompoundDS extends CompoundDS {
 
                 member_name = new String(memberNames[i]);
                 atom_tid = ((Integer) atomicList.get(i)).intValue();
+               
 
                 try {
                     member_class = H5.H5Tget_class(atom_tid);
@@ -950,7 +963,6 @@ public class H5CompoundDS extends CompoundDS {
             tid = H5.H5Dget_type(did);
             tclass = H5.H5Tget_class(tid);
 
-            // check if datatype in file is ntive datatype
             int tmptid = 0;
             if (tclass == HDF5Constants.H5T_ARRAY) {
                 // array of compound
@@ -1117,8 +1129,7 @@ public class H5CompoundDS extends CompoundDS {
      * nest.e
      * </pre>
      */
-    private void extractCompoundInfo(int tid, String name, List names,
-            List types) {
+    private void extractCompoundInfo(int tid, String name, List names, List types) {
         int nMembers = 0, mclass = -1, mtype = -1;
         String mname = null;
 
@@ -1170,8 +1181,7 @@ public class H5CompoundDS extends CompoundDS {
             }
 
             if (mclass == HDF5Constants.H5T_COMPOUND) {
-                extractCompoundInfo(mtype, mname + CompoundDS.separator, names,
-                        types);
+                extractCompoundInfo(mtype, mname + CompoundDS.separator, names, types);
                 continue;
             }
             else if (mclass == HDF5Constants.H5T_ARRAY) {
@@ -1201,7 +1211,6 @@ public class H5CompoundDS extends CompoundDS {
             if (names != null) {
                 names.add(mname);
             }
-
             types.add(new Integer(mtype));
 
         } // for (int i=0; i<nMembers; i++)

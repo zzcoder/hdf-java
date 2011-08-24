@@ -71,6 +71,7 @@ public class H5ScalarDS extends ScalarDS {
     /** flag to indicate if the dataset is an external dataset */
     private boolean isExternal = false;
 
+    private boolean isArrayOfCompound = false;
     /**
      * flag to indicate if the datatype in file is the same as dataype in memory
      */
@@ -303,6 +304,14 @@ public class H5ScalarDS extends ScalarDS {
             isEnum = (tclass == HDF5Constants.H5T_ENUM);
             isUnsigned = H5Datatype.isUnsigned(tid);
             isRegRef = H5.H5Tequal(tid, HDF5Constants.H5T_STD_REF_DSETREG);
+            
+            if (tclass == HDF5Constants.H5T_ARRAY) {
+                // use the base datatype to define the array
+                int basetid = H5.H5Tget_super(tid);
+                int baseclass = H5.H5Tget_class(basetid);
+                isArrayOfCompound = (baseclass==HDF5Constants.H5T_COMPOUND); 
+            }
+            
 
             // check if it is an external dataset
             try {
@@ -726,6 +735,9 @@ public class H5ScalarDS extends ScalarDS {
         if (rank <= 0) {
             init();
         }
+        
+        if (isArrayOfCompound)
+        	throw new HDF5Exception("Cannot show data with dataype of ARRAY of COMPOUND.");
       
         if (isExternal) {
             String pdir = this.getFileFormat().getAbsoluteFile().getParent();
