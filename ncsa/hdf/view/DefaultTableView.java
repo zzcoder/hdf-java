@@ -1608,10 +1608,11 @@ implements TableView, ActionListener, MouseListener
             {
                 if (startEditing[0])
                     return "";
-                
+        
                 if (isArray) {
                     // ARRAY dataset
                     int arraySize = dtype.getDatatypeSize()/btype.getDatatypeSize();
+
                     stringBuffer.setLength(0); // clear the old string
                     int i0 = (row*colCount+column)*arraySize;
                     int i1 = i0+arraySize;
@@ -1642,12 +1643,6 @@ implements TableView, ActionListener, MouseListener
                             index = row*colCount+column;
                     }
                     theValue = Array.get(dataValue, index);
-                    
-//                    if (isDataTransposed) {
-//                        theValue = Array.get(dataValue, column*rowCount+row);
-//                     } else {
-//                         theValue = Array.get(dataValue, row*colCount+column);
-//                    }
                     
                     if (isStr) 
                         return theValue;
