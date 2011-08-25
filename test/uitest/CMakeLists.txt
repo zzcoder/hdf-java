@@ -21,8 +21,8 @@ SET (CMAKE_JAVA_INCLUDE_PATH ${CMAKE_JAVA_INCLUDE_PATH} ${HDFJAVA_LIB_DIR}/junit
 
 SET (HDFJAVA_TEST_UITEST_SRCS
     TestHDFViewMenu.java
-    TestHDFView.java
-    AllTests.java
+    TestTreeViewNewMenu.java
+    TestAll.java
 )
 
 ADD_JAR (${HDFJAVA_TEST_UITEST_TARGET} "." ${HDFJAVA_TEST_UITEST_SRCS})
@@ -51,7 +51,7 @@ FILE (WRITE ${JUNIT_TEST_RUNNER}
   -Djava.library.path=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
   -Dhdfview.root=\"${PROJECT_BINARY_DIR}\" 
   -cp \"${${HDFJAVA_TEST_UITEST_TARGET}_CLASSPATH}\"
-  -ea org.junit.runner.JUnitCore test.uitest.TestHDFView
+  -ea org.junit.runner.JUnitCore test.uitest.TestTreeViewNewMenu
   WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
   RESULT_VARIABLE RESULT)
   IF(RESULT)
@@ -88,8 +88,8 @@ SET_TESTS_PROPERTIES (JUnit-gui-menu PROPERTIES
     ENVIRONMENT "${CMAKE_JAVA_PATH_EXPORT}"
 )
 
-ADD_TEST (JUnit-gui  ${CMAKE_COMMAND} -P ${JUNIT_TEST_RUNNER})
-SET_TESTS_PROPERTIES (JUnit-gui PROPERTIES
+ADD_TEST (JUnit-gui-treeview-newmenu  ${CMAKE_COMMAND} -P ${JUNIT_TEST_RUNNER})
+SET_TESTS_PROPERTIES (JUnit-gui-treeview-newmenu PROPERTIES
     DEPENDS JUnit-gui-menu
     ENVIRONMENT "${CMAKE_JAVA_PATH_EXPORT}"
 )
