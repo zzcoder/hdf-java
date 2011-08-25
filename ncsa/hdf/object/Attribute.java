@@ -57,10 +57,7 @@ import java.lang.reflect.Array;
  * @author Peter X. Cao
  */
 public class Attribute implements Metadata {
-    /**
-     * @see ncsa.hdf.object.HObject#serialVersionUID
-     */
-    public static final long serialVersionUID = HObject.serialVersionUID;
+    private static final long serialVersionUID = 2072473407027648309L;
 
     /** The name of the attribute. */
     private final String name;
@@ -247,7 +244,7 @@ public class Attribute implements Metadata {
      * @see toString(String delimiter)
      */
     @Override
-	public String toString() {
+    public String toString() {
         return name;
     }
 

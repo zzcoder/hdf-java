@@ -214,8 +214,13 @@ import java.io.File;
  *  <p>
  *  <hr>
  */
-public class HDFLibrary 
+public class HDFLibrary implements java.io.Serializable 
 {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -1695429510319126910L;
+
     public final static String HDFPATH_PROPERTY_KEY = "ncsa.hdf.hdflib.HDFLibrary.hdflib";
 
     private final static String JHI_VERSION= "2.6";

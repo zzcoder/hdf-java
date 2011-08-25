@@ -24,7 +24,6 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import ncsa.hdf.object.FileFormat;
-import ncsa.hdf.object.HObject;
 
 /**
  * NewFileDialog shows a message dialog requesting user input for creating a new
@@ -36,7 +35,7 @@ import ncsa.hdf.object.HObject;
 public class NewFileDialog extends JFileChooser // JDialog
 // implements ActionListener
 {
-    public static final long serialVersionUID = HObject.serialVersionUID;
+    private static final long serialVersionUID = 4796246032789504234L;
 
     /** flag if the new file is an HDF5 */
     private String fileType;
@@ -106,7 +105,7 @@ public class NewFileDialog extends JFileChooser // JDialog
     }
 
     @Override
-	protected void fireActionPerformed(String command) {
+    protected void fireActionPerformed(String command) {
         super.fireActionPerformed(command);
 
         if (command.equals("ApproveSelection")) {

@@ -129,7 +129,7 @@ import ncsa.hdf.object.ScalarDS;
 public class DefaultTableView extends JInternalFrame
 implements TableView, ActionListener, MouseListener
 {
-    private static final long serialVersionUID = HObject.serialVersionUID;
+    private static final long serialVersionUID = -7452459299532863847L;
 
     /**
      * The main HDFView.
@@ -1581,7 +1581,7 @@ implements TableView, ActionListener, MouseListener
 
         AbstractTableModel tm =  new AbstractTableModel()
         {
-            private static final long serialVersionUID = HObject.serialVersionUID;
+            private static final long serialVersionUID = 254175303655079056L;
             private final StringBuffer stringBuffer = new StringBuffer();
             private final Datatype dtype = dataset.getDatatype();
             private final Datatype btype = dtype.getBasetype();
@@ -1676,7 +1676,7 @@ implements TableView, ActionListener, MouseListener
         
         theTable = new JTable(tm)
         {
-            private static final long serialVersionUID = HObject.serialVersionUID;
+            private static final long serialVersionUID = -145476220959400488L;
             private final Datatype dtype = dataset.getDatatype();
             private final boolean isArray = (dtype.getDatatypeClass()==Datatype.CLASS_ARRAY);
 
@@ -1868,8 +1868,7 @@ implements TableView, ActionListener, MouseListener
         final String[] allColumnNames = subColumnNames;
         AbstractTableModel tm =  new AbstractTableModel()
         {
-            private static final long serialVersionUID = HObject.serialVersionUID;
-
+            private static final long serialVersionUID = -2176296469630678304L;
             CompoundDS compound = (CompoundDS)dataset;
             int orders[] = compound.getSelectedMemberOrders();
             Datatype types[] = compound.getSelectedMemberTypes();
@@ -1965,8 +1964,7 @@ implements TableView, ActionListener, MouseListener
 
         theTable = new JTable(tm)
         {
-            private static final long serialVersionUID = HObject.serialVersionUID;
-
+            private static final long serialVersionUID = 3221288637329958074L;
             int lastSelectedRow = -1;
             int lastSelectedColumn = -1;
 
@@ -3363,8 +3361,7 @@ implements TableView, ActionListener, MouseListener
 
     private class LineplotOption extends JDialog implements ActionListener, ItemListener
     {
-        private static final long serialVersionUID = HObject.serialVersionUID;
-
+        private static final long serialVersionUID = -3457035832213978906L;
         public static final int NO_PLOT = -1;
         public static final int ROW_PLOT = 0;
         public static final int COLUMN_PLOT = 1;
@@ -3503,8 +3500,7 @@ implements TableView, ActionListener, MouseListener
 
     private class ColumnHeader extends JTableHeader
     {
-        private static final long serialVersionUID = HObject.serialVersionUID;
-
+        private static final long serialVersionUID = -3179653809792147055L;
         private int currentColumnIndex = -1;
         private int lastColumnIndex = -1;
         private JTable parentTable;
@@ -3596,8 +3592,7 @@ implements TableView, ActionListener, MouseListener
     /** RowHeader defines the row header component of the Spreadsheet. */
     private class RowHeader extends JTable
     {
-        private static final long serialVersionUID = HObject.serialVersionUID;
-
+        private static final long serialVersionUID = -1548007702499873626L;
         private int currentRowIndex = -1;
         private int lastRowIndex = -1;
         private JTable parentTable;
@@ -3618,6 +3613,7 @@ implements TableView, ActionListener, MouseListener
             
             AbstractTableModel tm =  new AbstractTableModel()
             {
+                private static final long serialVersionUID = -8117073107569884677L;
                 public int getColumnCount() {
                     return 1;
                 }
@@ -3739,7 +3735,7 @@ implements TableView, ActionListener, MouseListener
     /** RowHeaderRenderer is a custom cell renderer that displays cells as buttons. */
     private class RowHeaderRenderer extends JLabel implements TableCellRenderer
     {
-        private static final long serialVersionUID = HObject.serialVersionUID;
+        private static final long serialVersionUID = -8963879626159783226L;
 
         public RowHeaderRenderer()
         {
@@ -3772,8 +3768,7 @@ implements TableView, ActionListener, MouseListener
 
     private class MultiLineHeaderRenderer extends JList implements TableCellRenderer
     {
-        private static final long serialVersionUID = HObject.serialVersionUID;
-
+        private static final long serialVersionUID = -3697496960833719169L;
         private final CompoundBorder subBorder = new CompoundBorder(
                 new MatteBorder(1, 0, 1, 0, java.awt.Color.darkGray),
                 new MatteBorder(1, 0, 1, 0, java.awt.Color.white));

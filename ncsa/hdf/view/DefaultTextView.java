@@ -80,7 +80,7 @@ import ncsa.hdf.object.ScalarDS;
  */
 public class DefaultTextView extends JInternalFrame implements TextView,
         ActionListener, KeyListener {
-    public static final long serialVersionUID = HObject.serialVersionUID;
+    private static final long serialVersionUID = 3892752752951438428L;
 
     /**
      * The main HDFView.
@@ -145,7 +145,7 @@ public class DefaultTextView extends JInternalFrame implements TextView,
         textEditor = new TextAreaEditor(this);
         
         if (ViewProperties.isIndexBase1())
-        	indexBase = 1;
+            indexBase = 1;
 
         HObject hobject = null;
         if (map != null)
@@ -242,20 +242,20 @@ public class DefaultTextView extends JInternalFrame implements TextView,
 
         int rows = text.length;
         theTable = new JTable(rows, 1) {
-            public static final long serialVersionUID = HObject.serialVersionUID;
+            private static final long serialVersionUID = -6571266777012522255L;
 
             @Override
-			public Object getValueAt(int row, int col) {
+            public Object getValueAt(int row, int col) {
                 return text[row];
             }
 
             @Override
-			public boolean isCellEditable(int row, int column) {
+            public boolean isCellEditable(int row, int column) {
                 return !isReadOnly;
             }
 
             @Override
-			public void editingStopped(ChangeEvent e) {
+            public void editingStopped(ChangeEvent e) {
                 int row = getEditingRow();
                 int col = getEditingColumn();
                 super.editingStopped(e);
@@ -426,7 +426,7 @@ public class DefaultTextView extends JInternalFrame implements TextView,
     }
 
     @Override
-	public void dispose() {
+    public void dispose() {
         if (isTextChanged && !isReadOnly) {
             int op = JOptionPane.showConfirmDialog(this, "\""
                     + dataset.getName() + "\" has changed.\n"
@@ -494,7 +494,7 @@ public class DefaultTextView extends JInternalFrame implements TextView,
 
     private class TextAreaRenderer extends JTextArea implements
             TableCellRenderer {
-        public static final long serialVersionUID = HObject.serialVersionUID;
+        private static final long serialVersionUID = -5869975162678521978L;
 
         private final DefaultTableCellRenderer adaptee = new DefaultTableCellRenderer();
 
@@ -585,7 +585,7 @@ public class DefaultTextView extends JInternalFrame implements TextView,
     }
 
     private class TextAreaEditor extends DefaultCellEditor {
-        public static final long serialVersionUID = HObject.serialVersionUID;
+        private static final long serialVersionUID = 1721646779892184957L;
 
         public TextAreaEditor(KeyListener keyListener) {
             super(new JTextField());
@@ -599,15 +599,15 @@ public class DefaultTextView extends JInternalFrame implements TextView,
             scrollPane.setBorder(null);
             editorComponent = scrollPane;
             delegate = new DefaultCellEditor.EditorDelegate() {
-                public static final long serialVersionUID = HObject.serialVersionUID;
+                private static final long serialVersionUID = 7662356579385373160L;
 
                 @Override
-				public void setValue(Object value) {
+                public void setValue(Object value) {
                     textArea.setText((value != null) ? value.toString() : "");
                 }
 
                 @Override
-				public Object getCellEditorValue() {
+                public Object getCellEditorValue() {
                     return textArea.getText();
                 }
             };
@@ -616,8 +616,7 @@ public class DefaultTextView extends JInternalFrame implements TextView,
 
     /** RowHeader defines the row header component of the Spreadsheet. */
     private class RowHeader extends JTable {
-        public static final long serialVersionUID = HObject.serialVersionUID;
-
+        private static final long serialVersionUID = 2572539746584274419L;
         private int currentRowIndex = -1;
         private int lastRowIndex = -1;
         private JTable parentTable;
@@ -651,13 +650,13 @@ public class DefaultTextView extends JInternalFrame implements TextView,
 
         /** Overridden to return false since the headers are not editable. */
         @Override
-		public boolean isCellEditable(int row, int col) {
+        public boolean isCellEditable(int row, int col) {
             return false;
         }
 
         /** This is called when the selection changes in the row headers. */
         @Override
-		public void valueChanged(ListSelectionEvent e) {
+        public void valueChanged(ListSelectionEvent e) {
             if (parentTable == null) {
                 return;
             }
@@ -674,7 +673,7 @@ public class DefaultTextView extends JInternalFrame implements TextView,
         }
 
         @Override
-		protected void processMouseMotionEvent(MouseEvent e) {
+        protected void processMouseMotionEvent(MouseEvent e) {
             if (e.getID() == MouseEvent.MOUSE_DRAGGED) {
                 int colEnd = rowAtPoint(e.getPoint());
 
@@ -702,7 +701,7 @@ public class DefaultTextView extends JInternalFrame implements TextView,
         }
 
         @Override
-		protected void processMouseEvent(MouseEvent e) {
+        protected void processMouseEvent(MouseEvent e) {
             int mouseID = e.getID();
 
             if (mouseID == MouseEvent.MOUSE_CLICKED) {
@@ -752,7 +751,7 @@ public class DefaultTextView extends JInternalFrame implements TextView,
      * buttons.
      */
     private class RowHeaderRenderer extends JLabel implements TableCellRenderer {
-        public static final long serialVersionUID = HObject.serialVersionUID;
+        private static final long serialVersionUID = 3081275694689434654L;
 
         public RowHeaderRenderer() {
             super();

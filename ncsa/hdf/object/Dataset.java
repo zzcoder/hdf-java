@@ -34,6 +34,11 @@ import java.util.Vector;
  */
 public abstract class Dataset extends HObject {
     /**
+     * 
+     */
+    private static final long serialVersionUID = -3360885430038261178L;
+
+    /**
      * The memory buffer that holds the raw data of the dataset.
      */
     protected Object data;
@@ -187,7 +192,7 @@ public abstract class Dataset extends HObject {
      *             Using {@link #Dataset(FileFormat, String, String)}
      */
     @Deprecated
-	public Dataset(FileFormat theFile, String name, String path, long[] oid) {
+    public Dataset(FileFormat theFile, String name, String path, long[] oid) {
         super(theFile, name, path, oid);
 
         rank = 0;
@@ -276,10 +281,10 @@ public abstract class Dataset extends HObject {
      * @return the number of dimensions of the dataset.
      */
     public final int getRank() {
-    	if (rank < 0)
-    		init();
+        if (rank < 0)
+            init();
 
-    	return rank;
+        return rank;
     }
 
     /**
@@ -288,9 +293,9 @@ public abstract class Dataset extends HObject {
      * @return the dimension sizes of the dataset.
      */
     public final long[] getDims() {
-    	if (rank < 0)
-    		init();
-    	
+        if (rank < 0)
+            init();
+        
         return dims;
     }
 
@@ -300,9 +305,9 @@ public abstract class Dataset extends HObject {
      * @return the max dimension sizes of the dataset.
      */
     public final long[] getMaxDims() {
-    	if (rank < 0)
-    		init();
-    	
+        if (rank < 0)
+            init();
+        
         if (maxDims == null)
             return dims;
 
@@ -339,9 +344,9 @@ public abstract class Dataset extends HObject {
      * @return the dimension sizes of the selected subset.
      */
     public final long[] getSelectedDims() {
-    	if (rank < 0)
-    		init();
-    	
+        if (rank < 0)
+            init();
+        
         return selectedDims;
     }
 
@@ -372,9 +377,9 @@ public abstract class Dataset extends HObject {
      * @return the starting position of a selected subset.
      */
     public final long[] getStartDims() {
-    	if (rank < 0)
-    		init();
-    	
+        if (rank < 0)
+            init();
+        
         return startDims;
     }
 
@@ -404,9 +409,9 @@ public abstract class Dataset extends HObject {
      * </pre>
      */
     public final long[] getStride() {
-    	if (rank < 0)
-    		init();
-    	
+        if (rank < 0)
+            init();
+        
         if (rank <= 0) {
             return null;
         }
@@ -718,7 +723,7 @@ public abstract class Dataset extends HObject {
      *             will fail if the buffer type or size is changed.
      */
     @Deprecated
-	public final void setData(Object d) {
+    public final void setData(Object d) {
         data = d;
     }
 
@@ -772,9 +777,9 @@ public abstract class Dataset extends HObject {
      * @return the size of dimension of the vertical axis.
      */
     public final int getHeight() {
-    	if (rank < 0)
-    		init();
-    	
+        if (rank < 0)
+            init();
+        
         if ((selectedDims == null) || (selectedIndex == null)) {
             return 0;
         }
@@ -813,9 +818,9 @@ public abstract class Dataset extends HObject {
      * @return the size of dimension of the horizontal axis.
      */
     public final int getWidth() {
-    	if (rank < 0)
-    		init();
-    	
+        if (rank < 0)
+            init();
+        
         if ((selectedDims == null) || (selectedIndex == null)) {
             return 0;
         }
@@ -858,9 +863,9 @@ public abstract class Dataset extends HObject {
      * @return the array of the indices of display order.
      */
     public final int[] getSelectedIndex() {
-    	if (rank < 0)
-    		init();
-    	
+        if (rank < 0)
+            init();
+        
         return selectedIndex;
     }
 
@@ -873,9 +878,9 @@ public abstract class Dataset extends HObject {
      * @return the string representation of compression information.
      */
     public final String getCompression() {
-    	if (rank < 0)
-    		init();
-    	
+        if (rank < 0)
+            init();
+        
         return compression;
     }
 
@@ -887,9 +892,9 @@ public abstract class Dataset extends HObject {
      *         chunked.
      */
     public final long[] getChunkSize() {
-    	if (rank < 0)
-    		init();
-    	
+        if (rank < 0)
+            init();
+        
         return chunkSize;
     }
 
@@ -898,7 +903,7 @@ public abstract class Dataset extends HObject {
      *             Using {@link #convertFromUnsignedC(Object, Object)}
      */
     @Deprecated
-	public static Object convertFromUnsignedC(Object data_in) {
+    public static Object convertFromUnsignedC(Object data_in) {
         return Dataset.convertFromUnsignedC(data_in, null);
     }
 
@@ -1037,7 +1042,7 @@ public abstract class Dataset extends HObject {
      *             Using {@link #convertToUnsignedC(Object, Object)}
      */
     @Deprecated
-	public static Object convertToUnsignedC(Object data_in) {
+    public static Object convertToUnsignedC(Object data_in) {
         return Dataset.convertToUnsignedC(data_in, null);
     }
 
@@ -1251,9 +1256,9 @@ public abstract class Dataset extends HObject {
      * @return the names of dimensions, or null if there is no dimension name.
      */
     public final String[] getDimNames() {
-    	if (rank < 0)
-    		init();
-    	
+        if (rank < 0)
+            init();
+        
         return dimNames;
     }
 

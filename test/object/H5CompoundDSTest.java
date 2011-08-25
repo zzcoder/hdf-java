@@ -3,6 +3,13 @@
  */
 package test.object;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.lang.reflect.Array;
 import java.util.Vector;
 
@@ -18,6 +25,7 @@ import ncsa.hdf.object.h5.H5CompoundDS;
 import ncsa.hdf.object.h5.H5Datatype;
 import ncsa.hdf.object.h5.H5File;
 import ncsa.hdf.object.h5.H5Group;
+import ncsa.hdf.object.h5.H5ScalarDS;
 
 /**
  * TestCase for H5CompoundDS.
@@ -2134,6 +2142,105 @@ public class H5CompoundDSTest extends TestCase {
         }
         catch (final Exception ex) {
             fail("H5CompoundDS.create() failed. " + ex);
+        }
+        int nObjs = 0;
+        try {
+            nObjs = H5.H5Fget_obj_count(testFile.getFID(),
+                    HDF5Constants.H5F_OBJ_ALL);
+        }
+        catch (final Exception ex) {
+            fail("H5.H5Fget_obj_count() failed. " + ex);
+        }
+        assertEquals(1, nObjs); // file id should be the only one left open
+    }
+    
+    /**
+     * Test method for {@link ncsa.hdf.object.h5.H5CompoundDS} IsSerializable.
+     */
+    public final void testIsSerializable() {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        ObjectOutputStream oos;
+        try {
+            oos = new ObjectOutputStream(out);
+            oos.writeObject(testDataset);
+            oos.close();
+        }
+        catch (IOException err) {
+            err.printStackTrace();
+            fail("ObjectOutputStream failed: " + err);
+        }
+        assertTrue(out.toByteArray().length > 0);
+    }
+    
+    /**
+     * Test method for {@link ncsa.hdf.object.h5.H5CompoundDS} SerializeToDisk.
+     * <p>
+     * What to test:
+     * <ul>
+     * <li>serialize a dataset identifier
+     * <li>deserialize a dataset identifier
+     * <li>open a dataset identifier
+     * <li>get datatype and dataspace identifier for the dataset
+     * </ul>
+     */
+    public final void testSerializeToDisk()
+    {
+        try {
+            FileOutputStream fos = new FileOutputStream("temph5cdset.ser");
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+            oos.writeObject(testDataset);
+            oos.close();
+        }
+        catch (Exception ex) {
+            fail("Exception thrown during test: " + ex.toString());
+        }
+        
+        H5CompoundDS test = null;
+        try {
+            FileInputStream fis = new FileInputStream("temph5cdset.ser");
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            test = (ncsa.hdf.object.h5.H5CompoundDS) ois.readObject();
+            ois.close();
+            
+            // Clean up the file
+            new File("temph5cdset.ser").delete();
+        }
+        catch (Exception ex) {
+            fail("Exception thrown during test: " + ex.toString());
+        }
+        
+        int did = -1, tid = -1, sid = -1;
+
+        for (int loop = 0; loop < NLOOPS; loop++) {
+            did = tid = sid = -1;
+            try {
+                did = test.open();
+                tid = H5.H5Dget_type(did);
+                sid = H5.H5Dget_space(did);
+            }
+            catch (final Exception ex) {
+                fail("open() failed. " + ex);
+            }
+
+            assertTrue(did > 0);
+            assertTrue(tid > 0);
+            assertTrue(sid > 0);
+
+            try {
+                H5.H5Tclose(tid);
+            }
+            catch (final Exception ex) {
+            }
+            try {
+                H5.H5Sclose(sid);
+            }
+            catch (final Exception ex) {
+            }
+            try {
+                H5.H5Dclose(did);
+            }
+            catch (final Exception ex) {
+            }
         }
         int nObjs = 0;
         try {

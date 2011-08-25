@@ -82,7 +82,7 @@ public abstract class HObject implements Serializable, DataFormat {
      * corresponds exactly to a serialized object. For details, see
      * http://java.sun.com/j2se/1.5.0/docs/api/java/io/Serializable.html
      */
-    public static final long serialVersionUID = 240L;
+    private static final long serialVersionUID = -1723666708199882519L;
 
     /**
      * The separator of object path, i.e. "/".
@@ -163,7 +163,7 @@ public abstract class HObject implements Serializable, DataFormat {
      *             Using {@link #HObject(FileFormat, String, String)}
      */
     @Deprecated
-	public HObject(FileFormat theFile, String theName, String thePath,
+    public HObject(FileFormat theFile, String theName, String thePath,
             long[] oid) {
         this.fileFormat = theFile;
         this.oid = oid;
@@ -494,7 +494,7 @@ public abstract class HObject implements Serializable, DataFormat {
      * @return The name of the object.
      */
     @Override
-	public String toString() {
+    public String toString() {
         if (name != null)
             return name;
         else

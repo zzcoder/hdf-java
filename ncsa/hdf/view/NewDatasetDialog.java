@@ -69,7 +69,7 @@ import ncsa.hdf.object.ScalarDS;
  */
 public class NewDatasetDialog extends JDialog implements ActionListener,
         ItemListener, HyperlinkListener {
-    public static final long serialVersionUID = HObject.serialVersionUID;
+    private static final long serialVersionUID = 5381164938654184532L;
 
     private JTextField nameField, currentSizeField, maxSizeField,
             chunkSizeField, stringLengthField;
