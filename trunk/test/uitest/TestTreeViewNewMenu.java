@@ -26,7 +26,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 
-public class TestHDFView {
+public class TestTreeViewNewMenu {
     private static FrameFixture mainFrameFixture;
 
     private File createHDF5File(String name) {
@@ -79,6 +79,39 @@ public class TestHDFView {
         mainFrameFixture.robot.waitForIdle();
         //mainFrameFixture.requireNotVisible();
         mainFrameFixture.cleanUp();
+    }
+
+    @Test 
+    public void createNewHDF5Group() {
+        try {
+            File hdf_file = createHDF5File("testds");
+
+            JTreeFixture filetree = mainFrameFixture.tree().focus();
+            filetree.requireVisible();
+            assertTrue("File-Dataset-HDF5 filetree shows:", filetree.target.getRowCount()==1);
+            assertTrue("File-Dataset-HDF5 filetree has file", (filetree.valueAt(0)).compareTo("testds.h5")==0);
+
+            JMenuItemFixture groupMenuItem = filetree.showPopupMenuAt(0).menuItemWithPath("New","Group");
+            groupMenuItem.robot.waitForIdle();
+            groupMenuItem.requireVisible();
+            groupMenuItem.click();
+
+            mainFrameFixture.dialog().textBox("groupname").setText("testgroupname");
+            mainFrameFixture.dialog().button("OK").click();
+
+            filetree = mainFrameFixture.tree().focus();
+            assertTrue("File-Dataset-HDF5 filetree shows:", filetree.target.getRowCount()==2);
+            assertTrue("File-Dataset-HDF5 filetree has file", (filetree.valueAt(0)).compareTo("testds.h5")==0);
+            assertTrue("File-Dataset-HDF5 filetree has group", (filetree.valueAt(1)).compareTo("testgroupname")==0);
+            
+            closeFile(hdf_file, true);
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        catch (AssertionError ae) {
+            ae.printStackTrace();
+        }
     }
 
     @Test 
