@@ -61,7 +61,6 @@ import ncsa.hdf.object.CompoundDS;
 import ncsa.hdf.object.Dataset;
 import ncsa.hdf.object.Datatype;
 import ncsa.hdf.object.FileFormat;
-import ncsa.hdf.object.HObject;
 import ncsa.hdf.object.ScalarDS;
 
 /**
@@ -74,7 +73,10 @@ import ncsa.hdf.object.ScalarDS;
  */
 public class DataOptionDialog extends JDialog implements ActionListener,
         ItemListener {
-    public static final long serialVersionUID = HObject.serialVersionUID;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -1078411885690696784L;
 
     /**
      * The main HDFView.
@@ -217,15 +219,15 @@ public class DataOptionDialog extends JDialog implements ActionListener,
 
         choicePalette.addItem("Select palette");
         if(dataset instanceof ScalarDS ){
-        	String paletteName = ((ScalarDS) dataset).getPaletteName(0);
-        	if(paletteName==null){
-        		paletteName = "Default";
-        	}
-        	choicePalette.addItem(paletteName);
-        	for (int i = 2; i <= numberOfPalettes; i++) {
-        		paletteName = ((ScalarDS) dataset).getPaletteName(i-1);
-        		choicePalette.addItem(paletteName);
-        	}
+            String paletteName = ((ScalarDS) dataset).getPaletteName(0);
+            if(paletteName==null){
+                paletteName = "Default";
+            }
+            choicePalette.addItem(paletteName);
+            for (int i = 2; i <= numberOfPalettes; i++) {
+                paletteName = ((ScalarDS) dataset).getPaletteName(i-1);
+                choicePalette.addItem(paletteName);
+            }
         }
         choicePalette.addItem("Gray");
         choicePalette.addItem("ReverseGray");
@@ -318,8 +320,8 @@ public class DataOptionDialog extends JDialog implements ActionListener,
                 centerP.add(txtviewP, BorderLayout.SOUTH);
             }
             else {
-            	 w1 = 680 + (ViewProperties.getFontSize() - 12) * 15;
-            	 h1 = 400 + (ViewProperties.getFontSize() - 12) * 10;
+                 w1 = 680 + (ViewProperties.getFontSize() - 12) * 15;
+                 h1 = 400 + (ViewProperties.getFontSize() - 12) * 10;
                 contentPane.setPreferredSize(new Dimension(w1, h1));
                 if (rank > 1) {
                     centerP.add(navigatorP, BorderLayout.WEST);
@@ -401,21 +403,21 @@ public class DataOptionDialog extends JDialog implements ActionListener,
 
                     JPanel tmpP = new JPanel();
                     if(bitmaskButtons.length <=8){
-                    	tmpP.setLayout(new GridLayout(1,
-                    			bitmaskButtons.length ));
-                    	for (int i = 0; i<=bitmaskButtons.length  - 1; i++)
-                    		tmpP.add(bitmaskButtons[i]);
+                        tmpP.setLayout(new GridLayout(1,
+                                bitmaskButtons.length ));
+                        for (int i = 0; i<=bitmaskButtons.length  - 1; i++)
+                            tmpP.add(bitmaskButtons[i]);
                     }
                     else{
-                    	tmpP
-                    	.setLayout(new GridLayout(2,
-                    			bitmaskButtons.length / 2));
+                        tmpP
+                        .setLayout(new GridLayout(2,
+                                bitmaskButtons.length / 2));
 
-                    	for (int i = 0; i<=bitmaskButtons.length / 2 - 1; i++)
-                    		tmpP.add(bitmaskButtons[i]);
+                        for (int i = 0; i<=bitmaskButtons.length / 2 - 1; i++)
+                            tmpP.add(bitmaskButtons[i]);
 
-                    	for (int i = bitmaskButtons.length / 2; i <= bitmaskButtons.length - 1; i++)
-                    		tmpP.add(bitmaskButtons[i]);
+                        for (int i = bitmaskButtons.length / 2; i <= bitmaskButtons.length - 1; i++)
+                            tmpP.add(bitmaskButtons[i]);
                     }
                     sheetP2.setLayout(new BorderLayout(10, 10));
                     sheetP2.add(tmpP, BorderLayout.CENTER);
@@ -656,42 +658,42 @@ public class DataOptionDialog extends JDialog implements ActionListener,
 
   //     if (source instanceof JRadioButton) {
         if (source.equals(imageButton) || source.equals(spreadsheetButton)) {
-        	choicePalette.setEnabled(imageButton.isSelected()
-        			&& !isTrueColorImage);
+            choicePalette.setEnabled(imageButton.isSelected()
+                    && !isTrueColorImage);
 
-        	if (imageButton.isSelected()) {
-        		choiceImageView.setEnabled(true);
-        		choiceTableView.setEnabled(false);
-        	}
-        	else {
-        		choiceImageView.setEnabled(false);
-        		choiceTableView.setEnabled(true);
-        	}
+            if (imageButton.isSelected()) {
+                choiceImageView.setEnabled(true);
+                choiceTableView.setEnabled(false);
+            }
+            else {
+                choiceImageView.setEnabled(false);
+                choiceTableView.setEnabled(true);
+            }
 
-        	// reset show char button
-        	Datatype dtype = dataset.getDatatype();
-        	int tclass = dtype.getDatatypeClass();
-        	if (tclass == Datatype.CLASS_CHAR
-        			|| tclass == Datatype.CLASS_INTEGER) {
-        		int tsize = dtype.getDatatypeSize();
-        		charCheckbox.setEnabled(spreadsheetButton.isSelected()
-        				&& (tsize == 1));
-        		bitmaskCheckbox.setEnabled((tsize <= 2));
-        	}                
-        	else {
-        		charCheckbox.setEnabled(false);
-        		charCheckbox.setSelected(false);
-        		bitmaskCheckbox.setEnabled(false);
-        		bitmaskCheckbox.setSelected(false);
-        	}
-        	if(bitmaskCheckbox.isEnabled())
-        		setEnableBitmask(bitmaskCheckbox.isEnabled()
-        				&& bitmaskCheckbox.isSelected());
+            // reset show char button
+            Datatype dtype = dataset.getDatatype();
+            int tclass = dtype.getDatatypeClass();
+            if (tclass == Datatype.CLASS_CHAR
+                    || tclass == Datatype.CLASS_INTEGER) {
+                int tsize = dtype.getDatatypeSize();
+                charCheckbox.setEnabled(spreadsheetButton.isSelected()
+                        && (tsize == 1));
+                bitmaskCheckbox.setEnabled((tsize <= 2));
+            }                
+            else {
+                charCheckbox.setEnabled(false);
+                charCheckbox.setSelected(false);
+                bitmaskCheckbox.setEnabled(false);
+                bitmaskCheckbox.setSelected(false);
+            }
+            if(bitmaskCheckbox.isEnabled())
+                setEnableBitmask(bitmaskCheckbox.isEnabled()
+                        && bitmaskCheckbox.isSelected());
 
         }
            if (source.equals(bitmaskCheckbox)) {
                 if (bitmaskCheckbox.isSelected())
-                	charCheckbox.setSelected(false);
+                    charCheckbox.setSelected(false);
 
                 setEnableBitmask(bitmaskCheckbox.isSelected());
             }
@@ -1114,8 +1116,7 @@ public class DataOptionDialog extends JDialog implements ActionListener,
     /** SubsetNavigator draws selection rectangle of subset. */
     private class PreviewNavigator extends JComponent implements MouseListener,
             MouseMotionListener {
-        public static final long serialVersionUID = HObject.serialVersionUID;
-
+        private static final long serialVersionUID = -4458114008420664965L;
         private final int NAVIGATOR_SIZE = 150;
         private int dimX, dimY, x, y;
         private double r;
@@ -1213,8 +1214,8 @@ public class DataOptionDialog extends JDialog implements ActionListener,
                 Object data = sd.read();
                 Object fillValue = sd.getFillValue();
                 if (fillValue != null){
-                	if(sd.isFillValueConverted)
-                    	fillValue = ScalarDS.convertToUnsignedC(fillValue, null);
+                    if(sd.isFillValueConverted)
+                        fillValue = ScalarDS.convertToUnsignedC(fillValue, null);
                 }
                 byte[] bData = Tools.getBytes(data, sd.getImageDataRange(), fillValue, null);
 
@@ -1271,7 +1272,7 @@ public class DataOptionDialog extends JDialog implements ActionListener,
         }
 
         @Override
-		public void paint(Graphics g) {
+        public void paint(Graphics g) {
             g.setColor(Color.blue);
 
             if (previewImage != null) {

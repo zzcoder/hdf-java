@@ -3,6 +3,13 @@
  */
 package test.object;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.List;
 
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -370,96 +377,96 @@ public class H5FileTest extends TestCase {
      * </ul>
      */
     public final void testCreateGroupWithGroupplist() {
-    	final String nameNew = "testH5File2.h5";
-    	H5File file = null;
-    	int fid = -1;
-    	int gcpl = -1;
-    	int gid = -1;
-    	int lcpl = -1;
-    	Group grp = null;
-    	Group grp2 = null, grp3 = null;
-    	H5G_info_t ginfo;
+        final String nameNew = "testH5File2.h5";
+        H5File file = null;
+        int fid = -1;
+        int gcpl = -1;
+        int gid = -1;
+        int lcpl = -1;
+        Group grp = null;
+        Group grp2 = null, grp3 = null;
+        H5G_info_t ginfo;
 
-    	try {
-    		file = (H5File) H5FILE.create(nameNew);
-    	} catch (final Exception ex) {
-    		fail("file.create() failed. " + ex);
-    	}
-    	try {
-    		fid = file.open();
-    	} catch (final Exception ex) {
-    		fail("file.open() failed. " + ex);
-    	}
-    	assertTrue(fid > 0);
+        try {
+            file = (H5File) H5FILE.create(nameNew);
+        } catch (final Exception ex) {
+            fail("file.create() failed. " + ex);
+        }
+        try {
+            fid = file.open();
+        } catch (final Exception ex) {
+            fail("file.open() failed. " + ex);
+        }
+        assertTrue(fid > 0);
 
-    	try {
-    		lcpl = H5.H5Pcreate(HDF5Constants.H5P_LINK_CREATE); //create lcpl
-    		if (lcpl >= 0) 
-    			H5.H5Pset_create_intermediate_group(lcpl, true);	
-    	} catch (final Exception ex) {
-    		fail("H5.H5Pcreate() failed. " + ex);
-    	}
+        try {
+            lcpl = H5.H5Pcreate(HDF5Constants.H5P_LINK_CREATE); //create lcpl
+            if (lcpl >= 0) 
+                H5.H5Pset_create_intermediate_group(lcpl, true);    
+        } catch (final Exception ex) {
+            fail("H5.H5Pcreate() failed. " + ex);
+        }
 
-    	try {
-    		gcpl = H5.H5Pcreate(HDF5Constants.H5P_GROUP_CREATE); //create gcpl
-    		if (gcpl >= 0) {
-    			H5.H5Pset_link_creation_order(gcpl,
-    					HDF5Constants.H5P_CRT_ORDER_TRACKED
-    					+ HDF5Constants.H5P_CRT_ORDER_INDEXED);//Set link creation order
-    		}
-    	} catch (final Exception ex) {
-    		fail("H5.H5Pcreate() failed. " + ex);
-    	}
-    	try {
-    		grp = file.createGroup("Group1/Group2/Group3", null, gcpl,lcpl);
-    	} catch (final Exception ex) {
-    		; //Expected -intentional as the order of gplist is invalid.
-    	}
-    	assertNull(grp);
+        try {
+            gcpl = H5.H5Pcreate(HDF5Constants.H5P_GROUP_CREATE); //create gcpl
+            if (gcpl >= 0) {
+                H5.H5Pset_link_creation_order(gcpl,
+                        HDF5Constants.H5P_CRT_ORDER_TRACKED
+                        + HDF5Constants.H5P_CRT_ORDER_INDEXED);//Set link creation order
+            }
+        } catch (final Exception ex) {
+            fail("H5.H5Pcreate() failed. " + ex);
+        }
+        try {
+            grp = file.createGroup("Group1/Group2/Group3", null, gcpl,lcpl);
+        } catch (final Exception ex) {
+            ; //Expected -intentional as the order of gplist is invalid.
+        }
+        assertNull(grp);
 
-    	try {
-    		grp = file.createGroup("Group1/Group2/Group3", null, lcpl,gcpl);
-    	} catch (final Exception ex) {
-    		fail("file.createGroup() failed. " + ex);
-    	}
-    	assertNotNull(grp);
+        try {
+            grp = file.createGroup("Group1/Group2/Group3", null, lcpl,gcpl);
+        } catch (final Exception ex) {
+            fail("file.createGroup() failed. " + ex);
+        }
+        assertNotNull(grp);
 
-    	try {
-    		gid = grp.open();
-    	} catch (final Exception ex) {
-    		fail("grp.open() failed. " + ex);
-    	}
-    	assertTrue(gid > 0);
+        try {
+            gid = grp.open();
+        } catch (final Exception ex) {
+            fail("grp.open() failed. " + ex);
+        }
+        assertTrue(gid > 0);
 
-    	try {
-    		grp2 = file.createGroup("G4", grp); // create subgroups in /Group3
-    		grp3 = file.createGroup("G3", grp);
-    	} catch (final Exception ex) {
-    		fail("file.createGroup() failed. " + ex);
-    	}
-    	assertNotNull(grp2);
-    	assertNotNull(grp3);
+        try {
+            grp2 = file.createGroup("G4", grp); // create subgroups in /Group3
+            grp3 = file.createGroup("G3", grp);
+        } catch (final Exception ex) {
+            fail("file.createGroup() failed. " + ex);
+        }
+        assertNotNull(grp2);
+        assertNotNull(grp3);
 
-    	try {	
-    		String name = H5.H5Lget_name_by_idx(gid, ".",
-    				HDF5Constants.H5_INDEX_CRT_ORDER,
-    				HDF5Constants.H5_ITER_INC, 1, HDF5Constants.H5P_DEFAULT); // Get name of 2nd link
-    		assertEquals("G3", name);
-    	} catch (final Exception ex) {
-    		fail("H5.H5Lget_name_by_idx() failed. " + ex);
-    	}
+        try {    
+            String name = H5.H5Lget_name_by_idx(gid, ".",
+                    HDF5Constants.H5_INDEX_CRT_ORDER,
+                    HDF5Constants.H5_ITER_INC, 1, HDF5Constants.H5P_DEFAULT); // Get name of 2nd link
+            assertEquals("G3", name);
+        } catch (final Exception ex) {
+            fail("H5.H5Lget_name_by_idx() failed. " + ex);
+        }
 
-    	grp.close(gid);
-    	try {
-    		H5.H5Pclose(lcpl);
-    		H5.H5Pclose(gcpl);
-    	} catch (final Exception ex) {
-    	}
-    	try {
-    		file.close();
-    	} catch (final Exception ex) {
-    	}
-    	file.delete();
+        grp.close(gid);
+        try {
+            H5.H5Pclose(lcpl);
+            H5.H5Pclose(gcpl);
+        } catch (final Exception ex) {
+        }
+        try {
+            file.close();
+        } catch (final Exception ex) {
+        }
+        file.delete();
     }
     
     /**
@@ -481,76 +488,76 @@ public class H5FileTest extends TestCase {
      */
     
     public final void testcreateGcpl() {
-    	final String nameNew = "test8.h5";
-    	H5File file = null;
-    	int fid = -1;
-    	int gcpl = -1;
-    	int gid = -1;
+        final String nameNew = "test8.h5";
+        H5File file = null;
+        int fid = -1;
+        int gcpl = -1;
+        int gid = -1;
  
-    	Group grp = null;
-    	Group grp2 = null, grp3 = null;
-    	H5G_info_t ginfo;
+        Group grp = null;
+        Group grp2 = null, grp3 = null;
+        H5G_info_t ginfo;
 
-    	try {
-    		file = (H5File) H5FILE.create(nameNew);
-    	} catch (final Exception ex) {
-    		fail("file.create() failed. " + ex);
-    	}
-    	try {
-    		fid = file.open();
-    	} catch (final Exception ex) {
-    		fail("file.open() failed. " + ex);
-    	}
-    	assertTrue(fid > 0);
+        try {
+            file = (H5File) H5FILE.create(nameNew);
+        } catch (final Exception ex) {
+            fail("file.create() failed. " + ex);
+        }
+        try {
+            fid = file.open();
+        } catch (final Exception ex) {
+            fail("file.open() failed. " + ex);
+        }
+        assertTrue(fid > 0);
 
 
-    	try {
-    		gcpl = file.createGcpl(Group.CRT_ORDER_INDEXED, 5, 3);
-    	} catch (final Exception ex) {
-    		fail("file.createGcpl() failed. " + ex);
-    	}
-    	
+        try {
+            gcpl = file.createGcpl(Group.CRT_ORDER_INDEXED, 5, 3);
+        } catch (final Exception ex) {
+            fail("file.createGcpl() failed. " + ex);
+        }
+        
 
-    	try {
-    		grp = file.createGroup("/Group1", null, HDF5Constants.H5P_DEFAULT,gcpl);
-    	} catch (final Exception ex) {
-    		fail("file.createGroup() failed. " + ex);
-    	}
-    	assertNotNull(grp);
-    	
-    	try {
-    		gid = grp.open();
-    	} catch (final Exception ex) {
-    		fail("grp.open() failed. " + ex);
-    	}
-    	assertTrue(gid > 0);
+        try {
+            grp = file.createGroup("/Group1", null, HDF5Constants.H5P_DEFAULT,gcpl);
+        } catch (final Exception ex) {
+            fail("file.createGroup() failed. " + ex);
+        }
+        assertNotNull(grp);
+        
+        try {
+            gid = grp.open();
+        } catch (final Exception ex) {
+            fail("grp.open() failed. " + ex);
+        }
+        assertTrue(gid > 0);
 
-    	try {
-    		grp2 = file.createGroup("G4", grp); // create subgroups in /Group1
-    		grp3 = file.createGroup("G3", grp);
-    	} catch (final Exception ex) {
-    		fail("file.createGroup() failed. " + ex);
-    	}
-    	assertNotNull(grp2);
-    	assertNotNull(grp3);
+        try {
+            grp2 = file.createGroup("G4", grp); // create subgroups in /Group1
+            grp3 = file.createGroup("G3", grp);
+        } catch (final Exception ex) {
+            fail("file.createGroup() failed. " + ex);
+        }
+        assertNotNull(grp2);
+        assertNotNull(grp3);
 
-    	try {	
-    		String name = H5.H5Lget_name_by_idx(gid, ".",
-    				HDF5Constants.H5_INDEX_CRT_ORDER,
-    				HDF5Constants.H5_ITER_INC, 1, HDF5Constants.H5P_DEFAULT); // Get name of 2nd link
-    		assertEquals("G3", name);
-    	} catch (final Exception ex) {
-    		fail("H5.H5Lget_name_by_idx() failed. " + ex);
-    	}
+        try {    
+            String name = H5.H5Lget_name_by_idx(gid, ".",
+                    HDF5Constants.H5_INDEX_CRT_ORDER,
+                    HDF5Constants.H5_ITER_INC, 1, HDF5Constants.H5P_DEFAULT); // Get name of 2nd link
+            assertEquals("G3", name);
+        } catch (final Exception ex) {
+            fail("H5.H5Lget_name_by_idx() failed. " + ex);
+        }
 
-    	grp.close(gid);
-    	
-    	
-    	try {
-    		file.close();
-    	} catch (final Exception ex) {
-    	}
-    	file.delete();
+        grp.close(gid);
+        
+        
+        try {
+            file.close();
+        } catch (final Exception ex) {
+        }
+        file.delete();
     }
 
     /**
@@ -1220,130 +1227,130 @@ public class H5FileTest extends TestCase {
      * </ul>
      */
     public final void testUpdateReferenceDataset() {
-    	Group root = null;
-    	HObject srcObj = null, dstObj = null;
-    	final String nameNewFile = "testH5File.h5";
-    	String dstName = null;
-    	H5File file = null;
+        Group root = null;
+        HObject srcObj = null, dstObj = null;
+        final String nameNewFile = "testH5File.h5";
+        String dstName = null;
+        H5File file = null;
 
-    	try {
-    		root = (Group) testFile.get("/");
-    	}
-    	catch (final Exception ex) {
-    		fail("file.get() failed. " + ex);
-    	}
-    	assertNotNull(root);
+        try {
+            root = (Group) testFile.get("/");
+        }
+        catch (final Exception ex) {
+            fail("file.get() failed. " + ex);
+        }
+        assertNotNull(root);
 
-    	final List members = root.getMemberList();
-    	final int n = members.size();
-    	assertTrue(n > 0);
+        final List members = root.getMemberList();
+        final int n = members.size();
+        assertTrue(n > 0);
 
-    	try {
-    		file = (H5File) H5FILE.create(nameNewFile);
-    		file.open();
-    	}
-    	catch (final Exception ex) {
-    		fail("file.create() failed. " + ex);
-    	}
-    	assertNotNull(file);
+        try {
+            file = (H5File) H5FILE.create(nameNewFile);
+            file.open();
+        }
+        catch (final Exception ex) {
+            fail("file.create() failed. " + ex);
+        }
+        assertNotNull(file);
 
-    	try {
-    		root = (Group) file.get("/");
-    	}
-    	catch (final Exception ex) {
-    		fail("file.get() failed. " + ex);
-    	}
-    	assertNotNull(root);
+        try {
+            root = (Group) file.get("/");
+        }
+        catch (final Exception ex) {
+            fail("file.get() failed. " + ex);
+        }
+        assertNotNull(root);
 
-    	// copy all the objects to the new file
-    	for (int i = 0; i < n; i++) {
-    		dstName = null;
-    		dstObj = null;
-    		srcObj = (HObject) members.get(i);
+        // copy all the objects to the new file
+        for (int i = 0; i < n; i++) {
+            dstName = null;
+            dstObj = null;
+            srcObj = (HObject) members.get(i);
 
-    		try {
-    			dstObj = (HObject) ((DefaultMutableTreeNode) testFile.copy(
-    					srcObj, root)).getUserObject();
-    		}
-    		catch (final Exception ex) {
-    			// image palette probably is copied already
-    			if (H5TestFile.NAME_DATASET_IMAGE_PALETTE.equals(srcObj
-    					.getFullName())) {
-    				continue;
-    			}
+            try {
+                dstObj = (HObject) ((DefaultMutableTreeNode) testFile.copy(
+                        srcObj, root)).getUserObject();
+            }
+            catch (final Exception ex) {
+                // image palette probably is copied already
+                if (H5TestFile.NAME_DATASET_IMAGE_PALETTE.equals(srcObj
+                        .getFullName())) {
+                    continue;
+                }
 
-    			fail("file.copy() failed on " + srcObj.getFullName() + ". "
-    					+ ex);
-    		}
-    		assertNotNull(dstObj);
-    		dstName = dstObj.getFullName();
+                fail("file.copy() failed on " + srcObj.getFullName() + ". "
+                        + ex);
+            }
+            assertNotNull(dstObj);
+            dstName = dstObj.getFullName();
 
-    		// re-open the file to make sure the object is writen to file
-    		try {
-    			file.close();
-    			file.open();
-    		}
-    		catch (final Exception ex) {
-    			fail("file.close() failed. " + ex);
-    		}
+            // re-open the file to make sure the object is writen to file
+            try {
+                file.close();
+                file.open();
+            }
+            catch (final Exception ex) {
+                fail("file.close() failed. " + ex);
+            }
 
-    		try {
-    			dstObj = file.get(dstName);
-    		}
-    		catch (final Exception ex) {
-    			fail("file.get() failed on " + dstObj.getFullName() + ". " + ex);
-    		}
-    		assertNotNull(dstObj);
-    	}
+            try {
+                dstObj = file.get(dstName);
+            }
+            catch (final Exception ex) {
+                fail("file.get() failed on " + dstObj.getFullName() + ". " + ex);
+            }
+            assertNotNull(dstObj);
+        }
 
-    	try {
-    		H5File.updateReferenceDataset(testFile, file);
-    	}
-    	catch (final Exception ex) {
-    		fail("H5File.updateReferenceDataset() failed. " + ex);
-    	}
+        try {
+            H5File.updateReferenceDataset(testFile, file);
+        }
+        catch (final Exception ex) {
+            fail("H5File.updateReferenceDataset() failed. " + ex);
+        }
 
-    	int[] otype = { 1 };
-    	int obj_type = -1;
-    	int did = -1;
-    	byte[] read_data = new byte[3920]; 
-    	HObject obj = null;
+        int[] otype = { 1 };
+        int obj_type = -1;
+        int did = -1;
+        byte[] read_data = new byte[3920]; 
+        HObject obj = null;
 
-    	//Check if the copied dataset containing references, point to correct object type.
-    	try {          	
-    		obj = file.get(H5TestFile.OBJ_NAMES[17]);
-    		did = H5.H5Dopen(file.getFID(),obj.getName(), HDF5Constants.H5P_DEFAULT);
-    		H5.H5Dread(did, HDF5Constants.H5T_STD_REF_OBJ, HDF5Constants.H5S_ALL,HDF5Constants.H5S_ALL, HDF5Constants.H5P_DEFAULT, read_data);
+        //Check if the copied dataset containing references, point to correct object type.
+        try {              
+            obj = file.get(H5TestFile.OBJ_NAMES[17]);
+            did = H5.H5Dopen(file.getFID(),obj.getName(), HDF5Constants.H5P_DEFAULT);
+            H5.H5Dread(did, HDF5Constants.H5T_STD_REF_OBJ, HDF5Constants.H5S_ALL,HDF5Constants.H5S_ALL, HDF5Constants.H5P_DEFAULT, read_data);
 
-    		byte rbuf0[]= new byte[8];
-    		int srcPos =0;
+            byte rbuf0[]= new byte[8];
+            int srcPos =0;
 
-    		for (int i = 0; i < 17; i++) {
-    			System.arraycopy(read_data, srcPos, rbuf0, 0, 8);
-    			srcPos = srcPos + 8;
-    			obj_type = H5.H5Rget_obj_type(file.getFID(), HDF5Constants.H5R_OBJECT, rbuf0, otype);
-    			assertTrue(obj_type== H5TestFile.OBJ_TYPES[i]);
-    		}
-    	}
-    	catch (final Exception ex) {
-    		ex.printStackTrace();
-    		fail("file.get() failed. " + ex);
-    	}
-    	
-    	try{
-    		H5.H5Dclose(did);
-    	}
-    	catch (final Exception ex) {
-    	}
-    	
-    	try {
-    		file.close();
-    	}
-    	catch (final Exception ex) {
-    		fail("file.close() failed. " + ex);
-    	}
+            for (int i = 0; i < 17; i++) {
+                System.arraycopy(read_data, srcPos, rbuf0, 0, 8);
+                srcPos = srcPos + 8;
+                obj_type = H5.H5Rget_obj_type(file.getFID(), HDF5Constants.H5R_OBJECT, rbuf0, otype);
+                assertTrue(obj_type== H5TestFile.OBJ_TYPES[i]);
+            }
+        }
+        catch (final Exception ex) {
+            ex.printStackTrace();
+            fail("file.get() failed. " + ex);
+        }
+        
+        try{
+            H5.H5Dclose(did);
+        }
+        catch (final Exception ex) {
+        }
+        
+        try {
+            file.close();
+        }
+        catch (final Exception ex) {
+            fail("file.close() failed. " + ex);
+        }
 
-    	file.delete();
+        file.delete();
     }
 
     /**
@@ -1380,41 +1387,41 @@ public class H5FileTest extends TestCase {
      * {@link ncsa.hdf.object.h5.H5File#getLibBounds()}
      */
     public final void testSetLibBounds() {
-    	int low = HDF5Constants.H5F_LIBVER_LATEST;
-    	int high = HDF5Constants.H5F_LIBVER_LATEST;
+        int low = HDF5Constants.H5F_LIBVER_LATEST;
+        int high = HDF5Constants.H5F_LIBVER_LATEST;
 
-    	final H5File file =  new H5File(H5TestFile.NAME_FILE_H5, FileFormat.WRITE);
-    	
-    	try{
-    		file.open();
-    		file.setLibBounds(low,high);   	
-    	}
-    	catch (final Exception ex) {
-    		fail("testFile.setLibBounds() failed. " + ex);
-    	}
-    	
-    	int[] libver = new int[2];
-    	try{
-    		libver = file.getLibBounds();   	
-    	}
-    	catch (final Exception ex) {
-    		fail("testFile.getLibBounds() failed. " + ex);
-    	}
-    	
-    	assertEquals(HDF5Constants.H5F_LIBVER_LATEST, libver[0]);
-    	assertEquals(HDF5Constants.H5F_LIBVER_LATEST, libver[1]);
-    	
-    	try{
-    		file.close();
-    	}
-    	catch(Exception ex){		
-    	}
-    	try{
-    		testFile.setLibBounds(-1, -1);   	
-    	}
-    	catch (final Exception ex) {
-    		fail("testFile.setLibBounds() failed. " + ex);
-    	}
+        final H5File file =  new H5File(H5TestFile.NAME_FILE_H5, FileFormat.WRITE);
+        
+        try{
+            file.open();
+            file.setLibBounds(low,high);       
+        }
+        catch (final Exception ex) {
+            fail("testFile.setLibBounds() failed. " + ex);
+        }
+        
+        int[] libver = new int[2];
+        try{
+            libver = file.getLibBounds();       
+        }
+        catch (final Exception ex) {
+            fail("testFile.getLibBounds() failed. " + ex);
+        }
+        
+        assertEquals(HDF5Constants.H5F_LIBVER_LATEST, libver[0]);
+        assertEquals(HDF5Constants.H5F_LIBVER_LATEST, libver[1]);
+        
+        try{
+            file.close();
+        }
+        catch(Exception ex){        
+        }
+        try{
+            testFile.setLibBounds(-1, -1);       
+        }
+        catch (final Exception ex) {
+            fail("testFile.setLibBounds() failed. " + ex);
+        }
     }
     
     /**
@@ -1437,143 +1444,143 @@ public class H5FileTest extends TestCase {
      * </ul>
      */
     public final void testCreateLink() {
-    	final String nameNew = "testH5FileLinks1.h5";
-    	H5File file = null;
-    	int fid = -1;
-    	Group grp1 = null, grp2 = null;
-    	Group subgrp1 = null;
-    	Dataset d1 = null;
+        final String nameNew = "testH5FileLinks1.h5";
+        H5File file = null;
+        int fid = -1;
+        Group grp1 = null, grp2 = null;
+        Group subgrp1 = null;
+        Dataset d1 = null;
 
-    	try {
-    		file = (H5File) H5FILE.create(nameNew);
-    	}
-    	catch (final Exception ex) {
-    		fail("file.create() failed. " + ex);
-    	}
+        try {
+            file = (H5File) H5FILE.create(nameNew);
+        }
+        catch (final Exception ex) {
+            fail("file.create() failed. " + ex);
+        }
 
-    	try {
-    		fid = file.open();
-    	}
-    	catch (final Exception ex) {
-    		fail("file.open() failed. " + ex);
-    	}
-    	assertTrue(fid > 0);
+        try {
+            fid = file.open();
+        }
+        catch (final Exception ex) {
+            fail("file.open() failed. " + ex);
+        }
+        assertTrue(fid > 0);
 
-    	try {
-    		grp1 = file.createGroup("Group1", null);
-    		grp2 = file.createGroup("Group2", null);
-    	}
-    	catch (final Exception ex) {
-    		fail("file.createGroup() failed. " + ex);
-    	}
-    	assertNotNull(grp1);
-    	assertNotNull(grp2);
+        try {
+            grp1 = file.createGroup("Group1", null);
+            grp2 = file.createGroup("Group2", null);
+        }
+        catch (final Exception ex) {
+            fail("file.createGroup() failed. " + ex);
+        }
+        assertNotNull(grp1);
+        assertNotNull(grp2);
 
-    	try {
-    		subgrp1 = file.createGroup("G2", grp1); // create subgroup in Group1
-    	} catch (final Exception ex) {
-    		fail("file.createGroup() failed. " + ex);
-    	}
-    	assertNotNull(subgrp1);
+        try {
+            subgrp1 = file.createGroup("G2", grp1); // create subgroup in Group1
+        } catch (final Exception ex) {
+            fail("file.createGroup() failed. " + ex);
+        }
+        assertNotNull(subgrp1);
 
-    	long[] H5dims = { 4, 6};
-    	try{
-    		d1 = file.createScalarDS("DS1", grp1, typeInt, H5dims, null, null,0, null); //create dataset in Group1  
-    	}
-    	catch (final Exception ex) {
-    		fail("file.createScalarDS() failed. " + ex);
-    	}
-    	assertNotNull(d1);
+        long[] H5dims = { 4, 6};
+        try{
+            d1 = file.createScalarDS("DS1", grp1, typeInt, H5dims, null, null,0, null); //create dataset in Group1  
+        }
+        catch (final Exception ex) {
+            fail("file.createScalarDS() failed. " + ex);
+        }
+        assertNotNull(d1);
 
-    	//Create Soft and hard Links
-    	HObject obj = null;
-    	try{
-    		obj = file.createLink(grp1, "NAME_SOFT_LINK", d1, Group.LINK_TYPE_SOFT);
-    	}catch (final Exception ex) {
-    		ex.printStackTrace();
-    		fail("file.createLink() failed. " + ex);
-    	}
-    	assertNotNull(obj);
+        //Create Soft and hard Links
+        HObject obj = null;
+        try{
+            obj = file.createLink(grp1, "NAME_SOFT_LINK", d1, Group.LINK_TYPE_SOFT);
+        }catch (final Exception ex) {
+            ex.printStackTrace();
+            fail("file.createLink() failed. " + ex);
+        }
+        assertNotNull(obj);
 
-    	//Check the name of the target object the link points to is correct.
-    	String linkTargetObjName = null;   	
-    	try{
-    		linkTargetObjName = file.getLinkTargetName(obj);
-    	}catch (final Exception ex) {
-    		ex.printStackTrace();
-    		fail("file.getLinkInfo() failed. " + ex);
-    	}
-    	assertEquals(linkTargetObjName,d1.getFullName());
-    	
-    	try{
-    		obj = file.createLink(grp2, "NAME_HARD_LINK", grp1,Group.LINK_TYPE_HARD);
-    	}catch (final Exception ex) {
-    		ex.printStackTrace();
-    		fail("file.createLink() failed. " + ex);
-    	}
-    	assertNotNull(obj);
-    	
-    	//Create a Dangling Link to object.     	
-    	Group grplink = new H5Group(null, "DGroup", "/Group1", null);
-    	assertNotNull(grplink);
-    	try{
-    		obj = file.createLink(grp1, "NAME_SOFT_LINK_DANGLE", grplink, Group.LINK_TYPE_SOFT);
-    	}catch (final Exception ex) {
-    		ex.printStackTrace();
-    		fail("file.createLink() failed. " + ex);
-    	}
-    	assertNotNull(obj);
+        //Check the name of the target object the link points to is correct.
+        String linkTargetObjName = null;       
+        try{
+            linkTargetObjName = file.getLinkTargetName(obj);
+        }catch (final Exception ex) {
+            ex.printStackTrace();
+            fail("file.getLinkInfo() failed. " + ex);
+        }
+        assertEquals(linkTargetObjName,d1.getFullName());
+        
+        try{
+            obj = file.createLink(grp2, "NAME_HARD_LINK", grp1,Group.LINK_TYPE_HARD);
+        }catch (final Exception ex) {
+            ex.printStackTrace();
+            fail("file.createLink() failed. " + ex);
+        }
+        assertNotNull(obj);
+        
+        //Create a Dangling Link to object.         
+        Group grplink = new H5Group(null, "DGroup", "/Group1", null);
+        assertNotNull(grplink);
+        try{
+            obj = file.createLink(grp1, "NAME_SOFT_LINK_DANGLE", grplink, Group.LINK_TYPE_SOFT);
+        }catch (final Exception ex) {
+            ex.printStackTrace();
+            fail("file.createLink() failed. " + ex);
+        }
+        assertNotNull(obj);
 
-    	//Create the object to which a dangling link is created
-    	try {
-    		grplink = file.createGroup("DGroup", grp1); 
-    	} catch (final Exception ex) {
-    		fail("file.createGroup() failed. " + ex);
-    	}
-    	assertNotNull(grplink);
-    	
-    	//Create a soft dangling Link to object.  
-    	String a = "D5";
-    	try{
-    		obj = file.createLink(grp1, "SD2", a, Group.LINK_TYPE_SOFT);
-    	}catch (final Exception ex) {
-    		ex.printStackTrace();
-    		fail("file.createLink() failed. " + ex);
-    	}
-    	assertNotNull(obj);
+        //Create the object to which a dangling link is created
+        try {
+            grplink = file.createGroup("DGroup", grp1); 
+        } catch (final Exception ex) {
+            fail("file.createGroup() failed. " + ex);
+        }
+        assertNotNull(grplink);
+        
+        //Create a soft dangling Link to object.  
+        String a = "D5";
+        try{
+            obj = file.createLink(grp1, "SD2", a, Group.LINK_TYPE_SOFT);
+        }catch (final Exception ex) {
+            ex.printStackTrace();
+            fail("file.createLink() failed. " + ex);
+        }
+        assertNotNull(obj);
 
-    	
-    	int gid = -1;
-    	try{
-    		gid = grp1.open();
-    	}
-    	catch(Exception ex){
-    		fail("grp1.open()failed. " + ex);
-    	}
+        
+        int gid = -1;
+        try{
+            gid = grp1.open();
+        }
+        catch(Exception ex){
+            fail("grp1.open()failed. " + ex);
+        }
 
-    	H5L_info_t link_info = null;
-    	try {
-    		link_info = H5.H5Lget_info(gid, "NAME_SOFT_LINK_DANGLE", HDF5Constants.H5P_DEFAULT);
-    	}
-    	catch (Exception ex) {
-    		fail("H5.H5Lget_info: " + ex);
-    	}
-    	assertFalse("H5Lget_info ",link_info==null);
-    	assertTrue("H5Lget_info link type",link_info.type==HDF5Constants.H5L_TYPE_SOFT);
-    	assertTrue("Link Address ",link_info.address_val_size>0);
+        H5L_info_t link_info = null;
+        try {
+            link_info = H5.H5Lget_info(gid, "NAME_SOFT_LINK_DANGLE", HDF5Constants.H5P_DEFAULT);
+        }
+        catch (Exception ex) {
+            fail("H5.H5Lget_info: " + ex);
+        }
+        assertFalse("H5Lget_info ",link_info==null);
+        assertTrue("H5Lget_info link type",link_info.type==HDF5Constants.H5L_TYPE_SOFT);
+        assertTrue("Link Address ",link_info.address_val_size>0);
 
-    	try {
-    		grp1.close(gid);
-    	}
-    	catch (final Exception ex) {
-    	}
+        try {
+            grp1.close(gid);
+        }
+        catch (final Exception ex) {
+        }
 
-    	try {
-    		file.close();
-    	}
-    	catch (final Exception ex) {
-    	}
-    	file.delete();
+        try {
+            file.close();
+        }
+        catch (final Exception ex) {
+        }
+        file.delete();
     }
   
     /**
@@ -1598,393 +1605,485 @@ public class H5FileTest extends TestCase {
      * </ul>
      */
     public final void testCreateLinkExternal() {
-    	final String nameNew = "TESTFILE1.h5";
-    	H5File file1 = null;
-    	H5File file2 = null;
-    	int fid = -1;
-    	Group grp1 = null;
-    	Group fgrp1 = null;
-    	Group subgrp1 = null;
-    	Dataset d1 = null;
+        final String nameNew = "TESTFILE1.h5";
+        H5File file1 = null;
+        H5File file2 = null;
+        int fid = -1;
+        Group grp1 = null;
+        Group fgrp1 = null;
+        Group subgrp1 = null;
+        Dataset d1 = null;
 
-    	//Create File1.
-    	try {
-    		file1 = (H5File) H5FILE.create(nameNew);
-    	}
-    	catch (final Exception ex) {
-    		fail("file1.create() failed. " + ex);
-    	}   
-    	try {
-    		fid = file1.open();
-    	}
-    	catch (final Exception ex) {
-    		fail("file1.open() failed. " + ex);
-    	}
-    	assertTrue(fid > 0);
+        //Create File1.
+        try {
+            file1 = (H5File) H5FILE.create(nameNew);
+        }
+        catch (final Exception ex) {
+            fail("file1.create() failed. " + ex);
+        }   
+        try {
+            fid = file1.open();
+        }
+        catch (final Exception ex) {
+            fail("file1.open() failed. " + ex);
+        }
+        assertTrue(fid > 0);
 
-    	try {
-    		grp1 = file1.createGroup("Group1", null);
-    	}
-    	catch (final Exception ex) {
-    		fail("file.createGroup() failed. " + ex);
-    	}
-    	assertNotNull(grp1);      
-    	try {
-    		subgrp1 = file1.createGroup("G2", grp1); // create subgroups in Group1
-    	} catch (final Exception ex) {
-    		fail("file.createGroup() failed. " + ex);
-    	}
-    	assertNotNull(subgrp1);  	
-    	long[] H5dims = { 4, 6};
-    	try{
-    		d1 = file1.createScalarDS("DS1", grp1, typeInt, H5dims, null, null,0, null); //create dataset in Group1  
-    	}
-    	catch (final Exception ex) {
-    		fail("file.createScalarDS() failed. " + ex);
-    	}
-    	assertNotNull(d1);
+        try {
+            grp1 = file1.createGroup("Group1", null);
+        }
+        catch (final Exception ex) {
+            fail("file.createGroup() failed. " + ex);
+        }
+        assertNotNull(grp1);      
+        try {
+            subgrp1 = file1.createGroup("G2", grp1); // create subgroups in Group1
+        } catch (final Exception ex) {
+            fail("file.createGroup() failed. " + ex);
+        }
+        assertNotNull(subgrp1);      
+        long[] H5dims = { 4, 6};
+        try{
+            d1 = file1.createScalarDS("DS1", grp1, typeInt, H5dims, null, null,0, null); //create dataset in Group1  
+        }
+        catch (final Exception ex) {
+            fail("file.createScalarDS() failed. " + ex);
+        }
+        assertNotNull(d1);
 
-    	//Create File2
-    	try {
-    		file2 = (H5File) H5FILE.create("TESTExternal.h5");
-    	}
-    	catch (final Exception ex) {
-    		fail("file2.create() failed. " + ex);
-    	} 
-    	try {
-    		fid = file2.open();
-    	}
-    	catch (final Exception ex) {
-    		fail("file2.open() failed. " + ex);
-    	}
-    	assertTrue(fid > 0);
-    	try {
-    		fgrp1 = file2.createGroup("Group1", null);
-    	}
-    	catch (final Exception ex) {
-    		fail("file.createGroup() failed. " + ex);
-    	}
-    	assertNotNull(fgrp1);
+        //Create File2
+        try {
+            file2 = (H5File) H5FILE.create("TESTExternal.h5");
+        }
+        catch (final Exception ex) {
+            fail("file2.create() failed. " + ex);
+        } 
+        try {
+            fid = file2.open();
+        }
+        catch (final Exception ex) {
+            fail("file2.open() failed. " + ex);
+        }
+        assertTrue(fid > 0);
+        try {
+            fgrp1 = file2.createGroup("Group1", null);
+        }
+        catch (final Exception ex) {
+            fail("file.createGroup() failed. " + ex);
+        }
+        assertNotNull(fgrp1);
 
-    	//Create External Links from file2 to dataset in File1.
-    	HObject obj = null;
-    	try{
-    		obj = file2.createLink(fgrp1, "NAME_EXTERNAL_LINK", d1,Group.LINK_TYPE_EXTERNAL);
-    	}catch (final Exception ex) {
-    		ex.printStackTrace();
-    		fail("file.createLink() failed. " + ex);
-    	}
-    	assertNotNull(obj);
-    	
-    	//Check the name of the target object the link points to is correct.
-    	String linkTargetObjName = null;
-    	try{
-    		linkTargetObjName = file2.getLinkTargetName(obj);
-    	}catch (final Exception ex) {
-    		ex.printStackTrace();
-    		fail("file.getLinkInfo() failed. " + ex);
-    	}
-    	String d1fullName = d1.getFile() + FileFormat.FILE_OBJ_SEP + d1.getFullName();
-    	assertEquals(d1fullName,linkTargetObjName);
+        //Create External Links from file2 to dataset in File1.
+        HObject obj = null;
+        try{
+            obj = file2.createLink(fgrp1, "NAME_EXTERNAL_LINK", d1,Group.LINK_TYPE_EXTERNAL);
+        }catch (final Exception ex) {
+            ex.printStackTrace();
+            fail("file.createLink() failed. " + ex);
+        }
+        assertNotNull(obj);
+        
+        //Check the name of the target object the link points to is correct.
+        String linkTargetObjName = null;
+        try{
+            linkTargetObjName = file2.getLinkTargetName(obj);
+        }catch (final Exception ex) {
+            ex.printStackTrace();
+            fail("file.getLinkInfo() failed. " + ex);
+        }
+        String d1fullName = d1.getFile() + FileFormat.FILE_OBJ_SEP + d1.getFullName();
+        assertEquals(d1fullName,linkTargetObjName);
 
-    	//Create a Dangling Link to object.
-    	Group grplink = new H5Group(file1, "DGroup", null, null);
-    	assertNotNull(grplink);	
-    	try{
-    		obj = file2.createLink(fgrp1, "GROUP_HARD_LINK_DANGLE", grplink, Group.LINK_TYPE_EXTERNAL);
-    	}catch (final Exception ex) {
-    		ex.printStackTrace();
-    		fail("file.createLink() failed. " + ex);
-    	}
-    	assertNotNull(obj);
+        //Create a Dangling Link to object.
+        Group grplink = new H5Group(file1, "DGroup", null, null);
+        assertNotNull(grplink);    
+        try{
+            obj = file2.createLink(fgrp1, "GROUP_HARD_LINK_DANGLE", grplink, Group.LINK_TYPE_EXTERNAL);
+        }catch (final Exception ex) {
+            ex.printStackTrace();
+            fail("file.createLink() failed. " + ex);
+        }
+        assertNotNull(obj);
 
-    	//Create the object to which a dangling link is created
-    	try {
-    		grplink = file1.createGroup("DGroup", null); 
-    	} catch (final Exception ex) {
-    		fail("file.createGroup() failed. " + ex);
-    	}
-    	assertNotNull(grplink);
+        //Create the object to which a dangling link is created
+        try {
+            grplink = file1.createGroup("DGroup", null); 
+        } catch (final Exception ex) {
+            fail("file.createGroup() failed. " + ex);
+        }
+        assertNotNull(grplink);
 
-    	//Retrieve Link information
-    	int gid = -1;
-    	try{
-    		gid = fgrp1.open(); 
-    	}
-    	catch(Exception ex){
-    		fail("fgrp1.open()failed. " + ex);
-    	}
+        //Retrieve Link information
+        int gid = -1;
+        try{
+            gid = fgrp1.open(); 
+        }
+        catch(Exception ex){
+            fail("fgrp1.open()failed. " + ex);
+        }
 
-    	H5L_info_t link_info = null;
-    	try {
-    		link_info = H5.H5Lget_info(gid, "GROUP_HARD_LINK_DANGLE", HDF5Constants.H5P_DEFAULT);
-    	}
-    	catch (Exception ex) {
-    		fail("H5.H5Lget_info: " + ex);
-    	}
-    	assertFalse("H5Lget_info ",link_info==null);
-    	assertTrue("H5Lget_info link type",link_info.type==HDF5Constants.H5L_TYPE_EXTERNAL);
-    	assertTrue("Link Address ",link_info.address_val_size>0);
+        H5L_info_t link_info = null;
+        try {
+            link_info = H5.H5Lget_info(gid, "GROUP_HARD_LINK_DANGLE", HDF5Constants.H5P_DEFAULT);
+        }
+        catch (Exception ex) {
+            fail("H5.H5Lget_info: " + ex);
+        }
+        assertFalse("H5Lget_info ",link_info==null);
+        assertTrue("H5Lget_info link type",link_info.type==HDF5Constants.H5L_TYPE_EXTERNAL);
+        assertTrue("Link Address ",link_info.address_val_size>0);
 
-    	try {
-    		fgrp1.close(gid);
-    	}
-    	catch (final Exception ex) {
-    	}
+        try {
+            fgrp1.close(gid);
+        }
+        catch (final Exception ex) {
+        }
 
-    	//Close file.
-    	try {
-    		file1.close();
-    	}
-    	catch (final Exception ex) {
-    	}
+        //Close file.
+        try {
+            file1.close();
+        }
+        catch (final Exception ex) {
+        }
 
-    	try {
-    		file2.close();
-    	}
-    	catch (final Exception ex) {
-    	}
-    	file1.delete();
-    	file2.delete();
+        try {
+            file2.close();
+        }
+        catch (final Exception ex) {
+        }
+        file1.delete();
+        file2.delete();
     }
     
-	/**
-	 * Test method for
-	 * {@link ncsa.hdf.object.h5.H5File#getAttribute(int, int, int)}.
-	 * <p>
-	 * What to test:
-	 * <ul>
-	 * <li>create a file
-	 * <li>create group
-	 * <li>create 3 attributes in a group
-	 * <li>open group
-	 * <li>retrieves attributes in alphabetical or creation order
-	 * <li>check the attribute name equals the attribute name retrieved from
-	 * list
-	 * <li>close group
-	 * <li>close/delete the files
-	 * </ul>
-	 */
-	public final void testCreateAttribute() {
-		final String nameNew = "TESTFILEAttr1.h5";
-		H5File file = null;
-		int fid = -1;
-		Group g1 = null;
-		Dataset d1 = null;
+    /**
+     * Test method for
+     * {@link ncsa.hdf.object.h5.H5File#getAttribute(int, int, int)}.
+     * <p>
+     * What to test:
+     * <ul>
+     * <li>create a file
+     * <li>create group
+     * <li>create 3 attributes in a group
+     * <li>open group
+     * <li>retrieves attributes in alphabetical or creation order
+     * <li>check the attribute name equals the attribute name retrieved from
+     * list
+     * <li>close group
+     * <li>close/delete the files
+     * </ul>
+     */
+    public final void testCreateAttribute() {
+        final String nameNew = "TESTFILEAttr1.h5";
+        H5File file = null;
+        int fid = -1;
+        Group g1 = null;
+        Dataset d1 = null;
 
-		try {
-			file = (H5File) H5FILE.create(nameNew); // Create File1.
-		} catch (final Exception ex) {
-			fail("file1.create() failed. " + ex);
-		}
-		try {
-			fid = file.open();
-		} catch (final Exception ex) {
-			fail("file1.open() failed. " + ex);
-		}
-		assertTrue(fid > 0);
+        try {
+            file = (H5File) H5FILE.create(nameNew); // Create File1.
+        } catch (final Exception ex) {
+            fail("file1.create() failed. " + ex);
+        }
+        try {
+            fid = file.open();
+        } catch (final Exception ex) {
+            fail("file1.open() failed. " + ex);
+        }
+        assertTrue(fid > 0);
 
-		try {
-			g1 = file.createGroup("Group1", null);
-		} catch (final Exception ex) {
-			fail("file.createGroup() failed. " + ex);
-		}
-		assertNotNull(g1);
+        try {
+            g1 = file.createGroup("Group1", null);
+        } catch (final Exception ex) {
+            fail("file.createGroup() failed. " + ex);
+        }
+        assertNotNull(g1);
 
-		Attribute attr1 = new Attribute("intAttr", new H5Datatype(
-				Datatype.CLASS_INTEGER, 4, -1, -1), new long[] { 10 },
-				new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
-		Attribute attr2 = new Attribute("strAttr", new H5Datatype(
-				Datatype.CLASS_STRING, 20, -1, -1), new long[] { 1 },
-				new String[] { "String attribute." });
+        Attribute attr1 = new Attribute("intAttr", new H5Datatype(
+                Datatype.CLASS_INTEGER, 4, -1, -1), new long[] { 10 },
+                new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
+        Attribute attr2 = new Attribute("strAttr", new H5Datatype(
+                Datatype.CLASS_STRING, 20, -1, -1), new long[] { 1 },
+                new String[] { "String attribute." });
 
-		Attribute attr3 = new Attribute("floatAttr", new H5Datatype(
-				Datatype.CLASS_FLOAT, 4, -1, -1), new long[] { 2 },
-				new float[] { 2, 4 });
+        Attribute attr3 = new Attribute("floatAttr", new H5Datatype(
+                Datatype.CLASS_FLOAT, 4, -1, -1), new long[] { 2 },
+                new float[] { 2, 4 });
 
-		try {
-			g1.writeMetadata(attr1);
-			g1.writeMetadata(attr2);
-			g1.writeMetadata(attr3);
-		} catch (final Exception ex) {
-			fail("g1.writeMetadata() failed. " + ex);
-		}
+        try {
+            g1.writeMetadata(attr1);
+            g1.writeMetadata(attr2);
+            g1.writeMetadata(attr3);
+        } catch (final Exception ex) {
+            fail("g1.writeMetadata() failed. " + ex);
+        }
 
-		int gid = -1;
-		try {
-			gid = g1.open();
-		} catch (Exception ex) {
-			fail("g1.open()failed. " + ex);
-		}
-		List attributeList = null;
-		try {
-			attributeList = file
-					.getAttribute(gid, HDF5Constants.H5_INDEX_CRT_ORDER,
-							HDF5Constants.H5_ITER_INC);//Retrieve attributes in increasing creation order.
-			assertEquals(attr2.getName(), attributeList.get(1).toString());
-		} catch (final Exception ex) {
-			fail("file.getAttribute() failed. " + ex);
-		}
+        int gid = -1;
+        try {
+            gid = g1.open();
+        } catch (Exception ex) {
+            fail("g1.open()failed. " + ex);
+        }
+        List attributeList = null;
+        try {
+            attributeList = file
+                    .getAttribute(gid, HDF5Constants.H5_INDEX_CRT_ORDER,
+                            HDF5Constants.H5_ITER_INC);//Retrieve attributes in increasing creation order.
+            assertEquals(attr2.getName(), attributeList.get(1).toString());
+        } catch (final Exception ex) {
+            fail("file.getAttribute() failed. " + ex);
+        }
 
-		try {
-			attributeList = file.getAttribute(gid); //Retrieve attributes in increasing alphabetical order.
-			assertEquals(attr2.getName(), attributeList.get(2).toString());
-		} catch (final Exception ex) {
-			fail("file.getAttribute() failed. " + ex);
-		}
+        try {
+            attributeList = file.getAttribute(gid); //Retrieve attributes in increasing alphabetical order.
+            assertEquals(attr2.getName(), attributeList.get(2).toString());
+        } catch (final Exception ex) {
+            fail("file.getAttribute() failed. " + ex);
+        }
 
-		try {
-			g1.close(gid);
-		} catch (final Exception ex) {
-		}
+        try {
+            g1.close(gid);
+        } catch (final Exception ex) {
+        }
 
-		try {
-			file.close(); // Close file.
-		} catch (final Exception ex) {
-		}
+        try {
+            file.close(); // Close file.
+        } catch (final Exception ex) {
+        }
 
-		file.delete();
-	}
-	
-	
-	/**
-	 * Test method for
-	 * {@link ncsa.hdf.object.h5.H5File#createDatatype(int, int, int, int, java.lang.String)}.
-	 * {@link ncsa.hdf.object.h5.H5Datatype#hasAttribute()}.
-	 * <p>
-	 * What to test:
-	 * <ul>
-	 * <li>create a file
-	 * <li>open file
-	 * <li>create Datatype
-	 * <li>create attribute in Datatype.
-	 * <li>check for attribute in datatype.
-	 * <li>close/delete the file
-	 * </ul>
-	 */
-	public final void testDatatypehasAttribute() {
-		final String nameNew = "testH5FileDatatype.h5";
-		H5File file = null;
-		int fid = -1;
-		Datatype d1 = null;
+        file.delete();
+    }
+    
+    
+    /**
+     * Test method for
+     * {@link ncsa.hdf.object.h5.H5File#createDatatype(int, int, int, int, java.lang.String)}.
+     * {@link ncsa.hdf.object.h5.H5Datatype#hasAttribute()}.
+     * <p>
+     * What to test:
+     * <ul>
+     * <li>create a file
+     * <li>open file
+     * <li>create Datatype
+     * <li>create attribute in Datatype.
+     * <li>check for attribute in datatype.
+     * <li>close/delete the file
+     * </ul>
+     */
+    public final void testDatatypehasAttribute() {
+        final String nameNew = "testH5FileDatatype.h5";
+        H5File file = null;
+        int fid = -1;
+        Datatype d1 = null;
 
-		try {
-			file = (H5File) H5FILE.create(nameNew); // Create File
-		} catch (final Exception ex) {
-			fail("file.create() failed. " + ex);
-		}
+        try {
+            file = (H5File) H5FILE.create(nameNew); // Create File
+        } catch (final Exception ex) {
+            fail("file.create() failed. " + ex);
+        }
 
-		try {
-			fid = file.open();
-		} catch (final Exception ex) {
-			fail("file.open() failed. " + ex);
-		}
-		assertTrue(fid > 0);
+        try {
+            fid = file.open();
+        } catch (final Exception ex) {
+            fail("file.open() failed. " + ex);
+        }
+        assertTrue(fid > 0);
 
-		try {
-			d1 = file.createDatatype(Datatype.CLASS_INTEGER, 4,
-					Datatype.ORDER_LE, Datatype.SIGN_NONE, "NATIVE_INT"); //create Datatype.
-		} catch (final Exception ex) {
-			fail("file.createDatatype() failed. " + ex);
-		}
-		assertNotNull(d1);
+        try {
+            d1 = file.createDatatype(Datatype.CLASS_INTEGER, 4,
+                    Datatype.ORDER_LE, Datatype.SIGN_NONE, "NATIVE_INT"); //create Datatype.
+        } catch (final Exception ex) {
+            fail("file.createDatatype() failed. " + ex);
+        }
+        assertNotNull(d1);
 
-		Attribute attr1 = new Attribute("strAttr", new H5Datatype(
-				Datatype.CLASS_STRING, 20, -1, -1), new long[] { 1 },
-				new String[] { "String attribute." });
+        Attribute attr1 = new Attribute("strAttr", new H5Datatype(
+                Datatype.CLASS_STRING, 20, -1, -1), new long[] { 1 },
+                new String[] { "String attribute." });
 
-		try {
-			d1.writeMetadata(attr1);
-		} catch (final Exception ex) {
-			fail("d1.writeMetadata() failed. " + ex);
-		}
+        try {
+            d1.writeMetadata(attr1);
+        } catch (final Exception ex) {
+            fail("d1.writeMetadata() failed. " + ex);
+        }
 
-		assertEquals(true, d1.hasAttribute());
+        assertEquals(true, d1.hasAttribute());
 
-		try {
-			file.close();
-		} catch (final Exception ex) {
-		}
-		file.delete();
-	}
-	
-	/**
-	 * Test method for
-	 * {@link ncsa.hdf.object.h5.H5File#renameAttribute(HObject, java.lang.String, java.lang.String)}.
-	 * <p>
-	 * What to test:
-	 * <ul>
-	 * <li>create a file
-	 * <li>open file
-	 * <li>create group and datatype
-	 * <li>create attribute in the group and datatype.
-	 * <li>rename the attribute.
-	 * <li>close/delete the file
-	 * </ul>
-	 */
-	public final void testrenameAttribute() {
-		final String nameNew = "testAttrName.h5";
-		H5File file = null;
-		int fid = -1;
-		Group g1 = null;
-		Datatype d1 = null;
+        try {
+            file.close();
+        } catch (final Exception ex) {
+        }
+        file.delete();
+    }
+    
+    /**
+     * Test method for
+     * {@link ncsa.hdf.object.h5.H5File#renameAttribute(HObject, java.lang.String, java.lang.String)}.
+     * <p>
+     * What to test:
+     * <ul>
+     * <li>create a file
+     * <li>open file
+     * <li>create group and datatype
+     * <li>create attribute in the group and datatype.
+     * <li>rename the attribute.
+     * <li>close/delete the file
+     * </ul>
+     */
+    public final void testrenameAttribute() {
+        final String nameNew = "testAttrName.h5";
+        H5File file = null;
+        int fid = -1;
+        Group g1 = null;
+        Datatype d1 = null;
 
-		try {
-			file = (H5File) H5FILE.create(nameNew); // Create File
-		} catch (final Exception ex) {
-			fail("file.create() failed. " + ex);
-		}
+        try {
+            file = (H5File) H5FILE.create(nameNew); // Create File
+        } catch (final Exception ex) {
+            fail("file.create() failed. " + ex);
+        }
 
-		try {
-			fid = file.open();
-		} catch (final Exception ex) {
-			fail("file.open() failed. " + ex);
-		}
-		assertTrue(fid > 0);
+        try {
+            fid = file.open();
+        } catch (final Exception ex) {
+            fail("file.open() failed. " + ex);
+        }
+        assertTrue(fid > 0);
 
-		try {
-			g1 = file.createGroup("G1", null);
-		} catch (final Exception ex) {
-			fail("file.createGroup() failed. " + ex);
-		}
-		assertNotNull(g1);
-		
-		try {
-			d1 = file.createDatatype(Datatype.CLASS_INTEGER, 4,
-					Datatype.ORDER_LE, Datatype.SIGN_NONE, "NATIVE_INT"); 
-		} catch (final Exception ex) {
-			fail("file.createDatatype() failed. " + ex);
-		}
-		assertNotNull(d1);
+        try {
+            g1 = file.createGroup("G1", null);
+        } catch (final Exception ex) {
+            fail("file.createGroup() failed. " + ex);
+        }
+        assertNotNull(g1);
+        
+        try {
+            d1 = file.createDatatype(Datatype.CLASS_INTEGER, 4,
+                    Datatype.ORDER_LE, Datatype.SIGN_NONE, "NATIVE_INT"); 
+        } catch (final Exception ex) {
+            fail("file.createDatatype() failed. " + ex);
+        }
+        assertNotNull(d1);
 
 
-		Attribute attr1 = new Attribute("strAttr", new H5Datatype(
-				Datatype.CLASS_STRING, 20, -1, -1), new long[] { 1 },
-				new String[] { "String attribute." });
+        Attribute attr1 = new Attribute("strAttr", new H5Datatype(
+                Datatype.CLASS_STRING, 20, -1, -1), new long[] { 1 },
+                new String[] { "String attribute." });
 
-		try {
-			g1.writeMetadata(attr1);
-		} catch (final Exception ex) {
-			fail("g1.writeMetadata() failed. " + ex);
-		}
-		try {
-			d1.writeMetadata(attr1);
-		} catch (final Exception ex) {
-			fail("d1.writeMetadata() failed. " + ex);
-		}
-		
-		try{
-			file.renameAttribute(g1, "strAttr", "GroupAttribute");
-			file.renameAttribute(d1, attr1.getName(), "DatatypeAttribute");
-		}catch (final Exception ex) {
-			ex.printStackTrace();
-			fail("file.changeAttrName() failed. " + ex);
-		}
+        try {
+            g1.writeMetadata(attr1);
+        } catch (final Exception ex) {
+            fail("g1.writeMetadata() failed. " + ex);
+        }
+        try {
+            d1.writeMetadata(attr1);
+        } catch (final Exception ex) {
+            fail("d1.writeMetadata() failed. " + ex);
+        }
+        
+        try{
+            file.renameAttribute(g1, "strAttr", "GroupAttribute");
+            file.renameAttribute(d1, attr1.getName(), "DatatypeAttribute");
+        }catch (final Exception ex) {
+            ex.printStackTrace();
+            fail("file.changeAttrName() failed. " + ex);
+        }
 
-		try {
-			file.close();
-		} catch (final Exception ex) {
-		}
-		file.delete();
-	}
+        try {
+            file.close();
+        } catch (final Exception ex) {
+        }
+        file.delete();
+    }
+    
+    /**
+     * Test method for {@link ncsa.hdf.object.h5.H5File} IsSerializable.
+     */
+    public final void testIsSerializable() {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        ObjectOutputStream oos;
+        try {
+            oos = new ObjectOutputStream(out);
+            oos.writeObject(testFile);
+            oos.close();
+        }
+        catch (IOException err) {
+            err.printStackTrace();
+            fail("ObjectOutputStream failed: " + err);
+        }
+        assertTrue(out.toByteArray().length > 0);
+
+    }
+    
+    /**
+     * Test method for {@link ncsa.hdf.object.h5.H5File} SerializeToDisk.
+     * <p>
+     * What to test:
+     * <ul>
+     * <li>serialize a dataset identifier
+     * <li>deserialize a dataset identifier
+     * <li>open a file identifier
+     * <li>check the file content
+     * <li>close the file
+     * </ul>
+     */
+    public final void testSerializeToDisk()
+    {
+        try {
+
+            FileOutputStream fos = new FileOutputStream("temph5file.ser");
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+            oos.writeObject(testFile);
+            oos.close();
+        }
+        catch (Exception ex) {
+            fail("Exception thrown during test: " + ex.toString());
+        }
+
+        H5File test = null;
+        
+        try {
+            FileInputStream fis = new FileInputStream("temph5file.ser");
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            test = (ncsa.hdf.object.h5.H5File) ois.readObject();
+            ois.close();
+            
+            // Clean up the file
+            new File("temph5file.ser").delete();
+            
+            String tver = test.getLibversion();
+            String H5ver = "HDF5 " + H5.LIB_VERSION[0] + "." + H5.LIB_VERSION[1] + "." + H5.LIB_VERSION[2];
+            assertEquals("H5.LIB_VERSION", tver, H5ver);
+        }
+        catch (Exception ex) {
+            fail("Exception thrown during test: " + ex.toString());
+        }
+        
+        // try to get all object in the file
+        try {
+            for (int j = 0; j < H5TestFile.OBJ_NAMES.length; j++) {
+                assertNotNull(test.get(H5TestFile.OBJ_NAMES[j]));
+            }
+        }
+        catch (final Exception ex) {
+            fail("test.get() failed. " + ex);
+        }
+        int nObjs = 0;
+
+        try {
+            nObjs = H5.H5Fget_obj_count(test.getFID(),
+                    HDF5Constants.H5F_OBJ_ALL);
+        }
+        catch (final Exception ex) {
+            fail("H5.H5Fget_obj_count() failed. " + ex);
+        }
+        assertTrue(nObjs <= 1); // file id should be the only this left
+                                // open. IS THIS BECAUSE THE ONLY THING WE
+                                // HAVE DONE IS OPEN THE FILE?
+        try {
+            test.close();
+        }
+        catch (final Exception ex) {
+            fail("test.close() failed. " + ex);
+        }
+    }
 }

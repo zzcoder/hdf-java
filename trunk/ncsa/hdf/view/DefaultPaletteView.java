@@ -67,8 +67,7 @@ import ncsa.hdf.object.ScalarDS;
  */
 public class DefaultPaletteView extends JDialog implements PaletteView,
         MouseListener, MouseMotionListener, ActionListener, ItemListener {
-    public static final long serialVersionUID = HObject.serialVersionUID;
-
+    private static final long serialVersionUID = -5092012421988388661L;
     private final Color[] lineColors = { Color.red, Color.green, Color.blue };
     private final String lineLabels[] = { "Red", "Green", "Blue" };
 
@@ -115,10 +114,10 @@ public class DefaultPaletteView extends JDialog implements PaletteView,
         String paletteName = ((ScalarDS) dataset).getPaletteName(0);
         
         if (paletteName!= null)
-        	paletteName = paletteName.trim();
+            paletteName = paletteName.trim();
         
         if (paletteName!= null && paletteName.length()>0)
-        	choicePalette.addItem(paletteName);
+            choicePalette.addItem(paletteName);
         
         if (isH5 && (dataset instanceof ScalarDS)) {
             byte[] palRefs = ((ScalarDS) dataset).getPaletteRefs();
@@ -127,8 +126,8 @@ public class DefaultPaletteView extends JDialog implements PaletteView,
             }
         }
         for (int i = 1; i < numberOfPalettes; i++) {
-        	paletteName = ((ScalarDS) dataset).getPaletteName(i);
-        	choicePalette.addItem(paletteName);
+            paletteName = ((ScalarDS) dataset).getPaletteName(i);
+            choicePalette.addItem(paletteName);
         }
         choicePalette.addItem(PALETTE_GRAY);
         choicePalette.addItem(PALETTE_GRAY_WAVE);
@@ -282,7 +281,7 @@ public class DefaultPaletteView extends JDialog implements PaletteView,
     }
 
     @Override
-	public void dispose() {
+    public void dispose() {
         imageView.setImage(originalImage);
         super.dispose();
     }
@@ -324,7 +323,7 @@ public class DefaultPaletteView extends JDialog implements PaletteView,
             imagePalette = Tools.createWavePalette();
         }
         else if (idx > 0 && idx <= numberOfPalettes) {
-        	imagePalette = ((ScalarDS) dataset).readPalette(idx - 1);
+            imagePalette = ((ScalarDS) dataset).readPalette(idx - 1);
         }
         else {
             imagePalette = Tools.readPalette((String)item);
@@ -461,8 +460,7 @@ public class DefaultPaletteView extends JDialog implements PaletteView,
 
     /** The dialog to show the palette values in spreadsheet. */
     private final class PaletteValueTable extends JDialog {
-        public static final long serialVersionUID = HObject.serialVersionUID;
-
+        private static final long serialVersionUID = 6105012612969555535L;
         private JTable valueTable;
         private DefaultTableModel valueTableModel;
         String rgbName = "Color";
@@ -475,15 +473,15 @@ public class DefaultPaletteView extends JDialog implements PaletteView,
             valueTableModel = new DefaultTableModel(columnNames, 256);
 
             valueTable = new JTable(valueTableModel) {
-                public static final long serialVersionUID = HObject.serialVersionUID;
+                private static final long serialVersionUID = -2823793138915014637L;
 
                 @Override
-				public boolean isCellEditable(int row, int col) {
+                public boolean isCellEditable(int row, int col) {
                     return (col > 0 && col < 4);
                 }
 
                 @Override
-				public Object getValueAt(int row, int col) {
+                public Object getValueAt(int row, int col) {
                     if (startEditing[0])
                         return "";
 
@@ -498,7 +496,7 @@ public class DefaultPaletteView extends JDialog implements PaletteView,
                 }
 
                 @Override
-				public boolean editCellAt(int row, int column,
+                public boolean editCellAt(int row, int column,
                         java.util.EventObject e) {
 
                     if (!isCellEditable(row, column)) {
@@ -515,7 +513,7 @@ public class DefaultPaletteView extends JDialog implements PaletteView,
                 }
 
                 @Override
-				public void editingStopped(ChangeEvent e) {
+                public void editingStopped(ChangeEvent e) {
                     int row = getEditingRow();
                     int col = getEditingColumn();
 
@@ -541,12 +539,11 @@ public class DefaultPaletteView extends JDialog implements PaletteView,
 
             valueTable.getColumn(rgbName).setCellRenderer(
                     new DefaultTableCellRenderer() {
-                        public static final long serialVersionUID = HObject.serialVersionUID;
-
+                        private static final long serialVersionUID = 8390954944015521331L;
                         Color color = Color.white;
 
                         @Override
-						public java.awt.Component getTableCellRendererComponent(
+                        public java.awt.Component getTableCellRendererComponent(
                                 JTable table, Object value, boolean isSelected,
                                 boolean hasFocus, int row, int col) {
                             java.awt.Component comp = super
@@ -562,10 +559,10 @@ public class DefaultPaletteView extends JDialog implements PaletteView,
 
             valueTable.getColumn(idxName).setCellRenderer(
                     new DefaultTableCellRenderer() {
-                        public static final long serialVersionUID = HObject.serialVersionUID;
+                        private static final long serialVersionUID = 2786027382023940417L;
 
                         @Override
-						public java.awt.Component getTableCellRendererComponent(
+                        public java.awt.Component getTableCellRendererComponent(
                                 JTable table, Object value, boolean isSelected,
                                 boolean hasFocus, int row, int col) {
                             java.awt.Component comp = super
@@ -646,13 +643,13 @@ public class DefaultPaletteView extends JDialog implements PaletteView,
 
     /** The canvas that paints the data lines. */
     private final class ChartPanel extends JComponent {
-        public static final long serialVersionUID = HObject.serialVersionUID;
+        private static final long serialVersionUID = -6861041412971944L;
 
         /**
          * Paints the plot components.
          */
         @Override
-		public void paint(Graphics g) {
+        public void paint(Graphics g) {
             Dimension d = getSize();
             int gap = 20;
             int legendSpace = 60;

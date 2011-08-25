@@ -28,7 +28,6 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Toolkit;
-import java.awt.Transparency;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
@@ -52,8 +51,8 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.PrintWriter;
 import java.io.FileWriter;
+import java.io.PrintWriter;
 import java.io.RandomAccessFile;
 import java.lang.reflect.Array;
 import java.text.DecimalFormat;
@@ -131,7 +130,7 @@ import ncsa.hdf.object.ScalarDS;
  */
 public class DefaultImageView extends JInternalFrame implements ImageView,
         ActionListener {
-    public static final long serialVersionUID = HObject.serialVersionUID;
+    private static final long serialVersionUID = -6534336542813587242L;
 
     /** Horizontal direction to flip an image. */
     public static final int FLIP_HORIZONTAL = 0;
@@ -313,14 +312,14 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
         
         String origStr = ViewProperties.getImageOrigin();
         if (ViewProperties.ORIGIN_LL.equalsIgnoreCase(origStr))
-        	origin = 1;
+            origin = 1;
         else if (ViewProperties.ORIGIN_UR.equalsIgnoreCase(origStr))
-        	origin = 2;
+            origin = 2;
         else if (ViewProperties.ORIGIN_LR.equalsIgnoreCase(origStr))
-        	origin = 3;
+            origin = 3;
         
         if (ViewProperties.isIndexBase1())
-        	indexBase = 1;
+            indexBase = 1;
 
         HObject hobject = null;
         if (map != null) {
@@ -391,12 +390,12 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
         }
         
         if (origin == 1)
-        	flip(FLIP_VERTICAL);
+            flip(FLIP_VERTICAL);
         else if (origin == 2)
-        	flip(FLIP_HORIZONTAL);
+            flip(FLIP_HORIZONTAL);
         if (origin == 3) {
-        	rotate(ROTATE_CW_90);
-           	rotate(ROTATE_CW_90);
+            rotate(ROTATE_CW_90);
+               rotate(ROTATE_CW_90);
         }
 
         // set title
@@ -1056,12 +1055,12 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
     // implementing ImageObserver
     private void zoomTo(float zf) {
         if (zf > 8)
-        	zf = 8;
+            zf = 8;
         else if (zf < 0.125)
-        	zf = 0.125f;
+            zf = 0.125f;
         
         if (zoomFactor == zf)
-        	return; // no change in zooming
+            return; // no change in zooming
         
         zoomFactor = zf;
 
@@ -1199,9 +1198,9 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
 
     // implementing ImageObserver
     private void rotate(int direction) {
-    	if ( !(direction == ROTATE_CW_90 || direction == ROTATE_CCW_90))
-    		return;
-    		
+        if ( !(direction == ROTATE_CW_90 || direction == ROTATE_CCW_90))
+            return;
+            
         Rotate90Filter filter = new Rotate90Filter(direction);
         changeImageFilter(filter);
         
@@ -1523,13 +1522,13 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
                 Vector<String> palList = ViewProperties.getPaletteList();
                 String palPath = choosedFile.getAbsolutePath();
                 if(!palList.contains(palList))
-                	palList.addElement(palPath);
+                    palList.addElement(palPath);
             }
             else if (cmd.equals("Export palette")) {
-            	if (imagePalette == null)
-            		return;
-            	
-            	String wd =ViewProperties.getWorkDir()+File.separator;
+                if (imagePalette == null)
+                    return;
+                
+                String wd =ViewProperties.getWorkDir()+File.separator;
                 JFileChooser fchooser = new JFileChooser(wd);
                 FileNameExtensionFilter filter = new FileNameExtensionFilter("Color lookup table", "lut");
                 File pfile = Tools.checkNewFile(wd, ".lut");
@@ -1560,26 +1559,26 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
                 PrintWriter out = null;
                 
                 try {
-                	out = new PrintWriter(new BufferedWriter(new FileWriter(choosedFile)));
+                    out = new PrintWriter(new BufferedWriter(new FileWriter(choosedFile)));
                 } catch (Exception ex) { out = null; }
                 
                 if (out == null)
-                	return;
+                    return;
 
                 int cols = 3;
                 int rows = 256;
                 int rgb = 0;
                 for (int i=0; i<rows; i++)
                 {
-                	out.print(i);
-                	for (int j=0; j<cols; j++)
-                	{
-                		out.print(' ');
-                		rgb = imagePalette[j][i];
-                		if (rgb<0) rgb += 256;
-                		out.print(rgb);
-                	}
-                	out.println();
+                    out.print(i);
+                    for (int j=0; j<cols; j++)
+                    {
+                        out.print(' ');
+                        rgb = imagePalette[j][i];
+                        if (rgb<0) rgb += 256;
+                        out.print(rgb);
+                    }
+                    out.println();
                 }
 
                 out.flush();
@@ -1891,7 +1890,7 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
 
     private void gotoPage(long idx) {
         if (dataset.getRank() < 3 ||
-        		idx == (curFrame-indexBase) ) {
+                idx == (curFrame-indexBase) ) {
             return;
         }
 
@@ -1922,12 +1921,12 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
         rotateCount = 0;        
 
         if (origin == 1)
-        	flip(FLIP_VERTICAL);
+            flip(FLIP_VERTICAL);
         else if (origin == 2)
-        	flip(FLIP_HORIZONTAL);
+            flip(FLIP_HORIZONTAL);
         if (origin == 3) {
-        	rotate(ROTATE_CW_90);
-           	rotate(ROTATE_CW_90);
+            rotate(ROTATE_CW_90);
+               rotate(ROTATE_CW_90);
         }
 
         setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
@@ -2117,8 +2116,7 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
 
     /** PaletteComponent draws the palette on the side of the image. */
     private class PaletteComponent extends JComponent {
-        public static final long serialVersionUID = HObject.serialVersionUID;
-
+        private static final long serialVersionUID = -5194383032992628565L;
         private Color[] colors = null;
         private double[] pixelData = null;
         private Dimension paintSize = null;
@@ -2213,8 +2211,7 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
     /** ImageComponent draws the image. */
     private class ImageComponent extends JComponent implements MouseListener,
             MouseMotionListener, MouseWheelListener {
-        public static final long serialVersionUID = HObject.serialVersionUID;
-
+        private static final long serialVersionUID = -2690648149547151532L;
         private Dimension originalSize, imageSize;
         private Image image;
         private Point startPosition, currentPosition; // mouse clicked position
@@ -2244,17 +2241,17 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
         }
 
         public void paint(Graphics g) {
-        	if (g instanceof Graphics2D && (zoomFactor<0.99)) {
-        		Graphics2D g2 = (Graphics2D) g;
+            if (g instanceof Graphics2D && (zoomFactor<0.99)) {
+                Graphics2D g2 = (Graphics2D) g;
 
-            	g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+                g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
                         RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-            	Image scaledImg = multiBiliner(image, imageSize.width, imageSize.height, true);
+                Image scaledImg = multiBiliner(image, imageSize.width, imageSize.height, true);
                 g2.drawImage(scaledImg, 0, 0, imageSize.width, imageSize.height, this);
                 
-        	} else
-        		g.drawImage(image, 0, 0, imageSize.width, imageSize.height, this);
-        	
+            } else
+                g.drawImage(image, 0, 0, imageSize.width, imageSize.height, this);
+            
             if ((selectedArea.width > 0) && (selectedArea.height > 0)) {
                 g.setColor(Color.red);
                 g.drawRect(selectedArea.x, selectedArea.y, selectedArea.width,
@@ -2279,19 +2276,19 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
             
             // only do multiple step bilinear for down scale more than two times
             if (!highquality || w <=targetWidth || h <=targetHeight)
-            	return ret;
+                return ret;
             
             int type = BufferedImage.TYPE_INT_RGB;
             if (image instanceof BufferedImage) {
-            	BufferedImage tmp = (BufferedImage)image;
+                BufferedImage tmp = (BufferedImage)image;
                  if (tmp.getColorModel().hasAlpha())
-                	 type = BufferedImage.TYPE_INT_ARGB;
+                     type = BufferedImage.TYPE_INT_ARGB;
             } 
             else {
-            	PixelGrabber pg = new PixelGrabber(image, 0, 0, 1, 1, false);
-            	ColorModel cm = pg.getColorModel();
-            	if (cm!=null && cm.hasAlpha())
-            		type = BufferedImage.TYPE_INT_ARGB;
+                PixelGrabber pg = new PixelGrabber(image, 0, 0, 1, 1, false);
+                ColorModel cm = pg.getColorModel();
+                if (cm!=null && cm.hasAlpha())
+                    type = BufferedImage.TYPE_INT_ARGB;
             }
 
             do {
@@ -3217,7 +3214,7 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
      * Makes animaion for 3D images.
      */
     private class Animation extends JDialog implements ActionListener, Runnable {
-        public static final long serialVersionUID = HObject.serialVersionUID;
+        private static final long serialVersionUID = 6717628496771098250L;
 
         private final int MAX_ANIMATION_IMAGE_SIZE = 300;
 
@@ -3315,7 +3312,7 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
             y0 = Math.max((MAX_ANIMATION_IMAGE_SIZE - h) / 2, 0);
 
             canvas = new JComponent() {
-                public static final long serialVersionUID = HObject.serialVersionUID;
+                private static final long serialVersionUID = -6828735330511795835L;
 
                 public void paint(Graphics g) {
                     g.clearRect(0, 0, MAX_ANIMATION_IMAGE_SIZE,
@@ -3417,8 +3414,7 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
 
     private class DataRangeDialog extends JDialog implements ActionListener,
             ChangeListener, PropertyChangeListener {
-        public static final long serialVersionUID = HObject.serialVersionUID;
-
+        private static final long serialVersionUID = 7565558368891693604L;
         double[] minmax = null;
         JSlider minSlider, maxSlider;
         JFormattedTextField minField, maxField;
@@ -3630,7 +3626,7 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
 
     private class GeneralContrastSlider extends JDialog implements
             ActionListener, ChangeListener, PropertyChangeListener {
-        public static final long serialVersionUID = HObject.serialVersionUID;
+        private static final long serialVersionUID = -3002524363351111565L;
         private boolean isValueChanged = false;
         JSlider brightSlider, contrastSlider;
         JFormattedTextField brightField, contrastField;
@@ -3826,7 +3822,7 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
     // for unsigned short image data only
     private class AutoContrastSlider extends JDialog implements ActionListener,
             ChangeListener, PropertyChangeListener {
-        public static final long serialVersionUID = HObject.serialVersionUID;
+        private static final long serialVersionUID = 5349620629230688506L;
         private boolean isValueChanged = false;
         JSlider brightSlider, contrastSlider;
         JFormattedTextField brightField, contrastField;

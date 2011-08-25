@@ -27,7 +27,6 @@ import java.lang.reflect.Array;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.StringTokenizer;
-//import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.CellEditor;
@@ -51,7 +50,6 @@ import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
-//import javax.swing.tree.TreeNode;
 
 import ncsa.hdf.object.Attribute;
 import ncsa.hdf.object.CompoundDS;
@@ -73,9 +71,9 @@ import ncsa.hdf.object.ScalarDS;
 public class DefaultMetaDataView extends JDialog
 implements ActionListener, MetaDataView
 {
-	public static final long serialVersionUID = HObject.serialVersionUID;
+    private static final long serialVersionUID = 7891048909810508761L;
 
-	/**
+    /**
      * The main HDFView.
      */
     private ViewManager viewer;
@@ -142,10 +140,10 @@ implements ActionListener, MetaDataView
         tabbedPane.setSelectedIndex(0);
 
         if(isH5){
-        	if(hObject.getLinkTargetObjName()!=null){
-        		LinkTObjName = hObject.getLinkTargetObjName();
-        	}
-        	}
+            if(hObject.getLinkTargetObjName()!=null){
+                LinkTObjName = hObject.getLinkTargetObjName();
+            }
+            }
         JPanel bPanel = new JPanel();
         JButton b = new JButton("  Close  ");
         b.setMnemonic(KeyEvent.VK_C);
@@ -177,9 +175,9 @@ implements ActionListener, MetaDataView
         String cmd = e.getActionCommand();
 
         if (cmd.equals("Close")) {
-        	if (isH5 && linkField != null)
-        		checkLinkTargetChanged();
-        	
+            if (isH5 && linkField != null)
+                checkLinkTargetChanged();
+            
             dispose();
         }
         else if (cmd.equals("Add attribute")) {
@@ -225,39 +223,39 @@ implements ActionListener, MetaDataView
     }
     
     private final void checkLinkTargetChanged() {
-    	Group pgroup = null;
-    	try{
-    		pgroup= (Group)hObject.getFileFormat().get(hObject.getPath());
-    	}catch (Exception ex) {
-    	} 
-    	if (pgroup == null) {
-    		JOptionPane.showMessageDialog(this, "Parent group is null.",
-    				getTitle(), JOptionPane.ERROR_MESSAGE);
-    		return;
-    	}
-    	
-    	String target_name = linkField.getText();
-    	if (target_name != null)
-    		target_name = target_name.trim();
-    		
-    	if (target_name == null ||
-    			target_name.length() < 1 || 
-    			target_name.equals("/") ||
-    			target_name.endsWith(FileFormat.FILE_OBJ_SEP+"/")||
-    			target_name.equals(hObject.getLinkTargetObjName()))
-    		return;
-    	
-    	int linkType = Group.LINK_TYPE_SOFT;
-    	if (LinkTObjName.contains(FileFormat.FILE_OBJ_SEP))
-    		linkType = Group.LINK_TYPE_EXTERNAL;
-    	
-    	try {
-    		fileFormat.createLink(pgroup,  hObject.getName(), target_name, linkType);
-    		hObject.setLinkTargetObjName(target_name);
-    	} catch (Exception ex) {
-			JOptionPane.showMessageDialog(this, ex, getTitle(),
-					JOptionPane.ERROR_MESSAGE);
-		}
+        Group pgroup = null;
+        try{
+            pgroup= (Group)hObject.getFileFormat().get(hObject.getPath());
+        }catch (Exception ex) {
+        } 
+        if (pgroup == null) {
+            JOptionPane.showMessageDialog(this, "Parent group is null.",
+                    getTitle(), JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        String target_name = linkField.getText();
+        if (target_name != null)
+            target_name = target_name.trim();
+            
+        if (target_name == null ||
+                target_name.length() < 1 || 
+                target_name.equals("/") ||
+                target_name.endsWith(FileFormat.FILE_OBJ_SEP+"/")||
+                target_name.equals(hObject.getLinkTargetObjName()))
+            return;
+        
+        int linkType = Group.LINK_TYPE_SOFT;
+        if (LinkTObjName.contains(FileFormat.FILE_OBJ_SEP))
+            linkType = Group.LINK_TYPE_EXTERNAL;
+        
+        try {
+            fileFormat.createLink(pgroup,  hObject.getName(), target_name, linkType);
+            hObject.setLinkTargetObjName(target_name);
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, ex, getTitle(),
+                    JOptionPane.ERROR_MESSAGE);
+        }
     }
    
 //    private final List<Object> breadthFirstUserObjects(TreeNode node)
@@ -629,7 +627,7 @@ implements ActionListener, MetaDataView
         String[] columnNames = {"Name", "Type"};
         JTable table = new JTable(rowData, columnNames)
         {
-        	public static final long serialVersionUID = HObject.serialVersionUID;
+            private static final long serialVersionUID = -834321929059590629L;
 
             public boolean isCellEditable(int row, int column)
             {
@@ -639,7 +637,7 @@ implements ActionListener, MetaDataView
         table.setCellSelectionEnabled(false);
         
         // set cell height for large fonts
-		int cellRowHeight = Math.max(16, table.getFontMetrics(table.getFont()).getHeight());
+        int cellRowHeight = Math.max(16, table.getFontMetrics(table.getFont()).getHeight());
         table.setRowHeight(cellRowHeight);
 
         table.getTableHeader().setReorderingAllowed(false);
@@ -790,11 +788,11 @@ implements ActionListener, MetaDataView
                     rowData[i][0] = names[i];
                     int mDims[] = compound.getMemeberDims(i);
                     if (mDims == null) {
-                    	rowData[i][2] = String.valueOf(orders[i]);
-                    	
-                    	if (isH4 && types[i].getDatatypeClass()==Datatype.CLASS_STRING) {
-                    		rowData[i][2] = String.valueOf(types[i].getDatatypeSize());
-                    	}
+                        rowData[i][2] = String.valueOf(orders[i]);
+                        
+                        if (isH4 && types[i].getDatatypeClass()==Datatype.CLASS_STRING) {
+                            rowData[i][2] = String.valueOf(types[i].getDatatypeSize());
+                        }
                     } else {
                         String mStr = String.valueOf(mDims[0]);
                         int m = mDims.length;
@@ -809,7 +807,7 @@ implements ActionListener, MetaDataView
                 String[] columnNames = {"Name", "Type", "Array Size"};
                 JTable table = new JTable(rowData, columnNames)
                 {
-                	public static final long serialVersionUID = HObject.serialVersionUID;
+                    private static final long serialVersionUID = -1517773307922536859L;
 
                     public boolean isCellEditable(int row, int column)
                     {
@@ -821,7 +819,7 @@ implements ActionListener, MetaDataView
                 panel.add(new JScrollPane(table), BorderLayout.CENTER);
 
                 // set cell height for large fonts
-        		int cellRowHeight = Math.max(16, table.getFontMetrics(table.getFont()).getHeight());
+                int cellRowHeight = Math.max(16, table.getFontMetrics(table.getFont()).getHeight());
                 table.setRowHeight(cellRowHeight);
             } // if (n > 0)
         } // if (d instanceof Compound)
@@ -920,7 +918,7 @@ implements ActionListener, MetaDataView
         List<?> attrList = null;
 
         try {
-        		attrList = hObject.getMetadata();
+                attrList = hObject.getMetadata();
         } catch (Exception ex) {
              attrList = null;
         }
@@ -933,8 +931,7 @@ implements ActionListener, MetaDataView
 
         attrTable = new JTable(attrTableModel)
         {
-        	public static final long serialVersionUID = HObject.serialVersionUID;
-
+            private static final long serialVersionUID = 2590244645972259454L;
             int lastSelectedRow = -1;
             int lastSelectedCol = -1;
 
@@ -988,8 +985,8 @@ implements ActionListener, MetaDataView
         attrTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         
         // set cell height for large fonts
-		int cellRowHeight = Math.max(16, attrTable.getFontMetrics(attrTable.getFont()).getHeight());
-		attrTable.setRowHeight(cellRowHeight);
+        int cellRowHeight = Math.max(16, attrTable.getFontMetrics(attrTable.getFont()).getHeight());
+        attrTable.setRowHeight(cellRowHeight);
 
         JScrollPane scroller1 = new JScrollPane(attrTable);
         attrContentArea = new JTextArea();
@@ -1141,9 +1138,9 @@ implements ActionListener, MetaDataView
 //        if (col != 1) {
 //            return; // can only change attribute value
 //        }
-    	
-    	 String attrName = (String)attrTable.getValueAt(row, 0);
-    	 List<?> attrList = null;
+        
+         String attrName = (String)attrTable.getValueAt(row, 0);
+         List<?> attrList = null;
          try { attrList = hObject.getMetadata(); }
          catch (Exception ex)
          {
@@ -1155,188 +1152,188 @@ implements ActionListener, MetaDataView
          }
 
          Attribute attr = (Attribute)attrList.get(row);
-    	
-    	if (col == 1) //To change attribute value
-    	{        
-    		Object data = attr.getValue();
-    		if (data == null) {
-    			return;
-    		}
+        
+        if (col == 1) //To change attribute value
+        {        
+            Object data = attr.getValue();
+            if (data == null) {
+                return;
+            }
 
-    		int array_length = Array.getLength(data);
-    		StringTokenizer st = new StringTokenizer(newValue, ",");
-    		if (st.countTokens() < array_length)
-    		{
-    			JOptionPane.showMessageDialog(getOwner(),
-    					"More data value needed: "+newValue,
-    					getTitle(),
-    					JOptionPane.ERROR_MESSAGE);
-    			return;
-    		}
+            int array_length = Array.getLength(data);
+            StringTokenizer st = new StringTokenizer(newValue, ",");
+            if (st.countTokens() < array_length)
+            {
+                JOptionPane.showMessageDialog(getOwner(),
+                        "More data value needed: "+newValue,
+                        getTitle(),
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
 
-    		char NT = ' ';
-    		String cName = data.getClass().getName();
-    		int cIndex = cName.lastIndexOf("[");
-    		if (cIndex >= 0 ) {
-    			NT = cName.charAt(cIndex+1);
-    		}
-    		boolean isUnsigned = attr.isUnsigned();
+            char NT = ' ';
+            String cName = data.getClass().getName();
+            int cIndex = cName.lastIndexOf("[");
+            if (cIndex >= 0 ) {
+                NT = cName.charAt(cIndex+1);
+            }
+            boolean isUnsigned = attr.isUnsigned();
 
-    		double d = 0;
-    		String theToken = null;
-    		long max=0, min=0;
-    		for (int i=0; i<array_length; i++)
-    		{
-    			max = min = 0;
+            double d = 0;
+            String theToken = null;
+            long max=0, min=0;
+            for (int i=0; i<array_length; i++)
+            {
+                max = min = 0;
 
-    			theToken = st.nextToken().trim();
-    			try {
-    				if (!(Array.get(data, i) instanceof String)) {
-    					d = Double.parseDouble(theToken);
-    				}
-    			}
-    			catch (NumberFormatException ex)
-    			{
-    				JOptionPane.showMessageDialog(
-    						getOwner(),
-    						ex.getMessage(),
-    						getTitle(),
-    						JOptionPane.ERROR_MESSAGE);
-    				return;
-    			}
+                theToken = st.nextToken().trim();
+                try {
+                    if (!(Array.get(data, i) instanceof String)) {
+                        d = Double.parseDouble(theToken);
+                    }
+                }
+                catch (NumberFormatException ex)
+                {
+                    JOptionPane.showMessageDialog(
+                            getOwner(),
+                            ex.getMessage(),
+                            getTitle(),
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
 
-    			if (isUnsigned && (d < 0))
-    			{
-    				JOptionPane.showMessageDialog(
-    						getOwner(),
-    						"Negative value for unsigned integer: "+newValue,
-    						getTitle(),
-    						JOptionPane.ERROR_MESSAGE);
-    				return;
-    			}
+                if (isUnsigned && (d < 0))
+                {
+                    JOptionPane.showMessageDialog(
+                            getOwner(),
+                            "Negative value for unsigned integer: "+newValue,
+                            getTitle(),
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
 
-    			switch (NT)
-    			{
-    			case 'B':
-    			{
-    				if (isUnsigned)
-    				{
-    					min = 0;
-    					max = 255;
-    				}
-    				else
-    				{
-    					min = Byte.MIN_VALUE;
-    					max = Byte.MAX_VALUE;
-    				}
+                switch (NT)
+                {
+                case 'B':
+                {
+                    if (isUnsigned)
+                    {
+                        min = 0;
+                        max = 255;
+                    }
+                    else
+                    {
+                        min = Byte.MIN_VALUE;
+                        max = Byte.MAX_VALUE;
+                    }
 
-    				if ((d > max) || (d < min)) {
-    					JOptionPane.showMessageDialog(
-    							getOwner(),
-    							"Data is out of range["+min+", "+max+"]: "+newValue,
-    							getTitle(),
-    							JOptionPane.ERROR_MESSAGE);
-    				} else {
-    					Array.setByte  (data, i, (byte)d);
-    				}
-    				break;
-    			}
-    			case 'S':
-    			{
-    				if (isUnsigned)
-    				{
-    					min = 0;
-    					max = 65535;
-    				}
-    				else
-    				{
-    					min = Short.MIN_VALUE;
-    					max = Short.MAX_VALUE;
-    				}
+                    if ((d > max) || (d < min)) {
+                        JOptionPane.showMessageDialog(
+                                getOwner(),
+                                "Data is out of range["+min+", "+max+"]: "+newValue,
+                                getTitle(),
+                                JOptionPane.ERROR_MESSAGE);
+                    } else {
+                        Array.setByte  (data, i, (byte)d);
+                    }
+                    break;
+                }
+                case 'S':
+                {
+                    if (isUnsigned)
+                    {
+                        min = 0;
+                        max = 65535;
+                    }
+                    else
+                    {
+                        min = Short.MIN_VALUE;
+                        max = Short.MAX_VALUE;
+                    }
 
-    				if ((d > max) || (d < min)) {
-    					JOptionPane.showMessageDialog(
-    							getOwner(),
-    							"Data is out of range["+min+", "+max+"]: "+newValue,
-    							getTitle(),
-    							JOptionPane.ERROR_MESSAGE);
-    				} else {
-    					Array.setShort (data, i, (short)d);
-    				}
-    				break;
-    			}
-    			case 'I':
-    			{
-    				if (isUnsigned)
-    				{
-    					min = 0;
-    					max = 4294967295L;
-    				}
-    				else
-    				{
-    					min = Integer.MIN_VALUE;
-    					max = Integer.MAX_VALUE;
-    				}
+                    if ((d > max) || (d < min)) {
+                        JOptionPane.showMessageDialog(
+                                getOwner(),
+                                "Data is out of range["+min+", "+max+"]: "+newValue,
+                                getTitle(),
+                                JOptionPane.ERROR_MESSAGE);
+                    } else {
+                        Array.setShort (data, i, (short)d);
+                    }
+                    break;
+                }
+                case 'I':
+                {
+                    if (isUnsigned)
+                    {
+                        min = 0;
+                        max = 4294967295L;
+                    }
+                    else
+                    {
+                        min = Integer.MIN_VALUE;
+                        max = Integer.MAX_VALUE;
+                    }
 
-    				if ((d > max) || (d < min)) {
-    					JOptionPane.showMessageDialog(
-    							getOwner(),
-    							"Data is out of range["+min+", "+max+"]: "+newValue,
-    							getTitle(),
-    							JOptionPane.ERROR_MESSAGE);
-    				} else {
-    					Array.setInt   (data, i, (int)d);
-    				}
-    				break;
-    			}
-    			case 'J':
-    				Array.setLong  (data, i, (long)d); 
-    				break;
-    			case 'F':
-    				Array.setFloat (data, i, (float)d); 
-    				break;
-    			case 'D':
-    				Array.setDouble(data, i, d); 
-    				break;
-    			default:  
-    				Array.set(data, i, theToken); 
-    			    break;
-    			}
-    		}
+                    if ((d > max) || (d < min)) {
+                        JOptionPane.showMessageDialog(
+                                getOwner(),
+                                "Data is out of range["+min+", "+max+"]: "+newValue,
+                                getTitle(),
+                                JOptionPane.ERROR_MESSAGE);
+                    } else {
+                        Array.setInt   (data, i, (int)d);
+                    }
+                    break;
+                }
+                case 'J':
+                    Array.setLong  (data, i, (long)d); 
+                    break;
+                case 'F':
+                    Array.setFloat (data, i, (float)d); 
+                    break;
+                case 'D':
+                    Array.setDouble(data, i, d); 
+                    break;
+                default:  
+                    Array.set(data, i, theToken); 
+                    break;
+                }
+            }
 
-    		try {
-    			hObject.getFileFormat().writeAttribute(hObject, attr, true);
-    		} catch (Exception ex)
-    		{
-    			JOptionPane.showMessageDialog(
-    					getOwner(),
-    					ex.getMessage(),
-    					getTitle(),
-    					JOptionPane.ERROR_MESSAGE);
-    			return;
-    		}
+            try {
+                hObject.getFileFormat().writeAttribute(hObject, attr, true);
+            } catch (Exception ex)
+            {
+                JOptionPane.showMessageDialog(
+                        getOwner(),
+                        ex.getMessage(),
+                        getTitle(),
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
 
-    		// update the attribute table
-    		attrTable.setValueAt(attr.toString(", "), row, 1);
-    	}
-    	
-    	if ((col == 0)&& isH5) //To change attribute name
-    	{
-    		try {
-    			hObject.getFileFormat().renameAttribute(hObject, attrName, newValue);
-    		} catch (Exception ex)
-    		{
-    			JOptionPane.showMessageDialog(
-    					getOwner(),
-    					ex.getMessage(),
-    					getTitle(),
-    					JOptionPane.ERROR_MESSAGE);
-    			return;
-    		}
+            // update the attribute table
+            attrTable.setValueAt(attr.toString(", "), row, 1);
+        }
+        
+        if ((col == 0)&& isH5) //To change attribute name
+        {
+            try {
+                hObject.getFileFormat().renameAttribute(hObject, attrName, newValue);
+            } catch (Exception ex)
+            {
+                JOptionPane.showMessageDialog(
+                        getOwner(),
+                        ex.getMessage(),
+                        getTitle(),
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
 
-    		// update the attribute table
-    		attrTable.setValueAt(newValue, row, 0);
-    	}
+            // update the attribute table
+            attrTable.setValueAt(newValue, row, 0);
+        }
     }
 
 

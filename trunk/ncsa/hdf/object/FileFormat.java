@@ -25,6 +25,8 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
 
+import ncsa.hdf.hdf5lib.exceptions.HDF5Exception;
+
 
 /**
  * FileFormat defines general interfaces for working with files whose data is
@@ -56,6 +58,11 @@ public abstract class FileFormat extends File {
     /***************************************************************************
      * File access flags used in calls to createInstance( String, flag );
      **************************************************************************/
+
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -4700692313888420796L;
 
     /**
      * File access flag for read-only permission. With this access flag,
@@ -1303,54 +1310,54 @@ public abstract class FileFormat extends File {
     // 'do the right thing' if fid is -1, currentObj is non-null, if
     // object is null, or the root group then what? document & verify!
 
-	/**
-	 * Creates a soft, hard or external link to an existing object in the open
-	 * file.
-	 * <p>
-	 * If parentGroup is null, the new link is created in the root group.
-	 * 
-	 * @param parentGroup
-	 *            The group where the link is created.
-	 * @param name
-	 *            The name of the link.
-	 * @param currentObj
-	 *            The existing object the new link will reference.
-	 * @param type
-	 *            The type of link to be created. It can be a hard link, a soft
-	 *            link or an external link.
-	 * @return The object pointed to by the new link if successful; otherwise
-	 *         returns null.
-	 * @throws Exception
-	 *             The exceptions thrown vary depending on the implementing
-	 *             class.
-	 */
+    /**
+     * Creates a soft, hard or external link to an existing object in the open
+     * file.
+     * <p>
+     * If parentGroup is null, the new link is created in the root group.
+     * 
+     * @param parentGroup
+     *            The group where the link is created.
+     * @param name
+     *            The name of the link.
+     * @param currentObj
+     *            The existing object the new link will reference.
+     * @param type
+     *            The type of link to be created. It can be a hard link, a soft
+     *            link or an external link.
+     * @return The object pointed to by the new link if successful; otherwise
+     *         returns null.
+     * @throws Exception
+     *             The exceptions thrown vary depending on the implementing
+     *             class.
+     */
     public HObject createLink(Group parentGroup, String name, HObject currentObj, int type)
     throws Exception {
-    	return createLink(parentGroup,name, currentObj);
+        return createLink(parentGroup,name, currentObj);
     }
   
-	/**
-	 * Creates a soft or external links to objects in a file that do not exist
-	 * at the time the link is created.
-	 * 
-	 * @param parentGroup
-	 *            The group where the link is created.
-	 * @param name
-	 *            The name of the link.
-	 * @param currentObj
-	 *            The name of the object the new link will reference. The object
-	 *            doesn't have to exist.
-	 * @param type
-	 *            The type of link to be created.
-	 * @return The H5Link object pointed to by the new link if successful;
-	 *         otherwise returns null.
-	 * @throws Exception
-	 *             The exceptions thrown vary depending on the implementing
-	 *             class.
-	 */
+    /**
+     * Creates a soft or external links to objects in a file that do not exist
+     * at the time the link is created.
+     * 
+     * @param parentGroup
+     *            The group where the link is created.
+     * @param name
+     *            The name of the link.
+     * @param currentObj
+     *            The name of the object the new link will reference. The object
+     *            doesn't have to exist.
+     * @param type
+     *            The type of link to be created.
+     * @return The H5Link object pointed to by the new link if successful;
+     *         otherwise returns null.
+     * @throws Exception
+     *             The exceptions thrown vary depending on the implementing
+     *             class.
+     */
     public HObject createLink(Group parentGroup, String name, String currentObj, int type)
     throws Exception {
-    	return createLink(parentGroup,name, currentObj);
+        return createLink(parentGroup,name, currentObj);
     }
     
     /**
@@ -1691,69 +1698,69 @@ public abstract class FileFormat extends File {
     // What if this is a new file? Is the root group created by default?
     // what if already open? What if can't use requested access mode?
     // Can we doc exceptions better or in implementation methods?
-	/**
-	 * Opens file and returns a file identifier.
-	 * 
-	 * @param propList
-	 *            The property list is the list of parameters, like index type
-	 *            and the index order. The index type can be alphabetical or
-	 *            creation. The index order can be increasing order or
-	 *            decreasing order.
-	 * @return File identifier if successful; otherwise -1.
-	 * @throws Exception
-	 * 
-	 */
+    /**
+     * Opens file and returns a file identifier.
+     * 
+     * @param propList
+     *            The property list is the list of parameters, like index type
+     *            and the index order. The index type can be alphabetical or
+     *            creation. The index order can be increasing order or
+     *            decreasing order.
+     * @return File identifier if successful; otherwise -1.
+     * @throws Exception
+     * 
+     */
     public int open(int ...propList) throws Exception
     {
         throw new UnsupportedOperationException("Unsupported operation. Subclasses must implement it.");
     }
     
     /**
-	 * Creates a new group with specified name in existing group.
-	 * <p>
-	 * If the parent group is null, the new group will be created in the root
-	 * group.
-	 * 
-	 * @param name
-	 *            The name of a new group.
-	 * @param pgroup
-	 *            The parent group object.
-	 * @param gplist
-	 *            The group creation properties, in which the order of the
-	 *            properties conforms the HDF5 library API, H5Gcreate(), i.e.
-	 *            lcpl, gcpl and gapl, where
-	 *           <ul>
-	 *            <li>lcpl : Property list for link creation <li>gcpl : Property
-	 *            list for group creation <li>gapl : Property list for group
-	 *            access
-	 *           </ul>
-	 * 
-	 * @return The new group if successful; otherwise returns null.
-	 * @throws Exception
-	 */
+     * Creates a new group with specified name in existing group.
+     * <p>
+     * If the parent group is null, the new group will be created in the root
+     * group.
+     * 
+     * @param name
+     *            The name of a new group.
+     * @param pgroup
+     *            The parent group object.
+     * @param gplist
+     *            The group creation properties, in which the order of the
+     *            properties conforms the HDF5 library API, H5Gcreate(), i.e.
+     *            lcpl, gcpl and gapl, where
+     *           <ul>
+     *            <li>lcpl : Property list for link creation <li>gcpl : Property
+     *            list for group creation <li>gapl : Property list for group
+     *            access
+     *           </ul>
+     * 
+     * @return The new group if successful; otherwise returns null.
+     * @throws Exception
+     */
     public Group createGroup(String name, Group pgroup, int ... gplist) throws Exception 
     {
         throw new UnsupportedOperationException("Unsupported operation. Subclasses must implement it.");
     }
     
-	/***
-	 * Creates the group creation property list identifier, gcpl. This
-	 * identifier is used when creating Groups.
-	 * 
-	 * @param creationorder
-	 *            The order in which the objects in a group should be created.
-	 *            It can be Tracked or Indexed.
-	 * @param maxcompact
-	 *            The maximum number of links to store in the group in a compact
-	 *            format.
-	 * @param mindense
-	 *            The minimum number of links to store in the indexed
-	 *            format.Groups which are in indexed format and in which the
-	 *            number of links falls below this threshold are automatically
-	 *            converted to compact format.
-	 * @return The gcpl identifier.
-	 * @throws Exception
-	 */
+    /***
+     * Creates the group creation property list identifier, gcpl. This
+     * identifier is used when creating Groups.
+     * 
+     * @param creationorder
+     *            The order in which the objects in a group should be created.
+     *            It can be Tracked or Indexed.
+     * @param maxcompact
+     *            The maximum number of links to store in the group in a compact
+     *            format.
+     * @param mindense
+     *            The minimum number of links to store in the indexed
+     *            format.Groups which are in indexed format and in which the
+     *            number of links falls below this threshold are automatically
+     *            converted to compact format.
+     * @return The gcpl identifier.
+     * @throws Exception
+     */
     public int createGcpl(int creationorder, int maxcompact, int mindense) throws Exception
     {
         throw new UnsupportedOperationException("Unsupported operation. Subclasses must implement it.");
@@ -1802,9 +1809,9 @@ public abstract class FileFormat extends File {
     /**
      * Sets the bounds of library versions.
      * @param low
-     * 				The earliest version of the library.
+     *                 The earliest version of the library.
      * @param high
-     * 				The latest version of the library.
+     *                 The latest version of the library.
      * @throws HDF5Exception
      */
     public void setLibBounds(int low, int high) throws Exception 
@@ -1812,12 +1819,12 @@ public abstract class FileFormat extends File {
         throw new UnsupportedOperationException("Unsupported operation. Subclasses must implement it.");
     }
     
-	/**
-	 * Gets the bounds of library versions
-	 * 
-	 * @return The earliest and latest library versions in an int array.
-	 * @throws HDF5Exception
-	 */
+    /**
+     * Gets the bounds of library versions
+     * 
+     * @return The earliest and latest library versions in an int array.
+     * @throws HDF5Exception
+     */
     public int[] getLibBounds() throws Exception
     {
         throw new UnsupportedOperationException("Unsupported operation. Subclasses must implement it.");

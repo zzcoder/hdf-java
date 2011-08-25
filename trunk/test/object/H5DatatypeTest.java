@@ -3,6 +3,13 @@
  */
 package test.object;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.Vector;
 
 import junit.framework.TestCase;
@@ -13,6 +20,7 @@ import ncsa.hdf.object.Datatype;
 import ncsa.hdf.object.FileFormat;
 import ncsa.hdf.object.h5.H5Datatype;
 import ncsa.hdf.object.h5.H5File;
+import ncsa.hdf.object.h5.H5ScalarDS;
 
 /**
  * TestCase for H5Datatype.
@@ -90,7 +98,7 @@ public class H5DatatypeTest extends TestCase {
      * @see junit.framework.TestCase#setUp()
      */
     @Override
-	protected void setUp() throws Exception {
+    protected void setUp() throws Exception {
         super.setUp();
 
         typeInt = new H5Datatype(Datatype.CLASS_INTEGER,
@@ -118,7 +126,7 @@ public class H5DatatypeTest extends TestCase {
      * @see junit.framework.TestCase#tearDown()
      */
     @Override
-	protected void tearDown() throws Exception {
+    protected void tearDown() throws Exception {
         super.tearDown();
 
         if (testFile != null) {
@@ -666,6 +674,103 @@ public class H5DatatypeTest extends TestCase {
         }
         catch (final Exception ex) {
             fail("writeMetadata() failed. " + ex);
+        }
+        int nObjs = 0;
+        try {
+            nObjs = H5.H5Fget_obj_count(testFile.getFID(),
+                    HDF5Constants.H5F_OBJ_ALL);
+        }
+        catch (final Exception ex) {
+            fail("H5.H5Fget_obj_count() failed. " + ex);
+        }
+        assertEquals(1, nObjs); // file id should be the only one left open
+    }
+    
+    /**
+     * Test method for {@link ncsa.hdf.object.h5.H5Datatype} IsSerializable.
+     */
+    public final void testIsSerializable() {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        ObjectOutputStream oos;
+        try {
+            oos = new ObjectOutputStream(out);
+            oos.writeObject(testDatatype);
+            oos.close();
+        }
+        catch (IOException err) {
+            err.printStackTrace();
+            fail("ObjectOutputStream failed: " + err);
+        }
+        assertTrue(out.toByteArray().length > 0);
+    }
+    
+    /**
+     * Test method for {@link ncsa.hdf.object.h5.H5Datatype} SerializeToDisk.
+     * <p>
+     * What to test:
+     * <ul>
+     * <li>serialize a dataset identifier
+     * <li>deserialize a dataset identifier
+     * <li>Open a datatype identifier
+     * <li>Check the class and size of the datatype
+     * <li>Close the datatype
+     * </ul>
+     */
+    public final void testSerializeToDisk()
+    {
+        try {
+            FileOutputStream fos = new FileOutputStream("temph5dtype.ser");
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+            oos.writeObject(testDatatype);
+            oos.close();
+        }
+        catch (Exception ex) {
+            fail("Exception thrown during test: " + ex.toString());
+        }
+        
+        H5Datatype test = null;
+        try {
+            FileInputStream fis = new FileInputStream("temph5dtype.ser");
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            test = (ncsa.hdf.object.h5.H5Datatype) ois.readObject();
+            ois.close();
+            
+            // Clean up the file
+            new File("temph5dtype.ser").delete();
+        }
+        catch (Exception ex) {
+            fail("Exception thrown during test: " + ex.toString());
+        }
+        
+        int tid = -1, tclass = -1, tsize = -1;
+
+        for (int loop = 0; loop < NLOOPS; loop++) {
+            tid = tclass = tsize = -1;
+
+            try {
+                tid = test.open();
+            }
+            catch (final Exception ex) {
+                fail("open() failed. " + ex);
+            }
+            assertTrue(tid > 0);
+
+            try {
+                tclass = H5.H5Tget_class(tid);
+                tsize = H5.H5Tget_size(tid);
+            }
+            catch (final Exception ex) {
+                fail("open() failed. " + ex);
+            }
+
+            assertEquals(4, tsize);
+            assertEquals(HDF5Constants.H5T_INTEGER, tclass);
+
+            try {
+                H5.H5Tclose(tid);
+            }
+            catch (final Exception ex) {
+            }
         }
         int nObjs = 0;
         try {

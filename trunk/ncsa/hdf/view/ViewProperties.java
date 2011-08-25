@@ -31,7 +31,6 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
 import ncsa.hdf.object.FileFormat;
-import ncsa.hdf.object.HObject;
 
 /**
  * The ViewProperties holds all the HDFView static information.
@@ -40,7 +39,7 @@ import ncsa.hdf.object.HObject;
  * @version 2.4 9/6/2007
  */
 public class ViewProperties extends Properties {
-    public static final long serialVersionUID = HObject.serialVersionUID;
+    private static final long serialVersionUID = -6411465283887959066L;
 
     /** the version of the HDFViewer */
     public static final String VERSION = "2.7";
@@ -1104,7 +1103,7 @@ public class ViewProperties extends Properties {
         for (int i = 0; i < MAX_RECENT_FILES; i++) {
             theFile = getProperty("palette.file" + i);
             if (theFile!=null)
-            	theFile = theFile.trim();
+                theFile = theFile.trim();
             
             if ((theFile != null && theFile.length()>0) && !paletteList.contains(theFile)) {
                 if ((new File(theFile)).exists()) {
@@ -1150,12 +1149,12 @@ public class ViewProperties extends Properties {
         
         // set default modules from user property files
         for (int i=0; i<6; i++) {
-        	String moduleName = (String)get(moduleKeys[i]);
-        	if ((moduleName !=null) && (moduleName.length()>0)) {
-        		if (moduleList[i].contains(moduleName))
-        			moduleList[i].remove(moduleName);
-        		moduleList[i].add(0, moduleName);
-        	}
+            String moduleName = (String)get(moduleKeys[i]);
+            if ((moduleName !=null) && (moduleName.length()>0)) {
+                if (moduleList[i].contains(moduleName))
+                    moduleList[i].remove(moduleName);
+                moduleList[i].add(0, moduleName);
+            }
         }         
     }
 
