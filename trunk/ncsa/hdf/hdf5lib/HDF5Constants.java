@@ -193,6 +193,15 @@ public class HDF5Constants {
     public static final int H5F_SCOPE_GLOBAL = H5F_SCOPE_GLOBAL();
     public static final int H5F_SCOPE_LOCAL = H5F_SCOPE_LOCAL();
     public static final int H5F_UNLIMITED = H5F_UNLIMITED();
+    public static final int H5FD_CORE = H5FD_CORE();
+    public static final int H5FD_DIRECT = H5FD_DIRECT();
+    public static final int H5FD_FAMILY = H5FD_FAMILY();
+    public static final int H5FD_LOG = H5FD_LOG();
+    public static final int H5FD_MPIO = H5FD_MPIO();
+    public static final int H5FD_MULTI = H5FD_MULTI();
+    public static final int H5FD_SEC2 = H5FD_SEC2();
+    public static final int H5FD_STDIO = H5FD_STDIO();  
+    public static final int H5FD_WINDOWS = H5FD_WINDOWS();
     public static final int H5G_DATASET = H5G_DATASET();
     public static final int H5G_GROUP = H5G_GROUP();
     public static final int H5G_LINK = H5G_LINK();
@@ -865,6 +874,24 @@ public class HDF5Constants {
     private static native final int H5F_SCOPE_LOCAL();
 
     private static native final int H5F_UNLIMITED();
+
+    private static native final int H5FD_CORE();
+
+    private static native final int H5FD_DIRECT();
+
+    private static native final int H5FD_FAMILY();
+
+    private static native final int H5FD_LOG();
+
+    private static native final int H5FD_MPIO();
+
+    private static native final int H5FD_MULTI();
+
+    private static native final int H5FD_SEC2();
+
+    private static native final int H5FD_STDIO();
+   
+    private static native final int H5FD_WINDOWS();
 
     private static native final int H5G_DATASET();
 
