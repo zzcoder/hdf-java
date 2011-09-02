@@ -5682,6 +5682,15 @@ public class H5 implements java.io.Serializable {
             String logfile, int flags, int buf_size)
             throws HDF5LibraryException, NullPointerException;
 
+    public synchronized static native int H5Pset_fapl_sec2(int fapl_id)
+            throws HDF5LibraryException, NullPointerException;
+
+    public synchronized static native int H5Pset_fapl_stdio(int fapl_id)
+            throws HDF5LibraryException, NullPointerException;
+
+    public synchronized static native int H5Pset_fapl_windows(int fapl_id)
+            throws HDF5LibraryException, NullPointerException;
+
     // //////////////////////////////////////////////////////////////////
     // //
     // New APIs from release 1.6.3 //
@@ -5845,6 +5854,11 @@ public class H5 implements java.io.Serializable {
      */
     public synchronized static native int H5Pequal(int plid1, int plid2)
             throws HDF5LibraryException;
+    public static boolean H5P_equal(int plid1, int plid2)
+            throws HDF5LibraryException {
+        if(H5Pequal(plid1, plid2)==1) return true;
+        return false;
+    }
 
     /**
      * H5Pcopy_prop copies a property from one property list or class to another
@@ -5897,6 +5911,19 @@ public class H5 implements java.io.Serializable {
      * @throws HDF5LibraryException
      */
     public synchronized static native int H5Pclose_class(int plid)
+            throws HDF5LibraryException;
+
+    /**
+     * H5Pget_driver returns the identifier of the low-level file driver 
+     * associated with the file access property list or data transfer 
+     * property list plid.
+     * 
+     * @param plid
+     *            IN: File access or data transfer property list identifier.
+     * @return a valid low-level driver identifier if successful; a negative value if failed
+     * @throws HDF5LibraryException
+     */
+    public synchronized static native int H5Pget_driver(int plid)
             throws HDF5LibraryException;
 
     // //////////////////////////////////////////////////////////////////
