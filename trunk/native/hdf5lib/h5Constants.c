@@ -215,10 +215,14 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5FD_1LOG_1FLAVOR(JNI
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5FD_1LOG_1NUM_1READ(JNIEnv *env, jclass cls) { return H5FD_LOG_NUM_READ; }
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5FD_1LOG_1NUM_1WRITE(JNIEnv *env, jclass cls) { return H5FD_LOG_NUM_WRITE; }
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5FD_1LOG_1NUM_1SEEK(JNIEnv *env, jclass cls) { return H5FD_LOG_NUM_SEEK; }
+#ifdef USING_1.8.8
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5FD_1LOG_1NUM_1TRUNCATE(JNIEnv *env, jclass cls) { return H5FD_LOG_NUM_TRUNCATE; }
+#endif
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5FD_1LOG_1NUM_1IO(JNIEnv *env, jclass cls) { return H5FD_LOG_NUM_IO; }
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5FD_1LOG_1TIME_1OPEN(JNIEnv *env, jclass cls) { return H5FD_LOG_TIME_OPEN; }
+#ifdef USING_1.8.8
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5FD_1LOG_1TIME_1STAT(JNIEnv *env, jclass cls) { return H5FD_LOG_TIME_STAT; }
+#endif
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5FD_1LOG_1TIME_1READ(JNIEnv *env, jclass cls) { return H5FD_LOG_TIME_READ; }
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5FD_1LOG_1TIME_1WRITE(JNIEnv *env, jclass cls) { return H5FD_LOG_TIME_WRITE; }
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5FD_1LOG_1TIME_1SEEK(JNIEnv *env, jclass cls) { return H5FD_LOG_TIME_SEEK; }

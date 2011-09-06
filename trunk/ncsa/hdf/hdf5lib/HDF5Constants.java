@@ -213,10 +213,10 @@ public class HDF5Constants {
     public static final int H5FD_LOG_NUM_READ = H5FD_LOG_NUM_READ();
     public static final int H5FD_LOG_NUM_WRITE = H5FD_LOG_NUM_WRITE();
     public static final int H5FD_LOG_NUM_SEEK = H5FD_LOG_NUM_SEEK();
-    public static final int H5FD_LOG_NUM_TRUNCATE = H5FD_LOG_NUM_TRUNCATE();
+//    public static final int H5FD_LOG_NUM_TRUNCATE = H5FD_LOG_NUM_TRUNCATE();
     public static final int H5FD_LOG_NUM_IO = H5FD_LOG_NUM_IO();
     public static final int H5FD_LOG_TIME_OPEN = H5FD_LOG_TIME_OPEN();
-    public static final int H5FD_LOG_TIME_STAT = H5FD_LOG_TIME_STAT();
+//    public static final int H5FD_LOG_TIME_STAT = H5FD_LOG_TIME_STAT();
     public static final int H5FD_LOG_TIME_READ = H5FD_LOG_TIME_READ();
     public static final int H5FD_LOG_TIME_WRITE = H5FD_LOG_TIME_WRITE();
     public static final int H5FD_LOG_TIME_SEEK = H5FD_LOG_TIME_SEEK();
@@ -937,13 +937,13 @@ public class HDF5Constants {
     
     private static native final int H5FD_LOG_NUM_SEEK();
     
-    private static native final int H5FD_LOG_NUM_TRUNCATE();
+//    private static native final int H5FD_LOG_NUM_TRUNCATE();
     
     private static native final int H5FD_LOG_NUM_IO();
     
     private static native final int H5FD_LOG_TIME_OPEN();
     
-    private static native final int H5FD_LOG_TIME_STAT();
+//    private static native final int H5FD_LOG_TIME_STAT();
     
     private static native final int H5FD_LOG_TIME_READ();
     
