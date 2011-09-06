@@ -202,6 +202,28 @@ public class HDF5Constants {
     public static final int H5FD_SEC2 = H5FD_SEC2();
     public static final int H5FD_STDIO = H5FD_STDIO();  
     public static final int H5FD_WINDOWS = H5FD_WINDOWS();
+    public static final int H5FD_LOG_LOC_READ = H5FD_LOG_LOC_READ();
+    public static final int H5FD_LOG_LOC_WRITE = H5FD_LOG_LOC_WRITE();
+    public static final int H5FD_LOG_LOC_SEEK = H5FD_LOG_LOC_SEEK();
+    public static final int H5FD_LOG_LOC_IO = H5FD_LOG_LOC_IO();
+    public static final int H5FD_LOG_FILE_READ = H5FD_LOG_FILE_READ();
+    public static final int H5FD_LOG_FILE_WRITE = H5FD_LOG_FILE_WRITE();
+    public static final int H5FD_LOG_FILE_IO = H5FD_LOG_FILE_IO();
+    public static final int H5FD_LOG_FLAVOR = H5FD_LOG_FLAVOR();
+    public static final int H5FD_LOG_NUM_READ = H5FD_LOG_NUM_READ();
+    public static final int H5FD_LOG_NUM_WRITE = H5FD_LOG_NUM_WRITE();
+    public static final int H5FD_LOG_NUM_SEEK = H5FD_LOG_NUM_SEEK();
+    public static final int H5FD_LOG_NUM_TRUNCATE = H5FD_LOG_NUM_TRUNCATE();
+    public static final int H5FD_LOG_NUM_IO = H5FD_LOG_NUM_IO();
+    public static final int H5FD_LOG_TIME_OPEN = H5FD_LOG_TIME_OPEN();
+    public static final int H5FD_LOG_TIME_STAT = H5FD_LOG_TIME_STAT();
+    public static final int H5FD_LOG_TIME_READ = H5FD_LOG_TIME_READ();
+    public static final int H5FD_LOG_TIME_WRITE = H5FD_LOG_TIME_WRITE();
+    public static final int H5FD_LOG_TIME_SEEK = H5FD_LOG_TIME_SEEK();
+    public static final int H5FD_LOG_TIME_CLOSE = H5FD_LOG_TIME_CLOSE();
+    public static final int H5FD_LOG_TIME_IO = H5FD_LOG_TIME_IO();
+    public static final int H5FD_LOG_ALLOC = H5FD_LOG_ALLOC();
+    public static final int H5FD_LOG_ALL = H5FD_LOG_ALL();
     public static final int H5G_DATASET = H5G_DATASET();
     public static final int H5G_GROUP = H5G_GROUP();
     public static final int H5G_LINK = H5G_LINK();
@@ -892,6 +914,50 @@ public class HDF5Constants {
     private static native final int H5FD_STDIO();
    
     private static native final int H5FD_WINDOWS();
+    
+    private static native final int H5FD_LOG_LOC_READ();
+    
+    private static native final int H5FD_LOG_LOC_WRITE();
+    
+    private static native final int H5FD_LOG_LOC_SEEK();
+    
+    private static native final int H5FD_LOG_LOC_IO();
+    
+    private static native final int H5FD_LOG_FILE_READ();
+    
+    private static native final int H5FD_LOG_FILE_WRITE();
+    
+    private static native final int H5FD_LOG_FILE_IO();
+    
+    private static native final int H5FD_LOG_FLAVOR();
+    
+    private static native final int H5FD_LOG_NUM_READ();
+    
+    private static native final int H5FD_LOG_NUM_WRITE();
+    
+    private static native final int H5FD_LOG_NUM_SEEK();
+    
+    private static native final int H5FD_LOG_NUM_TRUNCATE();
+    
+    private static native final int H5FD_LOG_NUM_IO();
+    
+    private static native final int H5FD_LOG_TIME_OPEN();
+    
+    private static native final int H5FD_LOG_TIME_STAT();
+    
+    private static native final int H5FD_LOG_TIME_READ();
+    
+    private static native final int H5FD_LOG_TIME_WRITE();
+    
+    private static native final int H5FD_LOG_TIME_SEEK();
+    
+    private static native final int H5FD_LOG_TIME_CLOSE();
+    
+    private static native final int H5FD_LOG_TIME_IO();
+    
+    private static native final int H5FD_LOG_ALLOC();
+    
+    private static native final int H5FD_LOG_ALL();
 
     private static native final int H5G_DATASET();
 
