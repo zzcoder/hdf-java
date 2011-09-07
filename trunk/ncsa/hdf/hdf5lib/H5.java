@@ -5678,9 +5678,50 @@ public class H5 implements java.io.Serializable {
     public synchronized static native long H5Pget_family_offset(int fapl_id)
             throws HDF5LibraryException, NullPointerException;
 
-    public synchronized static native int H5Pset_fapl_log(int fapl_id,
-            String logfile, int flags, int buf_size)
+
+    /**
+     *  H5Pset_fapl_log Sets up the logging virtual file driver (H5FD_LOG) for use.
+     *  H5Pset_fapl_log modifies the file access property list to use the logging driver, H5FD_LOG. 
+     *  The logging virtual file driver (VFD) is a clone of the standard SEC2 (H5FD_SEC2) driver 
+     *  with additional facilities for logging VFD metrics and activity to a file. 
+     *
+     *  @param fapl_id  IN: File access property list identifier. 
+     *  @param logfile  IN: logfile is the name of the file in which the logging entries are to be recorded.
+     *  @param flags    IN: Flags specifying the types of logging activity.
+     *  @param buf_size IN: The size of the logging buffers, in bytes.
+     *
+     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+     *  @exception NullPointerException - logfile is null.
+     **/
+    public synchronized static native void H5Pset_fapl_log(int fapl_id,
+            String logfile, long flags, int buf_size)
             throws HDF5LibraryException, NullPointerException;
+
+    /**
+     *  H5Pset_fapl_log Sets up the logging virtual file driver (H5FD_LOG) for use.
+     *  H5Pset_fapl_log modifies the file access property list to use the logging driver, H5FD_LOG. 
+     *  The logging virtual file driver (VFD) is a clone of the standard SEC2 (H5FD_SEC2) driver 
+     *  with additional facilities for logging VFD metrics and activity to a file. 
+     *
+     *  @deprecated As of HDF5 1.8.7, replaced by {@link #H5Pset_fapl_log(int, String, long, int)}
+     *
+     *  @param fapl_id  IN: File access property list identifier. 
+     *  @param logfile  IN: logfile is the name of the file in which the logging entries are to be recorded.
+     *  @param flags    IN: Flags specifying the types of logging activity.
+     *  @param buf_size IN: The size of the logging buffers, in bytes.
+     *
+     *  @return a non-negative value if successful
+     *
+     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+     *  @exception NullPointerException - logfile is null.
+     **/
+    @Deprecated
+    public static int H5Pset_fapl_log(int fapl_id,
+            String logfile, int flags, int buf_size)
+            throws HDF5LibraryException, NullPointerException {
+        H5Pset_fapl_log(fapl_id, logfile, (long)flags, buf_size);
+        return 1;
+    }
 
     public synchronized static native int H5Pset_fapl_sec2(int fapl_id)
             throws HDF5LibraryException, NullPointerException;

@@ -2340,10 +2340,10 @@ JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1family_1offset
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Pset_fapl_log
- * Signature: (ILjava/lang/String;II)I
+ * Signature: (ILjava/lang/String;JI)V
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1fapl_1log
-  (JNIEnv *env, jclass clss, jint fapl_id, jstring logfile, jint flags, jint buf_size)
+JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1fapl_1log
+  (JNIEnv *env, jclass clss, jint fapl_id, jstring logfile, jlong flags, jint buf_size)
 {
     herr_t retVal = -1;
     char * pLogfile;
@@ -2351,17 +2351,21 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1fapl_1log
 
     if (logfile == NULL) {
         h5nullArgument( env, "H5Pset_fapl_log:  logfile is NULL");
-        return -1;
+        return;
     }
 
-    pLogfile = (char *)ENVPTR->GetStringUTFChars(ENVPAR logfile,&isCopy);
+    pLogfile = (char *)ENVPTR->GetStringUTFChars(ENVPAR logfile, &isCopy);
 
     if (pLogfile == NULL) {
         h5JNIFatalError(env,  "H5Pset_fapl_log:  logfile not pinned");
-        return -1;
+        return;
     }
 
+#if H5_VERSION_GE(1,8,7)
+    retVal =  H5Pset_fapl_log( (hid_t) fapl_id, (const char *)pLogfile, (unsigned long long) flags, (size_t) buf_size );
+#else
     retVal =  H5Pset_fapl_log( (hid_t) fapl_id, (const char *)pLogfile, (unsigned int) flags, (size_t) buf_size );
+#endif
     if (retVal < 0) {
         h5libraryError(env);
     }
@@ -2372,7 +2376,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1fapl_1log
         h5libraryError(env);
     }
 
-    return (jint)retVal;
+    return;
 }
 
 

@@ -18,6 +18,7 @@ import org.junit.Test;
 public class TestH5Pfapl {
     
     private static final String H5_FILE = "test.h5";
+    private static final String H5_LOG_FILE = "test.log";
     private static final String H5_FAMILY_FILE = "test%05d";
     private static final int DIM_X = 4;
     private static final int DIM_Y = 6;
@@ -30,6 +31,19 @@ public class TestH5Pfapl {
 
     private final void _deleteFile(String filename) {
         File file = new File(filename);
+
+        if (file.exists()) {
+            try {
+                file.delete();
+            }
+            catch (SecurityException e) {
+                ;// e.printStackTrace();
+            }
+        }
+    }
+    
+    private final void _deleteLogFile() {
+        File file = new File(H5_LOG_FILE);
 
         if (file.exists()) {
             try {
@@ -312,6 +326,24 @@ public class TestH5Pfapl {
         }
         _createH5File(fapl_id);
         deleteH5file();
+    }
+    
+    @Test
+    public void testH5Pset_fapl_log() throws Throwable, HDF5LibraryException {
+        if (HDF5Constants.H5FD_LOG < 0)
+            return;
+        try {
+            H5.H5Pset_fapl_log(fapl_id, H5_LOG_FILE, HDF5Constants.H5FD_LOG_LOC_IO, 1024);
+            int driver_type = H5.H5Pget_driver(fapl_id);
+            assertTrue("H5Pget_driver: log = "+ driver_type, HDF5Constants.H5FD_LOG==driver_type);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5Pset_fapl_log: " + err);
+        }
+        _createH5File(fapl_id);
+        deleteH5file();
+        _deleteLogFile();
     }
     
     @Test
