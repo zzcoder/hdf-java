@@ -2361,7 +2361,7 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1fapl_1log
         return;
     }
 
-#if H5_VERSION_GE(1,8,7)
+#if (H5_VERS_RELEASE > 6) /* H5_VERSION_GE(1,8,7) */
     retVal =  H5Pset_fapl_log( (hid_t) fapl_id, (const char *)pLogfile, (unsigned long long) flags, (size_t) buf_size );
 #else
     retVal =  H5Pset_fapl_log( (hid_t) fapl_id, (const char *)pLogfile, (unsigned int) flags, (size_t) buf_size );
