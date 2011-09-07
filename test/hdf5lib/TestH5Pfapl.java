@@ -295,6 +295,39 @@ public class TestH5Pfapl {
     }
     
     @Test
+    public void testH5P_family_offset() throws Throwable, HDF5LibraryException {
+        if (HDF5Constants.H5FD_FAMILY < 0)
+            return;
+        try {
+            H5.H5Pset_fapl_family(fapl_id, 1024, HDF5Constants.H5P_DEFAULT);
+            int driver_type = H5.H5Pget_driver(fapl_id);
+            assertTrue("H5Pget_driver: family = "+ driver_type, HDF5Constants.H5FD_FAMILY==driver_type);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5Pset_fapl_family: " + err);
+        }
+        _createH5familyFile(fapl_id);
+        long family_offset = 512;
+        try {
+            H5.H5Pset_family_offset(fapl_id, family_offset);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5Pget_fapl_family: " + err);
+        }
+        try {
+            long offset = H5.H5Pget_family_offset(fapl_id);
+            assertTrue("H5Pget_fapl_family: offset="+offset, offset==family_offset);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5Pget_fapl_family: " + err);
+        }
+        deleteH5familyfile();
+    }
+    
+    @Test
     public void testH5Pset_fapl_sec2() throws Throwable, HDF5LibraryException {
         if (HDF5Constants.H5FD_SEC2 < 0)
             return;
