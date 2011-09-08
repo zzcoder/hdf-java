@@ -726,7 +726,7 @@ public class H5CompoundDS extends CompoundDS {
             }
 
             int[] flags = { 0, 0 };
-            int[] cd_nelmts = { 2 };
+            long[] cd_nelmts = { 2 };
             int[] cd_values = { 0, 0 };
             String[] cd_name = { "", "" };
             int nfilt = H5.H5Pget_nfilters(pid);

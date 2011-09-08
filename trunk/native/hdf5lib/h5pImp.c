@@ -61,7 +61,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Pcreate
 {
     hid_t retVal = -1;
     
-    retVal = H5Pcreate((hid_t)type ;
+    retVal = H5Pcreate((hid_t)type);
     if (retVal < 0) {
         h5libraryError(env);
     }
@@ -1027,7 +1027,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1cache
         rdcc_nelmtsArray = (jlong *) NULL;
     } 
     else {
-        rdcc_nelmtsArray = (jlongt *)ENVPTR->GetLongArrayElements(ENVPAR rdcc_nelmts, &isCopy);
+        rdcc_nelmtsArray = (jlong *)ENVPTR->GetLongArrayElements(ENVPAR rdcc_nelmts, &isCopy);
         if (rdcc_nelmtsArray == NULL) {
             ENVPTR->ReleaseIntArrayElements(ENVPAR mdc_nelmts, mdc_nelmtsArray, JNI_ABORT);
             /* exception -- out of memory */
@@ -1566,7 +1566,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1fill_1time
         return -1;
     }
 
-    retVal = H5Pget_fill_time((hid_t)plist, &time ;
+    retVal = H5Pget_fill_time((hid_t)plist, &time);
     if (retVal < 0) {
         ENVPTR->ReleaseIntArrayElements(ENVPAR fill_time, theArray, JNI_ABORT);
         h5libraryError(env);
