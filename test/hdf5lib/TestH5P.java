@@ -752,7 +752,7 @@ public class TestH5P {
 
     @Test
     public void testH5Pget_local_heap_size_hint() throws Throwable, HDF5LibraryException {
-        int size_hint = -1;
+        long size_hint = -1;
         try {
             size_hint = H5.H5Pget_local_heap_size_hint(gcpl_id);
         }
