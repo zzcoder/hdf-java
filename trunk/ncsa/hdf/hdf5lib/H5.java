@@ -2305,7 +2305,7 @@ public class H5 implements java.io.Serializable {
      * @exception IllegalArgumentException
      *                - size is invalid.
      **/
-    public synchronized static native int H5Pget_sizes(int plist, int[] size)
+    public synchronized static native int H5Pget_sizes(int plist, long[] size)
             throws HDF5LibraryException, NullPointerException,
             IllegalArgumentException;
 
@@ -2612,7 +2612,7 @@ public class H5 implements java.io.Serializable {
      * 
      **/
     public synchronized static native int H5Pget_external(int plist, int idx,
-            int name_size, String[] name, long[] size)
+            long name_size, String[] name, long[] size)
             throws ArrayIndexOutOfBoundsException, ArrayStoreException,
             HDF5LibraryException, NullPointerException,
             IllegalArgumentException;
@@ -2730,7 +2730,7 @@ public class H5 implements java.io.Serializable {
      *                - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Pset_filter(int plist, int filter,
-            int flags, int cd_nelmts, int[] cd_values)
+            int flags, long cd_nelmts, int[] cd_values)
             throws HDF5LibraryException;
 
     /**
@@ -3026,7 +3026,7 @@ public class H5 implements java.io.Serializable {
      *                - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Pset_cache(int plist,
-            int mdc_nelmts, int rdcc_nelmts, int rdcc_nbytes, double rdcc_w0)
+            int mdc_nelmts, long rdcc_nelmts, long rdcc_nbytes, double rdcc_w0)
             throws HDF5LibraryException;
 
     /**
@@ -3051,7 +3051,7 @@ public class H5 implements java.io.Serializable {
      *                - an array is null.
      **/
     public synchronized static native int H5Pget_cache(int plist,
-            int[] mdc_nelmts, int[] rdcc_nelmts, int[] rdcc_nbytes,
+            int[] mdc_nelmts, long[] rdcc_nelmts, long[] rdcc_nbytes,
             double[] rdcc_w0) throws HDF5LibraryException, NullPointerException;
 
     /**
@@ -3093,7 +3093,7 @@ public class H5 implements java.io.Serializable {
      * @exception IllegalArgumentException
      *                - plist is invalid.
      **/
-    public synchronized static native int H5Pset_buffer(int plist, int size,
+    public synchronized static native int H5Pset_buffer(int plist, long size,
             byte[] tconv, byte[] bkg)
             throws HDF5LibraryException, IllegalArgumentException;
 
@@ -5457,9 +5457,104 @@ public class H5 implements java.io.Serializable {
             int filter, int flags, long cd_nelmts, int[] cd_values)
             throws HDF5LibraryException, NullPointerException;
 
+    /**
+     * H5Pget_filter_by_id returns information about the filter specified in filter_id, a 
+     * filter identifier. plist_id must be a dataset or group creation property list and 
+     * filter_id must be in the associated filter pipeline. The filter_id and flags parameters 
+     * are used in the same manner as described in the discussion of H5Pset_filter. Aside from 
+     * the fact that they are used for output, the parameters cd_nelmts and cd_values[] are 
+     * used in the same manner as described in the discussion of H5Pset_filter. On input, the 
+     * cd_nelmts parameter indicates the number of entries in the cd_values[] array allocated 
+     * by the calling program; on exit it contains the number of values defined by the filter.
+     * On input, the namelen parameter indicates the number of characters allocated for the 
+     * filter name by the calling program in the array name[]. On exit name[] contains the name 
+     * of the filter with one character of the name in each element of the array. If the filter 
+     * specified in filter_id is not set for the property list, an error will be returned and 
+     * H5Pget_filter_by_id1 will fail.
+     * 
+     * @deprecated As of HDF5 1.8, replaced by {@link #H5Pget_filter_by_id(int, int, int[], int[], int[], int, String[], int[]) }
+     * 
+     * @param plist_id         IN: Property list identifier.
+     * @param filter_id        IN: Filter identifier.
+     * @param flags            OUT: Bit vector specifying certain general properties of the
+     *                                 filter.
+     * @param cd_nelmts        IN/OUT: Number of elements in cd_values
+     * @param cd_values        OUT: Auxiliary data for the filter.
+     * @param namelen          IN: Anticipated number of characters in name.
+     * @param name             OUT: Name of the filter.
+     * 
+     * @return the filter identification number if successful. Otherwise returns
+     *         H5Z_FILTER_ERROR (-1).
+     * 
+     * @exception ArrayIndexOutOfBoundsException
+     *                Fatal error on Copyback
+     * @exception ArrayStoreException
+     *                Fatal error on Copyback
+     * @exception NullPointerException
+     *                - name or an array is null.
+     * 
+     **/
+    @Deprecated
     public synchronized static native int H5Pget_filter_by_id(int plist_id,
-            int filter, int[] flags, long[] cd_nelmts, int[] cd_values,
+            int filter_id, int[] flags, long[] cd_nelmts, int[] cd_values,
             long namelen, String[] name)
+            throws HDF5LibraryException, NullPointerException;
+    /**
+     * H5Pget_filter_by_id returns information about the filter specified in filter_id, a 
+     * filter identifier. plist_id must be a dataset or group creation property list and 
+     * filter_id must be in the associated filter pipeline. The filter_id and flags parameters 
+     * are used in the same manner as described in the discussion of H5Pset_filter. Aside from 
+     * the fact that they are used for output, the parameters cd_nelmts and cd_values[] are 
+     * used in the same manner as described in the discussion of H5Pset_filter. On input, the 
+     * cd_nelmts parameter indicates the number of entries in the cd_values[] array allocated 
+     * by the calling program; on exit it contains the number of values defined by the filter.
+     * On input, the namelen parameter indicates the number of characters allocated for the 
+     * filter name by the calling program in the array name[]. On exit name[] contains the name 
+     * of the filter with one character of the name in each element of the array. If the filter 
+     * specified in filter_id is not set for the property list, an error will be returned and 
+     * H5Pget_filter_by_id1 will fail.
+     * 
+     * @param plist_id         IN: Property list identifier.
+     * @param filter_id        IN: Filter identifier.
+     * @param flags            OUT: Bit vector specifying certain general properties of the
+     *                                 filter.
+     * @param cd_nelmts        IN/OUT: Number of elements in cd_values
+     * @param cd_values        OUT: Auxiliary data for the filter.
+     * @param namelen          IN: Anticipated number of characters in name.
+     * @param name             OUT: Name of the filter.
+     * @param filter_config    OUT:A bit field encoding the returned filter information 
+     * 
+     * @return the filter identification number if successful. Otherwise returns
+     *         H5Z_FILTER_ERROR (-1).
+     * 
+     * @exception ArrayIndexOutOfBoundsException
+     *                Fatal error on Copyback
+     * @exception ArrayStoreException
+     *                Fatal error on Copyback
+     * @exception NullPointerException
+     *                - name or an array is null.
+     * 
+     **/
+    public static int H5Pget_filter_by_id(int plist_id,
+            int filter_id, int[] flags, long[] cd_nelmts, int[] cd_values,
+            long namelen, String[] name, int[] filter_config)
+            throws ArrayIndexOutOfBoundsException, ArrayStoreException,
+            HDF5LibraryException, NullPointerException {
+        return H5Pget_filter_by_id2(plist_id, filter_id, flags, cd_nelmts, cd_values,
+                namelen, name, filter_config);
+    }
+    /**
+     * H5Pget_filter_by_id2 returns information about a filter, specified by its filter
+     * id, in a filter pipeline, specified by the property list with which
+     * it is associated.
+     * 
+     * @see public static int H5Pget_filter_by_id(int plist,
+            int filter_id, int[] flags, int[] cd_nelmts, int[] cd_values,
+            int namelen, String[] name, int[] filter_config)
+     **/
+    public synchronized static native int H5Pget_filter_by_id2(int plist_id,
+            int filter_id, int[] flags, long[] cd_nelmts, int[] cd_values,
+            long namelen, String[] name, int[] filter_config)
             throws HDF5LibraryException, NullPointerException;
 
     public synchronized static native boolean H5Pall_filters_avail(int dcpl_id)
@@ -5665,11 +5760,11 @@ public class H5 implements java.io.Serializable {
             throws HDF5LibraryException, NullPointerException;
 
     public synchronized static native int H5Pset_fapl_core(int fapl_id,
-            int increment, boolean backing_store)
+            long increment, boolean backing_store)
             throws HDF5LibraryException, NullPointerException;
 
-    public synchronized static native int H5Pget_fapl_core(int fapl_id,
-            int[] increment, boolean[] backing_store)
+    public synchronized static native void H5Pget_fapl_core(int fapl_id,
+            long[] increment, boolean[] backing_store)
             throws HDF5LibraryException, NullPointerException;
 
     public synchronized static native int H5Pset_family_offset(int fapl_id,
@@ -8417,7 +8512,7 @@ throws HDF5LibraryException;
  
  /**
   * H5Pset_local_heap_size_hint Specifies the anticipated maximum size of a local heap. 
-  * @param gcpl_id                IN: Group creation property list identifier
+  * @param gcpl_id              IN: Group creation property list identifier
   * @param size_hint            IN: Anticipated maximum size in bytes of local heap
   *  
   * @return a non-negative value if successful; otherwise returns a negative value.
@@ -8425,7 +8520,7 @@ throws HDF5LibraryException;
   * @exception HDF5LibraryException - Error from the HDF-5 Library.
   *  
   **/
- public synchronized static native int H5Pset_local_heap_size_hint(int gcpl_id, int size_hint)
+ public synchronized static native int H5Pset_local_heap_size_hint(int gcpl_id, long size_hint)
  throws HDF5LibraryException;
  
  /**
@@ -8437,7 +8532,7 @@ throws HDF5LibraryException;
   * @exception HDF5LibraryException - Error from the HDF-5 Library.
   *  
   **/
- public synchronized static native int H5Pget_local_heap_size_hint(int gcpl_id)
+ public synchronized static native long H5Pget_local_heap_size_hint(int gcpl_id)
  throws HDF5LibraryException;
  
  /**
@@ -8577,7 +8672,7 @@ throws HDF5LibraryException;
   * @exception HDF5LibraryException - Error from the HDF-5 Library.
   *  
   **/
- public synchronized static native int H5Pset_fapl_direct(int fapl_id, int alignment, int block_size, int cbuf_size)
+ public synchronized static native int H5Pset_fapl_direct(int fapl_id, long alignment, long block_size, long cbuf_size)
  throws HDF5LibraryException;
 
  /**
@@ -8592,7 +8687,7 @@ throws HDF5LibraryException;
   * @exception HDF5LibraryException - Error from the HDF-5 Library.
   *  
   **/
- public synchronized static native int H5Pget_fapl_direct(int fapl_id, int[]info) throws HDF5LibraryException;
+ public synchronized static native int H5Pget_fapl_direct(int fapl_id, long[]info) throws HDF5LibraryException;
 
  /**
   * H5Pget_filter returns information about a filter, specified by its filter
@@ -8622,10 +8717,10 @@ throws HDF5LibraryException;
   * 
   **/
  public static int H5Pget_filter(int plist,
-         int filter_number, int[] flags, int[] cd_nelmts, int[] cd_values,
-         int namelen, String[] name, int[] filter_config)
+         int filter_number, int[] flags, long[] cd_nelmts, int[] cd_values,
+         long namelen, String[] name, int[] filter_config)
          throws ArrayIndexOutOfBoundsException, ArrayStoreException,
-         HDF5LibraryException, NullPointerException{
+         HDF5LibraryException, NullPointerException {
      return H5Pget_filter2(plist, filter_number, flags, cd_nelmts, cd_values,
              namelen, name, filter_config);
  }
@@ -8641,8 +8736,8 @@ throws HDF5LibraryException;
   **/
 
  private synchronized static native int H5Pget_filter2(int plist,
-         int filter_number, int[] flags, int[] cd_nelmts, int[] cd_values,
-         int namelen, String[] name, int[] filter_config)
+         int filter_number, int[] flags, long[] cd_nelmts, int[] cd_values,
+         long namelen, String[] name, int[] filter_config)
 throws ArrayIndexOutOfBoundsException, ArrayStoreException, HDF5LibraryException, NullPointerException;
 
 //////////////////////////////////////////////////////////////
