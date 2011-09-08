@@ -254,7 +254,7 @@ public class TestH5Pfapl {
             fail("H5Pset_fapl_core: " + err);
         }
         try {
-            int[] increment = {-1};
+            long[] increment = {-1};
             boolean[] backingstore = {true};
             H5.H5Pget_fapl_core(fapl_id, increment, backingstore);
             assertTrue("H5Pget_fapl_core: increment="+increment[0], increment[0]==4096);
@@ -394,7 +394,7 @@ public class TestH5Pfapl {
             fail("H5Pset_fapl_direct: " + err);
         }
         try {
-            int[] params = {-1, -1, -1};
+            long[] params = {-1, -1, -1};
             H5.H5Pget_fapl_direct(fapl_id, params);
             assertTrue("H5Pget_fapl_direct: alignment="+params[0], params[0]==1024);
             assertTrue("H5Pget_fapl_direct: block_size="+params[1], params[1]==4096);
