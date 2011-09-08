@@ -262,7 +262,7 @@ public class TestH5Pfapl {
         }
         catch (Throwable err) {
             err.printStackTrace();
-            fail("H5Pget_fapl_direct: " + err);
+            fail("H5Pget_fapl_core: " + err);
         }
     }
     
@@ -366,7 +366,8 @@ public class TestH5Pfapl {
         if (HDF5Constants.H5FD_LOG < 0)
             return;
         try {
-            H5.H5Pset_fapl_log(fapl_id, H5_LOG_FILE, HDF5Constants.H5FD_LOG_LOC_IO, 1024);
+            long log_flags = HDF5Constants.H5FD_LOG_LOC_IO;
+            H5.H5Pset_fapl_log(fapl_id, H5_LOG_FILE, log_flags, 1024);
             int driver_type = H5.H5Pget_driver(fapl_id);
             assertTrue("H5Pget_driver: log = "+ driver_type, HDF5Constants.H5FD_LOG==driver_type);
         }
