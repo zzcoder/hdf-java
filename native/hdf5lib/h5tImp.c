@@ -505,7 +505,7 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tget_1fields
 {
     herr_t status;
     jboolean isCopy;
-    jlong *P;
+    jlong *fieldsArray;
 
     if (fields == NULL) {
         h5nullArgument( env, "H5Tget_fields:  fields is NULL");
@@ -515,21 +515,41 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tget_1fields
         h5badArgument( env, "H5Tget_fields:  fields input array < order 5");
         return;
     }
-    P = ENVPTR->GetLongArrayElements(ENVPAR fields,&isCopy);
-    if (P == NULL) {
+    fieldsArray = ENVPTR->GetLongArrayElements(ENVPAR fields, &isCopy);
+    if (fieldsArray == NULL) {
         h5JNIFatalError(env,  "H5Tget_fields:  fields not pinned");
         return;
     }
 
-    status = H5Tget_fields(type_id, (size_t *)&(P[0]), (size_t *)&(P[1]), (size_t *)&(P[2]), (size_t *)&(P[3]), (size_t *)&(P[4]));
+    {
+        /* direct cast (size_t *)variable fails on 32-bit environment */
+        long fields_temp = *(&fieldsArray[0]);
+        size_t spos_t = fields_temp;
+        fields_temp = *(&fieldsArray[1]);
+        size_t epos_t = fields_temp;
+        fields_temp = *(&fieldsArray[2]);
+        size_t esize_t = fields_temp;
+        fields_temp = *(&fieldsArray[3]);
+        size_t mpos_t = fields_temp;
+        fields_temp = *(&fieldsArray[4]);
+        size_t msize_t = fields_temp;
+
+        status = H5Tget_fields(type_id, &spos_t, &epos_t, &esize_t, &mpos_t, &msize_t);
+        
+        *(&fieldsArray[0]) = spos_t;
+        *(&fieldsArray[1]) = epos_t;
+        *(&fieldsArray[2]) = esize_t;
+        *(&fieldsArray[3]) = mpos_t;
+        *(&fieldsArray[4]) = msize_t;
+    }
 
     if (status < 0) {
-        ENVPTR->ReleaseLongArrayElements(ENVPAR fields,P,JNI_ABORT);
+        ENVPTR->ReleaseLongArrayElements(ENVPAR fields, fieldsArray, JNI_ABORT);
         h5libraryError(env);
         return;
     }
 
-    ENVPTR->ReleaseLongArrayElements(ENVPAR fields,P,0);
+    ENVPTR->ReleaseLongArrayElements(ENVPAR fields, fieldsArray, 0);
 }
 
 /*
@@ -1786,8 +1806,8 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tget_1array_1dims2
  */
 JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tconvert
   (JNIEnv *env, jclass clss,
-		  jint src_id, jint dst_id, jlong nelmts,
-		  jbyteArray buf, jbyteArray background, jint plist_id)
+      jint src_id, jint dst_id, jlong nelmts,
+      jbyteArray buf, jbyteArray background, jint plist_id)
 {
     hid_t status;
     jbyte *bufP, *bgP=NULL;
