@@ -5789,7 +5789,7 @@ public class H5 implements java.io.Serializable {
      *  @exception NullPointerException - logfile is null.
      **/
     public synchronized static native void H5Pset_fapl_log(int fapl_id,
-            String logfile, long flags, int buf_size)
+            String logfile, long flags, long buf_size)
             throws HDF5LibraryException, NullPointerException;
 
     /**
@@ -5814,7 +5814,7 @@ public class H5 implements java.io.Serializable {
     public static int H5Pset_fapl_log(int fapl_id,
             String logfile, int flags, int buf_size)
             throws HDF5LibraryException, NullPointerException {
-        H5Pset_fapl_log(fapl_id, logfile, (long)flags, buf_size);
+        H5Pset_fapl_log(fapl_id, logfile, (long)flags, (long)buf_size);
         return 1;
     }
 
