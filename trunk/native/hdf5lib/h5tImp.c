@@ -523,16 +523,21 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tget_1fields
 
     {
         /* direct cast (size_t *)variable fails on 32-bit environment */
+        size_t spos_t = 0;
+        size_t epos_t = 0;
+        size_t esize_t = 0;
+        size_t mpos_t = 0;
+        size_t msize_t = 0;
         long fields_temp = *(&fieldsArray[0]);
-        size_t spos_t = fields_temp;
+        spos_t = fields_temp;
         fields_temp = *(&fieldsArray[1]);
-        size_t epos_t = fields_temp;
+        epos_t = fields_temp;
         fields_temp = *(&fieldsArray[2]);
-        size_t esize_t = fields_temp;
+        esize_t = fields_temp;
         fields_temp = *(&fieldsArray[3]);
-        size_t mpos_t = fields_temp;
+        mpos_t = fields_temp;
         fields_temp = *(&fieldsArray[4]);
-        size_t msize_t = fields_temp;
+        msize_t = fields_temp;
 
         status = H5Tget_fields(type_id, &spos_t, &epos_t, &esize_t, &mpos_t, &msize_t);
         
