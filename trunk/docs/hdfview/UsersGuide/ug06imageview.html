@@ -77,7 +77,7 @@ calculating the minimum, maximum and other statistics.</p>
 <ul class="ul">
 <li class="li2">An HDF4 RI8 image</li>
 <li class="li2">An HDF5 dataset that conforms to the HDF5 Image specification, and is
-an "IMAGE_SUBCLASS=IMAGE_INDEXED"</li>
+an &ldquo;IMAGE_SUBCLASS=IMAGE_INDEXED&rdquo;</li>
 <li class="li2">An SDS or HDF5 dataset with data that can be interpreted as an image </li>
 </ul>
 <p>The dataset is displayed as a Java image using IndexColorModel.
@@ -93,7 +93,7 @@ table. The following figure is an example of mapping dataset values into pixels.
 
 <center>
 <p><img src="images/image_indexed_mapping.gif" />
-<br /><b>Mapping of Dataset Values to Image Pixels</b></p></center>
+<br /><b>Mapping of dataset values to image pixels</b></p></center>
 
 <p>
 For a two-dimensional indexed image, HDFView assumes that the width of the image is
@@ -115,10 +115,10 @@ is treated as a two-dimension indexed image of [height][width].</p>
 
 <p>
 A 2-D or 3-D SDS or HDF5 dataset with integer or float data can be displayed as
-an indexed image using the "Open As" selection from the Object menu.
+an indexed image using the &ldquo;Open As&rdquo; selection from the Object menu.
 Since the dataset does not have a palette, a default palette is
-used. The palette is chosen from the "Select Palette" menu in the
-"Dataset Selection" window. The predefined palettes include:</p>
+used. The palette is chosen from the &ldquo;Select Palette&rdquo; menu in the
+&ldquo;Dataset Selection&rdquo; window. The predefined palettes include:</p>
 <ul class="ul">
 <li class="li2">gray</li>
 <li class="li2">rainbow</li>
@@ -153,23 +153,23 @@ simple linear conversion or auto gain conversion.
   </dd>
 </dl>
 <p />
-Auto gain algorithm will be used only if Auto gain is selected from "Tools" ==> "User Options",
-and the original dataset does not have any attached palette and you did not selected any palette from
-"Open As" windows. Simple linear conversion will be applied to all other cases. The image values will be
-different and the image will look different if different algorithm is used.
-
-<p />
+Auto gain algorithm will be used only if Auto gain is selected from 
+&ldquo;Tools&rdquo; ==> &ldquo;User Options&rdquo;,
+and the original dataset does not have any attached palette and you did not 
+selected any palette from &ldquo;Open As&rdquo; windows. Simple linear 
+conversion will be applied to all other cases. The image values will be
+different and the image will look different if different algorithm is used.<p />
 
 <h3>
 <a name="ug06image_true" id="ug06image_true"></a>6.1.2 True Color Image </h3>
 <p>
-In the case of an image with more than one component per pixel (e.g., Red,
-Green, and Blue), the data may be arranged in one of two ways.
+In the case of an image with more than one component per pixel (e.g., red, 
+green, and blue), the data may be arranged in one of two ways.
 HDFView
 only supports three color components: red, green and blue.</p>
 <p>Following HDF4
-terminology, the data may be interlaced by <i>pixel</i> or by <i>plane</i>. For an HDF5 Image 
-dataset the interlace should
+terminology, the data may be interlaced by <i>pixel</i> or by <i>plane</i>. 
+For an HDF5 Image dataset the interlace should 
 be indicated by the INTERLACE_MODE attribute.  In both cases, the dataset will
 have a dataspace with three dimensions, <i>height</i>, <i>width</i>, and <i>components</i>.
 For <i>pixel interlace</i>, the
@@ -179,10 +179,10 @@ For <i>plane interlace</i>, the data is arranged in the following order: [pixel 
 <p>
 The translation from pixel values to color components for display or processing
 purposes is a one-to-one correspondence of data values to components.
-Data of RGB
-color components is converted into byte data, which is packed into a single <i>int</i>
-pixel. The Java Image is created with a DirectColorModel, with masks to define
-packed samples. This color model is similar to an X11 TrueColor visual. The
+Data of RGB color components is converted into byte data, which is 
+packed into a single <i>int</i> pixel. The Java Image is created with a 
+DirectColorModel, with masks to define packed samples. This color model 
+is similar to an X11 TrueColor visual. The 
 default RGB ColorModel is specified with the following parameters:</p>
 <pre>
  Number of bits:        32
@@ -202,7 +202,7 @@ is plane interleaving with dimensions of [3][149][227].</p>
 
 <center>
 <p><img src="images/image_true_color.gif" />
-<br /><b>True Color Image Displayed in the Image View</b></p></center>
+<br /><b>True color image displayed in the Image View</b></p></center>
 
 <h2>
 <a name="ug06zoom"></a>6.2 Zoom/Flip/Contour Image</h2>
@@ -218,7 +218,7 @@ change the coordinates of the image.
 This technique can be used to adjust images that may have been created with
 different origins from the defaults.</p>
 <p>
-Manipulating the "contour" creates a contour plot of the pixel values.
+Manipulating the &ldquo;contour&rdquo; creates a contour plot of the pixel values.
 The contour can have from three to nine contour levels. Level three
 provides less details of contour and level nine provides more.
 <b>Repeated contour operations show a <em>cumulative</em> effect of contouring.
@@ -227,12 +227,12 @@ level 4, the final image shows the cumulative effect of applying a level 4
 to the level 3&#8211;contoured image</b>.
 
 <p>
-The following figure shows a contour image of level nine.</p>
+The following figure shows a contour image of level 9.</p>
 
 <center>
 <p><img src="images/image_contour.gif" />
 <br />
-<b>Contour Image (Level Nine)</b></p>
+<b>Contour image (level 9)</b></p>
 </center>
 
 <h2>
@@ -254,11 +254,12 @@ line plot.</p>
 
 <center>
 <p><img src="images/image_palette.gif" />
-<br /><b>Image Palette (256 Colors)</b></p></center>
+<br /><b>Image palette (256 colors)</b></p></center>
 
 <p>
-To view the pixel values of each individual point, check the "Show value" item
-in the "Image" menu. When you move the mouse over the image, the pixel values
+To view the pixel values of each individual point, check the 
+&ldquo;Show value&rdquo; item in the &ldquo;Image&rdquo; menu. When 
+you move the mouse over the image, the pixel values
 of the mouse point are shown at the bottom of the image.</p>
 
 <p>
@@ -270,7 +271,7 @@ color table.</p>
 
 <center>
 <p><img src="images/image_palette_modify.gif" />
-<br /><b>Modified Image Palette (256 Colors)</b></p></center>
+<br /><b>Modified image palette (256 colors)</b></p></center>
 
 <h2>
 <a name="ug06histogram"></a>6.4 Show Histogram of Pixel Values</h2>
@@ -281,22 +282,24 @@ chart depicts the 256 pixel values. The vertical axis shows the frequency
 of the pixel values.</p>
 <center>
 <p><img src="images/chart_histogram.gif" />
-<br /><b>Histogram of Pixel Values</b></p></center>
+<br /><b>Histogram of pixel values</b></p></center>
 
 <h2>
 <a name="ug06import"></a>6.5 Import JPEG, GIF, PNG, or BMP Image to HDF4/5</h2>
 <p>
-Using HDFView, you can convert a JPEG, GIF, PNG, or BMP image into an HDF4 or HDF5 image.
-Select the "Convert Image To" command in the Tools menu, a popup window prompts you to choose the
-image file that you want to convert. The image is converted into a 24-bit HDF4 or HDF5 image. The
-current conversion does not support an image with indexed color model or an image
+Using HDFView, you can convert a JPEG, GIF, PNG, or BMP image into an 
+HDF4 or HDF5 image. Select the &ldquo;Convert Image To&rdquo; command in 
+the Tools menu, a popup window prompts you to choose the 
+image file that you want to convert. The image is converted into a 24-bit 
+HDF4 or HDF5 image. The current conversion does not support an image with 
+indexed color model or an image 
 with less than two color components. The image data is saved as an 8-bit unsigned
 integer regardless of the data type of the original image.</p>
 
 <h2>
 <a name="ug06save"></a>6.6 Save HDF Image to JPEG, GIF, PNG, or BMP File</h2>
-Using the "Save Image As" command in the "Image" menu, you can save the
-current HDF image as a JPEG, GIF, PNG, or BMP file.
+Using the &ldquo;Save Image As&rdquo; command in the &ldquo;Image&rdquo; 
+menu, you can save the current HDF image as a JPEG, GIF, PNG, or BMP file.
 
 <!-- BEGIN OF FOOTER INFO -->
 <hr noshade size=1 />
