@@ -800,6 +800,8 @@ JAVASRCS= \
 ./ncsa/hdf/object/Datatype.java \
 ./ncsa/hdf/object/h4/H4Datatype.java \
 ./ncsa/hdf/object/h5/H5Datatype.java \
+./ncsa/hdf/object/nc2/*.java \
+./ncsa/hdf/object/fits/*.java \
 ./ncsa/hdf/view/DataOptionDialog.java \
 ./ncsa/hdf/view/HDFView.java \
 ./ncsa/hdf/view/ImageView.java \
@@ -834,6 +836,4 @@ JAVASRCS= \
 ./ncsa/hdf/view/PaletteView.java \
 ./test/object/misc/TestH4File.java \
 ./test/object/misc/TestH5File.java \
-./ncsa/hdf/object/nc2/*.java \
-./ncsa/hdf/object/fits/*.java \
 
