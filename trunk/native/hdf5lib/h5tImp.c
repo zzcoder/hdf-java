@@ -528,7 +528,7 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tget_1fields
         size_t esize_t = 0;
         size_t mpos_t = 0;
         size_t msize_t = 0;
-        long fields_temp = *(&fieldsArray[0]);
+        long long fields_temp = *(&fieldsArray[0]);
         spos_t = fields_temp;
         fields_temp = *(&fieldsArray[1]);
         epos_t = fields_temp;

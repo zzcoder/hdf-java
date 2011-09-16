@@ -18,6 +18,7 @@ SET (HDFJAVA_TEST_OBJECT_SRCS
     CompoundDSTest.java
     DatasetTest.java
     DatatypeTest.java
+    DataFormatTest.java
     FileFormatTest.java
     GroupTest.java
     H5BugFixTest.java
@@ -28,6 +29,7 @@ SET (HDFJAVA_TEST_OBJECT_SRCS
     H5ScalarDSTest.java
     H5TestFile.java
     HObjectTest.java
+    MetadataTest.java
     ScalarDSTest.java
 )
 

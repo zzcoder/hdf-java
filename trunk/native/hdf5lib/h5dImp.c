@@ -1807,10 +1807,8 @@ herr_t H5D_iterate_cb(void* elem, hid_t elem_id, unsigned ndim, const hsize_t *p
     jint       status;
     jclass     cls;
     jmethodID  mid;
-    jmethodID  constructor;
     jbyteArray elemArray;
     jlongArray pointArray;
-    jboolean   isCopy;
     jsize      size;
 
     if(JVMPTR->AttachCurrentThread(JVMPAR2 (void**)&cbenv, NULL) != 0) {

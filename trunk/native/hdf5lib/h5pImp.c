@@ -1,13 +1,15 @@
-/****************************************************************************
- * NCSA HDF                                                                 *
- * National Comptational Science Alliance                                   *
- * University of Illinois at Urbana-Champaign                               *
- * 605 E. Springfield, Champaign IL 61820                                   *
- *                                                                          *
- * For conditions of distribution and use, see the accompanying             *
- * hdf-java/COPYING file.                                                   *
- *                                                                          *
- ****************************************************************************/
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * Copyright by The HDF Group.                                               *
+ * Copyright by the Board of Trustees of the University of Illinois.         *
+ * All rights reserved.                                                      *
+ *                                                                           *
+ * This file is part of HDF Java Products. The full HDF Java copyright       *
+ * notice, including terms governing use, modification, and redistribution,  *
+ * is contained in the file, COPYING.  COPYING can be found at the root of   *
+ * the source code distribution tree. You can also access it online  at      *
+ * http://www.hdfgroup.org/products/licenses.html.  If you do not have       *
+ * access to the file, you may request a copy from help@hdfgroup.org.        *
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 /*
  *  This code is the C-interface called by Java programs to access the
@@ -25,9 +27,11 @@
 extern "C" {
 #endif
 
-#include "hdf5.h"
 #include <jni.h>
 #include <stdlib.h>
+#include "hdf5.h"
+#include "h5jni.h"
+#include "h5pImp.h"
 
 #ifndef FALSE
 #define FALSE 0
@@ -36,20 +40,6 @@ extern "C" {
 #ifndef TRUE
 #define TRUE (!FALSE)
 #endif
-
-#ifdef __cplusplus
-#define ENVPTR (env)
-#define ENVPAR 
-#else
-#define ENVPTR (*env)
-#define ENVPAR env,
-#endif
-
-extern jboolean h5outOfMemory(JNIEnv *env, char *functName);
-extern jboolean h5JNIFatalError(JNIEnv *env, char *functName);
-extern jboolean h5nullArgument(JNIEnv *env, char *functName);
-extern jboolean h5libraryError(JNIEnv *env );
-extern jboolean h5badArgument(JNIEnv *env, char *functName);
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
@@ -277,7 +267,6 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1sizes
 
     return (jint)status;
 }
-
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
@@ -908,7 +897,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1filter
 
     {
         /* direct cast (size_t *)variable fails on 32-bit environment */
-        long cd_nelmts_temp = *(cd_nelmtsArray);
+        long long cd_nelmts_temp = *(cd_nelmtsArray);
         size_t cd_nelmts_t = cd_nelmts_temp;
         unsigned int filter_config;
         status = H5Pget_filter2((hid_t)plist, (int)filter_number, 
@@ -1055,9 +1044,9 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1cache
     }
     {
         /* direct cast (size_t *)variable fails on 32-bit environment */
-        long rdcc_nelmts_temp = *(rdcc_nelmtsArray);
+        long long rdcc_nelmts_temp = *(rdcc_nelmtsArray);
         size_t rdcc_nelmts_t = rdcc_nelmts_temp;
-        long nbytes_temp = *(nbytesArray);
+        long long nbytes_temp = *(nbytesArray);
         size_t nbytes_t = nbytes_temp;
 
         status = H5Pget_cache((hid_t)plist, (int *)mdc_nelmtsArray, &rdcc_nelmts_t, 
@@ -1277,7 +1266,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1deflate
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1gc_1references
   (JNIEnv *env, jclass clss, jint fapl_id, jboolean gc_ref)
-  {
+{
     herr_t   retVal = -1;
     unsigned gc_ref_val;
     
@@ -1903,7 +1892,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1filter_1by_1id
 
     {
         /* direct cast (size_t *)variable fails on 32-bit environment */
-        long cd_nelmts_temp = *(cd_nelmtsArray);
+        long long cd_nelmts_temp = *(cd_nelmtsArray);
         size_t cd_nelmts_t = cd_nelmts_temp;
         unsigned int filter_config;
 
@@ -2113,7 +2102,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1fapl_1core
 
     {
         /* direct cast (size_t *)variable fails on 32-bit environment */
-        long inc_temp = *(incArray);
+        long long inc_temp = *(incArray);
         size_t inc_t = inc_temp;
 
         status = H5Pget_fapl_core((hid_t)fapl_id, &inc_t, (hbool_t *)backArray);
@@ -2681,7 +2670,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1filter2
 
     {
         /* direct cast (size_t *)variable fails on 32-bit environment */
-        long cd_nelmts_temp = *(cd_nelmtsArray);
+        long long cd_nelmts_temp = *(cd_nelmtsArray);
         size_t cd_nelmts_t = cd_nelmts_temp;
 
         status = H5Pget_filter2((hid_t)plist, (int)filter_number, 
@@ -2802,7 +2791,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1filter_1by_1id2
 
     {
         /* direct cast (size_t *)variable fails on 32-bit environment */
-        long cd_nelmts_temp = *(cd_nelmtsArray);
+        long long cd_nelmts_temp = *(cd_nelmtsArray);
         size_t cd_nelmts_t = cd_nelmts_temp;
 
         status = H5Pget_filter_by_id2((hid_t)plist, (H5Z_filter_t)filter,
@@ -2858,7 +2847,7 @@ JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1nlinks
     return (jlong) nlinks;
 }
 
- /*
+/*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Pset_nlinks
  * Signature: (IJ)I
@@ -3792,13 +3781,13 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1fapl_1direct
  (JNIEnv *env, jclass clss, jint fapl_id, jlongArray info)
 {
     herr_t   retVal = -1;
+
+#ifdef H5_HAVE_DIRECT
     size_t   alignment = 0;
     size_t   block_size = 0;
     size_t   cbuf_size = 0;
     jlong   *theArray;
     jboolean isCopy;
-
-#ifdef H5_HAVE_DIRECT
     if (info == NULL) {
         h5nullArgument(env, "H5Pget_fapl_direct:  info input array is NULL");
         return -1;

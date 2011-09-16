@@ -457,7 +457,7 @@ JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Fget_1obj_1ids_1long
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Fget_1obj_1ids
   (JNIEnv *env, jclass clss, jint file_id, jint types, jint obj_count, jintArray obj_id_list)
 {
-    herr_t status=-1;
+    ssize_t status=-1;
     jint *obj_id_listP;
     jboolean isCopy;
 
@@ -477,63 +477,13 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Fget_1obj_1ids
     if (status < 0) {
         ENVPTR->ReleaseIntArrayElements(ENVPAR obj_id_list,obj_id_listP,JNI_ABORT);
         h5libraryError(env);
-    } else  {
+    } 
+    else  {
         ENVPTR->ReleaseIntArrayElements(ENVPAR obj_id_list,obj_id_listP,0);
     }
 
     return (jint)status;
 }
-
-/* bug on 64-bit machines 
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Fget_1obj_1ids
-  (JNIEnv *env, jclass clss, jint file_id, jint types, jint maxObjs, jintArray obj_id_list)
-{
-    herr_t status;
-    jint *obj_id_listP;
-    jboolean isCopy;
-    hid_t *id_list;
-    int rank;
-    int i;
-
-    status = -1;
-
-    if ( obj_id_list == NULL ) {
-        h5nullArgument( env, "H5Fget_obj_ids:  obj_id_list is NULL");
-        return -1;
-    }
-
-    obj_id_listP = ENVPTR->GetIntArrayElements(ENVPAR obj_id_list,&isCopy);
-    if (obj_id_listP == NULL) {
-        h5JNIFatalError( env, "H5Fget_obj_ids:  obj_id_list not pinned");
-        return -1;
-    }
-    rank = (int)ENVPTR->GetArrayLength(ENVPAR obj_id_list);
-
-    id_list = (hid_t *)malloc( rank * sizeof(hid_t));
-
-    if (id_list == NULL) {
-        ENVPTR->ReleaseIntArrayElements(ENVPAR obj_id_list,obj_id_listP,JNI_ABORT);
-        h5JNIFatalError(env,  "H5Fget_obj_ids:  obj_id_list not converted to hid_t");
-        return -1;
-    }
-
-    status = H5Fget_obj_ids((hid_t)file_id, (unsigned int)types, (int)maxObjs, id_list);
-
-    if (status < 0) {
-        ENVPTR->ReleaseIntArrayElements(ENVPAR obj_id_list,obj_id_listP,JNI_ABORT);
-        free(id_list);
-        h5libraryError(env);
-    } else  {
-        for (i = 0; i < rank; i++) {
-            obj_id_listP[i] = id_list[i];
-        }
-        free(id_list);
-        ENVPTR->ReleaseIntArrayElements(ENVPAR obj_id_list,obj_id_listP,0);
-    }
-
-    return (jint)status;
-}
-*/
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
