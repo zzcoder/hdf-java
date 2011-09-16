@@ -25,6 +25,7 @@ all:    AllH5ObjectTests.class \
         CompoundDSTest.class \
         DatasetTest.class \
         DatatypeTest.class \
+        DataFormatTest.class \
         FileFormatTest.class \
         GroupTest.class \
         H5BugFixTest.class \
@@ -35,6 +36,7 @@ all:    AllH5ObjectTests.class \
         H5ScalarDSTest.class \
         H5TestFile.class \
         HObjectTest.class \
+		MetadataTest.class \
         ScalarDSTest.class
 
 
@@ -42,7 +44,7 @@ check: all
 	chmod u+x unittests.sh; ./unittests.sh
 
 clean:
-	$(RM) *.class
+	$(RM) -f *.class
 	$(RM) -f *.hdf
 	$(RM) -f *.h5
 

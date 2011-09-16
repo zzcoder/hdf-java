@@ -880,7 +880,6 @@ extern "C" {
       (JNIEnv *env, jclass clss, jint grp_id, jint idx_type, jint order,
               jobject callback_op, jobject op_data)
     {
-        jboolean      isCopy;
         herr_t        status = -1;
         
         ENVPTR->GetJavaVM(ENVPAR &jvm);
@@ -962,7 +961,6 @@ extern "C" {
       (JNIEnv *env, jclass clss, jint grp_id, jint idx_type, jint order,
               jlong idx, jobject callback_op, jobject op_data)
     {
-        jboolean      isCopy;
         hsize_t       start_idx = (hsize_t)idx;
         herr_t        status = -1;
         

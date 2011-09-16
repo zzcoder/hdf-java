@@ -161,7 +161,6 @@ extern "C" {
     {
         herr_t      status;
         H5O_info_t  infobuf;
-        jboolean    isCopy;
         jclass      cls;
         jmethodID   constructor;
         jvalue      args[12];
@@ -624,7 +623,6 @@ extern "C" {
       (JNIEnv *env, jclass clss, jint grp_id, jint idx_type, jint order,
               jobject callback_op, jobject op_data)
     {
-        jboolean      isCopy;
         herr_t        status = -1;
         
         ENVPTR->GetJavaVM(ENVPAR &jvm);

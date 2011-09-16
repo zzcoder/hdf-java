@@ -116,7 +116,7 @@ int h5str_sprintf(h5str_t *str, hid_t container, hid_t tid, void *ptr) {
     float tmp_float = 0;
     double tmp_double = 0.0;
 
-    size_t offset, size;
+    size_t offset, size, nll;
     char *cptr = (char*) ptr;
     unsigned char *ucptr = (unsigned char*) ptr;
     char *this_str;
@@ -254,11 +254,11 @@ int h5str_sprintf(h5str_t *str, hid_t container, hid_t tid, void *ptr) {
 
         vlptr = (hvl_t *) cptr;
 
-        n = vlptr->len;
-        for (i = 0; i < n; i++) {
+        nll = vlptr->len;
+        for (i = 0; i < nll; i++) {
             h5str_sprintf(str, container, mtid, ((char *) (vlptr->p)) + i
                     * size);
-            if (i < n - 1)
+            if (i < nll - 1)
                 strcat(str->s, ", ");
         }
         H5Tclose(mtid);
@@ -291,14 +291,14 @@ int h5str_sprintf(h5str_t *str, hid_t container, hid_t tid, void *ptr) {
     }
     else /* All other types get printed as hexadecimal */
     {
-        n = H5Tget_size(tid);
-        this_str = (char*) malloc(4 * (n + 1));
+        nll = H5Tget_size(tid);
+        this_str = (char*) malloc(4 * (nll + 1));
 
-        if (1 == n) {
+        if (1 == nll) {
             sprintf(this_str, "0x%02x", ucptr[0]);
         }
         else {
-            for (i = 0; i < n; i++)
+            for (i = 0; i < nll; i++)
                 sprintf(this_str, "%s%02x", i ? ":" : "", ucptr[i]);
         }
 

@@ -38,16 +38,19 @@ all:    TestH5.class \
         TestH5Tbasic.class \
         TestH5T.class \
         TestH5Dparams.class \
+        TestH5Dplist.class \
         TestH5D.class \
         TestH5Lparams.class \
         TestH5Lbasic.class \
         TestH5Lcreate.class \
         TestH5R.class \
         TestH5P.class \
+        TestH5Pfapl.class \
         TestH5A.class \
         TestH5Oparams.class \
         TestH5Obasic.class \
         TestH5Ocreate.class \
+        TestH5Ocopy.class \
         TestAll.class 
 
 
@@ -55,6 +58,6 @@ check: all
 	chmod u+x junit.sh; ./junit.sh
 
 clean:
-	$(RM) *.class
+	$(RM) -f *.class
 	$(RM) -f *.h5
 
