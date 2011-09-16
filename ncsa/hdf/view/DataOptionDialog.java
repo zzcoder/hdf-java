@@ -399,34 +399,32 @@ public class DataOptionDialog extends JDialog implements ActionListener,
 
                     JPanel sheetP2 = new JPanel();
                     northP.add(sheetP2);
-                    sheetP2.setBorder(new TitledBorder("Set Bitmask"));
+                    sheetP2.setBorder(new TitledBorder("Bitmask"));
 
                     JPanel tmpP = new JPanel();
                     if(bitmaskButtons.length <=8){
-                        tmpP.setLayout(new GridLayout(1,
-                                bitmaskButtons.length ));
-                        for (int i = 0; i<=bitmaskButtons.length  - 1; i++)
-                            tmpP.add(bitmaskButtons[i]);
+                        tmpP.setLayout(new GridLayout(1, bitmaskButtons.length));
+                        for (int i = bitmaskButtons.length; i>0; i--)
+                            tmpP.add(bitmaskButtons[i-1]);
                     }
                     else{
-                        tmpP
-                        .setLayout(new GridLayout(2,
-                                bitmaskButtons.length / 2));
+                        tmpP.setLayout(new GridLayout(2, bitmaskButtons.length/2));
 
-                        for (int i = 0; i<=bitmaskButtons.length / 2 - 1; i++)
-                            tmpP.add(bitmaskButtons[i]);
+                        for (int i = bitmaskButtons.length/2; i>0; i--)
+                            tmpP.add(bitmaskButtons[i-1]);
 
-                        for (int i = bitmaskButtons.length / 2; i <= bitmaskButtons.length - 1; i++)
-                            tmpP.add(bitmaskButtons[i]);
+                        for (int i = bitmaskButtons.length; i>bitmaskButtons.length/2; i--)
+                            tmpP.add(bitmaskButtons[i-1]);
                     }
                     sheetP2.setLayout(new BorderLayout(10, 10));
                     sheetP2.add(tmpP, BorderLayout.CENTER);
+                    sheetP2.add(new JLabel(), BorderLayout.NORTH);
 
                     tmpP = new JPanel();
                     tmpP.setLayout(new BorderLayout());
                     tmpP.add(bitmaskCheckbox, BorderLayout.WEST);
                     tmpP.add(bitmaskHelp, BorderLayout.EAST);
-                    sheetP2.add(tmpP, BorderLayout.NORTH);
+                    sheetP2.add(tmpP, BorderLayout.SOUTH);
                 }
 
                 contentPane.add(northP, BorderLayout.NORTH);

@@ -1138,7 +1138,7 @@ implements ActionListener, MetaDataView
 //        if (col != 1) {
 //            return; // can only change attribute value
 //        }
-        
+
          String attrName = (String)attrTable.getValueAt(row, 0);
          List<?> attrList = null;
          try { attrList = hObject.getMetadata(); }
