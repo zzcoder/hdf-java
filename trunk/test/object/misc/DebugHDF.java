@@ -972,75 +972,75 @@ public class DebugHDF {
 
   
 
-  private static void readDatatype() throws Exception {
-      String fname = "g:\\temp\\t1.h5";
+    private static void readDatatype() throws Exception {
+    	String fname = "g:\\temp\\t1.h5";
 
-         // retrieve an instance of H5File
+    	// retrieve an instance of H5File
 
-    FileFormat fileFormat =
-FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
+    	FileFormat fileFormat =
+    		FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
 
 
 
-    if (fileFormat == null)
+    	if (fileFormat == null)
 
-    {
+    	{
 
-        System.err.println("Cannot find HDF5 FileFormat.");
+    		System.err.println("Cannot find HDF5 FileFormat.");
 
-        return;
+    		return;
+
+    	}
+
+
+
+    	// open the file with read and write access
+
+    	FileFormat testFile = fileFormat.open(fname, FileFormat.READ);
+
+
+
+    	if (testFile == null)
+
+    	{
+
+    		System.err.println("Failed to open file: "+fname);
+
+    		return;
+
+    	}
+
+
+
+    	// open the file and retrieve the file structure
+
+    	testFile.open();
+
+
+
+    	Group root =
+    		(Group)((javax.swing.tree.DefaultMutableTreeNode)testFile.getRootNode()).getUserObject();
+
+
+
+    	/** read Attribute */
+
+    	Attribute attr = (Attribute)root.getMetadata().get(0);
+    	//System.out.println(attr);
+
+    	attr.getName(); // -> attribute int
+
+    	//System.out.println(attr.getName());
+
+    	attr.getValue(); // -> [15]
+    	//System.out.println(attr.getValue());
+
+    	attr.getType(); // -> null...
+
+    	// System.out.println(attr.getType());
+
 
     }
-
-
-
-    // open the file with read and write access
-
-    FileFormat testFile = fileFormat.open(fname, FileFormat.READ);
-
-
-
-    if (testFile == null)
-
-    {
-
-        System.err.println("Failed to open file: "+fname);
-
-        return;
-
-    }
-
-
-
-    // open the file and retrieve the file structure
-
-    testFile.open();
-
-    
-
-    Group root =
-(Group)((javax.swing.tree.DefaultMutableTreeNode)testFile.getRootNode()).getUserObject();
-
-
-
-    /** read Attribute */
-
-    Attribute attr = (Attribute)root.getMetadata().get(0);
-    //System.out.println(attr);
-
-        attr.getName(); // -> attribute int
-        
-        //System.out.println(attr.getName());
-
-        attr.getValue(); // -> [15]
-        //System.out.println(attr.getValue());
-
-        attr.getType(); // -> null...
-
-       // System.out.println(attr.getType());
-  
-
-  }
   
 
     private static final void testVariableArity(String desc, Object... args) {

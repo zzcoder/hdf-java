@@ -1496,8 +1496,8 @@ implements TableView, ActionListener, MouseListener
                 Border border = BorderFactory.createCompoundBorder(
                         BorderFactory.createRaisedBevelBorder(),
                         BorderFactory.createTitledBorder(
-                                BorderFactory.createLineBorder(Color.BLUE, 3),
-                                "By bitmask "+bitmask, 
+                                BorderFactory.createLineBorder(Color.BLUE, 1),
+                                "bitmask "+bitmask, 
                                 TitledBorder.RIGHT, 
                                 TitledBorder.TOP,
                                 this.getFont(),

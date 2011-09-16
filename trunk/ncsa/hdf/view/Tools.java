@@ -1944,49 +1944,38 @@ public final class Tools {
 
         int bmask = 0, theValue = 0, packedValue = 0;
 
-        int n = theMask.length();
-
-        for (int i = 0; i < n; i++) {
+        int nbits = theMask.length();
+        int len = Array.getLength(theData);
+        
+        for (int i = 0; i < nbits; i++) {
             if (theMask.get(i))
                 bmask += 1 << i;
         }
+        
+        for (int i = 0; i < len; i++) {
+        	if (nt == 'B')
+                theValue = ((byte[])theData)[i] & bmask;
+        	else
+                theValue = ((short[])theData)[i] & bmask;
 
-        if (nt == 'B') {
-            byte[] bdata = (byte[]) theData;
-            for (int i = 0; i < bdata.length; i++) {
-                theValue = bdata[i] & bmask;
-
-                // pack 1's bits
-                packedValue = 0;
-                for (int j = n - 1; j >= 0; j--) {
-                    if (theMask.get(j)) {
-                        if ((packedValue & 1) == 1)
-                            packedValue = packedValue << 1;
-                        packedValue += (theValue >> j) & 1;
-                    }
+            // pack 1's bits
+            packedValue = 0;
+            int bitPosition=0, bitValue=0;;
+            for (int j=0; j<nbits;j++) {
+                if (theMask.get(j)) {
+                	bitValue = (theValue & 1);
+                	packedValue += (bitValue<<bitPosition);
+                	bitPosition++;
                 }
-
-                bdata[i] = (byte) packedValue;
+                // move to the next bit
+                theValue = theValue >> 1;
             }
-        }
-        else {
-            short[] sdata = (short[]) theData;
-            for (int i = 0; i < sdata.length; i++) {
-                theValue = sdata[i] & bmask;
 
-                // pack 1's bits
-                packedValue = 0;
-                for (int j = n - 1; j >= 0; j--) {
-                    if (theMask.get(j)) {
-                        if ((packedValue & 1) == 1)
-                            packedValue = packedValue << 1;
-                        packedValue += (theValue >> j) & 1;
-                    }
-                }
-
-                sdata[i] = (short) packedValue;
-            }
-        }
+        	if (nt == 'B')
+                ((byte[])theData)[i] = (byte) packedValue;
+        	else
+                ((short[])theData)[i] = (short) packedValue;
+         } /*  for (int i = 0; i < len; i++) */
 
         return true;
     } /* public static final boolean applyBitmask() */
