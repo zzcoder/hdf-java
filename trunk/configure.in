@@ -801,19 +801,19 @@ AC_SUBST(VERSSTRING)
 ## Select one of the following, depending on what is being distributed.
 ##
 
-OUTPUT_FILES="Makefile native/Makefile native/hdflib/Makefile native/hdf5lib/Makefile bin/hdfview.sh"
+OUTPUT_FILES="Makefile native/Makefile native/hdflib/Makefile native/hdf5lib/Makefile ncsa/Makefile ncsa/hdf/Makefile ncsa/hdf/hdflib/Makefile ncsa/hdf/hdf5lib/Makefile ncsa/hdf/hdf5lib/exceptions/Makefile ncsa/hdf/hdf5lib/callbacks/Makefile ncsa/hdf/hdf5lib/structs/Makefile ncsa/hdf/object/Makefile ncsa/hdf/object/fits/Makefile ncsa/hdf/object/h4/Makefile ncsa/hdf/object/h5/Makefile ncsa/hdf/object/nc2/Makefile ncsa/hdf/view/Makefile bin/hdfview.sh"
 if test "$USEH45" = "yes"; then
 ##  want H4toH5 configured
 if test -d "./test"; then
 ##
 ##  Everything
 ##
-OUTPUT_FILES="$OUTPUT_FILES native/hdf5lib/Makefile test/Makefile test/object/misc/testh4file.sh test/object/misc/testh5file.sh test/object/misc/Makefile test/object/misc/runtests.sh test/hdf5lib/junit.sh test/hdf5lib/Makefile examples/Makefile examples/intro/Makefile examples/datasets/Makefile examples/datatypes/Makefile examples/groups/Makefile"
+OUTPUT_FILES="$OUTPUT_FILES test/Makefile test/object/misc/testh4file.sh test/object/misc/testh5file.sh test/object/misc/Makefile test/object/misc/runtests.sh test/hdf5lib/junit.sh test/hdf5lib/Makefile examples/Makefile examples/intro/Makefile examples/datasets/Makefile examples/datatypes/Makefile examples/groups/Makefile"
 else
 ##
 ##  H4, H5, H45, but NO tests
 ##
-OUTPUT_FILES="Makefile native/Makefile native/hdflib/Makefile native/hdf5lib/Makefile"
+OUTPUT_FILES="Makefile native/Makefile native/hdflib/Makefile native/hdf5lib/Makefile ncsa/Makefile ncsa/hdf/Makefile ncsa/hdf/hdflib/Makefile ncsa/hdf/hdf5lib/Makefile ncsa/hdf/hdf5lib/exceptions/Makefile ncsa/hdf/hdf5lib/callbacks/Makefile ncsa/hdf/hdf5lib/structs/Makefile ncsa/hdf/object/Makefile ncsa/hdf/object/fits/Makefile ncsa/hdf/object/h4/Makefile ncsa/hdf/object/h5/Makefile ncsa/hdf/object/nc2/Makefile ncsa/hdf/view/Makefile"
 fi
 else
 if test -d "./test"; then
