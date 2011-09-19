@@ -529,18 +529,18 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tget_1fields
         size_t mpos_t = 0;
         size_t msize_t = 0;
         long long fields_temp = *(&fieldsArray[0]);
-        spos_t = fields_temp;
+        spos_t = (size_t)fields_temp;
         fields_temp = *(&fieldsArray[1]);
-        epos_t = fields_temp;
+        epos_t = (size_t)fields_temp;
         fields_temp = *(&fieldsArray[2]);
-        esize_t = fields_temp;
+        esize_t = (size_t)fields_temp;
         fields_temp = *(&fieldsArray[3]);
-        mpos_t = fields_temp;
+        mpos_t = (size_t)fields_temp;
         fields_temp = *(&fieldsArray[4]);
-        msize_t = fields_temp;
+        msize_t = (size_t)fields_temp;
 
         status = H5Tget_fields(type_id, &spos_t, &epos_t, &esize_t, &mpos_t, &msize_t);
-        
+
         *(&fieldsArray[0]) = spos_t;
         *(&fieldsArray[1]) = epos_t;
         *(&fieldsArray[2]) = esize_t;
@@ -1232,7 +1232,7 @@ JNIEXPORT jstring JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tenum_1nameof
         return NULL;
     }
 
-    nameP = (char *)malloc(sizeof(char)*size);
+    nameP = (char *)malloc(sizeof(char)*(size_t)size);
     if (nameP == NULL) {
         /* exception -- out of memory */
         h5outOfMemory( env, "H5Tenum_nameof:  malloc name size");

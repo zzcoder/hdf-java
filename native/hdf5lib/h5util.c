@@ -22,9 +22,9 @@ extern "C" {
 #include "hdf5.h"
 #include "h5util.h"
 #include "jni.h"
-    
+
     JavaVM *jvm;
-    jobject visit_callback;   
+    jobject visit_callback;
 
 int h5str_dump_region(h5str_t *str, hid_t region);
 static hbool_t h5tools_is_zero(const void *_mem, size_t size);
@@ -255,10 +255,10 @@ int h5str_sprintf(h5str_t *str, hid_t container, hid_t tid, void *ptr) {
         vlptr = (hvl_t *) cptr;
 
         nll = vlptr->len;
-        for (i = 0; i < nll; i++) {
+        for (i = 0; i < (int)nll; i++) {
             h5str_sprintf(str, container, mtid, ((char *) (vlptr->p)) + i
                     * size);
-            if (i < nll - 1)
+            if (i < (int)nll - 1)
                 strcat(str->s, ", ");
         }
         H5Tclose(mtid);
@@ -298,7 +298,7 @@ int h5str_sprintf(h5str_t *str, hid_t container, hid_t tid, void *ptr) {
             sprintf(this_str, "0x%02x", ucptr[0]);
         }
         else {
-            for (i = 0; i < nll; i++)
+            for (i = 0; i < (int)nll; i++)
                 sprintf(this_str, "%s%02x", i ? ":" : "", ucptr[i]);
         }
 

@@ -159,7 +159,7 @@ extern "C" {
         char* the_err_msg;
         jboolean isCopy;
         H5E_type_t error_msg_type = (H5E_type_t)msg_type;
-        
+
         if (err_id < 0) {
             h5badArgument(env, "H5Ecreate_msg: invalid argument");
             return ret_val;
@@ -360,7 +360,7 @@ extern "C" {
             h5badArgument(env, "H5Epop: invalid argument");
             return;
         }
-        ret_val = H5Epop(stk_id, count);
+        ret_val = H5Epop(stk_id, (size_t)count);
         if (ret_val < 0) {
             h5libraryError(env);
             return;
@@ -445,10 +445,10 @@ extern "C" {
         }
         theArray[0] = error_msg_type;
         ENVPTR->ReleaseIntArrayElements(ENVPAR error_msg_type_list,theArray,0);
-        
+
         str = ENVPTR->NewStringUTF(ENVPAR namePtr);
         free(namePtr);
- 
+
         return str;
     }
 
