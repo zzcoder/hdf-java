@@ -561,8 +561,8 @@ ncsa.hdf.object.fits: \
 # The test files are not included in the preliminary source release
 #
 test.object: \
-	$(CLASS_DIR)/test/object/misc/TestH4File.class \
-	$(CLASS_DIR)/test/object/misc/TestH5File.class
+	./test/object/misc/TestH4File.class \
+	./test/object/misc/TestH5File.class
 
 #
 #  The Hdfviewer
