@@ -922,13 +922,13 @@ extern "C" {
         
         if (name == NULL) {
             h5nullArgument(env, "H5Lvisit_by_name:  name is NULL");
-            return NULL;
+            return -1;
         }
         
         lName = (char*)ENVPTR->GetStringUTFChars(ENVPAR name, &isCopy);
         if (lName == NULL) {
             h5JNIFatalError(env, "H5Lvisit_by_name:  name not pinned");
-            return NULL;
+            return -1;
         }
 
         if (op_data == NULL) {
@@ -1005,13 +1005,13 @@ extern "C" {
         
         if (name == NULL) {
             h5nullArgument(env, "H5Literate_by_name:  name is NULL");
-            return NULL;
+            return -1;
         }
         
         lName = (char*)ENVPTR->GetStringUTFChars(ENVPAR name, &isCopy);
         if (lName == NULL) {
             h5JNIFatalError(env, "H5Literate_by_name:  name not pinned");
-            return NULL;
+            return -1;
         }
 
         if (op_data == NULL) {
