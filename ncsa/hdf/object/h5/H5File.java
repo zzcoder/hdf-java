@@ -1682,9 +1682,18 @@ public class H5File extends FileFormat {
         if ((srcObj == null) || (dstGroup == null)) {
             return null;
         }
-
+        
         if (dstName == null) {
             dstName = srcObj.getName();
+        }
+
+        List<HObject> members = dstGroup.getMemberList(); 
+        int n = members.size();
+        for (int i=0; i<n; i++) {
+        	HObject obj = (HObject)members.get(i);
+        	String name = obj.getName();
+        	while (name.equals(dstName))
+        		dstName += "~copy";
         }
 
         if (srcObj instanceof Dataset) {
