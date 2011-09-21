@@ -10,7 +10,8 @@ Major changes include supporting HDF5 1.8 features in HDF-Java products, bug fix
 
 HDF libraries
 ==================================================================================================================
-This release was built and tested with HDF 4.2.5 and HDF5 1.8.6.
+This release was built and tested with HDF 4.2.5 and HDF5 1.8.6. $YOUR-HDF-JAVA-HOME/lib/<platform>/*.settings
+files include information on platform version and compiler are used to build hdf4 and hdf5.
 
 
 Platforms
