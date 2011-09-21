@@ -2,9 +2,9 @@
 
 # Set up default variable values if not supplied by the user.
 
-# where the HDFView is installed
-HDFVIEW_HOME=@JH45INST@
-export HDFVIEW_HOME
+# where the new builds exist
+HDFBLD_HOME=@abs_top_builddir@
+export HDFBLD_HOME
 
 # where Java is installed (requires jdk1.4.x)
 JAVAPATH=@JAVABIN@
@@ -16,7 +16,7 @@ export JAVAPATH
 
 rm TestH5Table.class
 
-CPATH=".:"$HDFVIEW_HOME"/lib/jhdf5.jar:"$HDFVIEW_HOME"/lib/jhdfobj.jar:"$HDFVIEW_HOME"/lib/jhdf5obj.jar"
+CPATH=".:"$HDFBLD_HOME"/lib/jhdf5.jar:"$HDFBLD_HOME"/lib/jhdfobj.jar:"$HDFBLD_HOME"/lib/jhdf5obj.jar"
 
 TEST=/usr/bin/test
 if [ ! -x /usr/bin/test ]
@@ -71,7 +71,7 @@ case  $os_name in
 esac
 
 $JAVAPATH/javac TestH5Table".java"
-(cd ../../..; $JAVAPATH/java -Xmx1024M -Djava.library.path=$HDFVIEW_HOME"/lib/"$OS_NAME test.object.misc.TestH5Table $*)
+(cd ../../..; $JAVAPATH/java -Xmx1024M -Djava.library.path=$HDFBLD_HOME"/lib/"$OS_NAME test.object.misc.TestH5Table $*)
 
 
 
