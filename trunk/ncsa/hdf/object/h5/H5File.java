@@ -1923,12 +1923,36 @@ public class H5File extends FileFormat {
         }
 
         try {
-            fid = H5.H5Fopen(fullFileName, flag, plist);
+             fid = H5.H5Fopen(fullFileName, flag, plist);
         }
         catch (Exception ex) {
-            isReadOnly = true;
-            fid = H5.H5Fopen(fullFileName, HDF5Constants.H5F_ACC_RDONLY,
-                    HDF5Constants.H5P_DEFAULT);
+        	try {
+                fid = H5.H5Fopen(fullFileName, HDF5Constants.H5F_ACC_RDONLY,
+                        HDF5Constants.H5P_DEFAULT);
+                isReadOnly = true;
+        	} catch (Exception ex2) {
+        		// try to see if it is a file family, always open a family file 
+        		// from the first one since other files will not be recongized as 
+        		// an HDF5 file
+        		File tmpf = new File(fullFileName);
+        		String tmpname = tmpf.getName();
+        		int idx = tmpname.lastIndexOf(".");
+        		while (idx>0) {
+        			char c = tmpname.charAt(idx);
+        			if (c>='0')
+        				idx--;
+        			else
+        				break;
+        		}
+        		
+        		if (idx>0) {
+        			tmpname = tmpname.substring(0, idx-1)+"%d"+tmpname.substring(tmpname.lastIndexOf("."));
+            		int pid = H5.H5Pcreate(HDF5Constants.H5P_FILE_ACCESS); 
+            		H5.H5Pset_fapl_family(pid, 0, HDF5Constants.H5P_DEFAULT);
+                    fid = H5.H5Fopen(tmpf.getParent()+File.separator+tmpname, flag, pid);
+                    H5.H5Pclose(pid);
+        		}
+        	} /* catch (Exception ex) { */
         }
 
         if ((fid >= 0) && loadFullHierarchy) {
