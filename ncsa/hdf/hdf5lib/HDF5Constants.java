@@ -32,6 +32,8 @@ public class HDF5Constants {
     // Get the HDF5 constants from the library //
     // /////////////////////////////////////////////////////////////////////////
 
+    public static final long H5_QUARTER_HADDR_MAX = H5_QUARTER_HADDR_MAX();
+
     public static final int H5_SZIP_MAX_PIXELS_PER_BLOCK = H5_SZIP_MAX_PIXELS_PER_BLOCK();
     public static final int H5_SZIP_NN_OPTION_MASK = H5_SZIP_NN_OPTION_MASK();
     public static final int H5_SZIP_EC_OPTION_MASK = H5_SZIP_EC_OPTION_MASK();
@@ -193,6 +195,7 @@ public class HDF5Constants {
     public static final int H5F_SCOPE_GLOBAL = H5F_SCOPE_GLOBAL();
     public static final int H5F_SCOPE_LOCAL = H5F_SCOPE_LOCAL();
     public static final int H5F_UNLIMITED = H5F_UNLIMITED();
+    
     public static final int H5FD_CORE = H5FD_CORE();
     public static final int H5FD_DIRECT = H5FD_DIRECT();
     public static final int H5FD_FAMILY = H5FD_FAMILY();
@@ -224,6 +227,17 @@ public class HDF5Constants {
     public static final int H5FD_LOG_TIME_IO = H5FD_LOG_TIME_IO();
     public static final int H5FD_LOG_ALLOC = H5FD_LOG_ALLOC();
     public static final int H5FD_LOG_ALL = H5FD_LOG_ALL();
+    public static final int H5FD_MEM_NOLIST = H5FD_MEM_NOLIST();
+    public static final int H5FD_MEM_DEFAULT = H5FD_MEM_DEFAULT();
+    public static final int H5FD_MEM_SUPER = H5FD_MEM_SUPER();
+    public static final int H5FD_MEM_BTREE = H5FD_MEM_BTREE();
+    public static final int H5FD_MEM_DRAW = H5FD_MEM_DRAW();
+    public static final int H5FD_MEM_GHEAP = H5FD_MEM_GHEAP();
+    public static final int H5FD_MEM_LHEAP = H5FD_MEM_LHEAP();
+    public static final int H5FD_MEM_OHDR = H5FD_MEM_OHDR();
+    public static final int H5FD_MEM_NTYPES = H5FD_MEM_NTYPES();
+    public static final long H5FD_DEFAULT_HADDR_SIZE = H5FD_DEFAULT_HADDR_SIZE();
+
     public static final int H5G_DATASET = H5G_DATASET();
     public static final int H5G_GROUP = H5G_GROUP();
     public static final int H5G_LINK = H5G_LINK();
@@ -575,6 +589,9 @@ public class HDF5Constants {
     // List of private native variables to get constant values from C //
     // DO NOT EDIT THE LIST UNLESS YOU KNOW WHAT YOU DO!!! //
     // /////////////////////////////////////////////////////////////////////////
+
+    private static native final long H5_QUARTER_HADDR_MAX();
+
     private static native final int H5_SZIP_MAX_PIXELS_PER_BLOCK();
 
     private static native final int H5_SZIP_NN_OPTION_MASK();
@@ -958,6 +975,26 @@ public class HDF5Constants {
     private static native final int H5FD_LOG_ALLOC();
     
     private static native final int H5FD_LOG_ALL();
+    
+    private static native final int H5FD_MEM_NOLIST();
+    
+    private static native final int H5FD_MEM_DEFAULT();
+    
+    private static native final int H5FD_MEM_SUPER();
+    
+    private static native final int H5FD_MEM_BTREE();
+    
+    private static native final int H5FD_MEM_DRAW();
+    
+    private static native final int H5FD_MEM_GHEAP();
+    
+    private static native final int H5FD_MEM_LHEAP();
+    
+    private static native final int H5FD_MEM_OHDR();
+    
+    private static native final int H5FD_MEM_NTYPES();
+    
+    private static native final long H5FD_DEFAULT_HADDR_SIZE();
 
     private static native final int H5G_DATASET();
 

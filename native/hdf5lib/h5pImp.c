@@ -3879,6 +3879,245 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1fapl_1windows
     return (jint)retVal;
 }
 
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Pget_fapl_muti
+ * Signature: (I[I[I[Ljava/lang/String;[J)Z
+ */
+JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1fapl_1multi
+  (JNIEnv *env, jclass clss, jint tid, jintArray memb_map, jintArray memb_fapl, jobjectArray memb_name, jlongArray memb_addr)
+{
+    herr_t   status;
+    int      i;
+    jint    *themapArray = NULL;
+    jint    *thefaplArray = NULL;
+    jlong   *theaddrArray = NULL;
+    char   **mName = NULL;
+    jstring  str;
+    jboolean isCopy;
+    jboolean relax = TRUE;
+    
+    if (memb_map) {
+        themapArray = (jint *)ENVPTR->GetIntArrayElements(ENVPAR memb_map, &isCopy);
+        if (themapArray == NULL) {
+            h5JNIFatalError(env, "H5Pget_fapl_muti:  memb_map not pinned");
+            return -1;
+        }
+    }
+
+    if (memb_fapl) {
+        thefaplArray = (jint *)ENVPTR->GetIntArrayElements(ENVPAR memb_fapl, &isCopy);
+        if (thefaplArray == NULL) {
+            if (memb_map) ENVPTR->ReleaseIntArrayElements(ENVPAR memb_map, themapArray, JNI_ABORT);
+            h5JNIFatalError(env, "H5Pget_fapl_muti:  memb_fapl not pinned");
+            return -1;
+        }
+    }
+
+    if (memb_addr) {
+        theaddrArray = (jlong *)ENVPTR->GetLongArrayElements(ENVPAR memb_addr, &isCopy);
+        if (theaddrArray == NULL) {
+            if (memb_map) ENVPTR->ReleaseIntArrayElements(ENVPAR memb_map, themapArray, JNI_ABORT);
+            if (memb_fapl) ENVPTR->ReleaseIntArrayElements(ENVPAR memb_fapl, thefaplArray, JNI_ABORT);
+            h5JNIFatalError(env, "H5Pget_fapl_muti:  memb_addr not pinned");
+            return -1;
+        }
+    }
+    
+    if (memb_name) mName = (char **)calloc(H5FD_MEM_NTYPES, sizeof (*mName));
+    
+    status = H5Pget_fapl_multi(tid, (int *)themapArray, (int *)thefaplArray, mName, (long *)theaddrArray, (hbool_t *)&relax);
+    if (status < 0) {
+        if (memb_map) ENVPTR->ReleaseIntArrayElements(ENVPAR memb_map, themapArray, JNI_ABORT);
+        if (memb_fapl) ENVPTR->ReleaseIntArrayElements(ENVPAR memb_fapl, thefaplArray, JNI_ABORT);
+        if (memb_addr) ENVPTR->ReleaseLongArrayElements(ENVPAR memb_addr, theaddrArray, JNI_ABORT);
+        if (memb_name) h5str_array_free(mName, H5FD_MEM_NTYPES);
+        h5libraryError(env);
+        return -1;
+    }
+
+    if (memb_map) {
+        ENVPTR->ReleaseIntArrayElements(ENVPAR memb_map, themapArray, 0);
+    }
+
+    if (memb_fapl) {
+        ENVPTR->ReleaseIntArrayElements(ENVPAR memb_fapl, thefaplArray, 0);
+    }
+
+    if (memb_addr) {
+        ENVPTR->ReleaseLongArrayElements(ENVPAR memb_addr, theaddrArray, 0);
+    }
+
+    if (memb_name) {
+        if (mName) {
+            for (i = 0; i < H5FD_MEM_NTYPES; i++) {
+                if (*(mName + i)) {
+                    str = ENVPTR->NewStringUTF(ENVPAR *(mName+i));
+                    ENVPTR->SetObjectArrayElement(ENVPAR memb_name, i, (jobject)str);
+                }
+            } /* for (i=0; i<n; i++)*/
+        }
+        h5str_array_free(mName, H5FD_MEM_NTYPES);
+    }
+    
+    return relax;
+}
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Pset_fapl_muti
+ * Signature: (I[I[I[Ljava/lang/String;[JZ)V
+ */
+JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1fapl_1multi
+  (JNIEnv *env, jclass clss, jint tid, jintArray memb_map, jintArray memb_fapl, jobjectArray memb_name, jlongArray memb_addr, jboolean relax)
+{
+    herr_t       status;
+    jint        *themapArray = NULL;
+    jint        *thefaplArray = NULL;
+    jlong       *theaddrArray = NULL;
+    jboolean     isCopy;
+    jclass       Sjc;
+    jstring      rstring;
+    jobject      o;
+    jboolean     bb;
+    const char **mName = NULL;
+    char  *member_name[H5FD_MEM_NTYPES];
+    
+    if (memb_map) {
+        themapArray = (jint *)ENVPTR->GetIntArrayElements(ENVPAR memb_map, &isCopy);
+        if (themapArray == NULL) {
+            h5JNIFatalError(env, "H5Pget_fapl_muti:  memb_map not pinned");
+            return;
+        }
+    }
+
+    if (memb_fapl) {
+        thefaplArray = (jint *)ENVPTR->GetIntArrayElements(ENVPAR memb_fapl, &isCopy);
+        if (thefaplArray == NULL) {
+            if (memb_map) ENVPTR->ReleaseIntArrayElements(ENVPAR memb_map, themapArray, JNI_ABORT);
+            h5JNIFatalError(env, "H5Pget_fapl_muti:  memb_fapl not pinned");
+            return;
+        }
+    }
+
+    if (memb_addr) {
+        theaddrArray = (jlong *)ENVPTR->GetLongArrayElements(ENVPAR memb_addr, &isCopy);
+        if (theaddrArray == NULL) {
+            if (memb_map) ENVPTR->ReleaseIntArrayElements(ENVPAR memb_map, themapArray, JNI_ABORT);
+            if (memb_fapl) ENVPTR->ReleaseIntArrayElements(ENVPAR memb_fapl, thefaplArray, JNI_ABORT);
+            h5JNIFatalError(env, "H5Pget_fapl_muti:  memb_addr not pinned");
+            return;
+        }
+    }
+
+    memset(member_name, 0, H5FD_MEM_NTYPES * sizeof(char*));
+    if (memb_name) {
+        int i;
+        for (i = 0; i < H5FD_MEM_NTYPES; i++) {
+            jstring obj = (jstring) ENVPTR->GetObjectArrayElement(ENVPAR (jobjectArray) memb_name, i);
+            if (obj != 0) {
+                jsize length = ENVPTR->GetStringUTFLength(ENVPAR obj);
+                const char *utf8 = ENVPTR->GetStringUTFChars(ENVPAR obj, 0);
+
+                if (utf8) {
+                    member_name[i] = (char*)malloc(strlen(utf8) + 1);
+                    if (member_name[i]) {
+                        strcpy(member_name[i], utf8);
+                    }
+                }
+
+                ENVPTR->ReleaseStringUTFChars(ENVPAR obj, utf8);
+                ENVPTR->DeleteLocalRef(ENVPAR obj);
+            }
+        }
+        mName = member_name;
+    }
+    
+    status = H5Pset_fapl_multi((hid_t)tid, (const H5FD_mem_t *)themapArray, (const hid_t *)thefaplArray, mName, (const haddr_t *)theaddrArray, (hbool_t)relax);
+
+    if (status < 0) {
+        if (memb_map) ENVPTR->ReleaseIntArrayElements(ENVPAR memb_map, themapArray, JNI_ABORT);
+        if (memb_fapl) ENVPTR->ReleaseIntArrayElements(ENVPAR memb_fapl, thefaplArray, JNI_ABORT);
+        if (memb_addr) ENVPTR->ReleaseLongArrayElements(ENVPAR memb_addr, theaddrArray, JNI_ABORT);
+        h5libraryError(env);
+        return;
+    }
+    if (memb_map) ENVPTR->ReleaseIntArrayElements(ENVPAR memb_map, themapArray, 0);
+    if (memb_fapl) ENVPTR->ReleaseIntArrayElements(ENVPAR memb_fapl, thefaplArray, 0);
+    if (memb_addr) ENVPTR->ReleaseLongArrayElements(ENVPAR memb_addr, theaddrArray, 0);
+    if (memb_name) {
+        if (mName != NULL) {
+            int i;
+            Sjc = ENVPTR->FindClass(ENVPAR  "java/lang/String");
+            if (Sjc == NULL) {
+                return;
+            }
+            for (i = 0; i < H5FD_MEM_NTYPES; i++) {
+                rstring = ENVPTR->NewStringUTF(ENVPAR member_name[i]);
+                o = ENVPTR->GetObjectArrayElement(ENVPAR memb_name, i);
+                if (o == NULL) {
+                    return;
+                }
+                bb = ENVPTR->IsInstanceOf(ENVPAR o, Sjc);
+                if (bb == JNI_FALSE) {
+                    return;
+                }
+                ENVPTR->SetObjectArrayElement(ENVPAR memb_name, i, (jobject)rstring);
+                free(member_name[i]);
+            }
+        }
+        free(member_name);
+    }
+}
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Pset_fapl_split
+ * Signature: (ILjava/lang/String;ILjava/lang/String;I)V
+ */
+JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1fapl_1split
+  (JNIEnv *env, jclass clss, jint fapl_id, jstring metaext, jint meta_pl_id, jstring rawext, jint raw_pl_id)
+{
+    herr_t retVal = -1;
+    const char    *mstr;
+    const char    *rstr;
+    jboolean isCopy;
+
+    if (metaext == NULL) {
+        h5nullArgument( env, "H5Pset_fapl_split: metaext is NULL");
+        return;
+    }
+    mstr = (const char *)ENVPTR->GetStringUTFChars(ENVPAR metaext, &isCopy);
+    if (mstr == NULL) {
+        h5JNIFatalError( env, "H5Pset_fapl_split: metaext not pinned");
+        return;
+    }
+
+    if (rawext == NULL) {
+        ENVPTR->ReleaseStringUTFChars(ENVPAR metaext, mstr);
+        h5nullArgument( env, "H5Pset_fapl_split: rawext is NULL");
+        return;
+    }
+    rstr = (const char *)ENVPTR->GetStringUTFChars(ENVPAR rawext, &isCopy);
+    if (rstr == NULL) {
+        ENVPTR->ReleaseStringUTFChars(ENVPAR metaext, mstr);
+        h5JNIFatalError( env, "H5Pset_fapl_split: rawext not pinned");
+        return;
+    }
+
+    retVal = H5Pset_fapl_split((hid_t)fapl_id, mstr, (hid_t)meta_pl_id, rstr, (hid_t)raw_pl_id);
+
+    ENVPTR->ReleaseStringUTFChars(ENVPAR metaext, mstr);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR rawext, rstr);
+
+    if (retVal < 0) {
+        h5libraryError(env);
+    }
+
+    return;
+}
+
+
 #ifdef __cplusplus
 }
 #endif

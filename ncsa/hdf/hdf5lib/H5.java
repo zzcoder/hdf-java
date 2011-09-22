@@ -5672,14 +5672,48 @@ public synchronized static native int H5Pset_fapl_family(int fapl_id,
         long memb_size, int memb_fapl_id)
         throws HDF5LibraryException, NullPointerException;
 
-//herr_t H5Pget_fapl_mpio( hid_t fapl_id, MPI_Comm *comm, MPI_Info *info ) 
-//herr_t H5Pset_fapl_mpio( hid_t fapl_id, MPI_Comm comm, MPI_Info info ) 
+//herr_t H5Pget_fapl_mpio( int fapl_id, MPI_Comm *comm, MPI_Info *info ) 
+//herr_t H5Pset_fapl_mpio( int fapl_id, MPI_Comm comm, MPI_Info info ) 
 
-//herr_t H5Pget_fapl_mpiposix( hid_t fapl_id, MPI_Comm *comm, hbool_t *use_gpfs_hints ) 
-//herr_t H5Pset_fapl_mpiposix( hid_t fapl_id, MPI_Comm comm, hbool_t use_gpfs_hints ) 
+//herr_t H5Pget_fapl_mpiposix( int fapl_id, MPI_Comm *comm, hbool_t *use_gpfs_hints ) 
+//herr_t H5Pset_fapl_mpiposix( int fapl_id, MPI_Comm comm, hbool_t use_gpfs_hints ) 
 
-//herr_t H5Pget_fapl_multi( hid_t fapl_id, const H5FD_mem_t *memb_map, const hid_t *memb_fapl, const char **memb_name, const haddr_t *memb_addr, hbool_t *relax ) 
-//herr_t H5Pset_fapl_multi( hid_t fapl_id, const H5FD_mem_t *memb_map, const hid_t *memb_fapl, const char * const *memb_name, const haddr_t *memb_addr, hbool_t relax ) 
+
+/**
+ * H5Pget_fapl_multi Sets up use of the multi I/O driver.   
+ * @param fapl_id     IN: File access property list identifier 
+ * @param memb_map    IN: Maps memory usage types to other memory usage types.
+ * @param memb_fapl   IN: Property list for each memory usage type.
+ * @param memb_name   IN: Name generator for names of member files.
+ * @param memb_addr   IN: The offsets within the virtual address space, from 0 (zero) to HADDR_MAX, at which each type of data storage begins.
+ *  
+ * @return a boolean value; Allows read-only access to incomplete file sets when TRUE.
+ * 
+ * @exception HDF5LibraryException - Error from the HDF-5 Library.
+ * @exception NullPointerException - an array is null.
+ *  
+ **/
+public synchronized static native boolean H5Pget_fapl_multi(int fapl_id, int[] memb_map, 
+        int[] memb_fapl, String[] memb_name, long[] memb_addr) 
+        throws HDF5LibraryException, NullPointerException;
+
+
+/**
+ * H5Pset_fapl_multi Sets up use of the multi I/O driver.   
+ * @param fapl_id     IN: File access property list identifier 
+ * @param memb_map    IN: Maps memory usage types to other memory usage types.
+ * @param memb_fapl   IN: Property list for each memory usage type.
+ * @param memb_name   IN: Name generator for names of member files.
+ * @param memb_addr   IN: The offsets within the virtual address space, from 0 (zero) to HADDR_MAX, at which each type of data storage begins.
+ * @param relax       IN: Allows read-only access to incomplete file sets when TRUE.
+ * 
+ * @exception HDF5LibraryException - Error from the HDF-5 Library.
+ * @exception NullPointerException - an array is null.
+ *  
+ **/
+public synchronized static native void H5Pset_fapl_multi(int fapl_id, int[] memb_map, 
+        int[] memb_fapl, String[] memb_name, long[] memb_addr, boolean relax) 
+        throws HDF5LibraryException, NullPointerException;
 
 public synchronized static native int H5Pget_fclose_degree(int plist_id)
         throws HDF5LibraryException, NullPointerException;
@@ -6800,7 +6834,9 @@ public synchronized static native void H5Pset_fapl_log(int fapl_id,
 public synchronized static native int H5Pset_fapl_sec2(int fapl_id)
         throws HDF5LibraryException, NullPointerException;
 
-//herr_t H5Pset_fapl_split( hid_t fapl_id, const char *meta_ext, hid_t meta_plist_id, const char *raw_ext, hid_t raw_plist_id ) 
+public synchronized static native void H5Pset_fapl_split(int fapl_id, 
+        String meta_ext, int meta_plist_id, String raw_ext, int raw_plist_id)
+        throws HDF5LibraryException, NullPointerException;
 
 public synchronized static native int H5Pset_fapl_stdio(int fapl_id)
         throws HDF5LibraryException, NullPointerException;

@@ -303,6 +303,14 @@ extern "C" {
 
     /*
      * Class:     ncsa_hdf_hdf5lib_H5
+     * Method:    H5Pget_fapl_muti
+     * Signature: (I[I[I[Ljava/lang/String;[J)Z
+     */
+    JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1fapl_1multi
+      (JNIEnv *env, jclass clss, jint tid, jintArray memb_map, jintArray memb_fapl, jobjectArray memb_name, jlongArray memb_addr);
+
+    /*
+     * Class:     ncsa_hdf_hdf5lib_H5
      * Method:    H5Pget_fclose_degree
      * Signature: (I)I
      */
@@ -750,11 +758,27 @@ extern "C" {
 
     /*
      * Class:     ncsa_hdf_hdf5lib_H5
+     * Method:    H5Pset_fapl_muti
+     * Signature: (I[I[I[Ljava/lang/String;[JZ)V
+     */
+    JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1fapl_1multi
+      (JNIEnv *env, jclass clss, jint tid, jintArray memb_map, jintArray memb_fapl, jlongArray memb_name, jlongArray memb_addr, jboolean relax);
+
+    /*
+     * Class:     ncsa_hdf_hdf5lib_H5
      * Method:    H5Pset_fapl_sec2
      * Signature: (I)I
      */
     JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1fapl_1sec2
       (JNIEnv *env, jclass clss, jint fapl_id);
+
+    /*
+     * Class:     ncsa_hdf_hdf5lib_H5
+     * Method:    H5Pset_fapl_split
+     * Signature: (ILjava/lang/String;ILjava/lang/String;I)V
+     */
+    JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1fapl_1split
+      (JNIEnv *env, jclass clss, jint fapl_id, jstring metaext, jint meta_pl_id, jstring rawext, jint raw_pl_id);
 
     /*
      * Class:     ncsa_hdf_hdf5lib_H5
