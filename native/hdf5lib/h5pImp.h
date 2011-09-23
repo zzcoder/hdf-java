@@ -214,6 +214,14 @@ extern "C" {
 
     /*
      * Class:     ncsa_hdf_hdf5lib_H5
+     * Method:    H5Pget_dxpl_multi
+     * Signature: (I[I)V
+     */
+    JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1dxpl_1multi
+      (JNIEnv *env, jclass clss, jint tid, jintArray dxpl_id);
+
+    /*
+     * Class:     ncsa_hdf_hdf5lib_H5
      * Method:    H5Pget_edc_check
      * Signature: (I)I
      */
@@ -667,6 +675,14 @@ extern "C" {
      */
     JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1deflate
       (JNIEnv *env, jclass clss, jint plist, jint level);
+
+    /*
+     * Class:     ncsa_hdf_hdf5lib_H5
+     * Method:    H5Pset_dxpl_multi
+     * Signature: (I[I)V
+     */
+    JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1dxpl_1multi
+      (JNIEnv *env, jclass clss, jint tid, jintArray dxpl_id);
 
     /*
      * Class:     ncsa_hdf_hdf5lib_H5
