@@ -428,6 +428,38 @@ public class TestH5Pfapl {
     }
     
     @Test
+    public void testH5P_btree_ratios() throws Throwable, HDF5LibraryException {
+        double[] left = {0.1};
+        double[] middle = {0.5};
+        double[] right = {0.7};
+        try {
+            H5.H5Pset_btree_ratios(plist_id, left[0], middle[0], right[0]);
+            H5.H5Pget_btree_ratios(plist_id, left, middle, right);
+            assertTrue("H5P_btree_ratios", left[0] == 0.1);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5P_btree_ratios: " + err);
+        }
+    }
+    
+    @Test
+    public void testH5P_edc_check() throws Throwable, HDF5LibraryException {
+        int ret_val_id = -1;
+        try {
+            ret_val_id = H5.H5Pget_edc_check(plist_id);
+            assertTrue("H5P_edc_check", ret_val_id == HDF5Constants.H5Z_ENABLE_EDC);
+            H5.H5Pset_edc_check(plist_id, HDF5Constants.H5Z_DISABLE_EDC);
+            ret_val_id = H5.H5Pget_edc_check(plist_id);
+            assertTrue("H5P_edc_check", ret_val_id == HDF5Constants.H5Z_DISABLE_EDC);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5P_edc_check: " + err);
+        }
+    }
+    
+    @Test
     public void testH5P_fclose_degree() throws Throwable, HDF5LibraryException {
         int ret_val_id = -1;
         try {
@@ -531,6 +563,29 @@ public class TestH5Pfapl {
     }
     
     @Test
+    public void testH5P_hyper_vector_size() throws Throwable, HDF5LibraryException {
+        long[] align = {0};
+        try {
+            H5.H5Pget_hyper_vector_size(plist_id, align);
+            assertTrue("H5P_hyper_vector_size default", align[0] == 1024);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5P_hyper_vector_size: default " + err);
+        }
+        try {
+            align[0] = 4096;
+            H5.H5Pset_hyper_vector_size(plist_id, align[0]);
+            H5.H5Pget_hyper_vector_size(plist_id, align);
+            assertTrue("H5P_hyper_vector_size 4096", align[0] == 4096);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5P_hyper_vector_size: " + err);
+        }
+    }
+    
+    @Test
     public void testH5P_cache() throws Throwable, HDF5LibraryException {
         long[] rdcc_nelmts = {0};
         long[] rdcc_nbytes = {0};
@@ -595,7 +650,7 @@ public class TestH5Pfapl {
     }
     
     @Test
-    public void testH5P_get_mdc_config() throws Throwable, HDF5LibraryException {
+    public void testH5Pget_mdc_config() throws Throwable, HDF5LibraryException {
         H5AC_cache_config_t cache_config = null;
         try {
             cache_config = H5.H5Pget_mdc_config(fapl_id);
@@ -608,26 +663,26 @@ public class TestH5Pfapl {
     }
     
     @Test
-    public void testH5P_set_mdc_config() throws Throwable, HDF5LibraryException {
+    public void testH5Pset_mdc_config() throws Throwable, HDF5LibraryException {
         H5AC_cache_config_t cache_config = null;
         try {
             cache_config = H5.H5Pget_mdc_config(fapl_id);
-            assertTrue("H5Pget_mdc_config", cache_config.version==HDF5Constants.H5AC_CURR_CACHE_CONFIG_VERSION);
+            assertTrue("H5Pset_mdc_config", cache_config.version==HDF5Constants.H5AC_CURR_CACHE_CONFIG_VERSION);
         }
         catch (Throwable err) {
             err.printStackTrace();
-            fail("H5Pget_mdc_config: " + err);
+            fail("H5Pset_mdc_config: " + err);
         }
         try {
             cache_config.decr_mode = HDF5Constants.H5C_decr_off;
             H5.H5Pset_mdc_config(fapl_id, cache_config);
             cache_config = H5.H5Pget_mdc_config(fapl_id);
-            assertTrue("H5Pget_mdc_config", cache_config.version==HDF5Constants.H5AC_CURR_CACHE_CONFIG_VERSION);
-            assertTrue("H5Pget_mdc_config", cache_config.decr_mode==HDF5Constants.H5C_decr_off);
+            assertTrue("H5Pset_mdc_config", cache_config.version==HDF5Constants.H5AC_CURR_CACHE_CONFIG_VERSION);
+            assertTrue("H5Pset_mdc_config", cache_config.decr_mode==HDF5Constants.H5C_decr_off);
         }
         catch (Throwable err) {
             err.printStackTrace();
-            fail("H5Pget_mdc_config: " + err);
+            fail("H5Pset_mdc_config: " + err);
         }
     }
     
@@ -771,7 +826,7 @@ public class TestH5Pfapl {
         _deleteLogFile();
     }
     
-    @Ignore
+    @Test
     public void testH5P_fapl_muti_nulls() throws Throwable, HDF5LibraryException {
         if (HDF5Constants.H5FD_MULTI < 0)
             return;
@@ -802,7 +857,7 @@ public class TestH5Pfapl {
         deleteH5multifile();
     }
     
-    @Ignore
+    @Test
     public void testH5P_fapl_muti_defaults() throws Throwable, HDF5LibraryException {
         if (HDF5Constants.H5FD_MULTI < 0)
             return;
@@ -851,7 +906,7 @@ public class TestH5Pfapl {
         deleteH5multifile();
     }
     
-    @Ignore
+    @Test
     public void testH5P_fapl_muti() throws Throwable, HDF5LibraryException {
         if (HDF5Constants.H5FD_MULTI < 0)
             return;
@@ -920,7 +975,6 @@ public class TestH5Pfapl {
         long file_size = H5.H5Fget_filesize(H5fid);
         assertTrue("H5Pget_fapl_muti: file_size ", file_size >= HADDRMAX/4 || file_size <= HADDRMAX/2);
         _createH5multiFileDS();
-        _createH5multiFileDS();
         deleteH5multifile();
         File file = new File(H5_MULTI_FILE+"-super.h5");
         if (file.exists()) {
@@ -960,7 +1014,7 @@ public class TestH5Pfapl {
         }
     }
     
-    @Ignore
+    @Test
     public void testH5P_fapl_split() throws Throwable, HDF5LibraryException {
         if (HDF5Constants.H5FD_MULTI < 0)
             return;
