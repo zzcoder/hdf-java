@@ -246,6 +246,14 @@ extern "C" {
 
     /*
      * Class:     ncsa_hdf_hdf5lib_H5
+     * Method:    H5Pget_elink_file_cache_size
+     * Signature: (I)I
+     */
+    JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1elink_1file_1cache_1size
+      (JNIEnv *env, jclass clss, jint plist);
+
+    /*
+     * Class:     ncsa_hdf_hdf5lib_H5
      * Method:    H5Pget_elink_prefix
      * Signature: (I[Ljava/lang/String;)J
      */
@@ -388,6 +396,14 @@ extern "C" {
 
     /*
      * Class:     ncsa_hdf_hdf5lib_H5
+     * Method:    H5Pget_gcreferences
+     * Signature: (I)Z
+     */
+    JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1gcreferences
+      (JNIEnv *env, jclass clss, jint fapl_id);
+
+    /*
+     * Class:     ncsa_hdf_hdf5lib_H5
      * Method:    H5Pget_hyper_vector_size
      * Signature: (I[J)I
      */
@@ -444,6 +460,22 @@ extern "C" {
 
     /*
      * Class:     ncsa_hdf_hdf5lib_H5
+     * Method:    H5Pget_mdc_config
+     * Signature: (I)Lncsa/hdf/hdf5lib/structs/H5AC_cache_config_t;
+     */
+    JNIEXPORT jobject JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1mdc_1config
+      (JNIEnv *env, jclass clss, jint plist);
+
+    /*
+     * Class:     ncsa_hdf_hdf5lib_H5
+     * Method:    H5Pget_meta_block_size
+     * Signature: (I)J
+     */
+    JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1meta_1block_1size
+      (JNIEnv *env, jclass clss, jint plist);
+
+    /*
+     * Class:     ncsa_hdf_hdf5lib_H5
      * Method:    H5Pget_nfilters
      * Signature: (I)I
      */
@@ -472,6 +504,14 @@ extern "C" {
      * Signature: (I)I
      */
     JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1preserve
+      (JNIEnv *env, jclass clss, jint plist);
+
+    /*
+     * Class:     ncsa_hdf_hdf5lib_H5
+     * Method:    H5Pget_sieve_buf_size
+     * Signature: (I)J
+     */
+    JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1sieve_1buf_1size
       (JNIEnv *env, jclass clss, jint plist);
 
     /*
@@ -521,6 +561,14 @@ extern "C" {
      */
     JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1small_1data_1block_1size
       (JNIEnv *env, jclass clss, jint plist, jlongArray size);
+
+    /*
+     * Class:     ncsa_hdf_hdf5lib_H5
+     * Method:    H5Pget_small_data_block_size_long
+     * Signature: (I)J
+     */
+    JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1small_1data_1block_1size_1long
+      (JNIEnv *env, jclass clss, jint plist);
 
     /*
      * Class:     ncsa_hdf_hdf5lib_H5
@@ -707,6 +755,14 @@ extern "C" {
      */
     JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1elink_1fapl
       (JNIEnv *env, jclass clss, jint lapl_id, jint fapl_id);
+
+    /*
+     * Class:     ncsa_hdf_hdf5lib_H5
+     * Method:    H5Pset_elink_file_cache_size
+     * Signature: (II)V
+     */
+    JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1elink_1file_1cache_1size
+      (JNIEnv *env, jclass clss, jint plist, jint size);
 
     /*
      * Class:     ncsa_hdf_hdf5lib_H5
@@ -919,6 +975,22 @@ extern "C" {
 
     /*
      * Class:     ncsa_hdf_hdf5lib_H5
+     * Method:    H5Pset_mdc_config
+     * Signature: (ILncsa/hdf/hdf5lib/structs/H5AC_cache_config_t;)V
+     */
+    JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1mdc_1config
+      (JNIEnv *env, jclass clss, jint plist, jobject cache_config);
+
+    /*
+     * Class:     ncsa_hdf_hdf5lib_H5
+     * Method:    H5Pset_meta_block_size
+     * Signature: (IJ)V
+     */
+    JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1meta_1block_1size
+      (JNIEnv *env, jclass clss, jint fapl_id, jlong size);
+
+    /*
+     * Class:     ncsa_hdf_hdf5lib_H5
      * Method:    H5Pset_nbit
      * Signature: (I)I
      */
@@ -948,6 +1020,14 @@ extern "C" {
      */
     JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1scaleoffset
       (JNIEnv *env, jclass clss, jint plist_id, jint scale_type, jint scale_factor);
+
+    /*
+     * Class:     ncsa_hdf_hdf5lib_H5
+     * Method:    H5Pset_sieve_buf_size
+     * Signature: (IJ)V
+     */
+    JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1sieve_1buf_1size
+      (JNIEnv *env, jclass clss, jint fapl_id, jlong size);
 
     /*
      * Class:     ncsa_hdf_hdf5lib_H5

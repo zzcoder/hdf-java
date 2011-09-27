@@ -45,6 +45,7 @@ all:    TestH5.class \
         TestH5Lcreate.class \
         TestH5R.class \
         TestH5P.class \
+        TestH5PData.class \
         TestH5Pfapl.class \
         TestH5A.class \
         TestH5Oparams.class \
