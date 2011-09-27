@@ -48,6 +48,18 @@ public class HDF5Constants {
     public static final int H5_ITER_DEC = H5_ITER_DEC();
     public static final int H5_ITER_NATIVE = H5_ITER_NATIVE();
     public static final int H5_ITER_N = H5_ITER_N();
+    public static final int H5AC_CURR_CACHE_CONFIG_VERSION = H5AC_CURR_CACHE_CONFIG_VERSION();
+    public static final int H5AC_MAX_TRACE_FILE_NAME_LEN = H5AC_MAX_TRACE_FILE_NAME_LEN();
+    public static final int H5AC_METADATA_WRITE_STRATEGY_PROCESS_ZERO_ONLY = H5AC_METADATA_WRITE_STRATEGY_PROCESS_ZERO_ONLY();
+    public static final int H5AC_METADATA_WRITE_STRATEGY_DISTRIBUTED = H5AC_METADATA_WRITE_STRATEGY_DISTRIBUTED();
+    public static final int H5C_incr_off = H5C_incr_off();
+    public static final int H5C_incr_threshold = H5C_incr_threshold();
+    public static final int H5C_flash_incr_off = H5C_flash_incr_off();
+    public static final int H5C_flash_incr_add_space = H5C_flash_incr_add_space();
+    public static final int H5C_decr_off = H5C_decr_off();
+    public static final int H5C_decr_threshold = H5C_decr_threshold();
+    public static final int H5C_decr_age_out = H5C_decr_age_out();
+    public static final int H5C_decr_age_out_with_threshold = H5C_decr_age_out_with_threshold();
     public static final int H5D_ALLOC_TIME_DEFAULT = H5D_ALLOC_TIME_DEFAULT();
     public static final int H5D_ALLOC_TIME_EARLY = H5D_ALLOC_TIME_EARLY();
     public static final int H5D_ALLOC_TIME_ERROR = H5D_ALLOC_TIME_ERROR();
@@ -172,6 +184,7 @@ public class HDF5Constants {
     public static final int H5E_WALK_DOWNWARD = H5E_WALK_DOWNWARD();
     public static final int H5E_WALK_UPWARD = H5E_WALK_UPWARD();
     public static final int H5E_WRITEERROR = H5E_WRITEERROR();
+    
     public static final int H5F_ACC_CREAT = H5F_ACC_CREAT();
     public static final int H5F_ACC_DEBUG = H5F_ACC_DEBUG();
     public static final int H5F_ACC_EXCL = H5F_ACC_EXCL();
@@ -620,6 +633,30 @@ public class HDF5Constants {
 
     private static native final int H5_ITER_N();
 
+    private static native final int H5AC_CURR_CACHE_CONFIG_VERSION();
+
+    private static native final int H5AC_MAX_TRACE_FILE_NAME_LEN();
+
+    private static native final int H5AC_METADATA_WRITE_STRATEGY_PROCESS_ZERO_ONLY();
+
+    private static native final int H5AC_METADATA_WRITE_STRATEGY_DISTRIBUTED();
+
+    private static native final int H5C_incr_off();
+
+    private static native final int H5C_incr_threshold();
+
+    private static native final int H5C_flash_incr_off();
+
+    private static native final int H5C_flash_incr_add_space();
+
+    private static native final int H5C_decr_off();
+
+    private static native final int H5C_decr_threshold();
+
+    private static native final int H5C_decr_age_out();
+
+    private static native final int H5C_decr_age_out_with_threshold();
+
     private static native final int H5D_ALLOC_TIME_DEFAULT();
 
     private static native final int H5D_ALLOC_TIME_EARLY();
@@ -877,7 +914,7 @@ public class HDF5Constants {
     private static native final int H5F_ACC_RDWR();
 
     private static native final int H5F_ACC_TRUNC();
-    
+
     private static native final int H5F_ACC_DEFAULT();
 
     private static native final int H5F_CLOSE_DEFAULT();

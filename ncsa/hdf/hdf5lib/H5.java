@@ -28,6 +28,7 @@ import ncsa.hdf.hdf5lib.callbacks.H5O_iterate_t;
 import ncsa.hdf.hdf5lib.exceptions.HDF5Exception;
 import ncsa.hdf.hdf5lib.exceptions.HDF5JavaException;
 import ncsa.hdf.hdf5lib.exceptions.HDF5LibraryException;
+import ncsa.hdf.hdf5lib.structs.H5AC_cache_config_t;
 import ncsa.hdf.hdf5lib.structs.H5A_info_t;
 import ncsa.hdf.hdf5lib.structs.H5G_info_t;
 import ncsa.hdf.hdf5lib.structs.H5L_info_t;
@@ -5128,14 +5129,11 @@ public synchronized static native int H5Pset_buffer(int plist, long size,
  * and the maximum possible number of bytes and the RDCC_W0 value in the raw
  * data chunk cache.
  * 
- * @param plist
- *            IN: Identifier of the file access property list.
- * @param mdc_nelmts
- *            IN/OUT: Number of elements (objects) in the meta data cache.
- * @param rdcc_nbytes
- *            IN/OUT: Total size of the raw data chunk cache, in bytes.
- * @param rdcc_w0
- *            IN/OUT: Preemption policy.
+ * @param plist       IN: Identifier of the file access property list.
+ * @param mdc_nelmts  IN/OUT: No longer used, will be ignored.
+ * @param rdcc_nelmts IN/OUT: Number of elements (objects) in the raw data chunk cache.
+ * @param rdcc_nbytes IN/OUT: Total size of the raw data chunk cache, in bytes.
+ * @param rdcc_w0     IN/OUT: Preemption policy.
  * 
  * @return a non-negative value if successful
  * 
@@ -5168,14 +5166,11 @@ public static int H5Pget_cache(int plist,
  * H5Pset_cache sets the number of elements (objects) in the meta data cache
  * and the total number of bytes in the raw data chunk cache.
  * 
- * @param plist
- *            IN: Identifier of the file access property list.
- * @param mdc_nelmts
- *            IN: Number of elements (objects) in the meta data cache.
- * @param rdcc_nbytes
- *            IN: Total size of the raw data chunk cache, in bytes.
- * @param rdcc_w0
- *            IN: Preemption policy.
+ * @param plist       IN: Identifier of the file access property list.
+ * @param mdc_nelmts  IN: No longer used, will be ignored.
+ * @param rdcc_nelmts IN: Number of elements (objects) in the raw data chunk cache.
+ * @param rdcc_nbytes IN: Total size of the raw data chunk cache, in bytes.
+ * @param rdcc_w0     IN: Preemption policy.
  * 
  * @return a non-negative value if successful
  * 
@@ -5402,8 +5397,11 @@ public synchronized static native int H5Pget_driver(int plid)
 //herr_t H5Pset_dxpl_mpio_chunk_opt_ratio (hid_t dxpl_id, unsigned percent_proc_per_chunk) 
 //herr_t H5Pset_dxpl_mpio_collective_opt (hid_t dxpl_id, H5FD_mpio_collective_opt_t opt_mode) 
 
-//herr_t H5Pget_dxpl_multi( hid_t dxpl_id, const hid_t *memb_dxpl ) 
-//herr_t H5Pset_dxpl_multi( hid_t dxpl_id, const hid_t *memb_dxpl ) 
+public synchronized static native void H5Pget_dxpl_multi(int dxpl_id, int[] memb_dxpl) 
+        throws HDF5LibraryException, NullPointerException;
+
+public synchronized static native void H5Pset_dxpl_multi(int dxpl_id, int[] memb_dxpl) 
+        throws HDF5LibraryException, NullPointerException;
 
 public synchronized static native int H5Pget_edc_check(int plist)
         throws HDF5LibraryException, NullPointerException;
@@ -5462,20 +5460,42 @@ private synchronized static native int _H5Pget_elink_fapl(int lapl_id)
         throws HDF5LibraryException;
 
 /**
-* H5Pset_elink_fapl Sets a file access property list for use in accessing a file pointed to by an external link.  
-* @param lapl_id                IN: Link access property list identifier
-* @param fapl_id                 IN: File access property list identifier
-*  
-* @return a non-negative value if successful; otherwise returns a negative value.
-* 
-* @exception HDF5LibraryException - Error from the HDF-5 Library.
-*  
-**/
+ * H5Pset_elink_fapl sets a file access property list for use in accessing a file pointed to by an external link.  
+ * @param lapl_id                IN: Link access property list identifier
+ * @param fapl_id                 IN: File access property list identifier
+ *  
+ * @return a non-negative value if successful; otherwise returns a negative value.
+ * 
+ * @exception HDF5LibraryException - Error from the HDF-5 Library.
+ *  
+ **/
 public synchronized static native int H5Pset_elink_fapl(int lapl_id, int fapl_id)
         throws HDF5LibraryException;
 
-//herr_t H5Pget_elink_file_cache_size( hid_t fapl_id, unsigned *efc_size ) 
-//herr_t H5Pset_elink_file_cache_size( hid_t fapl_id, unsigned efc_size ) 
+/**
+ * H5Pget_elink_file_cache_size retrieves the size of the external link open file cache. 
+ * @param fapl_id                 IN: File access property list identifier
+ *  
+ * @return External link open file cache size in number of files. 
+ *  
+ * @exception HDF5LibraryException - Error from the HDF-5 Library.
+ *  
+ **/
+public synchronized static native int H5Pget_elink_file_cache_size(int fapl_id)
+        throws HDF5LibraryException; 
+
+/**
+ * H5Pset_elink_file_cache_size sets the number of files that can be held open in an external link open file cache. 
+ * @param fapl_id                 IN: File access property list identifier
+ * @param efc_size                IN: External link open file cache size in number of files. 
+ *  
+ * @return none.
+ * 
+ * @exception HDF5LibraryException - Error from the HDF-5 Library.
+ *  
+ **/
+public synchronized static native void H5Pset_elink_file_cache_size(int fapl_id, int efc_size) 
+        throws HDF5LibraryException;
 
 /**
 * H5Pget_elink_prefix Retrieves prefix applied to external link paths.
@@ -5489,7 +5509,7 @@ public synchronized static native int H5Pset_elink_fapl(int lapl_id, int fapl_id
 * @exception NullPointerException - prefix is null.
 *  
 **/
-public synchronized static native long H5Pget_elink_prefix( int lapl_id, String[] prefix)
+public synchronized static native long H5Pget_elink_prefix(int lapl_id, String[] prefix)
         throws HDF5LibraryException, NullPointerException;
 
 /**
@@ -6061,6 +6081,8 @@ public synchronized static native int H5Pget_filter_by_id2(int plist_id,
  **/
 public synchronized static native int H5Pget_gc_references(int fapl_id,
         boolean[] gc_ref) throws HDF5LibraryException, NullPointerException;
+public synchronized static native boolean H5Pget_gcreferences(int fapl_id)
+        throws HDF5LibraryException;
 
 /*
  * Earlier versions of the HDF5 library had a different name. This is
@@ -6287,11 +6309,46 @@ public synchronized static native long H5Pget_local_heap_size_hint(int gcpl_id)
 public synchronized static native int H5Pset_local_heap_size_hint(int gcpl_id, long size_hint)
         throws HDF5LibraryException;
 
-//herr_t H5Pget_mdc_config(hid_t plist_id, H5AC_cache_config_t *config_ptr) 
-//herr_t H5Pset_mdc_config(hid_t plist_id, H5AC_cache_config_t *config_ptr) 
+/**
+ * H5Pget_mdc_config gets the initial metadata cache configuration contained in a 
+ * file access property list and loads it into the instance of H5AC_cache_config_t 
+ * pointed to by the config_ptr parameter. This configuration is used when the file is opened. 
+ * 
+ * @param plist_id            IN: Identifier of the file access property list. 
+ * 
+ * @return  A buffer(H5AC_cache_config_t) for the current metadata cache configuration information 
+ * 
+ * @exception HDF5LibraryException - Error from the HDF-5 Library.
+ **/
+public synchronized static native H5AC_cache_config_t H5Pget_mdc_config(int plist_id) 
+        throws HDF5LibraryException;
+public synchronized static native void H5Pset_mdc_config(int plist_id, H5AC_cache_config_t config_ptr) 
+        throws HDF5LibraryException; 
 
-//herr_t H5Pget_meta_block_size( hid_t fapl_id, hsize_t *size ) 
-//herr_t H5Pset_meta_block_size( hid_t fapl_id, hsize_t size ) 
+/**
+ * H5Pget_meta_block_size the current metadata block size setting. 
+ * @param fapl_id                 IN: File access property list identifier
+ *  
+ * @return the minimum size, in bytes, of metadata block allocations.
+ *  
+ * @exception HDF5LibraryException - Error from the HDF-5 Library.
+ *  
+ **/
+public synchronized static native long H5Pget_meta_block_size(int fapl_id)
+        throws HDF5LibraryException;
+
+/**
+ * H5Pset_meta_block_size sets the minimum metadata block size. 
+ * @param fapl_id             IN: File access property list identifier
+ * @param size                IN: Minimum size, in bytes, of metadata block allocations.
+ *  
+ * @return none.
+ * 
+ * @exception HDF5LibraryException - Error from the HDF-5 Library.
+ *  
+ **/
+public synchronized static native void H5Pset_meta_block_size(int fapl_id, long size)
+        throws HDF5LibraryException;
 
 //herr_t H5Pget_multi_type ( hid_t fapl_id, H5FD_mem_t *type ) 
 //herr_t H5Pset_multi_type ( hid_t fapl_id, H5FD_mem_t type ) 
@@ -6492,8 +6549,10 @@ public synchronized static native int H5Pget_shared_mesg_phase_change(int fcpl_i
 public synchronized static native int H5Pset_shared_mesg_phase_change(int fcpl_id, int max_list, int min_btree)
         throws HDF5LibraryException, IllegalArgumentException;
 
-//herr_t H5Pget_sieve_buf_size( hid_t fapl_id, size_t *size )
-//herr_t H5Pset_sieve_buf_size( hid_t fapl_id, size_t size ) 
+public synchronized static native long H5Pget_sieve_buf_size(int fapl_id)
+        throws HDF5LibraryException;
+public synchronized static native void H5Pset_sieve_buf_size(int fapl_id, long size) 
+        throws HDF5LibraryException;
 
 /**
  * H5Pget_size retrieves the size of a property's value in bytes
@@ -6574,6 +6633,9 @@ public synchronized static native int H5Pset_sizes(int plist,
 public synchronized static native int H5Pget_small_data_block_size(
         int plist, long[] size)
         throws HDF5LibraryException, NullPointerException;
+public synchronized static native long H5Pget_small_data_block_size_long(
+        int plist)
+        throws HDF5LibraryException;
 
 /**
  * H5Pset_small_data_block_size reserves blocks of size bytes for the

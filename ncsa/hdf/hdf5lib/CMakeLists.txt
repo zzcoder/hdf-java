@@ -48,6 +48,7 @@ SET (HDFJAVA_NCSA_HDF_HDF5_EXCEPTIONS_SRCS
 SET (HDFJAVA_NCSA_HDF_HDF5_STRUCTS_SRCS
     structs/H5_ih_info_t.java
     structs/H5A_info_t.java
+    structs/H5AC_cache_config_t.java
     structs/H5G_info_t.java
     structs/H5L_info_t.java
     structs/H5O_hdr_info_t.java

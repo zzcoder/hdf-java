@@ -20,9 +20,6 @@ public class TestH5P {
     private static final String H5_FILE = "test.h5";
     private static final int DIM_X = 4;
     private static final int DIM_Y = 6;
-    int H5fid = -1;
-    int H5dsid = -1;
-    int H5did = -1;
     long[] H5dims = { DIM_X, DIM_Y };
     int lapl_id = -1;
     int fapl_id = -1;
@@ -35,43 +32,12 @@ public class TestH5P {
     int gapl_id = -1;
     int gcpl_id = -1;
 
-    private final void _deleteFile(String filename) {
-        File file = new File(filename);
-
-        if (file.exists()) {
-            try {
-                file.delete();
-            }
-            catch (SecurityException e) {
-                ;// e.printStackTrace();
-            }
-        }
-    }
-
-    private final int _createDataset(int fid, int dsid, String name, int dapl) {
-        int did = -1;
-        try {
-            did = H5.H5Dcreate(fid, name, HDF5Constants.H5T_STD_I32BE, dsid,
-                    HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, dapl);
-        } catch (Throwable err) {
-            err.printStackTrace();
-            fail("H5.H5Dcreate: " + err);
-        }
-        assertTrue("TestH5D._createDataset: ", did > 0);
-
-        return did;
-    }
-
     @Before
     public void createH5file()
             throws NullPointerException, HDF5Exception {
         assertTrue("H5 open ids is 0",H5.getOpenIDCount()==0);
 
         try {
-            H5fid = H5.H5Fcreate(H5_FILE, HDF5Constants.H5F_ACC_TRUNC,
-                    HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
-            H5dsid = H5.H5Screate_simple(2, H5dims, null);
-            H5did = _createDataset(H5fid, H5dsid, "dset", HDF5Constants.H5P_DEFAULT);
             lapl_id = H5.H5Pcreate(HDF5Constants.H5P_DATASET_ACCESS);
             fapl_id = H5.H5Pcreate(HDF5Constants.H5P_FILE_ACCESS);
             fcpl_id = H5.H5Pcreate(HDF5Constants.H5P_FILE_CREATE);
@@ -87,9 +53,6 @@ public class TestH5P {
             err.printStackTrace();
             fail("TestH5D.createH5file: " + err);
         }
-        assertTrue("TestH5D.createH5file: H5.H5Fcreate: ",H5fid > 0);
-        assertTrue("TestH5D.createH5file: H5.H5Screate_simple: ",H5dsid > 0);
-        assertTrue("TestH5D.createH5file: _createDataset: ",H5did > 0);
         assertTrue(lapl_id > 0);
         assertTrue(fapl_id > 0);
         assertTrue(fcpl_id > 0);
@@ -100,21 +63,10 @@ public class TestH5P {
         assertTrue(plist_id > 0);
         assertTrue(gapl_id > 0);
         assertTrue(gcpl_id >0);
-
-        H5.H5Fflush(H5fid, HDF5Constants.H5F_SCOPE_LOCAL);
     }
 
     @After
     public void deleteH5file() throws HDF5LibraryException {
-        if (H5dsid > 0) 
-            H5.H5Sclose(H5dsid);
-        if (H5did > 0) 
-            H5.H5Dclose(H5did);         
-        if (H5fid > 0) 
-            H5.H5Fclose(H5fid);
- 
-        _deleteFile(H5_FILE);
-        
         if (lapl_id >0)
             H5.H5Pclose(lapl_id);
         if (fapl_id >0)
@@ -167,48 +119,6 @@ public class TestH5P {
         assertTrue("testH5Pset_nlinks", ret_val >= 0);
         // Check the value of nlinks retrieved from H5Pget_nlinks function.
         assertEquals(nlinks, 20L); 
-    }
-    
-    @Test
-    public void testH5Pget_libver_bounds() throws Throwable, HDF5LibraryException {
-        int ret_val = -1;
-        int[] libver = new int[2];
-        
-        try {
-            ret_val = H5.H5Pget_libver_bounds(fapl_id, libver);
-        }
-        catch (Throwable err) {
-            err.printStackTrace();
-            fail("H5Pget_libver_bounds: " + err);
-        }
-        assertTrue("testH5Pget_libver_bounds", ret_val >= 0);
-        // Check the Earliest Version if the library
-        assertEquals(HDF5Constants.H5F_LIBVER_EARLIEST, libver[0]);
-        // Check the Latest Version if the library
-        assertEquals(HDF5Constants.H5F_LIBVER_LATEST, libver[1]);
-    }
-       
-    @Test
-    public void testH5Pset_libver_bounds() throws Throwable, HDF5LibraryException {
-        
-        int ret_val = -1;
-        int low = HDF5Constants.H5F_LIBVER_EARLIEST;
-        int high = HDF5Constants.H5F_LIBVER_LATEST;
-        int[] libver = new int[2];
-
-        try {
-            ret_val = H5.H5Pset_libver_bounds(fapl_id, low, high);
-            H5.H5Pget_libver_bounds(fapl_id, libver);
-        }
-        catch (Throwable err) {
-            err.printStackTrace();
-            fail("H5Pset_libver_bounds: " + err);
-        }
-        assertTrue("testH5Pset_libver_bounds", ret_val >= 0);
-        // Check the Earliest Version if the library
-        assertEquals(HDF5Constants.H5F_LIBVER_EARLIEST, libver[0]);
-        // Check the Latest Version if the library
-        assertEquals(HDF5Constants.H5F_LIBVER_LATEST, libver[1]);
     }
     
     @Test(expected = IllegalArgumentException.class)
