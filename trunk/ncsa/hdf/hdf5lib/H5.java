@@ -5252,8 +5252,45 @@ public synchronized static int H5Pset_chunk(int plist, int ndims, long[] dim)
     return retVal;
 }
 
-//herr_t H5Pget_chunk_cache( hid_t dapl_id, size_t *rdcc_nslots, size_t *rdcc_nbytes, double *rdcc_w0 )
-//herr_t H5Pset_chunk_cache( hid_t dapl_id, size_t rdcc_nslots, size_t rdcc_nbytes, double rdcc_w0 ) 
+
+/**
+ * Retrieves the maximum possible number of elements in the meta data cache
+ * and the maximum possible number of bytes and the RDCC_W0 value in the raw
+ * data chunk cache on a per-datset basis.
+ * 
+ * @param dapl_id     IN: Identifier of the dataset access property list.
+ * @param rdcc_nslots IN/OUT: Number of elements (objects) in the raw data chunk cache.
+ * @param rdcc_nbytes IN/OUT: Total size of the raw data chunk cache, in bytes.
+ * @param rdcc_w0     IN/OUT: Preemption policy.
+ * 
+ * @return none
+ * 
+ * @exception HDF5LibraryException
+ *                - Error from the HDF-5 Library.
+ * @exception NullPointerException
+ *                - an array is null.
+ **/
+public synchronized static native void H5Pget_chunk_cache(int dapl_id,
+        long[] rdcc_nslots, long[] rdcc_nbytes, double[] rdcc_w0)
+        throws HDF5LibraryException, NullPointerException;
+
+/**
+ * H5Pset_chunk_cache sets the number of elements (objects) in the meta data cache
+ * and the total number of bytes in the raw data chunk cache on a per-datset basis.
+ * 
+ * @param dapl_id     IN: Identifier of the datset access property list.
+ * @param rdcc_nslots IN: Number of elements (objects) in the raw data chunk cache.
+ * @param rdcc_nbytes IN: Total size of the raw data chunk cache, in bytes.
+ * @param rdcc_w0     IN: Preemption policy.
+ * 
+ * @return none
+ * 
+ * @exception HDF5LibraryException
+ *                - Error from the HDF-5 Library.
+ **/
+public synchronized static native void H5Pset_chunk_cache(int dapl_id,
+        long rdcc_nslots, long rdcc_nbytes, double rdcc_w0)
+        throws HDF5LibraryException;
 
 /**
  * H5Pget_class returns the property list class for the property list

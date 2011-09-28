@@ -4752,6 +4752,124 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1mdc_1config
     }
 }
 
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Pset_chunk_cache
+ * Signature: (IJJD)V
+ */
+JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1chunk_1cache
+(JNIEnv *env, jclass clss, jint dapl, jlong rdcc_nslots,
+        jlong rdcc_nbytes, jdouble rdcc_w0)
+{
+    herr_t retVal = -1;
+
+    retVal = H5Pset_chunk_cache((hid_t)dapl, (size_t)rdcc_nslots,
+            (size_t)rdcc_nbytes, (double) rdcc_w0);
+    if (retVal < 0) {
+        h5libraryError(env);
+    }
+
+    return;
+}
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Pget_chunk_cache
+ * Signature: (I[J[J[D)V
+ */
+JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1chunk_1cache
+(JNIEnv *env, jclass clss, jint dapl, jlongArray rdcc_nslots, 
+        jlongArray rdcc_nbytes, jdoubleArray rdcc_w0)
+{
+    herr_t   status;
+    jint     mode;
+    jdouble *w0Array;
+    jlong   *rdcc_nslotsArray;
+    jlong   *nbytesArray;
+    jboolean isCopy;
+
+    if (rdcc_w0 == NULL) {
+        w0Array = (jdouble *)NULL;
+    }
+    else {
+        w0Array = (jdouble *)ENVPTR->GetDoubleArrayElements(ENVPAR rdcc_w0, &isCopy);
+        if (w0Array == NULL) {
+            h5JNIFatalError(env, "H5Pget_chunk_cache:  w0_array array not pinned");
+            return;
+        }
+    }
+
+    if (rdcc_nslots == NULL) {
+        rdcc_nslotsArray = (jlong *)NULL;
+    }
+    else {
+        rdcc_nslotsArray = (jlong *)ENVPTR->GetLongArrayElements(ENVPAR rdcc_nslots, &isCopy);
+        if (rdcc_nslotsArray == NULL) {
+            /* exception -- out of memory */
+            if (w0Array != NULL) {
+                ENVPTR->ReleaseDoubleArrayElements(ENVPAR rdcc_w0, w0Array, JNI_ABORT);
+            }
+            h5JNIFatalError(env, "H5Pget_chunk_cache:  rdcc_nslots array not pinned");
+            return;
+        }
+    }
+
+    if (rdcc_nbytes == NULL) {
+        nbytesArray = (jlong *)NULL;
+    }
+    else {
+        nbytesArray = (jlong *)ENVPTR->GetLongArrayElements(ENVPAR rdcc_nbytes, &isCopy);
+        if (nbytesArray == NULL) {
+            if (w0Array != NULL) {
+                ENVPTR->ReleaseDoubleArrayElements(ENVPAR rdcc_w0, w0Array, JNI_ABORT);
+            }
+            if (rdcc_nslotsArray != NULL) {
+                ENVPTR->ReleaseLongArrayElements(ENVPAR rdcc_nslots, rdcc_nslotsArray, JNI_ABORT);
+            }
+            h5JNIFatalError(env, "H5Pget_chunk_cache:  nbytesArray array not pinned");
+            return;
+        }
+    }
+    {
+        /* direct cast (size_t *)variable fails on 32-bit environment */
+        long long rdcc_nslots_temp = *(rdcc_nslotsArray);
+        size_t rdcc_nslots_t = (size_t)rdcc_nslots_temp;
+        long long nbytes_temp = *(nbytesArray);
+        size_t nbytes_t = (size_t)nbytes_temp;
+
+        status = H5Pget_chunk_cache((hid_t)dapl, &rdcc_nslots_t, &nbytes_t, (double *)w0Array);
+
+        *rdcc_nslotsArray = rdcc_nslots_t;
+        *nbytesArray = nbytes_t;
+    }
+
+
+    if (status < 0) {
+        mode = JNI_ABORT;
+    }
+    else {
+        mode = 0; /* commit and free */
+    }
+
+    if (rdcc_nslotsArray != NULL) {
+        ENVPTR->ReleaseLongArrayElements(ENVPAR rdcc_nslots, rdcc_nslotsArray, mode);
+    }
+
+    if (nbytesArray != NULL) {
+        ENVPTR->ReleaseLongArrayElements(ENVPAR rdcc_nbytes, nbytesArray, mode);
+    }
+
+    if (w0Array != NULL) {
+        ENVPTR->ReleaseDoubleArrayElements(ENVPAR rdcc_w0, w0Array, mode);
+    }
+
+    if (status < 0) {
+        h5libraryError(env);
+    }
+
+    return;
+}
+
 
 #ifdef __cplusplus
 }

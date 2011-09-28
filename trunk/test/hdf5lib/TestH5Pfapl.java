@@ -16,7 +16,6 @@ import ncsa.hdf.hdf5lib.structs.H5AC_cache_config_t;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class TestH5Pfapl {
@@ -38,6 +37,7 @@ public class TestH5Pfapl {
     long[] H5dims = { DIM_X, DIM_Y };
     int fapl_id = -1;
     int plapl_id = -1;
+    int dapl_id = -1;
     int multi_dxplid = -1;
     int plist_id = -1;
     int btplist_id = -1;
@@ -271,6 +271,7 @@ public class TestH5Pfapl {
             multi_dxplid = H5.H5Pcreate(HDF5Constants.H5P_DATASET_XFER);
             plist_id = H5.H5Pcreate(HDF5Constants.H5P_DATASET_XFER);
             btplist_id = H5.H5Pcreate(HDF5Constants.H5P_DATASET_XFER);
+            dapl_id = H5.H5Pcreate(HDF5Constants.H5P_DATASET_ACCESS);
         }
         catch (Throwable err) {
             err.printStackTrace();
@@ -287,6 +288,8 @@ public class TestH5Pfapl {
             H5.H5Pclose(fapl_id);
         if (plapl_id > 0)
             H5.H5Pclose(plapl_id);
+        if (dapl_id > 0)
+            H5.H5Pclose(dapl_id);
         if (plist_id > 0)
             H5.H5Pclose(plist_id);
         if (btplist_id > 0)
@@ -609,6 +612,33 @@ public class TestH5Pfapl {
         catch (Throwable err) {
             err.printStackTrace();
             fail("H5P_cache: " + err);
+        }
+    }
+    
+    @Test
+    public void testH5P_chunk_cache() throws Throwable, HDF5LibraryException {
+        long[] rdcc_nslots = {0};
+        long[] rdcc_nbytes = {0};
+        double[] rdcc_w0 = {0};
+        try {
+            H5.H5Pget_chunk_cache(dapl_id, rdcc_nslots, rdcc_nbytes, rdcc_w0);
+            assertTrue("H5P_chunk_cache default", rdcc_nslots[0] == 521);
+            assertTrue("H5P_chunk_cache default", rdcc_nbytes[0] == (1024*1024));
+            assertTrue("H5P_chunk_cache default", rdcc_w0[0] == 0.75);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5P_chunk_cache: default " + err);
+        }
+        try {
+            rdcc_nslots[0] = 4096;
+            H5.H5Pset_chunk_cache(dapl_id, rdcc_nslots[0], rdcc_nbytes[0], rdcc_w0[0]);
+            H5.H5Pget_chunk_cache(dapl_id, rdcc_nslots, rdcc_nbytes, rdcc_w0);
+            assertTrue("H5P_chunk_cache 4096", rdcc_nslots[0] == 4096);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5P_chunk_cache: " + err);
         }
     }
     
