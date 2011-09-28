@@ -158,6 +158,15 @@ extern "C" {
 
     /*
      * Class:     ncsa_hdf_hdf5lib_H5
+     * Method:    H5Pget_chunk_cache
+     * Signature: (I[J[J[D)V
+     */
+    JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1chunk_1cache
+      (JNIEnv *env, jclass clss, jint dapl, jlongArray rdcc_nslots, 
+              jlongArray rdcc_nbytes, jdoubleArray rdcc_w0);
+
+    /*
+     * Class:     ncsa_hdf_hdf5lib_H5
      * Method:    H5Pget_class
      * Signature: (I)I
      */
@@ -691,6 +700,15 @@ extern "C" {
      */
     JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1chunk
       (JNIEnv *env, jclass clss, jint plist, jint ndims, jbyteArray dim);
+
+    /*
+     * Class:     ncsa_hdf_hdf5lib_H5
+     * Method:    H5Pset_chunk_cache
+     * Signature: (IJJD)V
+     */
+    JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1chunk_1cache
+      (JNIEnv *env, jclass clss, jint dapl, jlong rdcc_nslots,
+      jlong rdcc_nbytes, jdouble rdcc_w0);
 
     /*
      * Class:     ncsa_hdf_hdf5lib_H5
