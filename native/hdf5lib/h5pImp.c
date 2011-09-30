@@ -4459,7 +4459,7 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1mdc_1config
         return;
     }
     cacheinfo.version = ENVPTR->GetIntField(ENVPAR cache_config, fid);
-    if(ENVPTR->ExceptionOccurred(env)) {
+    if(ENVPTR->ExceptionOccurred()) {
         h5JNIFatalError(env, "H5Pset_mdc_config: loading version failed");
         return;
     }
