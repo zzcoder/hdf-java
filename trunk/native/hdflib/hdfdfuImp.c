@@ -28,6 +28,16 @@ extern "C" {
 #include "hdf.h"
 #include "jni.h"
 
+#ifdef __cplusplus
+#define ENVPTR (env)
+#define ENVPAR
+#define ENVONLY
+#else
+#define ENVPTR (*env)
+#define ENVPAR env,
+#define ENVONLY env
+#endif
+
 extern jboolean h4NotImplemented( JNIEnv *env, char *functName);
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_DFUfptoimage
@@ -59,20 +69,20 @@ jint compress) /* IN */
     if (hscale == NULL) {
         hs = NULL;
     } else {
-        hs = (float *)(*env)->GetFloatArrayElements(env,hscale,&bb);
+        hs = (float *)ENVPTR->GetFloatArrayElements(ENVPAR hscale,&bb);
     }
     if (vscale == NULL) {
         vs = NULL;
     } else {
-        vs = (float *)(*env)->GetFloatArrayElements(env,vscale,&bb);
+        vs = (float *)ENVPTR->GetFloatArrayElements(ENVPAR vscale,&bb);
     }
-    arr = (char *)(*env)->GetByteArrayElements(env,data,&bb);
+    arr = (char *)ENVPTR->GetByteArrayElements(ENVPAR data,&bb);
     if (palette == NULL) {
         pal = NULL;
     } else {
-        pal = (char *)(*env)->GetByteArrayElements(env,palette,&bb);
+        pal = (char *)ENVPTR->GetByteArrayElements(ENVPAR palette,&bb);
     }
-    file =(char *) (*env)->GetStringUTFChars(env,outfile,0);
+    file =(char *) ENVPTR->GetStringUTFChars(ENVPAR outfile,0);
 
     rval = DFUfptoimage((int32) hdim, (int32) vdim,
         (float32) max, (float32) min, (float32 *)hs, (float32 *)vs,
@@ -82,23 +92,23 @@ jint compress) /* IN */
         (int) compress);
 
     if (hs != NULL) {
-        (*env)->ReleaseFloatArrayElements(env,hscale,hs,JNI_ABORT);
+        ENVPTR->ReleaseFloatArrayElements(ENVPAR hscale,hs,JNI_ABORT);
     }
     if (vs != NULL) {
-        (*env)->ReleaseFloatArrayElements(env,vscale,vs,JNI_ABORT);
+        ENVPTR->ReleaseFloatArrayElements(ENVPAR vscale,vs,JNI_ABORT);
     }
-    (*env)->ReleaseByteArrayElements(env,data,(jbyte *)arr,JNI_ABORT);
+    ENVPTR->ReleaseByteArrayElements(ENVPAR data,(jbyte *)arr,JNI_ABORT);
     if (pal != NULL) {
-        (*env)->ReleaseByteArrayElements(env,palette,(jbyte *)pal,JNI_ABORT);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR palette,(jbyte *)pal,JNI_ABORT);
     }
-    (*env)->ReleaseStringUTFChars(env,outfile,arr);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR outfile,arr);
     if (rval == FAIL) {
         return JNI_FALSE;
     } else {
         return JNI_TRUE;
     }
 #else
-    h4NotImplemented(env, "DFUfptoimage (windows)");
+    h4NotImplemented(ENVPAR  "DFUfptoimage (windows)");
     return JNI_TRUE;
 #endif
 }
