@@ -1138,7 +1138,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1buffer
 #ifdef notdef
 
 /* DON'T IMPLEMENT THIS!!! */
-    jint     status = -1;
+    jlong     status = -1;
     jbyte   *tconvP;
     jbyte   *bkgP;
     jboolean isCopy;
@@ -1174,6 +1174,42 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1buffer
 
     return status;
 #endif
+}
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Pset_buffer_size
+ * Signature: (IJ)V
+ */
+JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1buffer_1size
+  (JNIEnv *env, jclass clss, jint plist, jlong size)
+{
+    herr_t    status = -1;
+
+    status = H5Pset_buffer((hid_t)plist, (size_t)size, NULL, NULL);
+    if (status < 0) {
+        h5libraryError(env);
+        return;
+    }
+}
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Pget_buffer_size
+ * Signature: (I)J
+ */
+JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1buffer_1size
+  (JNIEnv *env, jclass clss, jint plist)
+{
+    size_t     size = -1;
+
+    size = H5Pget_buffer((hid_t)plist, NULL, NULL);
+    if (size < 0) {
+        h5libraryError(env);
+        return -1;
+    }
+
+    return (jlong)size;
 }
 
 /*
@@ -4293,6 +4329,7 @@ JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1sieve_1buf_1size
 JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1elink_1file_1cache_1size
   (JNIEnv *env, jclass clss, jint plist, jint size)
 {
+#if (H5_VERS_RELEASE > 6) /* H5_VERSION_GE(1,8,7) */
     unsigned   sz;
     herr_t status = -1;
 
@@ -4302,6 +4339,9 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1elink_1file_1cache_1size
     if (status < 0) {
         h5libraryError(env);
     }
+#else
+    h5JNIFatalError(env, "H5Pset_elink_file_cache_size: only available > 1.8.6");
+#endif
 }
 
 /*
@@ -4312,6 +4352,7 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1elink_1file_1cache_1size
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1elink_1file_1cache_1size
   (JNIEnv *env, jclass clss, jint plist)
 {
+#if (H5_VERS_RELEASE > 6) /* H5_VERSION_GE(1,8,7) */
     herr_t   status;
     jboolean isCopy;
     unsigned  s;
@@ -4323,6 +4364,10 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1elink_1file_1cache_1size
     }
 
     return (jint)s;
+#else
+    h5JNIFatalError(env, "H5Pget_elink_file_cache_size: only available > 1.8.6");
+    return -1;
+#endif
 }
 
 
@@ -4843,7 +4888,6 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1chunk_1cache
         *nbytesArray = nbytes_t;
     }
 
-
     if (status < 0) {
         mode = JNI_ABORT;
     }
@@ -4870,6 +4914,97 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1chunk_1cache
     return;
 }
 
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Pget_obj_track_times
+ * Signature: (I)Z  
+ */
+JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1obj_1track_1times
+  (JNIEnv *env, jclass clss, jint objplid) 
+{
+    herr_t   status;
+    hbool_t  track_times;
+
+    status = H5Pget_obj_track_times((hid_t)objplid, &track_times);
+
+    if (status < 0) {
+        h5libraryError(env);
+        return JNI_FALSE;
+    }
+    
+    if (track_times == 1) {
+        return JNI_TRUE;
+    }
+    return JNI_FALSE;
+}
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Pset_obj_track_times
+ * Signature: (IZ)V
+ */
+JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1obj_1track_1times
+  (JNIEnv *env, jclass clss, jint objplid, jboolean track_times)
+{
+    herr_t   status;
+    hbool_t  track;
+
+    if (track_times == JNI_TRUE) {
+        track = 1;
+    }
+    else {
+        track = 0;
+    }
+
+    status = H5Pset_obj_track_times((hid_t)objplid, track);
+
+    if (status < 0) {
+        h5libraryError(env);
+    }
+    
+    return;
+}
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Pget_char_encoding
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1char_1encoding
+  (JNIEnv *env, jclass clss, jint acpl)
+{
+    herr_t   status;
+    H5T_cset_t  encoding;
+
+    status = H5Pget_char_encoding((hid_t)acpl, &encoding);
+
+    if (status < 0) {
+        h5libraryError(env);
+    }
+    
+    return encoding;
+    
+}
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Pset_char_encoding
+ * Signature: (II)V
+ */
+JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1char_1encoding
+  (JNIEnv *env, jclass clss, jint acpl, jint encoding)
+{
+    herr_t   status;
+
+    status = H5Pset_char_encoding((hid_t)acpl, encoding);
+
+    if (status < 0) {
+        h5libraryError(env);
+    }
+    
+    return;
+    
+}
 
 #ifdef __cplusplus
 }

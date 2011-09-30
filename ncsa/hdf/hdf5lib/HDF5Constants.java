@@ -305,25 +305,43 @@ public class HDF5Constants {
     public static final int H5O_TYPE_DATASET = H5O_TYPE_DATASET();
     public static final int H5O_TYPE_NAMED_DATATYPE = H5O_TYPE_NAMED_DATATYPE();
     public static final int H5O_TYPE_NTYPES = H5O_TYPE_NTYPES();
-    public static final int H5P_CRT_ORDER_TRACKED = H5P_CRT_ORDER_TRACKED();
-    public static final int H5P_CRT_ORDER_INDEXED = H5P_CRT_ORDER_INDEXED();
-    public static final int H5P_DATASET_CREATE = H5P_DATASET_CREATE();
-    public static final int H5P_DATASET_CREATE_DEFAULT = H5P_DATASET_CREATE_DEFAULT();
-    public static final int H5P_DATASET_ACCESS = H5P_DATASET_ACCESS();
-    public static final int H5P_DATASET_ACCESS_DEFAULT = H5P_DATASET_ACCESS_DEFAULT();
-    public static final int H5P_DATASET_XFER = H5P_DATASET_XFER();
-    public static final int H5P_DATASET_XFER_DEFAULT = H5P_DATASET_XFER_DEFAULT();
-    public static final int H5P_DEFAULT = H5P_DEFAULT();
-    public static final int H5P_FILE_ACCESS = H5P_FILE_ACCESS();
-    public static final int H5P_FILE_ACCESS_DEFAULT = H5P_FILE_ACCESS_DEFAULT();
+    
+    public static final int H5P_ROOT = H5P_ROOT();
+    public static final int H5P_OBJECT_CREATE = H5P_OBJECT_CREATE();
     public static final int H5P_FILE_CREATE = H5P_FILE_CREATE();
-    public static final int H5P_FILE_CREATE_DEFAULT = H5P_FILE_CREATE_DEFAULT();
+    public static final int H5P_FILE_ACCESS = H5P_FILE_ACCESS();
+    public static final int H5P_DATASET_CREATE = H5P_DATASET_CREATE();
+    public static final int H5P_DATASET_ACCESS = H5P_DATASET_ACCESS();
+    public static final int H5P_DATASET_XFER = H5P_DATASET_XFER();
+    public static final int H5P_FILE_MOUNT = H5P_FILE_MOUNT();
     public static final int H5P_GROUP_CREATE = H5P_GROUP_CREATE();
     public static final int H5P_GROUP_ACCESS = H5P_GROUP_ACCESS();
+    public static final int H5P_DATATYPE_CREATE = H5P_DATATYPE_CREATE();
+    public static final int H5P_DATATYPE_ACCESS = H5P_DATATYPE_ACCESS();
+    public static final int H5P_STRING_CREATE = H5P_STRING_CREATE();
+    public static final int H5P_ATTRIBUTE_CREATE = H5P_ATTRIBUTE_CREATE();
+    public static final int H5P_OBJECT_COPY = H5P_OBJECT_COPY();
     public static final int H5P_LINK_CREATE = H5P_LINK_CREATE();
     public static final int H5P_LINK_ACCESS = H5P_LINK_ACCESS();
+    public static final int H5P_FILE_CREATE_DEFAULT = H5P_FILE_CREATE_DEFAULT();
+    public static final int H5P_FILE_ACCESS_DEFAULT = H5P_FILE_ACCESS_DEFAULT();
+    public static final int H5P_DATASET_CREATE_DEFAULT = H5P_DATASET_CREATE_DEFAULT();
+    public static final int H5P_DATASET_ACCESS_DEFAULT = H5P_DATASET_ACCESS_DEFAULT();
+    public static final int H5P_DATASET_XFER_DEFAULT = H5P_DATASET_XFER_DEFAULT();
+    public static final int H5P_FILE_MOUNT_DEFAULT = H5P_FILE_MOUNT_DEFAULT();
+    public static final int H5P_GROUP_CREATE_DEFAULT = H5P_GROUP_CREATE_DEFAULT();
+    public static final int H5P_GROUP_ACCESS_DEFAULT = H5P_GROUP_ACCESS_DEFAULT();
+    public static final int H5P_DATATYPE_CREATE_DEFAULT = H5P_DATATYPE_CREATE_DEFAULT();
+    public static final int H5P_DATATYPE_ACCESS_DEFAULT = H5P_DATATYPE_ACCESS_DEFAULT();
+    public static final int H5P_ATTRIBUTE_CREATE_DEFAULT = H5P_ATTRIBUTE_CREATE_DEFAULT();
+    public static final int H5P_OBJECT_COPY_DEFAULT = H5P_OBJECT_COPY_DEFAULT();
+    public static final int H5P_LINK_CREATE_DEFAULT = H5P_LINK_CREATE_DEFAULT();
+    public static final int H5P_LINK_ACCESS_DEFAULT = H5P_LINK_ACCESS_DEFAULT();
+    public static final int H5P_CRT_ORDER_TRACKED = H5P_CRT_ORDER_TRACKED();
+    public static final int H5P_CRT_ORDER_INDEXED = H5P_CRT_ORDER_INDEXED();
+    public static final int H5P_DEFAULT = H5P_DEFAULT();
     public static final int H5P_NO_CLASS = H5P_NO_CLASS();
-    public static final int H5P_OBJECT_COPY = H5P_OBJECT_COPY();
+
     public static final int H5R_BADTYPE = H5R_BADTYPE();
     public static final int H5R_DATASET_REGION = H5R_DATASET_REGION();
     public static final int H5R_MAXTYPE = H5R_MAXTYPE();
@@ -375,8 +393,9 @@ public class HDF5Constants {
     public static final int H5T_CONV_CONV = H5T_CONV_CONV();
     public static final int H5T_CONV_FREE = H5T_CONV_FREE();
     public static final int H5T_CONV_INIT = H5T_CONV_INIT();
-    public static final int H5T_CSET_ASCII = H5T_CSET_ASCII();
     public static final int H5T_CSET_ERROR = H5T_CSET_ERROR();
+    public static final int H5T_CSET_ASCII = H5T_CSET_ASCII();
+    public static final int H5T_CSET_UTF8 = H5T_CSET_UTF8();
     public static final int H5T_CSET_RESERVED_10 = H5T_CSET_RESERVED_10();
     public static final int H5T_CSET_RESERVED_11 = H5T_CSET_RESERVED_11();
     public static final int H5T_CSET_RESERVED_12 = H5T_CSET_RESERVED_12();
@@ -1141,43 +1160,75 @@ public class HDF5Constants {
     
     private static native final int H5O_TYPE_NTYPES();
     
+    private static native final int H5P_ROOT();
+    
+    private static native final int H5P_OBJECT_CREATE();
+    
+    private static native final int H5P_FILE_CREATE();
+    
+    private static native final int H5P_FILE_ACCESS();
+    
+    private static native final int H5P_DATASET_CREATE();
+        
+    private static native final int H5P_DATASET_ACCESS();
+        
+    private static native final int H5P_DATASET_XFER();
+        
+    private static native final int H5P_FILE_MOUNT();
+        
+    private static native final int H5P_GROUP_CREATE();
+        
+    private static native final int H5P_GROUP_ACCESS();
+        
+    private static native final int H5P_DATATYPE_CREATE();
+        
+    private static native final int H5P_DATATYPE_ACCESS();
+        
+    private static native final int H5P_STRING_CREATE();
+        
+    private static native final int H5P_ATTRIBUTE_CREATE();
+        
+    private static native final int H5P_OBJECT_COPY();
+        
+    private static native final int H5P_LINK_CREATE();
+        
+    private static native final int H5P_LINK_ACCESS();
+        
+    private static native final int H5P_FILE_CREATE_DEFAULT();
+        
+    private static native final int H5P_FILE_ACCESS_DEFAULT();
+        
+    private static native final int H5P_DATASET_CREATE_DEFAULT();
+        
+    private static native final int H5P_DATASET_ACCESS_DEFAULT();
+        
+    private static native final int H5P_DATASET_XFER_DEFAULT();
+        
+    private static native final int H5P_FILE_MOUNT_DEFAULT();
+        
+    private static native final int H5P_GROUP_CREATE_DEFAULT();
+        
+    private static native final int H5P_GROUP_ACCESS_DEFAULT();
+        
+    private static native final int H5P_DATATYPE_CREATE_DEFAULT();
+        
+    private static native final int H5P_DATATYPE_ACCESS_DEFAULT();
+        
+    private static native final int H5P_ATTRIBUTE_CREATE_DEFAULT();
+        
+    private static native final int H5P_OBJECT_COPY_DEFAULT();
+        
+    private static native final int H5P_LINK_CREATE_DEFAULT();
+        
+    private static native final int H5P_LINK_ACCESS_DEFAULT();
+    
     private static native final int H5P_CRT_ORDER_TRACKED();
     
     private static native final int H5P_CRT_ORDER_INDEXED();
 
-    private static native final int H5P_DATASET_CREATE();
-
-    private static native final int H5P_DATASET_CREATE_DEFAULT();
-
-    private static native final int H5P_DATASET_ACCESS();
-
-    private static native final int H5P_DATASET_ACCESS_DEFAULT();
-
-    private static native final int H5P_DATASET_XFER();
-
-    private static native final int H5P_DATASET_XFER_DEFAULT();
-
     private static native final int H5P_DEFAULT();
 
-    private static native final int H5P_FILE_ACCESS();
-
-    private static native final int H5P_FILE_ACCESS_DEFAULT();
-
-    private static native final int H5P_FILE_CREATE();
-
-    private static native final int H5P_FILE_CREATE_DEFAULT();
-
-    private static native final int H5P_GROUP_CREATE();
-    
-    private static native final int H5P_GROUP_ACCESS();
-
-    private static native final int H5P_LINK_CREATE();
-
-    private static native final int H5P_LINK_ACCESS();
-
     private static native final int H5P_NO_CLASS();
-    
-    private static native final int H5P_OBJECT_COPY();
 
     private static native final int H5R_BADTYPE();
 
@@ -1281,9 +1332,11 @@ public class HDF5Constants {
 
     private static native final int H5T_CONV_INIT();
 
+    private static native final int H5T_CSET_ERROR();
+
     private static native final int H5T_CSET_ASCII();
 
-    private static native final int H5T_CSET_ERROR();
+    private static native final int H5T_CSET_UTF8();
 
     private static native final int H5T_CSET_RESERVED_10();
 
