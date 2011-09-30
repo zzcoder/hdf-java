@@ -892,7 +892,7 @@ extern "C" {
      * Signature: (I[I[I[Ljava/lang/String;[JZ)V
      */
     JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1fapl_1multi
-      (JNIEnv *env, jclass clss, jint tid, jintArray memb_map, jintArray memb_fapl, jlongArray memb_name, jlongArray memb_addr, jboolean relax);
+      (JNIEnv *env, jclass clss, jint tid, jintArray memb_map, jintArray memb_fapl, jobjectArray memb_name, jlongArray memb_addr, jboolean relax);
 
     /*
      * Class:     ncsa_hdf_hdf5lib_H5
