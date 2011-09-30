@@ -4470,7 +4470,7 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1mdc_1config
         return;
     }
     cacheinfo.rpt_fcn_enabled = ENVPTR->GetBooleanField(ENVPAR cache_config, fid);
-    if(ENVPTR->ExceptionOccurred(env)) {
+    if(ENVPTR->ExceptionOccurred()) {
         h5JNIFatalError(env, "H5Pset_mdc_config: loading rpt_fcn_enabled failed");
         return;
     }
@@ -4481,7 +4481,7 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1mdc_1config
         return;
     }
     cacheinfo.open_trace_file = ENVPTR->GetBooleanField(ENVPAR cache_config, fid);
-    if(ENVPTR->ExceptionOccurred(env)) {
+    if(ENVPTR->ExceptionOccurred()) {
         h5JNIFatalError(env, "H5Pset_mdc_config: loading open_trace_file failed");
         return;
     }
@@ -4492,7 +4492,7 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1mdc_1config
         return;
     }
     cacheinfo.close_trace_file = ENVPTR->GetBooleanField(ENVPAR cache_config, fid);
-    if(ENVPTR->ExceptionOccurred(env)) {
+    if(ENVPTR->ExceptionOccurred()) {
         h5JNIFatalError(env, "H5Pset_mdc_config: loading close_trace_file failed");
         return;
     }
@@ -4510,7 +4510,7 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1mdc_1config
     }
     strncpy(cacheinfo.trace_file_name, str, 1025);
     ENVPTR->ReleaseStringUTFChars(ENVPAR j_str, str);
-    if(ENVPTR->ExceptionOccurred(env)) {
+    if(ENVPTR->ExceptionOccurred()) {
         h5JNIFatalError(env, "H5Pset_mdc_config: loading trace_file_name failed");
         return;
     }
@@ -4521,7 +4521,7 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1mdc_1config
         return;
     }
     cacheinfo.evictions_enabled = ENVPTR->GetBooleanField(ENVPAR cache_config, fid);
-    if(ENVPTR->ExceptionOccurred(env)) {
+    if(ENVPTR->ExceptionOccurred()) {
         h5JNIFatalError(env, "H5Pset_mdc_config: loading evictions_enabled failed");
         return;
     }
@@ -4532,7 +4532,7 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1mdc_1config
         return;
     }
     cacheinfo.set_initial_size = ENVPTR->GetBooleanField(ENVPAR cache_config, fid);
-    if(ENVPTR->ExceptionOccurred(env)) {
+    if(ENVPTR->ExceptionOccurred()) {
         h5JNIFatalError(env, "H5Pset_mdc_config: loading set_initial_size failed");
         return;
     }
@@ -4543,7 +4543,7 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1mdc_1config
         return;
     }
     cacheinfo.initial_size = ENVPTR->GetLongField(ENVPAR cache_config, fid);
-    if(ENVPTR->ExceptionOccurred(env)) {
+    if(ENVPTR->ExceptionOccurred()) {
         h5JNIFatalError(env, "H5Pset_mdc_config: loading initial_size failed");
         return;
     }
@@ -4554,7 +4554,7 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1mdc_1config
         return;
     }
     cacheinfo.min_clean_fraction = ENVPTR->GetDoubleField(ENVPAR cache_config, fid);
-    if(ENVPTR->ExceptionOccurred(env)) {
+    if(ENVPTR->ExceptionOccurred()) {
         h5JNIFatalError(env, "H5Pset_mdc_config: loading min_clean_fraction failed");
         return;
     }
@@ -4565,7 +4565,7 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1mdc_1config
         return;
     }
     cacheinfo.max_size = ENVPTR->GetLongField(ENVPAR cache_config, fid);
-    if(ENVPTR->ExceptionOccurred(env)) {
+    if(ENVPTR->ExceptionOccurred()) {
         h5JNIFatalError(env, "H5Pset_mdc_config: loading max_size failed");
         return;
     }
@@ -4576,7 +4576,7 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1mdc_1config
         return;
     }
     cacheinfo.min_size = ENVPTR->GetLongField(ENVPAR cache_config, fid);
-    if(ENVPTR->ExceptionOccurred(env)) {
+    if(ENVPTR->ExceptionOccurred()) {
         h5JNIFatalError(env, "H5Pset_mdc_config: loading min_size failed");
         return;
     }
@@ -4587,7 +4587,7 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1mdc_1config
         return;
     }
     cacheinfo.epoch_length = ENVPTR->GetLongField(ENVPAR cache_config, fid);
-    if(ENVPTR->ExceptionOccurred(env)) {
+    if(ENVPTR->ExceptionOccurred()) {
         h5JNIFatalError(env, "H5Pset_mdc_config: loading epoch_length failed");
         return;
     }
@@ -4598,7 +4598,7 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1mdc_1config
         return;
     }
     cacheinfo.incr_mode = ENVPTR->GetIntField(ENVPAR cache_config, fid);
-    if(ENVPTR->ExceptionOccurred(env)) {
+    if(ENVPTR->ExceptionOccurred()) {
         h5JNIFatalError(env, "H5Pset_mdc_config: loading incr_mode failed");
         return;
     }
@@ -4609,7 +4609,7 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1mdc_1config
         return;
     }
     cacheinfo.lower_hr_threshold = ENVPTR->GetDoubleField(ENVPAR cache_config, fid);
-    if(ENVPTR->ExceptionOccurred(env)) {
+    if(ENVPTR->ExceptionOccurred()) {
         h5JNIFatalError(env, "H5Pset_mdc_config: loading lower_hr_threshold failed");
         return;
     }
@@ -4620,7 +4620,7 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1mdc_1config
         return;
     }
     cacheinfo.increment = ENVPTR->GetDoubleField(ENVPAR cache_config, fid);
-    if(ENVPTR->ExceptionOccurred(env)) {
+    if(ENVPTR->ExceptionOccurred()) {
         h5JNIFatalError(env, "H5Pset_mdc_config: loading increment failed");
         return;
     }
@@ -4631,7 +4631,7 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1mdc_1config
         return;
     }
     cacheinfo.apply_max_increment = ENVPTR->GetBooleanField(ENVPAR cache_config, fid);
-    if(ENVPTR->ExceptionOccurred(env)) {
+    if(ENVPTR->ExceptionOccurred()) {
         h5JNIFatalError(env, "H5Pset_mdc_config: loading apply_max_increment failed");
         return;
     }
@@ -4642,7 +4642,7 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1mdc_1config
         return;
     }
     cacheinfo.max_increment = ENVPTR->GetLongField(ENVPAR cache_config, fid);
-    if(ENVPTR->ExceptionOccurred(env)) {
+    if(ENVPTR->ExceptionOccurred()) {
         h5JNIFatalError(env, "H5Pset_mdc_config: loading max_increment failed");
         return;
     }
@@ -4653,7 +4653,7 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1mdc_1config
         return;
     }
     cacheinfo.flash_incr_mode = ENVPTR->GetIntField(ENVPAR cache_config, fid);
-    if(ENVPTR->ExceptionOccurred(env)) {
+    if(ENVPTR->ExceptionOccurred()) {
         h5JNIFatalError(env, "H5Pset_mdc_config: loading flash_incr_mode failed");
         return;
     }
@@ -4664,7 +4664,7 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1mdc_1config
         return;
     }
     cacheinfo.flash_multiple = ENVPTR->GetDoubleField(ENVPAR cache_config, fid);
-    if(ENVPTR->ExceptionOccurred(env)) {
+    if(ENVPTR->ExceptionOccurred()) {
         h5JNIFatalError(env, "H5Pset_mdc_config: loading flash_multiple failed");
         return;
     }
@@ -4675,7 +4675,7 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1mdc_1config
         return;
     }
     cacheinfo.flash_threshold = ENVPTR->GetDoubleField(ENVPAR cache_config, fid);
-    if(ENVPTR->ExceptionOccurred(env)) {
+    if(ENVPTR->ExceptionOccurred()) {
         h5JNIFatalError(env, "H5Pset_mdc_config: loading flash_threshold failed");
         return;
     }
@@ -4686,7 +4686,7 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1mdc_1config
         return;
     }
     cacheinfo.decr_mode = ENVPTR->GetIntField(ENVPAR cache_config, fid);
-    if(ENVPTR->ExceptionOccurred(env)) {
+    if(ENVPTR->ExceptionOccurred()) {
         h5JNIFatalError(env, "H5Pset_mdc_config: loading decr_mode failed");
         return;
     }
@@ -4697,7 +4697,7 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1mdc_1config
         return;
     }
     cacheinfo.upper_hr_threshold = ENVPTR->GetDoubleField(ENVPAR cache_config, fid);
-    if(ENVPTR->ExceptionOccurred(env)) {
+    if(ENVPTR->ExceptionOccurred()) {
         h5JNIFatalError(env, "H5Pset_mdc_config: loading upper_hr_threshold failed");
         return;
     }
@@ -4708,7 +4708,7 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1mdc_1config
         return;
     }
     cacheinfo.decrement = ENVPTR->GetDoubleField(ENVPAR cache_config, fid);
-    if(ENVPTR->ExceptionOccurred(env)) {
+    if(ENVPTR->ExceptionOccurred()) {
         h5JNIFatalError(env, "H5Pset_mdc_config: loading decrement failed");
         return;
     }
@@ -4719,7 +4719,7 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1mdc_1config
         return;
     }
     cacheinfo.apply_max_decrement = ENVPTR->GetBooleanField(ENVPAR cache_config, fid);
-    if(ENVPTR->ExceptionOccurred(env)) {
+    if(ENVPTR->ExceptionOccurred()) {
         h5JNIFatalError(env, "H5Pset_mdc_config: loading apply_max_decrement failed");
         return;
     }
@@ -4730,7 +4730,7 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1mdc_1config
         return;
     }
     cacheinfo.max_decrement = ENVPTR->GetLongField(ENVPAR cache_config, fid);
-    if(ENVPTR->ExceptionOccurred(env)) {
+    if(ENVPTR->ExceptionOccurred()) {
         h5JNIFatalError(env, "H5Pset_mdc_config: loading max_decrement failed");
         return;
     }
@@ -4741,7 +4741,7 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1mdc_1config
         return;
     }
     cacheinfo.epochs_before_eviction = ENVPTR->GetIntField(ENVPAR cache_config, fid);
-    if(ENVPTR->ExceptionOccurred(env)) {
+    if(ENVPTR->ExceptionOccurred()) {
         h5JNIFatalError(env, "H5Pset_mdc_config: loading epochs_before_eviction failed");
         return;
     }
@@ -4752,7 +4752,7 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1mdc_1config
         return;
     }
     cacheinfo.apply_empty_reserve = ENVPTR->GetBooleanField(ENVPAR cache_config, fid);
-    if(ENVPTR->ExceptionOccurred(env)) {
+    if(ENVPTR->ExceptionOccurred()) {
         h5JNIFatalError(env, "H5Pset_mdc_config: loading apply_empty_reserve failed");
         return;
     }
@@ -4763,7 +4763,7 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1mdc_1config
         return;
     }
     cacheinfo.empty_reserve = ENVPTR->GetDoubleField(ENVPAR cache_config, fid);
-    if(ENVPTR->ExceptionOccurred(env)) {
+    if(ENVPTR->ExceptionOccurred()) {
         h5JNIFatalError(env, "H5Pset_mdc_config: loading empty_reserve failed");
         return;
     }
@@ -4774,7 +4774,7 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1mdc_1config
         return;
     }
     cacheinfo.dirty_bytes_threshold = ENVPTR->GetIntField(ENVPAR cache_config, fid);
-    if(ENVPTR->ExceptionOccurred(env)) {
+    if(ENVPTR->ExceptionOccurred()) {
         h5JNIFatalError(env, "H5Pset_mdc_config: loading dirty_bytes_threshold failed");
         return;
     }
@@ -4785,7 +4785,7 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1mdc_1config
         return;
     }
     cacheinfo.metadata_write_strategy = ENVPTR->GetIntField(ENVPAR cache_config, fid);    
-    if(ENVPTR->ExceptionOccurred(env)) {
+    if(ENVPTR->ExceptionOccurred()) {
         h5JNIFatalError(env, "H5Pset_mdc_config: loading metadata_write_strategy failed");
         return;
     }
