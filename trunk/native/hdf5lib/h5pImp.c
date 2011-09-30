@@ -32,6 +32,7 @@ extern "C" {
 #include "hdf5.h"
 #include "h5jni.h"
 #include "h5pImp.h"
+#include "h5util.h"
 
 #ifndef FALSE
 #define FALSE 0
