@@ -1077,7 +1077,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1cache
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1buffer
   (JNIEnv *env, jclass clss, jint plist, jlong size, jbyteArray tconv, jbyteArray bkg)
 {
-    h5JNIFatalError(env, "H5Pset_buffer:  not implemented");
+    h5unimplemented(env, "H5Pset_buffer:  not implemented");
     return -1;
 #ifdef notdef
 
@@ -1133,7 +1133,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1buffer
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1buffer
   (JNIEnv *env, jclass clss, jint plist, jbyteArray tconv, jbyteArray bkg)
 {
-    h5JNIFatalError(env, "H5Pset_buffer:  not implemented");
+    h5unimplemented(env, "H5Pset_buffer:  not implemented");
     return -1;
 #ifdef notdef
 
@@ -4340,7 +4340,7 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1elink_1file_1cache_1size
         h5libraryError(env);
     }
 #else
-    h5JNIFatalError(env, "H5Pset_elink_file_cache_size: only available > 1.8.6");
+    h5unimplemented(env, "H5Pset_elink_file_cache_size: only available > 1.8.6");
 #endif
 }
 
@@ -4365,7 +4365,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1elink_1file_1cache_1size
 
     return (jint)s;
 #else
-    h5JNIFatalError(env, "H5Pget_elink_file_cache_size: only available > 1.8.6");
+    h5unimplemented(env, "H5Pget_elink_file_cache_size: only available > 1.8.6");
     return -1;
 #endif
 }

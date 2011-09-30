@@ -417,7 +417,7 @@ public class TestH5Pfapl {
                 efc_size = H5.H5Pget_elink_file_cache_size(elink_fapl_id);
                 assertTrue("H5P_elink_file_cache_size default", efc_size == 0);
             }
-            catch (HDF5LibraryException err) {
+            catch (UnsupportedOperationException err) {
                 err.printStackTrace();
             }
             try {
@@ -426,7 +426,7 @@ public class TestH5Pfapl {
                 efc_size = H5.H5Pget_elink_file_cache_size(elink_fapl_id);
                 assertTrue("H5P_elink_file_cache_size 8", efc_size == 8);
             }
-            catch (HDF5LibraryException err) {
+            catch (UnsupportedOperationException err) {
                 err.printStackTrace();
             }
         }
