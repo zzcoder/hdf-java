@@ -28,20 +28,7 @@ extern "C" {
 #include "hdf5.h"
 #include <stdlib.h>
 #include <jni.h>
-
-#ifdef __cplusplus
-#define ENVPTR (env)
-#define ENVPAR 
-#else
-#define ENVPTR (*env)
-#define ENVPAR env
-#endif
-
-extern jboolean h5outOfMemory( JNIEnv *env, char *functName);
-extern jboolean h5JNIFatalError( JNIEnv *env, char *functName);
-extern jboolean h5nullArgument( JNIEnv *env, char *functName);
-extern jboolean h5libraryError( JNIEnv *env );
-extern jboolean h5badArgument( JNIEnv *env, char *functName);
+#include "h5jni.h"
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
@@ -98,8 +85,8 @@ JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Iget_1name
         /*  exception, returns immediately */
     }
     /* successful return -- save the string; */
-    str = ENVPTR->NewStringUTF(ENVPAR, aName);
-    ENVPTR->SetObjectArrayElement(ENVPAR, name,0,str);
+    str = ENVPTR->NewStringUTF(ENVPAR aName);
+    ENVPTR->SetObjectArrayElement(ENVPAR name,0,str);
 
     free(aName);
     return (jlong)size;
@@ -196,16 +183,16 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Iget_1file_1id
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Iget_1type_1ref
   (JNIEnv *env, jclass clss, jint type)
 {
-	int retVal;
+  int retVal;
 
-	retVal = H5Iget_type_ref((H5I_type_t)type);
+  retVal = H5Iget_type_ref((H5I_type_t)type);
 
-	
-	if (retVal <0){
-		h5libraryError(env);
-	}
+  
+  if (retVal <0){
+    h5libraryError(env);
+  }
 
-	return (jint)retVal;
+  return (jint)retVal;
 
 }
 
@@ -223,8 +210,8 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Inmembers
    retVal = H5Inmembers((H5I_type_t)type, &num_members);
 
    if (retVal <0){
-		h5libraryError(env);
-	}
+    h5libraryError(env);
+  }
 
    return (jint)num_members;
 

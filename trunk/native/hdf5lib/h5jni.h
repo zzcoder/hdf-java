@@ -20,9 +20,11 @@
 #ifdef __cplusplus
 #define ENVPTR (env)
 #define ENVPAR
+#define ENVONLY
 #else
 #define ENVPTR (*env)
-#define ENVPAR env
+#define ENVPAR env,
+#define ENVONLY env
 #endif
 
 #ifdef __cplusplus

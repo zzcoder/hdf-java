@@ -34,16 +34,12 @@ extern "C" {
 #include "h5lImp.h"
 
 #ifdef __cplusplus
-#define ENVPTR (env)
-#define ENVPAR 
 #define CBENVPTR (cbenv)
 #define CBENVPAR 
 #define JVMPTR (jvm)
 #define JVMPAR 
 #define JVMPAR2 
 #else
-#define ENVPTR (*env)
-#define ENVPAR env
 #define CBENVPTR (*cbenv)
 #define CBENVPAR cbenv,
 #define JVMPTR (*jvm)
@@ -69,29 +65,29 @@ extern "C" {
             return;
         }
         
-        lCurName = (char*)ENVPTR->GetStringUTFChars(ENVPAR, cur_name, &isCopy);
+        lCurName = (char*)ENVPTR->GetStringUTFChars(ENVPAR cur_name, &isCopy);
         if (lCurName == NULL) {
             h5JNIFatalError(env, "H5Lcopy:  cur_name not pinned");
             return;
         }
         
         if (dst_name == NULL) {
-            ENVPTR->ReleaseStringUTFChars(ENVPAR, cur_name, lCurName);
+            ENVPTR->ReleaseStringUTFChars(ENVPAR cur_name, lCurName);
             h5nullArgument(env, "H5Lcopy:  dst_name is NULL");
             return;
         }
         
-        lDstName = (char*)ENVPTR->GetStringUTFChars(ENVPAR, dst_name, &isCopy);
+        lDstName = (char*)ENVPTR->GetStringUTFChars(ENVPAR dst_name, &isCopy);
         if (lDstName == NULL) {
-            ENVPTR->ReleaseStringUTFChars(ENVPAR, cur_name, lCurName);
+            ENVPTR->ReleaseStringUTFChars(ENVPAR cur_name, lCurName);
             h5JNIFatalError(env, "H5Lcopy:  dst_name not pinned");
             return;
         }
 
         status = H5Lcopy((hid_t)cur_loc_id, (const char*)lCurName, (hid_t)dst_loc_id, (const char*)lDstName, (hid_t)create_id, (hid_t)access_id);
 
-        ENVPTR->ReleaseStringUTFChars(ENVPAR, cur_name, lCurName);
-        ENVPTR->ReleaseStringUTFChars(ENVPAR, dst_name, lDstName);
+        ENVPTR->ReleaseStringUTFChars(ENVPAR cur_name, lCurName);
+        ENVPTR->ReleaseStringUTFChars(ENVPAR dst_name, lDstName);
         
         if (status < 0) {
            h5libraryError(env);
@@ -120,45 +116,45 @@ extern "C" {
           return;
       }
       
-      lFileName = (char*)ENVPTR->GetStringUTFChars(ENVPAR, file_name, &isCopy);
+      lFileName = (char*)ENVPTR->GetStringUTFChars(ENVPAR file_name, &isCopy);
       if (lFileName == NULL) {
           h5JNIFatalError(env, "H5Lcreate_external:  file_name not pinned");
           return;
       }
      
       if (cur_name == NULL) {
-          ENVPTR->ReleaseStringUTFChars(ENVPAR, file_name, lFileName);
+          ENVPTR->ReleaseStringUTFChars(ENVPAR file_name, lFileName);
           h5nullArgument(env, "H5Lcreate_external:  cur_name is NULL");
           return;
       }
       
-      lCurName = (char*)ENVPTR->GetStringUTFChars(ENVPAR, cur_name,&isCopy);
+      lCurName = (char*)ENVPTR->GetStringUTFChars(ENVPAR cur_name,&isCopy);
       if (lCurName == NULL) {
-          ENVPTR->ReleaseStringUTFChars(ENVPAR, file_name, lFileName);
+          ENVPTR->ReleaseStringUTFChars(ENVPAR file_name, lFileName);
           h5JNIFatalError(env, "H5Lcreate_external:  cur_name not pinned");
           return;
       }
       
       if (dst_name == NULL) {
-          ENVPTR->ReleaseStringUTFChars(ENVPAR, file_name, lFileName);
-          ENVPTR->ReleaseStringUTFChars(ENVPAR, cur_name, lCurName);
+          ENVPTR->ReleaseStringUTFChars(ENVPAR file_name, lFileName);
+          ENVPTR->ReleaseStringUTFChars(ENVPAR cur_name, lCurName);
           h5nullArgument(env, "H5Lcreate_external:  dst_name is NULL");
           return;
       }
       
-      lDstName = (char*)ENVPTR->GetStringUTFChars(ENVPAR, dst_name, &isCopy);
+      lDstName = (char*)ENVPTR->GetStringUTFChars(ENVPAR dst_name, &isCopy);
       if (lDstName == NULL) {
-          ENVPTR->ReleaseStringUTFChars(ENVPAR, file_name, lFileName);
-          ENVPTR->ReleaseStringUTFChars(ENVPAR, cur_name, lCurName);
+          ENVPTR->ReleaseStringUTFChars(ENVPAR file_name, lFileName);
+          ENVPTR->ReleaseStringUTFChars(ENVPAR cur_name, lCurName);
           h5JNIFatalError(env, "H5Lcreate_external:  dst_name not pinned");
           return;
       }
 
       status = H5Lcreate_external((const char*)lFileName, (const char*)lCurName, (hid_t)dst_loc_id, (const char*)lDstName, (hid_t)create_id, (hid_t)access_id);
 
-      ENVPTR->ReleaseStringUTFChars(ENVPAR, file_name, lFileName);
-      ENVPTR->ReleaseStringUTFChars(ENVPAR, cur_name, lCurName);
-      ENVPTR->ReleaseStringUTFChars(ENVPAR, dst_name, lDstName);
+      ENVPTR->ReleaseStringUTFChars(ENVPAR file_name, lFileName);
+      ENVPTR->ReleaseStringUTFChars(ENVPAR cur_name, lCurName);
+      ENVPTR->ReleaseStringUTFChars(ENVPAR dst_name, lDstName);
       
       if (status < 0) {
          h5libraryError(env);
@@ -186,29 +182,29 @@ extern "C" {
             return;
         }
         
-        lCurName = (char*)ENVPTR->GetStringUTFChars(ENVPAR, cur_name, &isCopy);
+        lCurName = (char*)ENVPTR->GetStringUTFChars(ENVPAR cur_name, &isCopy);
         if (lCurName == NULL) {
             h5JNIFatalError(env, "H5Lcreate_hard:  cur_name not pinned");
             return;
         }
         
         if (dst_name == NULL) {
-            ENVPTR->ReleaseStringUTFChars(ENVPAR, cur_name, lCurName);
+            ENVPTR->ReleaseStringUTFChars(ENVPAR cur_name, lCurName);
             h5nullArgument(env, "H5Lcreate_hard:  dst_name is NULL");
             return;
         }
         
-        lDstName = (char*)ENVPTR->GetStringUTFChars(ENVPAR, dst_name, &isCopy);
+        lDstName = (char*)ENVPTR->GetStringUTFChars(ENVPAR dst_name, &isCopy);
         if (lDstName == NULL) {
-            ENVPTR->ReleaseStringUTFChars(ENVPAR, cur_name, lCurName);
+            ENVPTR->ReleaseStringUTFChars(ENVPAR cur_name, lCurName);
             h5JNIFatalError(env, "H5Lcreate_hard:  dst_name not pinned");
             return;
         }
 
         status = H5Lcreate_hard((hid_t)cur_loc_id, (const char*)lCurName, (hid_t)dst_loc_id, (const char*)lDstName, (hid_t)create_id, (hid_t)access_id);
 
-        ENVPTR->ReleaseStringUTFChars(ENVPAR, cur_name, lCurName);
-        ENVPTR->ReleaseStringUTFChars(ENVPAR, dst_name, lDstName);
+        ENVPTR->ReleaseStringUTFChars(ENVPAR cur_name, lCurName);
+        ENVPTR->ReleaseStringUTFChars(ENVPAR dst_name, lDstName);
         
         if (status < 0) {
            h5libraryError(env);
@@ -236,29 +232,29 @@ extern "C" {
             return;
         }
         
-        lCurName = (char*)ENVPTR->GetStringUTFChars(ENVPAR, cur_name, &isCopy);
+        lCurName = (char*)ENVPTR->GetStringUTFChars(ENVPAR cur_name, &isCopy);
         if (lCurName == NULL) {
             h5JNIFatalError(env, "H5Lcreate_soft:  cur_name not pinned");
             return;
         }
         
         if (dst_name == NULL) {
-            ENVPTR->ReleaseStringUTFChars(ENVPAR, cur_name, lCurName);
+            ENVPTR->ReleaseStringUTFChars(ENVPAR cur_name, lCurName);
             h5nullArgument(env, "H5Lcreate_soft:  dst_name is NULL");
             return;
         }
         
-        lDstName = (char*)ENVPTR->GetStringUTFChars(ENVPAR, dst_name,&isCopy);
+        lDstName = (char*)ENVPTR->GetStringUTFChars(ENVPAR dst_name,&isCopy);
         if (lDstName == NULL) {
-            ENVPTR->ReleaseStringUTFChars(ENVPAR, cur_name, lCurName);
+            ENVPTR->ReleaseStringUTFChars(ENVPAR cur_name, lCurName);
             h5JNIFatalError(env, "H5Lcreate_soft:  dst_name not pinned");
             return;
         }
 
         status = H5Lcreate_soft((const char*)lCurName, (hid_t)dst_loc_id, (const char*)lDstName, (hid_t)create_id, (hid_t)access_id);
 
-        ENVPTR->ReleaseStringUTFChars(ENVPAR, cur_name, lCurName);
-        ENVPTR->ReleaseStringUTFChars(ENVPAR, dst_name, lDstName);
+        ENVPTR->ReleaseStringUTFChars(ENVPAR cur_name, lCurName);
+        ENVPTR->ReleaseStringUTFChars(ENVPAR dst_name, lDstName);
         
         if (status < 0) {
            h5libraryError(env);
@@ -285,7 +281,7 @@ extern "C" {
             return;
         }
         
-        lName = (char*)ENVPTR->GetStringUTFChars(ENVPAR, name, &isCopy);
+        lName = (char*)ENVPTR->GetStringUTFChars(ENVPAR name, &isCopy);
         if (lName == NULL) {
             h5JNIFatalError(env, "H5Ldelete:  name not pinned");
             return;
@@ -293,7 +289,7 @@ extern "C" {
         
         status = H5Ldelete((hid_t)loc_id, (const char*)lName, (hid_t)access_id);
         
-        ENVPTR->ReleaseStringUTFChars(ENVPAR, name, lName);
+        ENVPTR->ReleaseStringUTFChars(ENVPAR name, lName);
         
         if (status < 0) {
             h5libraryError(env);
@@ -318,7 +314,7 @@ extern "C" {
             return;
         }
         
-        lName = (char*)ENVPTR->GetStringUTFChars(ENVPAR, name, &isCopy);
+        lName = (char*)ENVPTR->GetStringUTFChars(ENVPAR name, &isCopy);
         if (lName == NULL) {
             h5JNIFatalError(env, "H5Ldelete_by_idx:  name not pinned");
             return;
@@ -326,7 +322,7 @@ extern "C" {
 
         status = H5Ldelete_by_idx((hid_t)loc_id, (const char*)lName, (H5_index_t)index_field, (H5_iter_order_t)order, (hsize_t)link_n, (hid_t)access_id);
 
-        ENVPTR->ReleaseStringUTFChars(ENVPAR, name, lName);
+        ENVPTR->ReleaseStringUTFChars(ENVPAR name, lName);
 
         if (status < 0) {
            h5libraryError(env);
@@ -351,14 +347,14 @@ extern "C" {
             return JNI_FALSE;
         }
         
-        lName = (char*)ENVPTR->GetStringUTFChars(ENVPAR, name, &isCopy);
+        lName = (char*)ENVPTR->GetStringUTFChars(ENVPAR name, &isCopy);
         if (lName == NULL) {
             h5JNIFatalError(env, "H5Lexists:  name not pinned");
             return JNI_FALSE;
         }
         
         bval = H5Lexists((hid_t)loc_id, (const char*)lName, (hid_t)access_id);
-        ENVPTR->ReleaseStringUTFChars(ENVPAR, name, lName);
+        ENVPTR->ReleaseStringUTFChars(ENVPAR name, lName);
         
         if (bval > 0) {
             return JNI_TRUE;
@@ -394,7 +390,7 @@ extern "C" {
             return NULL;
         }
         
-        lName = (char*)ENVPTR->GetStringUTFChars(ENVPAR, name, &isCopy);
+        lName = (char*)ENVPTR->GetStringUTFChars(ENVPAR name, &isCopy);
         if (lName == NULL) {
             h5JNIFatalError(env, "H5Lget_info:  name not pinned");
             return NULL;
@@ -402,7 +398,7 @@ extern "C" {
 
         status = H5Lget_info((hid_t)loc_id, (const char*)lName, (H5L_info_t*)&infobuf, (hid_t)access_id);
 
-        ENVPTR->ReleaseStringUTFChars(ENVPAR, name, lName);
+        ENVPTR->ReleaseStringUTFChars(ENVPAR name, lName);
 
         if (status < 0) {
            h5libraryError(env);
@@ -410,13 +406,13 @@ extern "C" {
         }
 
         // get a reference to your class if you don't have it already
-        cls = ENVPTR->FindClass(ENVPAR, "ncsa/hdf/hdf5lib/structs/H5L_info_t");
+        cls = ENVPTR->FindClass(ENVPAR "ncsa/hdf/hdf5lib/structs/H5L_info_t");
         if (cls == 0) {
            h5JNIFatalError( env, "JNI error: GetObjectClass failed\n");
            return NULL;
         }
         // get a reference to the constructor; the name is <init>
-        constructor = ENVPTR->GetMethodID(ENVPAR, cls, "<init>", "(IZJIJ)V");
+        constructor = ENVPTR->GetMethodID(ENVPAR cls, "<init>", "(IZJIJ)V");
         if (constructor == 0) {
             h5JNIFatalError( env, "JNI error: GetMethodID failed\n");
            return NULL;
@@ -429,7 +425,7 @@ extern "C" {
             args[4].j = infobuf.u.address;
         else
             args[4].j = infobuf.u.val_size;
-        ret_info_t = ENVPTR->NewObjectA(ENVPAR, cls, constructor, args);
+        ret_info_t = ENVPTR->NewObjectA(ENVPAR cls, constructor, args);
         return ret_info_t;
     }
     
@@ -455,7 +451,7 @@ extern "C" {
             return NULL;
         }
         
-        lName = (char*)ENVPTR->GetStringUTFChars(ENVPAR, name, &isCopy);
+        lName = (char*)ENVPTR->GetStringUTFChars(ENVPAR name, &isCopy);
         if (lName == NULL) {
             h5JNIFatalError(env, "H5Lget_info_by_idx:  name not pinned");
             return NULL;
@@ -463,7 +459,7 @@ extern "C" {
 
         status = H5Lget_info_by_idx((hid_t)loc_id, (const char*)lName, (H5_index_t)index_field, (H5_iter_order_t)order, (hsize_t)link_n, (H5L_info_t*)&infobuf, (hid_t)access_id);
 
-        ENVPTR->ReleaseStringUTFChars(ENVPAR, name, lName);
+        ENVPTR->ReleaseStringUTFChars(ENVPAR name, lName);
 
         if (status < 0) {
            h5libraryError(env);
@@ -471,13 +467,13 @@ extern "C" {
         }
 
         // get a reference to your class if you don't have it already
-        cls = ENVPTR->FindClass(ENVPAR, "ncsa/hdf/hdf5lib/structs/H5L_info_t");
+        cls = ENVPTR->FindClass(ENVPAR "ncsa/hdf/hdf5lib/structs/H5L_info_t");
         if (cls == 0) {
             h5JNIFatalError(env, "JNI error: GetObjectClass failed\n");
            return NULL;
         }
         // get a reference to the constructor; the name is <init>
-        constructor = ENVPTR->GetMethodID(ENVPAR, cls, "<init>", "(IZJIJ)V");
+        constructor = ENVPTR->GetMethodID(ENVPAR cls, "<init>", "(IZJIJ)V");
         if (constructor == 0) {
             h5JNIFatalError(env, "JNI error: GetMethodID failed\n");
            return NULL;
@@ -490,7 +486,7 @@ extern "C" {
             args[4].j = infobuf.u.address;
         else
             args[4].j = infobuf.u.val_size;
-        ret_info_t = ENVPTR->NewObjectA(ENVPAR, cls, constructor, args);
+        ret_info_t = ENVPTR->NewObjectA(ENVPAR cls, constructor, args);
         return ret_info_t;
     }
     
@@ -514,7 +510,7 @@ extern "C" {
             return NULL;
         }
         
-        lName = (char*)ENVPTR->GetStringUTFChars(ENVPAR, name, &isCopy);
+        lName = (char*)ENVPTR->GetStringUTFChars(ENVPAR name, &isCopy);
         if (lName == NULL) {
             h5JNIFatalError(env, "H5Lget_name_by_idx:  name not pinned");
             return NULL;
@@ -523,7 +519,7 @@ extern "C" {
         /* get the length of the link name */
         status_size = H5Lget_name_by_idx((hid_t)loc_id, (const char*)lName, (H5_index_t)index_field, (H5_iter_order_t)order, (hsize_t)link_n, (char*)NULL, (size_t)0, (hid_t)H5P_DEFAULT);
         if(status_size < 0) {
-            ENVPTR->ReleaseStringUTFChars(ENVPAR, name, lName);
+            ENVPTR->ReleaseStringUTFChars(ENVPAR name, lName);
             h5libraryError(env);
             return NULL;
         }
@@ -531,14 +527,14 @@ extern "C" {
         
         lValue = (char*)malloc(sizeof(char) * buf_size);
         if (lValue == NULL) {
-            ENVPTR->ReleaseStringUTFChars(ENVPAR, name, lName);
+            ENVPTR->ReleaseStringUTFChars(ENVPAR name, lName);
             h5outOfMemory(env, "H5Lget_name_by_idx:  malloc failed ");
             return NULL;
         }
 
         status_size = H5Lget_name_by_idx((hid_t)loc_id, (const char*)lName, (H5_index_t)index_field, (H5_iter_order_t)order, (hsize_t)link_n, (char*)lValue, (size_t)buf_size, (hid_t)access_id);
 
-        ENVPTR->ReleaseStringUTFChars(ENVPAR, name, lName);
+        ENVPTR->ReleaseStringUTFChars(ENVPAR name, lName);
 
         if (status_size < 0) {
             free(lValue);
@@ -546,7 +542,7 @@ extern "C" {
             return NULL;
         }
         /* may throw OutOfMemoryError */
-        str = ENVPTR->NewStringUTF(ENVPAR, lValue);
+        str = ENVPTR->NewStringUTF(ENVPAR lValue);
         if (str == NULL) {
             /* exception -- fatal JNI error */
             free(lValue);
@@ -582,7 +578,7 @@ extern "C" {
             return -1;
         }
         
-        lName = (char*)ENVPTR->GetStringUTFChars(ENVPAR, name,&isCopy);
+        lName = (char*)ENVPTR->GetStringUTFChars(ENVPAR name,&isCopy);
         if (lName == NULL) {
             h5JNIFatalError(env, "H5Lget_val:  name not pinned");
             return -1;
@@ -591,28 +587,28 @@ extern "C" {
         /* get the length of the link val */
         status = H5Lget_info((hid_t)loc_id, (const char*)lName, (H5L_info_t*)&infobuf, (hid_t)H5P_DEFAULT);
         if(status < 0) {
-            ENVPTR->ReleaseStringUTFChars(ENVPAR, name, lName);
+            ENVPTR->ReleaseStringUTFChars(ENVPAR name, lName);
             h5libraryError(env);
             return -1;
         }
         buf_size = infobuf.u.val_size + 1;/* add extra space for the null terminator */
         
         if(infobuf.type == H5L_TYPE_HARD) {
-            ENVPTR->ReleaseStringUTFChars(ENVPAR, name, lName);
+            ENVPTR->ReleaseStringUTFChars(ENVPAR name, lName);
             h5JNIFatalError(env, "H5Lget_val:  link is hard type");
             return -1;
         }
         
         lValue = (char*)malloc(sizeof(char) * buf_size);
         if (lValue == NULL) {
-            ENVPTR->ReleaseStringUTFChars(ENVPAR, name, lName);
+            ENVPTR->ReleaseStringUTFChars(ENVPAR name, lName);
             h5outOfMemory(env, "H5Lget_val:  malloc failed");
             return -1;
         }
 
         status = H5Lget_val((hid_t)loc_id, (const char*)lName, (void*)lValue, (size_t)buf_size, (hid_t)access_id);
 
-        ENVPTR->ReleaseStringUTFChars(ENVPAR, name, lName);
+        ENVPTR->ReleaseStringUTFChars(ENVPAR name, lName);
         if (status < 0) {
            free(lValue);
            h5libraryError(env);
@@ -627,33 +623,33 @@ extern "C" {
                return -1;
             }
             
-            str = ENVPTR->NewStringUTF(ENVPAR, obj_name);
+            str = ENVPTR->NewStringUTF(ENVPAR obj_name);
             if (str == NULL) {
                 /* exception -- fatal JNI error */
                 free(lValue);
                 h5JNIFatalError(env, "H5Lget_val:  return string not created");
                 return -1;
             }
-            ENVPTR->SetObjectArrayElement(ENVPAR, link_value, 0, str);
+            ENVPTR->SetObjectArrayElement(ENVPAR link_value, 0, str);
             
-            str = ENVPTR->NewStringUTF(ENVPAR, file_name);
+            str = ENVPTR->NewStringUTF(ENVPAR file_name);
             if (str == NULL) {
                 /* exception -- fatal JNI error */
                 free(lValue);
                 h5JNIFatalError(env, "H5Lget_val:  return string not created");
                 return -1;
             }
-            ENVPTR->SetObjectArrayElement(ENVPAR, link_value, 1, str);
+            ENVPTR->SetObjectArrayElement(ENVPAR link_value, 1, str);
         }
         else {
-            str = ENVPTR->NewStringUTF(ENVPAR, lValue);
+            str = ENVPTR->NewStringUTF(ENVPAR lValue);
             if (str == NULL) {
                 /* exception -- fatal JNI error */
                 free(lValue);
                 h5JNIFatalError(env, "H5Lget_val:  return string not created");
                 return -1;
             }
-            ENVPTR->SetObjectArrayElement(ENVPAR, link_value, 0, str);
+            ENVPTR->SetObjectArrayElement(ENVPAR link_value, 0, str);
         }
 
         free(lValue);
@@ -685,7 +681,7 @@ extern "C" {
             return -1;
         }
         
-        lName = (char*)ENVPTR->GetStringUTFChars(ENVPAR, name, &isCopy);
+        lName = (char*)ENVPTR->GetStringUTFChars(ENVPAR name, &isCopy);
         if (lName == NULL) {
             h5JNIFatalError(env, "H5Lget_val_by_idx:  name not pinned");
             return -1;
@@ -694,26 +690,26 @@ extern "C" {
         /* get the length of the link valuee */
         status = H5Lget_info_by_idx((hid_t)loc_id, (const char*)lName, (H5_index_t)index_field, (H5_iter_order_t)order, (hsize_t)link_n, (H5L_info_t*)&infobuf, (hid_t)access_id);
         if(status < 0) {
-            ENVPTR->ReleaseStringUTFChars(ENVPAR, name, lName);
+            ENVPTR->ReleaseStringUTFChars(ENVPAR name, lName);
             h5libraryError(env);
             return -1;
         }
         buf_size = infobuf.u.val_size;
         if(buf_size < 0) {
-            ENVPTR->ReleaseStringUTFChars(ENVPAR, name, lName);
+            ENVPTR->ReleaseStringUTFChars(ENVPAR name, lName);
             h5libraryError(env);
             return -1;
         }
         lValue = (void*)malloc(buf_size);
         if (lValue == NULL) {
-            ENVPTR->ReleaseStringUTFChars(ENVPAR, name, lName);
+            ENVPTR->ReleaseStringUTFChars(ENVPAR name, lName);
             h5outOfMemory(env, "H5Lget_val_by_idx:  malloc failed ");
             return -1;
         }
 
         status = H5Lget_val_by_idx((hid_t)loc_id, (const char*)lName, (H5_index_t)index_field, (H5_iter_order_t)order, (hsize_t)link_n, (void*)lValue, (size_t)buf_size, (hid_t)access_id);
 
-        ENVPTR->ReleaseStringUTFChars(ENVPAR, name, lName);
+        ENVPTR->ReleaseStringUTFChars(ENVPAR name, lName);
         if (status < 0) {
            free(lValue);
            h5libraryError(env);
@@ -728,33 +724,33 @@ extern "C" {
                return -1;
             }
             
-            str = ENVPTR->NewStringUTF(ENVPAR, obj_name);
+            str = ENVPTR->NewStringUTF(ENVPAR obj_name);
             if (str == NULL) {
                 /* exception -- fatal JNI error */
                 free(lValue);
                 h5JNIFatalError(env, "H5Lget_val_by_idx:  return string not created");
                 return -1;
             }
-            ENVPTR->SetObjectArrayElement(ENVPAR, link_value, 0, str);
+            ENVPTR->SetObjectArrayElement(ENVPAR link_value, 0, str);
             
-            str = ENVPTR->NewStringUTF(ENVPAR, file_name);
+            str = ENVPTR->NewStringUTF(ENVPAR file_name);
             if (str == NULL) {
                 /* exception -- fatal JNI error */
                 free(lValue);
                 h5JNIFatalError(env, "H5Lget_val_by_idx:  return string not created");
                 return -1;
             }
-            ENVPTR->SetObjectArrayElement(ENVPAR, link_value, 1, str);
+            ENVPTR->SetObjectArrayElement(ENVPAR link_value, 1, str);
         }
         else {
-            str = ENVPTR->NewStringUTF(ENVPAR, (char *)lValue);
+            str = ENVPTR->NewStringUTF(ENVPAR (char *)lValue);
             if (str == NULL) {
                 /* exception -- fatal JNI error */
                 free(lValue);
                 h5JNIFatalError(env, "H5Lget_val_by_idx:  return string not created");
                 return -1;
             }
-            ENVPTR->SetObjectArrayElement(ENVPAR, link_value, 0, str);
+            ENVPTR->SetObjectArrayElement(ENVPAR link_value, 0, str);
         }
 
         free(lValue);
@@ -780,29 +776,29 @@ extern "C" {
             return;
         }
         
-        lCurName = (char*)ENVPTR->GetStringUTFChars(ENVPAR, cur_name, &isCopy);
+        lCurName = (char*)ENVPTR->GetStringUTFChars(ENVPAR cur_name, &isCopy);
         if (lCurName == NULL) {
             h5JNIFatalError(env, "H5Lcreate_hard:  cur_name not pinned");
             return;
         }
         
         if (dst_name == NULL) {
-            ENVPTR->ReleaseStringUTFChars(ENVPAR, cur_name, lCurName);
+            ENVPTR->ReleaseStringUTFChars(ENVPAR cur_name, lCurName);
             h5nullArgument(env, "H5Lcreate_hard:  dst_name is NULL");
             return;
         }
         
-        lDstName = (char*)ENVPTR->GetStringUTFChars(ENVPAR, dst_name, &isCopy);
+        lDstName = (char*)ENVPTR->GetStringUTFChars(ENVPAR dst_name, &isCopy);
         if (lDstName == NULL) {
-            ENVPTR->ReleaseStringUTFChars(ENVPAR, cur_name, lCurName);
+            ENVPTR->ReleaseStringUTFChars(ENVPAR cur_name, lCurName);
             h5JNIFatalError( env, "H5Lcreate_hard:  dst_name not pinned");
             return;
         }
 
         status = H5Lmove((hid_t)cur_loc_id, (const char*)lCurName, (hid_t)dst_loc_id, (const char*)lDstName, (hid_t)create_id, (hid_t)access_id);
 
-        ENVPTR->ReleaseStringUTFChars(ENVPAR, cur_name, lCurName);
-        ENVPTR->ReleaseStringUTFChars(ENVPAR, dst_name, lDstName);
+        ENVPTR->ReleaseStringUTFChars(ENVPAR cur_name, lCurName);
+        ENVPTR->ReleaseStringUTFChars(ENVPAR dst_name, lDstName);
         
         if (status < 0) {
            h5libraryError(env);
@@ -882,7 +878,7 @@ extern "C" {
     {
         herr_t        status = -1;
         
-        ENVPTR->GetJavaVM(ENVPAR, &jvm);
+        ENVPTR->GetJavaVM(ENVPAR &jvm);
         visit_callback = callback_op;
 
         if (op_data == NULL) {
@@ -917,7 +913,7 @@ extern "C" {
         char         *lName;
         herr_t        status = -1;
         
-        ENVPTR->GetJavaVM(ENVPAR, &jvm);
+        ENVPTR->GetJavaVM(ENVPAR &jvm);
         visit_callback = callback_op;
         
         if (name == NULL) {
@@ -925,7 +921,7 @@ extern "C" {
             return -1;
         }
         
-        lName = (char*)ENVPTR->GetStringUTFChars(ENVPAR, name, &isCopy);
+        lName = (char*)ENVPTR->GetStringUTFChars(ENVPAR name, &isCopy);
         if (lName == NULL) {
             h5JNIFatalError(env, "H5Lvisit_by_name:  name not pinned");
             return -1;
@@ -942,7 +938,7 @@ extern "C" {
         
         status = H5Lvisit_by_name((hid_t)grp_id, (const char*)lName, (H5_index_t)idx_type, (H5_iter_order_t)order, (H5L_iterate_t)H5L_iterate_cb, (void*)op_data, (hid_t)access_id);
 
-        ENVPTR->ReleaseStringUTFChars(ENVPAR, name, lName);
+        ENVPTR->ReleaseStringUTFChars(ENVPAR name, lName);
         
         if (status < 0) {
            h5libraryError(env);
@@ -964,7 +960,7 @@ extern "C" {
         hsize_t       start_idx = (hsize_t)idx;
         herr_t        status = -1;
         
-        ENVPTR->GetJavaVM(ENVPAR, &jvm);
+        ENVPTR->GetJavaVM(ENVPAR &jvm);
         visit_callback = callback_op;
 
         if (op_data == NULL) {
@@ -1000,7 +996,7 @@ extern "C" {
         hsize_t       start_idx = (hsize_t)idx;
         herr_t        status = -1;
         
-        ENVPTR->GetJavaVM(ENVPAR, &jvm);
+        ENVPTR->GetJavaVM(ENVPAR &jvm);
         visit_callback = callback_op;
         
         if (name == NULL) {
@@ -1008,7 +1004,7 @@ extern "C" {
             return -1;
         }
         
-        lName = (char*)ENVPTR->GetStringUTFChars(ENVPAR, name, &isCopy);
+        lName = (char*)ENVPTR->GetStringUTFChars(ENVPAR name, &isCopy);
         if (lName == NULL) {
             h5JNIFatalError(env, "H5Literate_by_name:  name not pinned");
             return -1;
@@ -1025,7 +1021,7 @@ extern "C" {
         
         status = H5Literate_by_name((hid_t)grp_id, (const char*)lName, (H5_index_t)idx_type, (H5_iter_order_t)order, (hsize_t*)&start_idx, (H5L_iterate_t)H5L_iterate_cb, (void*)op_data, (hid_t)access_id);
 
-        ENVPTR->ReleaseStringUTFChars(ENVPAR, name, lName);
+        ENVPTR->ReleaseStringUTFChars(ENVPAR name, lName);
         
         if (status < 0) {
            h5libraryError(env);

@@ -34,16 +34,12 @@ extern "C" {
 #include "h5oImp.h"
 
 #ifdef __cplusplus
-#define ENVPTR (env)
-#define ENVPAR 
 #define CBENVPTR (cbenv)
 #define CBENVPAR 
 #define JVMPTR (jvm)
 #define JVMPAR 
 #define JVMPAR2 
 #else
-#define ENVPTR (*env)
-#define ENVPAR env
 #define CBENVPTR (*cbenv)
 #define CBENVPAR cbenv,
 #define JVMPTR (*jvm)
@@ -68,7 +64,7 @@ extern "C" {
             return -1;
         }
 
-        oName = (char *)ENVPTR->GetStringUTFChars(ENVPAR, name,&isCopy);
+        oName = (char *)ENVPTR->GetStringUTFChars(ENVPAR name,&isCopy);
 
         if (oName == NULL) {
             h5JNIFatalError( env, "H5Oopen:  object name not pinned");
@@ -77,7 +73,7 @@ extern "C" {
 
         status = H5Oopen((hid_t)loc_id, oName, (hid_t)access_plist_id );
 
-        ENVPTR->ReleaseStringUTFChars(ENVPAR, name, oName);
+        ENVPTR->ReleaseStringUTFChars(ENVPAR name, oName);
         if (status < 0) {
             h5libraryError(env);
         }
@@ -119,29 +115,29 @@ extern "C" {
             return;
         }
         
-        lCurName = (char*)ENVPTR->GetStringUTFChars(ENVPAR, cur_name, &isCopy);
+        lCurName = (char*)ENVPTR->GetStringUTFChars(ENVPAR cur_name, &isCopy);
         if (lCurName == NULL) {
             h5JNIFatalError(env, "H5Ocopy:  cur_name not pinned");
             return;
         }
         
         if (dst_name == NULL) {
-            ENVPTR->ReleaseStringUTFChars(ENVPAR, cur_name, lCurName);
+            ENVPTR->ReleaseStringUTFChars(ENVPAR cur_name, lCurName);
             h5nullArgument(env, "H5Ocopy:  dst_name is NULL");
             return;
         }
         
-        lDstName = (char*)ENVPTR->GetStringUTFChars(ENVPAR, dst_name, &isCopy);
+        lDstName = (char*)ENVPTR->GetStringUTFChars(ENVPAR dst_name, &isCopy);
         if (lDstName == NULL) {
-            ENVPTR->ReleaseStringUTFChars(ENVPAR, cur_name, lCurName);
+            ENVPTR->ReleaseStringUTFChars(ENVPAR cur_name, lCurName);
             h5JNIFatalError(env, "H5Ocopy:  dst_name not pinned");
             return;
         }
 
         status = H5Ocopy((hid_t)cur_loc_id, (const char*)lCurName, (hid_t)dst_loc_id, (const char*)lDstName, (hid_t)create_id, (hid_t)access_id);
 
-        ENVPTR->ReleaseStringUTFChars(ENVPAR, cur_name, lCurName);
-        ENVPTR->ReleaseStringUTFChars(ENVPAR, dst_name, lDstName);
+        ENVPTR->ReleaseStringUTFChars(ENVPAR cur_name, lCurName);
+        ENVPTR->ReleaseStringUTFChars(ENVPAR dst_name, lDstName);
         
         if (status < 0) {
            h5libraryError(env);
@@ -177,13 +173,13 @@ extern "C" {
         }
 
         // get a reference to the H5_hdr_info_t class
-        cls = ENVPTR->FindClass(ENVPAR, "ncsa/hdf/hdf5lib/structs/H5O_hdr_info_t");
+        cls = ENVPTR->FindClass(ENVPAR "ncsa/hdf/hdf5lib/structs/H5O_hdr_info_t");
         if (cls == 0) {
            h5JNIFatalError( env, "JNI error: GetObjectClass H5O_hdr_info_t failed\n");
            return NULL;
         }
         // get a reference to the constructor; the name is <init>
-        constructor = ENVPTR->GetMethodID(ENVPAR, cls, "<init>", "(IIIIJJJJJJ)V");
+        constructor = ENVPTR->GetMethodID(ENVPAR cls, "<init>", "(IIIIJJJJJJ)V");
         if (constructor == 0) {
             h5JNIFatalError( env, "JNI error: GetMethodID H5O_hdr_info_t failed\n");
            return NULL;
@@ -198,35 +194,35 @@ extern "C" {
         args[7].j = infobuf.hdr.space.free;
         args[8].j = infobuf.hdr.mesg.present;
         args[9].j = infobuf.hdr.mesg.shared;
-        hdrinfobuf = ENVPTR->NewObjectA(ENVPAR, cls, constructor, args);
+        hdrinfobuf = ENVPTR->NewObjectA(ENVPAR cls, constructor, args);
 
         // get a reference to the H5_ih_info_t class
-        cls = ENVPTR->FindClass(ENVPAR, "ncsa/hdf/hdf5lib/structs/H5_ih_info_t");
+        cls = ENVPTR->FindClass(ENVPAR "ncsa/hdf/hdf5lib/structs/H5_ih_info_t");
         if (cls == 0) {
            h5JNIFatalError( env, "JNI error: GetObjectClass H5_ih_info_t failed\n");
            return NULL;
         }
         // get a reference to the constructor; the name is <init>
-        constructor = ENVPTR->GetMethodID(ENVPAR, cls, "<init>", "(JJ)V");
+        constructor = ENVPTR->GetMethodID(ENVPAR cls, "<init>", "(JJ)V");
         if (constructor == 0) {
             h5JNIFatalError( env, "JNI error: GetMethodID H5_ih_info_t failed\n");
            return NULL;
         }
         args[0].j = infobuf.meta_size.obj.index_size;
         args[1].j = infobuf.meta_size.obj.heap_size;
-        ihinfobuf1 = ENVPTR->NewObjectA(ENVPAR, cls, constructor, args);
+        ihinfobuf1 = ENVPTR->NewObjectA(ENVPAR cls, constructor, args);
         args[0].j = infobuf.meta_size.attr.index_size;
         args[1].j = infobuf.meta_size.attr.heap_size;
-        ihinfobuf2 = ENVPTR->NewObjectA(ENVPAR, cls, constructor, args);
+        ihinfobuf2 = ENVPTR->NewObjectA(ENVPAR cls, constructor, args);
 
         // get a reference to the H5O_info_t class
-        cls = ENVPTR->FindClass(ENVPAR, "ncsa/hdf/hdf5lib/structs/H5O_info_t");
+        cls = ENVPTR->FindClass(ENVPAR "ncsa/hdf/hdf5lib/structs/H5O_info_t");
         if (cls == 0) {
            h5JNIFatalError( env, "JNI error: GetObjectClass H5O_info_t failed\n");
            return NULL;
         }
         // get a reference to the constructor; the name is <init>
-        constructor = ENVPTR->GetMethodID(ENVPAR, cls, "<init>", "(JJIIJJJJJLncsa/hdf/hdf5lib/structs/H5O_hdr_info_t;Lncsa/hdf/hdf5lib/structs/H5_ih_info_t;Lncsa/hdf/hdf5lib/structs/H5_ih_info_t;)V");
+        constructor = ENVPTR->GetMethodID(ENVPAR cls, "<init>", "(JJIIJJJJJLncsa/hdf/hdf5lib/structs/H5O_hdr_info_t;Lncsa/hdf/hdf5lib/structs/H5_ih_info_t;Lncsa/hdf/hdf5lib/structs/H5_ih_info_t;)V");
         if (constructor == 0) {
             h5JNIFatalError( env, "JNI error: GetMethodID H5O_info_t failed\n");
            return NULL;
@@ -243,7 +239,7 @@ extern "C" {
         args[9].l = hdrinfobuf;
         args[10].l = ihinfobuf1;
         args[11].l = ihinfobuf2;
-        ret_info_t = ENVPTR->NewObjectA(ENVPAR, cls, constructor, args);
+        ret_info_t = ENVPTR->NewObjectA(ENVPAR cls, constructor, args);
 
         return ret_info_t;
     }
@@ -273,7 +269,7 @@ extern "C" {
             return NULL;
         }
 
-        lName = (char*)ENVPTR->GetStringUTFChars(ENVPAR, name, &isCopy);
+        lName = (char*)ENVPTR->GetStringUTFChars(ENVPAR name, &isCopy);
         if (lName == NULL) {
             h5JNIFatalError(env, "H5Oget_info_by_name:  name not pinned");
             return NULL;
@@ -281,7 +277,7 @@ extern "C" {
 
         status = H5Oget_info_by_name((hid_t)loc_id, (const char*)lName, (H5O_info_t*)&infobuf, (hid_t)access_id);
 
-        ENVPTR->ReleaseStringUTFChars(ENVPAR, name, lName);
+        ENVPTR->ReleaseStringUTFChars(ENVPAR name, lName);
 
         if (status < 0) {
            h5libraryError(env);
@@ -289,13 +285,13 @@ extern "C" {
         }
 
         // get a reference to the H5_hdr_info_t class
-        cls = ENVPTR->FindClass(ENVPAR, "ncsa/hdf/hdf5lib/structs/H5O_hdr_info_t");
+        cls = ENVPTR->FindClass(ENVPAR "ncsa/hdf/hdf5lib/structs/H5O_hdr_info_t");
         if (cls == 0) {
            h5JNIFatalError( env, "JNI error: GetObjectClass H5O_hdr_info_t failed\n");
            return NULL;
         }
         // get a reference to the constructor; the name is <init>
-        constructor = ENVPTR->GetMethodID(ENVPAR, cls, "<init>", "(IIIIJJJJJJ)V");
+        constructor = ENVPTR->GetMethodID(ENVPAR cls, "<init>", "(IIIIJJJJJJ)V");
         if (constructor == 0) {
             h5JNIFatalError( env, "JNI error: GetMethodID H5O_hdr_info_t failed\n");
            return NULL;
@@ -310,35 +306,35 @@ extern "C" {
         args[7].j = infobuf.hdr.space.free;
         args[8].j = infobuf.hdr.mesg.present;
         args[9].j = infobuf.hdr.mesg.shared;
-        hdrinfobuf = ENVPTR->NewObjectA(ENVPAR, cls, constructor, args);
+        hdrinfobuf = ENVPTR->NewObjectA(ENVPAR cls, constructor, args);
 
         // get a reference to the H5_ih_info_t class
-        cls = ENVPTR->FindClass(ENVPAR, "ncsa/hdf/hdf5lib/structs/H5_ih_info_t");
+        cls = ENVPTR->FindClass(ENVPAR "ncsa/hdf/hdf5lib/structs/H5_ih_info_t");
         if (cls == 0) {
            h5JNIFatalError( env, "JNI error: GetObjectClass H5_ih_info_t failed\n");
            return NULL;
         }
         // get a reference to the constructor; the name is <init>
-        constructor = ENVPTR->GetMethodID(ENVPAR, cls, "<init>", "(JJ)V");
+        constructor = ENVPTR->GetMethodID(ENVPAR cls, "<init>", "(JJ)V");
         if (constructor == 0) {
             h5JNIFatalError( env, "JNI error: GetMethodID H5_ih_info_t failed\n");
            return NULL;
         }
         args[0].j = infobuf.meta_size.obj.index_size;
         args[1].j = infobuf.meta_size.obj.heap_size;
-        ihinfobuf1 = ENVPTR->NewObjectA(ENVPAR, cls, constructor, args);
+        ihinfobuf1 = ENVPTR->NewObjectA(ENVPAR cls, constructor, args);
         args[0].j = infobuf.meta_size.attr.index_size;
         args[1].j = infobuf.meta_size.attr.heap_size;
-        ihinfobuf2 = ENVPTR->NewObjectA(ENVPAR, cls, constructor, args);
+        ihinfobuf2 = ENVPTR->NewObjectA(ENVPAR cls, constructor, args);
 
         // get a reference to the H5O_info_t class
-        cls = ENVPTR->FindClass(ENVPAR, "ncsa/hdf/hdf5lib/structs/H5O_info_t");
+        cls = ENVPTR->FindClass(ENVPAR "ncsa/hdf/hdf5lib/structs/H5O_info_t");
         if (cls == 0) {
            h5JNIFatalError( env, "JNI error: GetObjectClass H5O_info_t failed\n");
            return NULL;
         }
         // get a reference to the constructor; the name is <init>
-        constructor = ENVPTR->GetMethodID(ENVPAR, cls, "<init>", "(JJIIJJJJJLncsa/hdf/hdf5lib/structs/H5O_hdr_info_t;Lncsa/hdf/hdf5lib/structs/H5_ih_info_t;Lncsa/hdf/hdf5lib/structs/H5_ih_info_t;)V");
+        constructor = ENVPTR->GetMethodID(ENVPAR cls, "<init>", "(JJIIJJJJJLncsa/hdf/hdf5lib/structs/H5O_hdr_info_t;Lncsa/hdf/hdf5lib/structs/H5_ih_info_t;Lncsa/hdf/hdf5lib/structs/H5_ih_info_t;)V");
         if (constructor == 0) {
             h5JNIFatalError( env, "JNI error: GetMethodID H5O_info_t failed\n");
            return NULL;
@@ -355,7 +351,7 @@ extern "C" {
         args[9].l = hdrinfobuf;
         args[10].l = ihinfobuf1;
         args[11].l = ihinfobuf2;
-        ret_info_t = ENVPTR->NewObjectA(ENVPAR, cls, constructor, args);
+        ret_info_t = ENVPTR->NewObjectA(ENVPAR cls, constructor, args);
 
         return ret_info_t;
     }
@@ -385,7 +381,7 @@ extern "C" {
             return NULL;
         }
         
-        lName = (char*)ENVPTR->GetStringUTFChars(ENVPAR, name, &isCopy);
+        lName = (char*)ENVPTR->GetStringUTFChars(ENVPAR name, &isCopy);
         if (lName == NULL) {
             h5JNIFatalError(env, "H5Oget_info_by_idx:  name not pinned");
             return NULL;
@@ -393,7 +389,7 @@ extern "C" {
 
         status = H5Oget_info_by_idx((hid_t)loc_id, (const char*)lName, (H5_index_t)index_field, (H5_iter_order_t)order, (hsize_t)link_n, (H5O_info_t*)&infobuf, (hid_t)access_id);
 
-        ENVPTR->ReleaseStringUTFChars(ENVPAR, name, lName);
+        ENVPTR->ReleaseStringUTFChars(ENVPAR name, lName);
 
         if (status < 0) {
            h5libraryError(env);
@@ -401,13 +397,13 @@ extern "C" {
         }
 
         // get a reference to the H5_hdr_info_t class
-        cls = ENVPTR->FindClass(ENVPAR, "ncsa/hdf/hdf5lib/structs/H5O_hdr_info_t");
+        cls = ENVPTR->FindClass(ENVPAR "ncsa/hdf/hdf5lib/structs/H5O_hdr_info_t");
         if (cls == 0) {
            h5JNIFatalError( env, "JNI error: GetObjectClass H5O_hdr_info_t failed\n");
            return NULL;
         }
         // get a reference to the constructor; the name is <init>
-        constructor = ENVPTR->GetMethodID(ENVPAR, cls, "<init>", "(IIIIJJJJJJ)V");
+        constructor = ENVPTR->GetMethodID(ENVPAR cls, "<init>", "(IIIIJJJJJJ)V");
         if (constructor == 0) {
             h5JNIFatalError( env, "JNI error: GetMethodID H5O_hdr_info_t failed\n");
            return NULL;
@@ -422,35 +418,35 @@ extern "C" {
         args[7].j = infobuf.hdr.space.free;
         args[8].j = infobuf.hdr.mesg.present;
         args[9].j = infobuf.hdr.mesg.shared;
-        hdrinfobuf = ENVPTR->NewObjectA(ENVPAR, cls, constructor, args);
+        hdrinfobuf = ENVPTR->NewObjectA(ENVPAR cls, constructor, args);
 
         // get a reference to the H5_ih_info_t class
-        cls = ENVPTR->FindClass(ENVPAR, "ncsa/hdf/hdf5lib/structs/H5_ih_info_t");
+        cls = ENVPTR->FindClass(ENVPAR "ncsa/hdf/hdf5lib/structs/H5_ih_info_t");
         if (cls == 0) {
            h5JNIFatalError( env, "JNI error: GetObjectClass H5_ih_info_t failed\n");
            return NULL;
         }
         // get a reference to the constructor; the name is <init>
-        constructor = ENVPTR->GetMethodID(ENVPAR, cls, "<init>", "(JJ)V");
+        constructor = ENVPTR->GetMethodID(ENVPAR cls, "<init>", "(JJ)V");
         if (constructor == 0) {
             h5JNIFatalError( env, "JNI error: GetMethodID H5_ih_info_t failed\n");
            return NULL;
         }
         args[0].j = infobuf.meta_size.obj.index_size;
         args[1].j = infobuf.meta_size.obj.heap_size;
-        ihinfobuf1 = ENVPTR->NewObjectA(ENVPAR, cls, constructor, args);
+        ihinfobuf1 = ENVPTR->NewObjectA(ENVPAR cls, constructor, args);
         args[0].j = infobuf.meta_size.attr.index_size;
         args[1].j = infobuf.meta_size.attr.heap_size;
-        ihinfobuf2 = ENVPTR->NewObjectA(ENVPAR, cls, constructor, args);
+        ihinfobuf2 = ENVPTR->NewObjectA(ENVPAR cls, constructor, args);
 
         // get a reference to the H5O_info_t class
-        cls = ENVPTR->FindClass(ENVPAR, "ncsa/hdf/hdf5lib/structs/H5O_info_t");
+        cls = ENVPTR->FindClass(ENVPAR "ncsa/hdf/hdf5lib/structs/H5O_info_t");
         if (cls == 0) {
            h5JNIFatalError( env, "JNI error: GetObjectClass H5O_info_t failed\n");
            return NULL;
         }
         // get a reference to the constructor; the name is <init>
-        constructor = ENVPTR->GetMethodID(ENVPAR, cls, "<init>", "(JJIIJJJJJLncsa/hdf/hdf5lib/structs/H5O_hdr_info_t;Lncsa/hdf/hdf5lib/structs/H5_ih_info_t;Lncsa/hdf/hdf5lib/structs/H5_ih_info_t;)V");
+        constructor = ENVPTR->GetMethodID(ENVPAR cls, "<init>", "(JJIIJJJJJLncsa/hdf/hdf5lib/structs/H5O_hdr_info_t;Lncsa/hdf/hdf5lib/structs/H5_ih_info_t;Lncsa/hdf/hdf5lib/structs/H5_ih_info_t;)V");
         if (constructor == 0) {
             h5JNIFatalError( env, "JNI error: GetMethodID H5O_info_t failed\n");
            return NULL;
@@ -467,7 +463,7 @@ extern "C" {
         args[9].l = hdrinfobuf;
         args[10].l = ihinfobuf1;
         args[11].l = ihinfobuf2;
-        ret_info_t = ENVPTR->NewObjectA(ENVPAR, cls, constructor, args);
+        ret_info_t = ENVPTR->NewObjectA(ENVPAR cls, constructor, args);
 
         return ret_info_t;
     }
@@ -489,7 +485,7 @@ extern "C" {
             return;
         }
         
-        lDstName = (char*)ENVPTR->GetStringUTFChars(ENVPAR, dst_name, &isCopy);
+        lDstName = (char*)ENVPTR->GetStringUTFChars(ENVPAR dst_name, &isCopy);
         if (lDstName == NULL) {
             h5JNIFatalError( env, "H5Ocreate_hard:  dst_name not pinned");
             return;
@@ -497,7 +493,7 @@ extern "C" {
 
         status = H5Olink((hid_t)cur_loc_id, (hid_t)dst_loc_id, (const char*)lDstName, (hid_t)create_id, (hid_t)access_id);
 
-        ENVPTR->ReleaseStringUTFChars(ENVPAR, dst_name, lDstName);
+        ENVPTR->ReleaseStringUTFChars(ENVPAR dst_name, lDstName);
         
         if (status < 0) {
            h5libraryError(env);
@@ -625,7 +621,7 @@ extern "C" {
     {
         herr_t        status = -1;
         
-        ENVPTR->GetJavaVM(ENVPAR, &jvm);
+        ENVPTR->GetJavaVM(ENVPAR &jvm);
         visit_callback = callback_op;
 
         if (op_data == NULL) {
@@ -660,7 +656,7 @@ extern "C" {
         char         *lName;
         herr_t        status = -1;
         
-        ENVPTR->GetJavaVM(ENVPAR, &jvm);
+        ENVPTR->GetJavaVM(ENVPAR &jvm);
         visit_callback = callback_op;
         
         if (name == NULL) {
@@ -668,7 +664,7 @@ extern "C" {
             return -1;
         }
         
-        lName = (char*)ENVPTR->GetStringUTFChars(ENVPAR, name, &isCopy);
+        lName = (char*)ENVPTR->GetStringUTFChars(ENVPAR name, &isCopy);
         if (lName == NULL) {
             h5JNIFatalError(env, "H5Ovisit_by_name:  name not pinned");
             return -1;
@@ -685,7 +681,7 @@ extern "C" {
         
         status = H5Ovisit_by_name((hid_t)grp_id, (const char*)lName, (H5_index_t)idx_type, (H5_iter_order_t)order, (H5O_iterate_t)H5O_iterate_cb, (void*)op_data, (hid_t)access_id);
 
-        ENVPTR->ReleaseStringUTFChars(ENVPAR, name, lName);
+        ENVPTR->ReleaseStringUTFChars(ENVPAR name, lName);
         
         if (status < 0) {
            h5libraryError(env);
@@ -711,7 +707,7 @@ extern "C" {
             oComment = NULL;
         }
         else {
-            oComment = (char *)ENVPTR->GetStringUTFChars(ENVPAR, comment, &isCopy);
+            oComment = (char *)ENVPTR->GetStringUTFChars(ENVPAR comment, &isCopy);
             if (oComment == NULL) {
                 h5JNIFatalError( env, "H5Oset_comment:  comment not pinned");
                 return;
@@ -720,7 +716,7 @@ extern "C" {
 
         status = H5Oset_comment((hid_t)loc_id, (const char*)oComment);
 
-        ENVPTR->ReleaseStringUTFChars(ENVPAR, comment, oComment);
+        ENVPTR->ReleaseStringUTFChars(ENVPAR comment, oComment);
 
         if (status < 0) {
             h5libraryError(env);
@@ -744,7 +740,7 @@ extern "C" {
             h5nullArgument( env, "H5Oset_comment_by_name:  name is NULL");
             return;
         }
-        oName = (char *)ENVPTR->GetStringUTFChars(ENVPAR, name, &isCopy);
+        oName = (char *)ENVPTR->GetStringUTFChars(ENVPAR name, &isCopy);
         if (oName == NULL) {
             h5JNIFatalError( env, "H5Oset_comment_by_name:  name not pinned");
             return;
@@ -753,9 +749,9 @@ extern "C" {
             oComment = NULL;
         }
         else {
-            oComment = (char *)ENVPTR->GetStringUTFChars(ENVPAR, comment,&isCopy);
+            oComment = (char *)ENVPTR->GetStringUTFChars(ENVPAR comment,&isCopy);
             if (oComment == NULL) {
-                ENVPTR->ReleaseStringUTFChars(ENVPAR, name, oName);
+                ENVPTR->ReleaseStringUTFChars(ENVPAR name, oName);
                 h5JNIFatalError( env, "H5Oset_comment_by_name:  comment not pinned");
                 return;
             }
@@ -763,8 +759,8 @@ extern "C" {
 
         status = H5Oset_comment_by_name((hid_t)loc_id, (const char*)oName, (const char*)oComment, (hid_t)access_id);
 
-        ENVPTR->ReleaseStringUTFChars(ENVPAR, comment, oComment);
-        ENVPTR->ReleaseStringUTFChars(ENVPAR, name, oName);
+        ENVPTR->ReleaseStringUTFChars(ENVPAR comment, oComment);
+        ENVPTR->ReleaseStringUTFChars(ENVPAR name, oName);
 
         if (status < 0) {
             h5libraryError(env);
@@ -807,7 +803,7 @@ extern "C" {
 
         if (status >= 0) {
             /*  may throw OutOfMemoryError */
-            str = ENVPTR->NewStringUTF(ENVPAR, oComment);
+            str = ENVPTR->NewStringUTF(ENVPAR oComment);
             free(oComment);
             if (str == NULL) {
                 h5JNIFatalError( env, "H5Oget_comment:  return string not allocated");
@@ -842,7 +838,7 @@ extern "C" {
             h5nullArgument( env, "H5Oget_comment_by_name:  name is NULL");
             return NULL;
         }
-        oName = (char *)ENVPTR->GetStringUTFChars(ENVPAR, name, &isCopy);
+        oName = (char *)ENVPTR->GetStringUTFChars(ENVPAR name, &isCopy);
         if (oName == NULL) {
             h5JNIFatalError( env, "H5Oget_comment_by_name:  name not pinned");
             return NULL;
@@ -851,29 +847,29 @@ extern "C" {
         /* get the length of the comment */
         buf_size = H5Oget_comment_by_name((hid_t)loc_id, (const char*)oName, NULL, 0, (hid_t)access_id);
         if (buf_size < 0) {
-            ENVPTR->ReleaseStringUTFChars(ENVPAR, name, oName);
+            ENVPTR->ReleaseStringUTFChars(ENVPAR name, oName);
             h5badArgument( env, "H5Oget_comment_by_name:  buf_size < 0");
             return NULL;
         }
         if (buf_size == 0) {
-            ENVPTR->ReleaseStringUTFChars(ENVPAR, name, oName);
+            ENVPTR->ReleaseStringUTFChars(ENVPAR name, oName);
             return NULL;
         }
 
         buf_size++; /* add extra space for the null terminator */
         oComment = (char *)malloc(sizeof(char)*buf_size);
         if (oComment == NULL) {
-            ENVPTR->ReleaseStringUTFChars(ENVPAR, name, oName);
+            ENVPTR->ReleaseStringUTFChars(ENVPAR name, oName);
             h5outOfMemory( env, "H5Oget_comment_by_name:  malloc failed");
             return NULL;
         }
 
         status = H5Oget_comment_by_name((hid_t)loc_id, (const char*)oName, (char*)oComment, (size_t)buf_size, (hid_t)access_id);
-        ENVPTR->ReleaseStringUTFChars(ENVPAR, name, oName);
+        ENVPTR->ReleaseStringUTFChars(ENVPAR name, oName);
 
         if (status >= 0) {
             /*  may throw OutOfMemoryError */
-            str = ENVPTR->NewStringUTF(ENVPAR, oComment);
+            str = ENVPTR->NewStringUTF(ENVPAR oComment);
             free(oComment);
             if (str == NULL) {
                 h5JNIFatalError( env, "H5Oget_comment_by_name:  return string not allocated");

@@ -31,9 +31,11 @@ extern "C" {
 #ifdef __cplusplus
 #define ENVPTR (env)
 #define ENVPAR
+#define ENVONLY
 #else
 #define ENVPTR (*env)
-#define ENVPAR env
+#define ENVPAR env,
+#define ENVONLY env
 #endif
 
 extern jboolean h4outOfMemory( JNIEnv *env, char *functName);
@@ -50,12 +52,12 @@ jstring accessmode)
     int   retVal;
     char  *access;
 
-    access = (char *)ENVPTR->GetStringUTFChars(ENVPAR, accessmode,0);
+    access = (char *)ENVPTR->GetStringUTFChars(ENVPAR accessmode,0);
 
     /* open HDF file specified by ncsa_hdf_HDF_file */
     retVal = VSattach(fid, vdata_ref, (char *)access);
 
-    ENVPTR->ReleaseStringUTFChars(ENVPAR, accessmode,access);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR accessmode,access);
 
     return retVal;
 }
@@ -94,7 +96,7 @@ jobjectArray hdfclass) /* OUT: String */
         /* exception: null argument */
         return;
     }
-    r = ENVPTR->GetArrayLength(ENVPAR, hdfclass);
+    r = ENVPTR->GetArrayLength(ENVPAR hdfclass);
     if (r < 1) {
         /* exception: bad argument */
         return;
@@ -111,24 +113,24 @@ jobjectArray hdfclass) /* OUT: String */
     className[VSNAMELENMAX] = '\0';
 
     /* convert it to java string */
-    rstring = ENVPTR->NewStringUTF(ENVPAR, className);
+    rstring = ENVPTR->NewStringUTF(ENVPAR className);
 
-    o = ENVPTR->GetObjectArrayElement(ENVPAR, hdfclass,0);
+    o = ENVPTR->GetObjectArrayElement(ENVPAR hdfclass,0);
     if (o == NULL) {
         free(className);
         return;
     }
-    jc = ENVPTR->FindClass(ENVPAR,  "java/lang/String");
+    jc = ENVPTR->FindClass(ENVPAR  "java/lang/String");
     if (jc == NULL) {
         free(className);
         return;
     }
-    bb = ENVPTR->IsInstanceOf(ENVPAR, o,jc);
+    bb = ENVPTR->IsInstanceOf(ENVPAR o,jc);
     if (bb == JNI_FALSE) {
         free(className);
         return;
     }
-    ENVPTR->SetObjectArrayElement(ENVPAR, hdfclass,0,(jobject)rstring);
+    ENVPTR->SetObjectArrayElement(ENVPAR hdfclass,0,(jobject)rstring);
 
     free(className);
     return;
@@ -152,21 +154,21 @@ jobjectArray hdfname) /* OUT: String */
     nameName[VSNAMELENMAX]='\0';
 
     /* convert it to java string */
-    rstring = ENVPTR->NewStringUTF(ENVPAR, nameName);
+    rstring = ENVPTR->NewStringUTF(ENVPAR nameName);
 
-    o = ENVPTR->GetObjectArrayElement(ENVPAR, hdfname,0);
+    o = ENVPTR->GetObjectArrayElement(ENVPAR hdfname,0);
     if (o == NULL) {
         return;
     }
-    jc = ENVPTR->FindClass(ENVPAR,  "java/lang/String");
+    jc = ENVPTR->FindClass(ENVPAR  "java/lang/String");
     if (jc == NULL) {
         return;
     }
-    bb = ENVPTR->IsInstanceOf(ENVPAR, o,jc);
+    bb = ENVPTR->IsInstanceOf(ENVPAR o,jc);
     if (bb == JNI_FALSE) {
         return;
     }
-    ENVPTR->SetObjectArrayElement(ENVPAR, hdfname,0,(jobject)rstring);
+    ENVPTR->SetObjectArrayElement(ENVPAR hdfname,0,(jobject)rstring);
 
     return;
 
@@ -192,11 +194,11 @@ jint order)
     int32 retVal;
     char  *fldName;
 
-    fldName = (char *)ENVPTR->GetStringUTFChars(ENVPAR, fieldname,0);
+    fldName = (char *)ENVPTR->GetStringUTFChars(ENVPAR fieldname,0);
 
     retVal  = VSfdefine((int32)vdata_id,(char *)fldName,(int32)numbertype,(int32)order);
 
-    ENVPTR->ReleaseStringUTFChars(ENVPAR, fieldname,fldName);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR fieldname,fldName);
 
     if (retVal == FAIL) {
         return JNI_FALSE;
@@ -214,11 +216,11 @@ jstring fieldname)
     int32 retVal;
     char  *fldName;
 
-    fldName = (char *)ENVPTR->GetStringUTFChars(ENVPAR, fieldname,0);
+    fldName = (char *)ENVPTR->GetStringUTFChars(ENVPAR fieldname,0);
 
     /* Check the fields */
     retVal  = VSfexist((int32)vdata_id,(char *)fldName);
-    ENVPTR->ReleaseStringUTFChars(ENVPAR, fieldname,fldName);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR fieldname,fldName);
     if (retVal != FAIL)
         return JNI_TRUE;
     else
@@ -235,12 +237,12 @@ jstring fieldname)
     int32 retVal;
     char  *fldName;
 
-    fldName = (char *)ENVPTR->GetStringUTFChars(ENVPAR, fieldname,0);
+    fldName = (char *)ENVPTR->GetStringUTFChars(ENVPAR fieldname,0);
 
     /* Check the fields */
     retVal  = VSfind((int32)vdata_id,(char *)fldName);
 
-    ENVPTR->ReleaseStringUTFChars(ENVPAR, fieldname,fldName);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR fieldname,fldName);
 
     return(retVal);
 }
@@ -300,23 +302,23 @@ jobjectArray fields) /* OUT: String */
     flds[25599] = '\0';
 
     if (retVal != FAIL) {
-        rstring = ENVPTR->NewStringUTF(ENVPAR,  flds);
-        o = ENVPTR->GetObjectArrayElement(ENVPAR, fields,0);
+        rstring = ENVPTR->NewStringUTF(ENVPAR  flds);
+        o = ENVPTR->GetObjectArrayElement(ENVPAR fields,0);
         if (o == NULL) {
             free(flds);
             return FAIL;
         }
-        jc = ENVPTR->FindClass(ENVPAR,  "java/lang/String");
+        jc = ENVPTR->FindClass(ENVPAR  "java/lang/String");
         if (jc == NULL) {
             free(flds);
             return FAIL;
         }
-        bb = ENVPTR->IsInstanceOf(ENVPAR, o,jc);
+        bb = ENVPTR->IsInstanceOf(ENVPAR o,jc);
         if (bb == JNI_FALSE) {
             free(flds);
             return FAIL;
         }
-        ENVPTR->SetObjectArrayElement(ENVPAR, fields,0,(jobject)rstring);
+        ENVPTR->SetObjectArrayElement(ENVPAR fields,0,(jobject)rstring);
     }
     free(flds);
     return retVal;
@@ -361,7 +363,7 @@ jobjectArray sargs) /* OUT: String fields, vdata_name */
         return FAIL;
     }
 
-    theIargs = ENVPTR->GetIntArrayElements(ENVPAR, iargs,&bb);
+    theIargs = ENVPTR->GetIntArrayElements(ENVPAR iargs,&bb);
 
     if (theIargs == NULL) {
         free(flds);
@@ -376,48 +378,48 @@ jobjectArray sargs) /* OUT: String fields, vdata_name */
     name[MAX_NC_NAME] = '\0';
 
     if (rval == FAIL) {
-        ENVPTR->ReleaseIntArrayElements(ENVPAR, iargs,theIargs,JNI_ABORT);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR iargs,theIargs,JNI_ABORT);
         free(flds);
         free(name);
         return JNI_FALSE;
     } else {
-        ENVPTR->ReleaseIntArrayElements(ENVPAR, iargs,theIargs,0);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR iargs,theIargs,0);
 
-        jc = ENVPTR->FindClass(ENVPAR,  "java/lang/String");
+        jc = ENVPTR->FindClass(ENVPAR  "java/lang/String");
         if (jc == NULL) {
             free(flds);
             free(name);
             return JNI_FALSE;
         }
-        o = ENVPTR->GetObjectArrayElement(ENVPAR, sargs,0);
+        o = ENVPTR->GetObjectArrayElement(ENVPAR sargs,0);
         if (o == NULL) {
             free(flds);
             free(name);
             return JNI_FALSE;
         }
-        bb = ENVPTR->IsInstanceOf(ENVPAR, o,jc);
+        bb = ENVPTR->IsInstanceOf(ENVPAR o,jc);
         if (bb == JNI_FALSE) {
             /*GB*/ free(flds);
             return JNI_FALSE;
         }
-        rstring = ENVPTR->NewStringUTF(ENVPAR, flds);
-        ENVPTR->SetObjectArrayElement(ENVPAR, sargs,0,(jobject)rstring);
+        rstring = ENVPTR->NewStringUTF(ENVPAR flds);
+        ENVPTR->SetObjectArrayElement(ENVPAR sargs,0,(jobject)rstring);
 
 
-        o = ENVPTR->GetObjectArrayElement(ENVPAR, sargs,1);
+        o = ENVPTR->GetObjectArrayElement(ENVPAR sargs,1);
         if (o == NULL) {
             free(flds);
             free(name);
             return JNI_FALSE;
         }
-        bb = ENVPTR->IsInstanceOf(ENVPAR, o,jc);
+        bb = ENVPTR->IsInstanceOf(ENVPAR o,jc);
         if (bb == JNI_FALSE) {
             free(flds);
             free(name);
             return JNI_FALSE;
         }
-        rstring = ENVPTR->NewStringUTF(ENVPAR, name);
-        ENVPTR->SetObjectArrayElement(ENVPAR, sargs,1,(jobject)rstring);
+        rstring = ENVPTR->NewStringUTF(ENVPAR name);
+        ENVPTR->SetObjectArrayElement(ENVPAR sargs,1,(jobject)rstring);
 
         free(flds);
         free(name);
@@ -435,7 +437,7 @@ jintArray iargs)  /* OUT: int blocksize, num_blocks */
     jint * theIargs;
     jboolean bb;
 
-    theIargs = ENVPTR->GetIntArrayElements(ENVPAR, iargs,&bb);
+    theIargs = ENVPTR->GetIntArrayElements(ENVPAR iargs,&bb);
 
     if (theIargs == NULL) {
         return FAIL;
@@ -445,10 +447,10 @@ jintArray iargs)  /* OUT: int blocksize, num_blocks */
         (int32 *)&(theIargs[1]));
 
     if (rval == FAIL) {
-        ENVPTR->ReleaseIntArrayElements(ENVPAR, iargs,theIargs,JNI_ABORT);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR iargs,theIargs,JNI_ABORT);
         return JNI_FALSE;
     } else {
-        ENVPTR->ReleaseIntArrayElements(ENVPAR, iargs,theIargs,0);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR iargs,theIargs,0);
         return JNI_TRUE;
     }
 }
@@ -469,7 +471,7 @@ jint arraysize
     if (ref_array == NULL ) {
         arr = NULL;
     } else {
-        arr = ENVPTR->GetIntArrayElements(ENVPAR, ref_array,&bb);
+        arr = ENVPTR->GetIntArrayElements(ENVPAR ref_array,&bb);
 
         if (arr == NULL) {
             return FAIL;
@@ -481,11 +483,11 @@ jint arraysize
 
     if (retVal == FAIL) {
         if (arr != NULL) {
-        ENVPTR->ReleaseIntArrayElements(ENVPAR, ref_array,arr,JNI_ABORT);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR ref_array,arr,JNI_ABORT);
         }
     } else {
         if (arr != NULL) {
-        ENVPTR->ReleaseIntArrayElements(ENVPAR, ref_array,arr,0);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR ref_array,arr,0);
         }
     }
 
@@ -504,15 +506,15 @@ jint interlace)
     jbyte  * data;
     jboolean bb;
 
-    data = (jbyte *)ENVPTR->GetPrimitiveArrayCritical(ENVPAR, databuf,&bb);
+    data = (jbyte *)ENVPTR->GetPrimitiveArrayCritical(ENVPAR databuf,&bb);
 
     /* retrieve the general info. */
     retVal = VSread((int32)vdata_id, (unsigned char *)data, nrecords, interlace);
 
     if (retVal == FAIL) {
-        ENVPTR->ReleaseByteArrayElements(ENVPAR, databuf,data,JNI_ABORT);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR databuf,data,JNI_ABORT);
     } else {
-        ENVPTR->ReleasePrimitiveArrayCritical(ENVPAR, databuf,data,0);
+        ENVPTR->ReleasePrimitiveArrayCritical(ENVPAR databuf,data,0);
     }
     return retVal;
 }
@@ -535,12 +537,12 @@ jstring fields)
     int32 retVal;
     char *fldPtr;
 
-    fldPtr = (char *)ENVPTR->GetStringUTFChars(ENVPAR, fields,0);
+    fldPtr = (char *)ENVPTR->GetStringUTFChars(ENVPAR fields,0);
 
     /* set the vdata fields to read */
     retVal = VSsetfields((int32)vdata_id, (char *)fldPtr);
 
-    ENVPTR->ReleaseStringUTFChars(ENVPAR, fields,fldPtr);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR fields,fldPtr);
 
     if (retVal != FAIL) {
         return JNI_TRUE;
@@ -576,12 +578,12 @@ jstring fields)
     int32 retVal;
     char *fldPtr;
 
-    fldPtr = (char *)ENVPTR->GetStringUTFChars(ENVPAR, fields,0);
+    fldPtr = (char *)ENVPTR->GetStringUTFChars(ENVPAR fields,0);
 
     /* get the size of a Vdata */
     retVal = VSsizeof((int32)vdata_id, (char *)fldPtr);
 
-    ENVPTR->ReleaseStringUTFChars(ENVPAR, fields,fldPtr);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR fields,fldPtr);
 
     return(retVal);
 }
@@ -619,12 +621,12 @@ jstring hdfclassname)
     char *string;
 
 
-    string = (char *)ENVPTR->GetStringUTFChars(ENVPAR, hdfclassname,0);
+    string = (char *)ENVPTR->GetStringUTFChars(ENVPAR hdfclassname,0);
 
     /* get the class name of the vgroup */
     rval = VSfindclass((int32) vdata_id, string);
 
-    ENVPTR->ReleaseStringUTFChars(ENVPAR, hdfclassname,string);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR hdfclassname,string);
 
     return rval;
 
@@ -665,11 +667,11 @@ jclass clss,
 jint vdata_id,
 jstring vdata_class)
 {
-    char *string = (char *)ENVPTR->GetStringUTFChars(ENVPAR, vdata_class,0);
+    char *string = (char *)ENVPTR->GetStringUTFChars(ENVPAR vdata_class,0);
 
     VSsetclass((int32) vdata_id, (char *)string);
 
-    ENVPTR->ReleaseStringUTFChars(ENVPAR, vdata_class,string);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR vdata_class,string);
 
     return;
 }
@@ -684,9 +686,9 @@ jint offset)
 {
     intn rval;
 
-    char *string = (char *)ENVPTR->GetStringUTFChars(ENVPAR, filename,0);
+    char *string = (char *)ENVPTR->GetStringUTFChars(ENVPAR filename,0);
     rval = VSsetexternalfile((int32) vkey, (char *)string, (int32) offset);
-    ENVPTR->ReleaseStringUTFChars(ENVPAR, filename,string);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR filename,string);
     if (rval == FAIL) {
         return JNI_FALSE;
     } else {
@@ -701,11 +703,11 @@ jclass clss,
 jint vdata_id,
 jstring vdata_name)
 {
-    char *string = (char *)ENVPTR->GetStringUTFChars(ENVPAR, vdata_name,0);
+    char *string = (char *)ENVPTR->GetStringUTFChars(ENVPAR vdata_name,0);
 
     VSsetname((int32) vdata_id, (char *)string);
 
-    ENVPTR->ReleaseStringUTFChars(ENVPAR, vdata_name,string);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR vdata_name,string);
 
     return;
 }
@@ -722,14 +724,14 @@ jint interlace)
     jbyte *b;
     jboolean bb;
 
-    b = ENVPTR->GetByteArrayElements(ENVPAR, databuf,&bb);
+    b = ENVPTR->GetByteArrayElements(ENVPAR databuf,&bb);
 
     rval = VSwrite((int32) vdata_id, (unsigned char *)b, (int32) n_records, (int32) interlace);
 
     if (rval == FAIL) {
-        ENVPTR->ReleaseByteArrayElements(ENVPAR, databuf,b,JNI_ABORT);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR databuf,b,JNI_ABORT);
     } else {
-        ENVPTR->ReleaseByteArrayElements(ENVPAR, databuf,b,0);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR databuf,b,0);
     }
     return rval;
 }
@@ -751,7 +753,7 @@ jintArray argv)  /* OUT:  NT, count, size */
     jobject o;
     char  nam[256];  /* what is the correct constant??? */
 
-    theArgs = ENVPTR->GetIntArrayElements(ENVPAR, argv,&bb);
+    theArgs = ENVPTR->GetIntArrayElements(ENVPAR argv,&bb);
 
     retVal = VSattrinfo((int32)id, (int32)index, (int32)attr_index,
         nam,
@@ -761,26 +763,26 @@ jintArray argv)  /* OUT:  NT, count, size */
     nam[255] = '\0';
 
     if (retVal == FAIL) {
-        ENVPTR->ReleaseIntArrayElements(ENVPAR, argv,theArgs,JNI_ABORT);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR argv,theArgs,JNI_ABORT);
         return JNI_FALSE;
     } else {
 
-        ENVPTR->ReleaseIntArrayElements(ENVPAR, argv,theArgs,0);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR argv,theArgs,0);
 
-        str = ENVPTR->NewStringUTF(ENVPAR, nam);
-        o = ENVPTR->GetObjectArrayElement(ENVPAR, name,0);
+        str = ENVPTR->NewStringUTF(ENVPAR nam);
+        o = ENVPTR->GetObjectArrayElement(ENVPAR name,0);
         if (o == NULL) {
             return JNI_FALSE;
         }
-        Sjc = ENVPTR->FindClass(ENVPAR,  "java/lang/String");
+        Sjc = ENVPTR->FindClass(ENVPAR  "java/lang/String");
         if (Sjc == NULL) {
             return JNI_FALSE;
         }
-        bb = ENVPTR->IsInstanceOf(ENVPAR, o,Sjc);
+        bb = ENVPTR->IsInstanceOf(ENVPAR o,Sjc);
         if (bb == JNI_FALSE) {
             return JNI_FALSE;
         }
-        ENVPTR->SetObjectArrayElement(ENVPAR, name,0,(jobject)str);
+        ENVPTR->SetObjectArrayElement(ENVPAR name,0,(jobject)str);
         return JNI_TRUE;
     }
 }
@@ -797,16 +799,16 @@ jintArray findex)  /* OUT: findex */
     jint *arr;
     jboolean bb;
 
-    str =(char *) ENVPTR->GetStringUTFChars(ENVPAR, name,0);
-    arr = ENVPTR->GetIntArrayElements(ENVPAR, findex,&bb);
+    str =(char *) ENVPTR->GetStringUTFChars(ENVPAR name,0);
+    arr = ENVPTR->GetIntArrayElements(ENVPAR findex,&bb);
 
     rval = VSfindex((int32) id, str, (int32 *)arr);
 
     if (rval == FAIL) {
-        ENVPTR->ReleaseIntArrayElements(ENVPAR, findex,arr,JNI_ABORT);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR findex,arr,JNI_ABORT);
         return JNI_FALSE;
     } else {
-        ENVPTR->ReleaseIntArrayElements(ENVPAR, findex,arr,0);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR findex,arr,0);
         return JNI_TRUE;
     }
 }
@@ -821,11 +823,11 @@ jstring name)
         int32 retVal;
         char  *cname;
 
-        cname =(char *) ENVPTR->GetStringUTFChars(ENVPAR, name,0);
+        cname =(char *) ENVPTR->GetStringUTFChars(ENVPAR name,0);
 
         retVal = VSfindattr((int32)id, (int32)index, cname);
 
-        ENVPTR->ReleaseStringUTFChars(ENVPAR, name,cname);
+        ENVPTR->ReleaseStringUTFChars(ENVPAR name,cname);
 
         return retVal;
 }
@@ -852,14 +854,14 @@ jbyteArray values)  /* OUT: byte[] */
     jbyte *arr;
     jboolean bb;
 
-    arr = ENVPTR->GetByteArrayElements(ENVPAR, values,&bb);
+    arr = ENVPTR->GetByteArrayElements(ENVPAR values,&bb);
     rval = VSgetattr((int32) id, (int32)field_index,
         (int32) attr_index,  (VOIDP) arr);
     if (rval == FAIL) {
-        ENVPTR->ReleaseByteArrayElements(ENVPAR, values,arr,JNI_ABORT);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR values,arr,JNI_ABORT);
         return JNI_FALSE;
     } else {
-        ENVPTR->ReleaseByteArrayElements(ENVPAR, values,arr,0);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR values,arr,0);
         return JNI_TRUE;
     }
 }
@@ -901,14 +903,14 @@ jstring values)  /* IN: String */
     char *str;
     char *val;
 
-    str =(char *) ENVPTR->GetStringUTFChars(ENVPAR, attr_name,0);
-    val =(char *) ENVPTR->GetStringUTFChars(ENVPAR, values,0);
+    str =(char *) ENVPTR->GetStringUTFChars(ENVPAR attr_name,0);
+    val =(char *) ENVPTR->GetStringUTFChars(ENVPAR values,0);
 
     rval = VSsetattr((int32) id, (int32) index, (char *)str,
         (int32) data_type, (int32) count, (VOIDP) val);
 
-    ENVPTR->ReleaseStringUTFChars(ENVPAR, attr_name,str);
-    ENVPTR->ReleaseStringUTFChars(ENVPAR, values,val);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR attr_name,str);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR values,val);
 
     if (rval == FAIL) {
         return JNI_FALSE;
@@ -932,14 +934,14 @@ jbyteArray values)  /* IN: byte[] */
     char *str;
     jboolean bb;
 
-    arr = ENVPTR->GetByteArrayElements(ENVPAR, values,&bb);
-    str =(char *) ENVPTR->GetStringUTFChars(ENVPAR, attr_name,0);
+    arr = ENVPTR->GetByteArrayElements(ENVPAR values,&bb);
+    str =(char *) ENVPTR->GetStringUTFChars(ENVPAR attr_name,0);
 
     rval = VSsetattr((int32) id, (int32) index, (char *)str,
         (int32) data_type, (int32) count, (VOIDP) arr);
 
-    ENVPTR->ReleaseStringUTFChars(ENVPAR, attr_name,str);
-    ENVPTR->ReleaseByteArrayElements(ENVPAR, values,arr,JNI_ABORT);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR attr_name,str);
+    ENVPTR->ReleaseByteArrayElements(ENVPAR values,arr,JNI_ABORT);
 
     if (rval == FAIL) {
         return JNI_FALSE;

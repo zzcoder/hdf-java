@@ -29,10 +29,12 @@ extern "C" {
 
 #ifdef __cplusplus
 #define ENVPTR (env)
-#define ENVPAR 
+#define ENVPAR
+#define ENVONLY
 #else
 #define ENVPTR (*env)
-#define ENVPAR env
+#define ENVPAR env,
+#define ENVONLY env
 #endif
 
 extern jboolean getOldCompInfo( JNIEnv *env, jobject ciobj, comp_info *cinf);
@@ -52,15 +54,15 @@ jint method)
     jbyte *im;
     jboolean bb;
 
-    im = ENVPTR->GetByteArrayElements(ENVPAR, image,&bb);
+    im = ENVPTR->GetByteArrayElements(ENVPAR image,&bb);
 
     rval = DFgetcomp((int32) file_id, (uint16) tag, (uint16) ref,
         (uint8 *)image, (int32) xdim, (int32) ydim,  (int16) method);
     if (rval == FAIL) {
-        ENVPTR->ReleaseByteArrayElements(ENVPAR, image,im,JNI_ABORT);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR image,im,JNI_ABORT);
         return JNI_FALSE;
     } else {
-        ENVPTR->ReleaseByteArrayElements(ENVPAR, image,im,0);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR image,im,0);
         return JNI_TRUE;
     }
 }
@@ -92,9 +94,9 @@ jobject c_info)  /* IN: HDFCompInfo c_info */
 
     /* check for success... */
 
-    im = ENVPTR->GetByteArrayElements(ENVPAR, image,&bb);
-    p = ENVPTR->GetByteArrayElements(ENVPAR, palette,&bb);
-    np = ENVPTR->GetByteArrayElements(ENVPAR, newpal,&bb);
+    im = ENVPTR->GetByteArrayElements(ENVPAR image,&bb);
+    p = ENVPTR->GetByteArrayElements(ENVPAR palette,&bb);
+    np = ENVPTR->GetByteArrayElements(ENVPAR newpal,&bb);
 
 
     rval = DFputcomp((int32) file_id, (uint16) tag, (uint16) ref,
@@ -102,14 +104,14 @@ jobject c_info)  /* IN: HDFCompInfo c_info */
         (uint8 *)np, (int16) scheme, (comp_info *)&cinf);
 
     if (rval == FAIL) {
-        ENVPTR->ReleaseByteArrayElements(ENVPAR, image,im,JNI_ABORT);
-        ENVPTR->ReleaseByteArrayElements(ENVPAR, palette,p,JNI_ABORT);
-        ENVPTR->ReleaseByteArrayElements(ENVPAR, newpal,np,JNI_ABORT);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR image,im,JNI_ABORT);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR palette,p,JNI_ABORT);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR newpal,np,JNI_ABORT);
         return JNI_FALSE;
     } else {
-        ENVPTR->ReleaseByteArrayElements(ENVPAR, image,im,0);
-        ENVPTR->ReleaseByteArrayElements(ENVPAR, palette,p,0);
-        ENVPTR->ReleaseByteArrayElements(ENVPAR, newpal,np,0);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR image,im,0);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR palette,p,0);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR newpal,np,0);
         return JNI_TRUE;
     }
 }
