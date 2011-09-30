@@ -34,7 +34,7 @@ extern "C" {
 #define ENVPAR 
 #else
 #define ENVPTR (*env)
-#define ENVPAR env,
+#define ENVPAR env
 #endif
 
 
@@ -54,15 +54,15 @@ jbyteArray data)  /* IN: byte[] */
     jint * dims;
     jboolean bb;
 
-    name =(jchar *) ENVPTR->GetStringUTFChars(ENVPAR filename,0);
-    dims = (jint *)ENVPTR->GetIntArrayElements(ENVPAR dimsizes,&bb);
-    dat = (jbyte *)ENVPTR->GetByteArrayElements(ENVPAR data,&bb);
+    name =(jchar *) ENVPTR->GetStringUTFChars(ENVPAR, filename,0);
+    dims = (jint *)ENVPTR->GetIntArrayElements(ENVPAR, dimsizes,&bb);
+    dat = (jbyte *)ENVPTR->GetByteArrayElements(ENVPAR, data,&bb);
 
     rval = DFSDadddata((char *)name, (intn) rank, (int32 *) dims, (VOIDP) dat);
 
-    ENVPTR->ReleaseStringUTFChars(ENVPAR filename,(char *)name);
-    ENVPTR->ReleaseByteArrayElements(ENVPAR data,dat,JNI_ABORT); /* no write back */
-    ENVPTR->ReleaseIntArrayElements(ENVPAR dimsizes,dims,JNI_ABORT); /* no write back */
+    ENVPTR->ReleaseStringUTFChars(ENVPAR, filename,(char *)name);
+    ENVPTR->ReleaseByteArrayElements(ENVPAR, data,dat,JNI_ABORT); /* no write back */
+    ENVPTR->ReleaseIntArrayElements(ENVPAR, dimsizes,dims,JNI_ABORT); /* no write back */
     if (rval==FAIL) {
         return JNI_FALSE;
     } else {
@@ -115,20 +115,20 @@ jintArray data_type)  /* OUT: */
     jint *theNT;
     jboolean bb;
 
-    theCal = (jdouble *)ENVPTR->GetDoubleArrayElements(ENVPAR calInfo,&bb);
-    theNT = (jint *)ENVPTR->GetIntArrayElements(ENVPAR data_type,&bb);
+    theCal = (jdouble *)ENVPTR->GetDoubleArrayElements(ENVPAR, calInfo,&bb);
+    theNT = (jint *)ENVPTR->GetIntArrayElements(ENVPAR, data_type,&bb);
 
     rval = DFSDgetcal((float64 *)&(theCal[0]), (float64 *)&(theCal[1]),
         (float64 *)&(theCal[2]), (float64 *)&(theCal[3]),
         (int32 *)&(theNT[0]));
 
     if (rval == FAIL) {
-        ENVPTR->ReleaseDoubleArrayElements(ENVPAR calInfo,theCal,JNI_ABORT);
-        ENVPTR->ReleaseIntArrayElements(ENVPAR data_type,theNT,JNI_ABORT);
+        ENVPTR->ReleaseDoubleArrayElements(ENVPAR, calInfo,theCal,JNI_ABORT);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR, data_type,theNT,JNI_ABORT);
         return JNI_FALSE;
     } else {
-        ENVPTR->ReleaseDoubleArrayElements(ENVPAR calInfo,theCal,0);
-        ENVPTR->ReleaseIntArrayElements(ENVPAR data_type,theNT,0);
+        ENVPTR->ReleaseDoubleArrayElements(ENVPAR, calInfo,theCal,0);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR, data_type,theNT,0);
         return JNI_TRUE;
     }
 }
@@ -147,21 +147,21 @@ jbyteArray data)    /* OUT: byte[] */
     jint * dims;
     jboolean bb;
 
-    name =(jchar *) ENVPTR->GetStringUTFChars(ENVPAR filename,0);
-    dims = (jint *)ENVPTR->GetIntArrayElements(ENVPAR dimsizes,&bb);
+    name =(jchar *) ENVPTR->GetStringUTFChars(ENVPAR, filename,0);
+    dims = (jint *)ENVPTR->GetIntArrayElements(ENVPAR, dimsizes,&bb);
 
     /* assume that data is big enough */
-    dat = (jbyte *)ENVPTR->GetByteArrayElements(ENVPAR data,&bb);
+    dat = (jbyte *)ENVPTR->GetByteArrayElements(ENVPAR, data,&bb);
 
     rval = DFSDgetdata((char *)name, (intn) rank, (int32 *) dims, (VOIDP) dat);
 
-    ENVPTR->ReleaseStringUTFChars(ENVPAR filename,(char *)name);
-    ENVPTR->ReleaseIntArrayElements(ENVPAR dimsizes,dims,JNI_ABORT); /* no write back */
+    ENVPTR->ReleaseStringUTFChars(ENVPAR, filename,(char *)name);
+    ENVPTR->ReleaseIntArrayElements(ENVPAR, dimsizes,dims,JNI_ABORT); /* no write back */
     if (rval==FAIL) {
-        ENVPTR->ReleaseByteArrayElements(ENVPAR data,dat,JNI_ABORT); /* no write back */
+        ENVPTR->ReleaseByteArrayElements(ENVPAR, data,dat,JNI_ABORT); /* no write back */
         return JNI_FALSE;
     } else {
-        ENVPTR->ReleaseByteArrayElements(ENVPAR data,dat,0); /* write back */
+        ENVPTR->ReleaseByteArrayElements(ENVPAR, data,dat,0); /* write back */
         return JNI_TRUE;
     }
 }
@@ -176,16 +176,16 @@ jintArray info) /* label_len, unit_len, format_len coords_len */
     jint *theInfo;
     jboolean bb;
 
-    theInfo = (jint *)ENVPTR->GetIntArrayElements(ENVPAR info,&bb);
+    theInfo = (jint *)ENVPTR->GetIntArrayElements(ENVPAR, info,&bb);
 
     rval = DFSDgetdatalen((intn *)&(theInfo[0]), (intn *)&(theInfo[1]),
         (intn *)&(theInfo[2]), (intn *)&(theInfo[3]));
 
     if (rval == FAIL) {
-        ENVPTR->ReleaseIntArrayElements(ENVPAR info,theInfo,JNI_ABORT);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR, info,theInfo,JNI_ABORT);
         return JNI_FALSE;
     } else {
-        ENVPTR->ReleaseIntArrayElements(ENVPAR info,theInfo,0);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR, info,theInfo,0);
         return JNI_TRUE;
     }
 }
@@ -260,7 +260,7 @@ jobjectArray datastrs) /* OUT: label, unit, format, coordsys */
         return JNI_FALSE;
     } else {
 
-        Sjc = ENVPTR->FindClass(ENVPAR  "java/lang/String");
+        Sjc = ENVPTR->FindClass(ENVPAR,  "java/lang/String");
         if (Sjc == NULL) {
             if (l != NULL)
                 HDfree((char *)l);
@@ -273,9 +273,9 @@ jobjectArray datastrs) /* OUT: label, unit, format, coordsys */
             return JNI_FALSE; /* exception is raised */
         }
 
-        rstring = ENVPTR->NewStringUTF(ENVPAR  l);
+        rstring = ENVPTR->NewStringUTF(ENVPAR,  l);
 
-        o = ENVPTR->GetObjectArrayElement(ENVPAR datastrs,0);
+        o = ENVPTR->GetObjectArrayElement(ENVPAR, datastrs,0);
         if (o == NULL) {
             if (l != NULL)
                 HDfree((char *)l);
@@ -287,7 +287,7 @@ jobjectArray datastrs) /* OUT: label, unit, format, coordsys */
                 HDfree((char *)c);
             return JNI_FALSE;
         }
-        bb = ENVPTR->IsInstanceOf(ENVPAR o,Sjc);
+        bb = ENVPTR->IsInstanceOf(ENVPAR, o,Sjc);
         if (bb == JNI_FALSE) {
             if (l != NULL)
                 HDfree((char *)l);
@@ -299,11 +299,11 @@ jobjectArray datastrs) /* OUT: label, unit, format, coordsys */
                 HDfree((char *)c);
             return JNI_FALSE;
         }
-        ENVPTR->SetObjectArrayElement(ENVPAR datastrs,0,(jobject)rstring);
+        ENVPTR->SetObjectArrayElement(ENVPAR, datastrs,0,(jobject)rstring);
 
-        rstring = ENVPTR->NewStringUTF(ENVPAR  u);
+        rstring = ENVPTR->NewStringUTF(ENVPAR,  u);
 
-        o = ENVPTR->GetObjectArrayElement(ENVPAR datastrs,1);
+        o = ENVPTR->GetObjectArrayElement(ENVPAR, datastrs,1);
         if (o == NULL) {
             if (l != NULL)
                 HDfree((char *)l);
@@ -315,7 +315,7 @@ jobjectArray datastrs) /* OUT: label, unit, format, coordsys */
                 HDfree((char *)c);
             return JNI_FALSE;
         }
-        bb = ENVPTR->IsInstanceOf(ENVPAR o,Sjc);
+        bb = ENVPTR->IsInstanceOf(ENVPAR, o,Sjc);
         if (bb == JNI_FALSE) {
             if (l != NULL)
                 HDfree((char *)l);
@@ -327,11 +327,11 @@ jobjectArray datastrs) /* OUT: label, unit, format, coordsys */
                 HDfree((char *)c);
             return JNI_FALSE;
         }
-        ENVPTR->SetObjectArrayElement(ENVPAR datastrs,1,(jobject)rstring);
+        ENVPTR->SetObjectArrayElement(ENVPAR, datastrs,1,(jobject)rstring);
 
-        rstring = ENVPTR->NewStringUTF(ENVPAR  f);
+        rstring = ENVPTR->NewStringUTF(ENVPAR,  f);
 
-        o = ENVPTR->GetObjectArrayElement(ENVPAR datastrs,2);
+        o = ENVPTR->GetObjectArrayElement(ENVPAR, datastrs,2);
         if (o == NULL) {
             if (l != NULL)
                 HDfree((char *)l);
@@ -343,7 +343,7 @@ jobjectArray datastrs) /* OUT: label, unit, format, coordsys */
                 HDfree((char *)c);
             return JNI_FALSE;
         }
-        bb = ENVPTR->IsInstanceOf(ENVPAR o,Sjc);
+        bb = ENVPTR->IsInstanceOf(ENVPAR, o,Sjc);
         if (bb == JNI_FALSE) {
             if (l != NULL)
                 HDfree((char *)l);
@@ -355,11 +355,11 @@ jobjectArray datastrs) /* OUT: label, unit, format, coordsys */
                 HDfree((char *)c);
             return JNI_FALSE;
         }
-        ENVPTR->SetObjectArrayElement(ENVPAR datastrs,2,(jobject)rstring);
+        ENVPTR->SetObjectArrayElement(ENVPAR, datastrs,2,(jobject)rstring);
 
-        rstring = ENVPTR->NewStringUTF(ENVPAR  c);
+        rstring = ENVPTR->NewStringUTF(ENVPAR,  c);
 
-        o = ENVPTR->GetObjectArrayElement(ENVPAR datastrs,3);
+        o = ENVPTR->GetObjectArrayElement(ENVPAR, datastrs,3);
         if (o == NULL) {
             if (l != NULL)
                 HDfree((char *)l);
@@ -371,7 +371,7 @@ jobjectArray datastrs) /* OUT: label, unit, format, coordsys */
                 HDfree((char *)c);
             return JNI_FALSE;
         }
-        bb = ENVPTR->IsInstanceOf(ENVPAR o,Sjc);
+        bb = ENVPTR->IsInstanceOf(ENVPAR, o,Sjc);
         if (bb == JNI_FALSE) {
             if (l != NULL)
                 HDfree((char *)l);
@@ -383,7 +383,7 @@ jobjectArray datastrs) /* OUT: label, unit, format, coordsys */
                 HDfree((char *)c);
             return JNI_FALSE;
         }
-        ENVPTR->SetObjectArrayElement(ENVPAR datastrs,3,(jobject)rstring);
+        ENVPTR->SetObjectArrayElement(ENVPAR, datastrs,3,(jobject)rstring);
 
         if (l != NULL)
             HDfree((char *)l);
@@ -408,16 +408,16 @@ jintArray dimInfo) /* OUT: int label_len, unit_len, format_len */
     jint *theArgs;
     jboolean bb;
 
-    theArgs = (jint *)ENVPTR->GetIntArrayElements(ENVPAR dimInfo,&bb);
+    theArgs = (jint *)ENVPTR->GetIntArrayElements(ENVPAR, dimInfo,&bb);
 
     rval = DFSDgetdimlen((intn) dim, (intn *)&(theArgs[0]),
         (intn *)&(theArgs[1]), (intn *)&(theArgs[2]));
 
     if (rval == FAIL) {
-        ENVPTR->ReleaseIntArrayElements(ENVPAR dimInfo,theArgs,JNI_ABORT);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR, dimInfo,theArgs,JNI_ABORT);
         return JNI_FALSE;
     } else {
-        ENVPTR->ReleaseIntArrayElements(ENVPAR dimInfo,theArgs,0);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR, dimInfo,theArgs,0);
         return JNI_TRUE;
     }
 }
@@ -436,22 +436,22 @@ jint maxrank)
     jint * rnk;
     jboolean bb;
 
-    name =(jchar *) ENVPTR->GetStringUTFChars(ENVPAR filename,0);
-    dims = (jint *)ENVPTR->GetIntArrayElements(ENVPAR dimsizes,&bb);
-    rnk = (jint *)ENVPTR->GetIntArrayElements(ENVPAR rank,&bb);
+    name =(jchar *) ENVPTR->GetStringUTFChars(ENVPAR, filename,0);
+    dims = (jint *)ENVPTR->GetIntArrayElements(ENVPAR, dimsizes,&bb);
+    rnk = (jint *)ENVPTR->GetIntArrayElements(ENVPAR, rank,&bb);
 
     /* should check lenght of dims.... */
 
     rval = DFSDgetdims((char *)name, (intn *)&(rnk[0]), (int32 *)dims, (intn) maxrank);
 
-    ENVPTR->ReleaseStringUTFChars(ENVPAR filename,(char *)name);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR, filename,(char *)name);
     if (rval==FAIL) {
-        ENVPTR->ReleaseIntArrayElements(ENVPAR dimsizes,dims,JNI_ABORT);
-        ENVPTR->ReleaseIntArrayElements(ENVPAR rank,rnk,JNI_ABORT);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR, dimsizes,dims,JNI_ABORT);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR, rank,rnk,JNI_ABORT);
         return JNI_FALSE;
     } else {
-        ENVPTR->ReleaseIntArrayElements(ENVPAR dimsizes,dims,0);
-        ENVPTR->ReleaseIntArrayElements(ENVPAR rank,rnk,0);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR, dimsizes,dims,0);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR, rank,rnk,0);
         return JNI_TRUE;
     }
 }
@@ -467,15 +467,15 @@ jbyteArray scale) /* OUT: byte[] assumed to be long enough */
     jbyte *s;
     jboolean bb;
 
-    s = (jbyte *)ENVPTR->GetByteArrayElements(ENVPAR scale,&bb);
+    s = (jbyte *)ENVPTR->GetByteArrayElements(ENVPAR, scale,&bb);
 
     rval = DFSDgetdimscale((intn) dim, (int32) size, (VOIDP) s);
 
     if (rval==FAIL) {
-        ENVPTR->ReleaseByteArrayElements(ENVPAR scale,s,JNI_ABORT); /* no write back */
+        ENVPTR->ReleaseByteArrayElements(ENVPAR, scale,s,JNI_ABORT); /* no write back */
         return JNI_FALSE;
     } else {
-        ENVPTR->ReleaseByteArrayElements(ENVPAR scale,s,0); /* write back */
+        ENVPTR->ReleaseByteArrayElements(ENVPAR, scale,s,0); /* write back */
         return JNI_TRUE;
     }
 }
@@ -539,7 +539,7 @@ jobjectArray dimstrs) /* OUT: jstring label, jstring unit, jstring format */
         return JNI_FALSE;
     } else {
 
-        Sjc = ENVPTR->FindClass(ENVPAR  "java/lang/String");
+        Sjc = ENVPTR->FindClass(ENVPAR,  "java/lang/String");
         if (Sjc == NULL) {
             if (l != NULL)
                 HDfree((char *)l);
@@ -550,9 +550,9 @@ jobjectArray dimstrs) /* OUT: jstring label, jstring unit, jstring format */
             return JNI_FALSE; /* exception is raised */
         }
 
-        rstring = ENVPTR->NewStringUTF(ENVPAR  l);
+        rstring = ENVPTR->NewStringUTF(ENVPAR,  l);
 
-        o = ENVPTR->GetObjectArrayElement(ENVPAR dimstrs,0);
+        o = ENVPTR->GetObjectArrayElement(ENVPAR, dimstrs,0);
         if (o == NULL) {
             if (l != NULL)
                 HDfree((char *)l);
@@ -562,7 +562,7 @@ jobjectArray dimstrs) /* OUT: jstring label, jstring unit, jstring format */
                 HDfree((char *)f);
             return JNI_FALSE;
         }
-        bb = ENVPTR->IsInstanceOf(ENVPAR o,Sjc);
+        bb = ENVPTR->IsInstanceOf(ENVPAR, o,Sjc);
         if (bb == JNI_FALSE) {
             if (l != NULL)
                 HDfree((char *)l);
@@ -572,11 +572,11 @@ jobjectArray dimstrs) /* OUT: jstring label, jstring unit, jstring format */
                 HDfree((char *)f);
             return JNI_FALSE;
         }
-        ENVPTR->SetObjectArrayElement(ENVPAR dimstrs,0,(jobject)rstring);
+        ENVPTR->SetObjectArrayElement(ENVPAR, dimstrs,0,(jobject)rstring);
 
-        rstring = ENVPTR->NewStringUTF(ENVPAR  u);
+        rstring = ENVPTR->NewStringUTF(ENVPAR,  u);
 
-        o = ENVPTR->GetObjectArrayElement(ENVPAR dimstrs,1);
+        o = ENVPTR->GetObjectArrayElement(ENVPAR, dimstrs,1);
         if (o == NULL) {
             if (l != NULL)
                 HDfree((char *)l);
@@ -586,7 +586,7 @@ jobjectArray dimstrs) /* OUT: jstring label, jstring unit, jstring format */
                 HDfree((char *)f);
             return JNI_FALSE;
         }
-        bb = ENVPTR->IsInstanceOf(ENVPAR o,Sjc);
+        bb = ENVPTR->IsInstanceOf(ENVPAR, o,Sjc);
         if (bb == JNI_FALSE) {
             if (l != NULL)
                 HDfree((char *)l);
@@ -596,11 +596,11 @@ jobjectArray dimstrs) /* OUT: jstring label, jstring unit, jstring format */
                 HDfree((char *)f);
             return JNI_FALSE;
         }
-        ENVPTR->SetObjectArrayElement(ENVPAR dimstrs,1,(jobject)rstring);
+        ENVPTR->SetObjectArrayElement(ENVPAR, dimstrs,1,(jobject)rstring);
 
-        rstring = ENVPTR->NewStringUTF(ENVPAR  f);
+        rstring = ENVPTR->NewStringUTF(ENVPAR,  f);
 
-        o = ENVPTR->GetObjectArrayElement(ENVPAR dimstrs,2);
+        o = ENVPTR->GetObjectArrayElement(ENVPAR, dimstrs,2);
         if (o == NULL) {
             if (l != NULL)
                 HDfree((char *)l);
@@ -610,7 +610,7 @@ jobjectArray dimstrs) /* OUT: jstring label, jstring unit, jstring format */
                 HDfree((char *)f);
             return JNI_FALSE;
         }
-        bb = ENVPTR->IsInstanceOf(ENVPAR o,Sjc);
+        bb = ENVPTR->IsInstanceOf(ENVPAR, o,Sjc);
         if (bb == JNI_FALSE) {
             if (l != NULL)
                 HDfree((char *)l);
@@ -620,7 +620,7 @@ jobjectArray dimstrs) /* OUT: jstring label, jstring unit, jstring format */
                 HDfree((char *)f);
             return JNI_FALSE;
         }
-        ENVPTR->SetObjectArrayElement(ENVPAR dimstrs,2,(jobject)rstring);
+        ENVPTR->SetObjectArrayElement(ENVPAR, dimstrs,2,(jobject)rstring);
 
         if (l != NULL)
             HDfree((char *)l);
@@ -642,7 +642,7 @@ jbyteArray fill_value)  /* OUT: some kind of number? */
     jbyte *dat;
     jboolean bb;
 
-    dat = (jbyte *)ENVPTR->GetByteArrayElements(ENVPAR fill_value,&bb);
+    dat = (jbyte *)ENVPTR->GetByteArrayElements(ENVPAR, fill_value,&bb);
     if (dat == NULL) {
         /* exception */
         return(JNI_FALSE);
@@ -650,10 +650,10 @@ jbyteArray fill_value)  /* OUT: some kind of number? */
 
     rval = DFSDgetfillvalue((int32 *)dat);
     if (rval==FAIL) {
-        ENVPTR->ReleaseByteArrayElements(ENVPAR fill_value,dat,JNI_ABORT); /* no write back */
+        ENVPTR->ReleaseByteArrayElements(ENVPAR, fill_value,dat,JNI_ABORT); /* no write back */
         return JNI_FALSE;
     } else {
-        ENVPTR->ReleaseByteArrayElements(ENVPAR fill_value,dat,0); /* write back */
+        ENVPTR->ReleaseByteArrayElements(ENVPAR, fill_value,dat,0); /* write back */
         return JNI_TRUE;
     }
 }
@@ -667,7 +667,7 @@ jintArray data_type) /* OUT: Integer */
     jint *dt;
     jboolean bb;
 
-    dt = ENVPTR->GetIntArrayElements(ENVPAR data_type,&bb);
+    dt = ENVPTR->GetIntArrayElements(ENVPAR, data_type,&bb);
     if (dt == NULL) {
         /* exception */
         return(JNI_FALSE);
@@ -676,10 +676,10 @@ jintArray data_type) /* OUT: Integer */
     rval = DFSDgetNT((int32 *)&(dt[0]));
 
     if (rval == FAIL) {
-        ENVPTR->ReleaseIntArrayElements(ENVPAR data_type,dt,JNI_ABORT);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR, data_type,dt,JNI_ABORT);
         return JNI_FALSE;
     } else {
-        ENVPTR->ReleaseIntArrayElements(ENVPAR data_type,dt,0);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR, data_type,dt,0);
         return JNI_TRUE;
     }
 }
@@ -694,19 +694,19 @@ jbyteArray min)  /* OUT:  byte[] ? */
         jbyte *minp, *maxp;
         jboolean bb;
 
-        maxp = ENVPTR->GetByteArrayElements(ENVPAR max,&bb);
-        minp = ENVPTR->GetByteArrayElements(ENVPAR min,&bb);
+        maxp = ENVPTR->GetByteArrayElements(ENVPAR, max,&bb);
+        minp = ENVPTR->GetByteArrayElements(ENVPAR, min,&bb);
 
         retVal = DFSDgetrange(maxp, minp);
 
         if (retVal==FAIL) {
-                ENVPTR->ReleaseByteArrayElements(ENVPAR max,maxp,JNI_ABORT);
-                ENVPTR->ReleaseByteArrayElements(ENVPAR min,minp,JNI_ABORT);
+                ENVPTR->ReleaseByteArrayElements(ENVPAR, max,maxp,JNI_ABORT);
+                ENVPTR->ReleaseByteArrayElements(ENVPAR, min,minp,JNI_ABORT);
                 return JNI_FALSE;
         }
         else {
-                ENVPTR->ReleaseByteArrayElements(ENVPAR max,maxp,0);
-                ENVPTR->ReleaseByteArrayElements(ENVPAR min,minp,0);
+                ENVPTR->ReleaseByteArrayElements(ENVPAR, max,maxp,0);
+                ENVPTR->ReleaseByteArrayElements(ENVPAR, min,minp,0);
                 return JNI_TRUE;
         }
 }
@@ -728,24 +728,24 @@ jintArray dims) /* OUT: int [] */
     jint * d;
     jboolean bb;
 
-    name =(jchar *) ENVPTR->GetStringUTFChars(ENVPAR filename,0);
-    wi = (jint *)ENVPTR->GetIntArrayElements(ENVPAR winst,&bb);
-    wd = (jint *)ENVPTR->GetIntArrayElements(ENVPAR windims,&bb);
-    d = (jint *)ENVPTR->GetIntArrayElements(ENVPAR dims,&bb);
-    dat = (jbyte *)ENVPTR->GetByteArrayElements(ENVPAR data,&bb);
+    name =(jchar *) ENVPTR->GetStringUTFChars(ENVPAR, filename,0);
+    wi = (jint *)ENVPTR->GetIntArrayElements(ENVPAR, winst,&bb);
+    wd = (jint *)ENVPTR->GetIntArrayElements(ENVPAR, windims,&bb);
+    d = (jint *)ENVPTR->GetIntArrayElements(ENVPAR, dims,&bb);
+    dat = (jbyte *)ENVPTR->GetByteArrayElements(ENVPAR, data,&bb);
 
     rval = DFSDgetslice((char *)name, (int32 *) wi, (int32 *) wd, (VOIDP) dat, (int32 *) d);
 
-    ENVPTR->ReleaseStringUTFChars(ENVPAR filename,(char *)name);
-    ENVPTR->ReleaseIntArrayElements(ENVPAR winst,wi,JNI_ABORT); /* no write back */
-    ENVPTR->ReleaseIntArrayElements(ENVPAR windims,wd,JNI_ABORT); /* no write back */
+    ENVPTR->ReleaseStringUTFChars(ENVPAR, filename,(char *)name);
+    ENVPTR->ReleaseIntArrayElements(ENVPAR, winst,wi,JNI_ABORT); /* no write back */
+    ENVPTR->ReleaseIntArrayElements(ENVPAR, windims,wd,JNI_ABORT); /* no write back */
     if (rval==FAIL) {
-        ENVPTR->ReleaseByteArrayElements(ENVPAR data,dat,JNI_ABORT); /* no write back */
-        ENVPTR->ReleaseIntArrayElements(ENVPAR dims,d,JNI_ABORT); /* no write back */
+        ENVPTR->ReleaseByteArrayElements(ENVPAR, data,dat,JNI_ABORT); /* no write back */
+        ENVPTR->ReleaseIntArrayElements(ENVPAR, dims,d,JNI_ABORT); /* no write back */
         return JNI_FALSE;
     } else {
-        ENVPTR->ReleaseByteArrayElements(ENVPAR data,dat,0); /* write back */
-        ENVPTR->ReleaseIntArrayElements(ENVPAR dims,d,0); /* write back */
+        ENVPTR->ReleaseByteArrayElements(ENVPAR, data,dat,0); /* write back */
+        ENVPTR->ReleaseIntArrayElements(ENVPAR, dims,d,0); /* write back */
         return JNI_TRUE;
     }
 }
@@ -766,11 +766,11 @@ jstring filename)
     intn rval;
     jchar * name;
 
-    name =(jchar *) ENVPTR->GetStringUTFChars(ENVPAR filename,0);
+    name =(jchar *) ENVPTR->GetStringUTFChars(ENVPAR, filename,0);
 
     rval = DFSDndatasets((char *)name);
 
-    ENVPTR->ReleaseStringUTFChars(ENVPAR filename,(char *)name);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR, filename,(char *)name);
 
     return rval;
 }
@@ -787,16 +787,16 @@ jintArray ispre32) /* OUT: int[] */
     jint *d;
     jboolean bb;
 
-    d = (jint *)ENVPTR->GetIntArrayElements(ENVPAR ispre32,&bb);
-    name =(jchar *) ENVPTR->GetStringUTFChars(ENVPAR filename,0);
+    d = (jint *)ENVPTR->GetIntArrayElements(ENVPAR, ispre32,&bb);
+    name =(jchar *) ENVPTR->GetStringUTFChars(ENVPAR, filename,0);
 
     rval = DFSDpre32sdg((char *)name, (uint16) ref, (intn *)&(d[0]));
 
     if (rval == FAIL) {
-        ENVPTR->ReleaseIntArrayElements(ENVPAR ispre32,d,JNI_ABORT);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR, ispre32,d,JNI_ABORT);
         return JNI_FALSE;
     } else {
-        ENVPTR->ReleaseIntArrayElements(ENVPAR ispre32,d,0);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR, ispre32,d,0);
         return JNI_TRUE;
     }
 }
@@ -817,15 +817,15 @@ jbyteArray data)  /* IN: byte[] */
     jint * dims;
     jboolean bb;
 
-    name =(jchar *) ENVPTR->GetStringUTFChars(ENVPAR filename,0);
-    dims = (jint *)ENVPTR->GetIntArrayElements(ENVPAR dimsizes,&bb);
-    dat = (jbyte *)ENVPTR->GetByteArrayElements(ENVPAR data,&bb);
+    name =(jchar *) ENVPTR->GetStringUTFChars(ENVPAR, filename,0);
+    dims = (jint *)ENVPTR->GetIntArrayElements(ENVPAR, dimsizes,&bb);
+    dat = (jbyte *)ENVPTR->GetByteArrayElements(ENVPAR, data,&bb);
 
     rval = DFSDputdata((char *)name, (intn) rank, (int32 *) dims, (VOIDP) dat);
 
-    ENVPTR->ReleaseStringUTFChars(ENVPAR filename,(char *)name);
-    ENVPTR->ReleaseByteArrayElements(ENVPAR data,dat,JNI_ABORT); /* no write back */
-    ENVPTR->ReleaseIntArrayElements(ENVPAR dimsizes,dims,JNI_ABORT); /* no write back */
+    ENVPTR->ReleaseStringUTFChars(ENVPAR, filename,(char *)name);
+    ENVPTR->ReleaseByteArrayElements(ENVPAR, data,dat,JNI_ABORT); /* no write back */
+    ENVPTR->ReleaseIntArrayElements(ENVPAR, dimsizes,dims,JNI_ABORT); /* no write back */
     if (rval==FAIL) {
         return JNI_FALSE;
     } else {
@@ -846,16 +846,16 @@ jintArray  dims) /* IN: int[] */
     jint * d;
     jboolean bb;
 
-    d = (jint *)ENVPTR->GetIntArrayElements(ENVPAR dims,&bb);
-    wd = (jint *)ENVPTR->GetIntArrayElements(ENVPAR windims,&bb);
-    dat = (jbyte *)ENVPTR->GetByteArrayElements(ENVPAR source,&bb);
+    d = (jint *)ENVPTR->GetIntArrayElements(ENVPAR, dims,&bb);
+    wd = (jint *)ENVPTR->GetIntArrayElements(ENVPAR, windims,&bb);
+    dat = (jbyte *)ENVPTR->GetByteArrayElements(ENVPAR, source,&bb);
 
 
     rval = DFSDputslice((int32 *)windims, (VOIDP)source, (int32 *)dims);
 
-    ENVPTR->ReleaseByteArrayElements(ENVPAR source,dat,JNI_ABORT); /* no write back */
-    ENVPTR->ReleaseIntArrayElements(ENVPAR dims,d,JNI_ABORT); /* no write back */
-    ENVPTR->ReleaseIntArrayElements(ENVPAR windims,wd,JNI_ABORT); /* no write back */
+    ENVPTR->ReleaseByteArrayElements(ENVPAR, source,dat,JNI_ABORT); /* no write back */
+    ENVPTR->ReleaseIntArrayElements(ENVPAR, dims,d,JNI_ABORT); /* no write back */
+    ENVPTR->ReleaseIntArrayElements(ENVPAR, windims,wd,JNI_ABORT); /* no write back */
 
     if (rval==FAIL) {
         return JNI_FALSE;
@@ -873,10 +873,10 @@ jshort ref)
     intn rval;
     jchar * name;
 
-    name =(jchar *) ENVPTR->GetStringUTFChars(ENVPAR filename,0);
+    name =(jchar *) ENVPTR->GetStringUTFChars(ENVPAR, filename,0);
 
     rval = DFSDreadref((char *)name, (uint16) ref);
-    ENVPTR->ReleaseStringUTFChars(ENVPAR filename,(char *)name);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR, filename,(char *)name);
     if (rval==FAIL) {
         return JNI_FALSE;
     } else {
@@ -890,11 +890,11 @@ JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFDeprecated_DFSDreadslab
 ( JNIEnv *env,
 jclass clss,
 jstring filename,
-jintArray start, 	/* IN: int[] */
-jintArray slab_size, 	/* IN: int[] */
-jintArray stride, 	/* IN: int[] */
-jbyteArray buffer,	/* OUT: byte[] */
-jintArray buffer_size)	/* OUT: int[] */
+jintArray start,   /* IN: int[] */
+jintArray slab_size,   /* IN: int[] */
+jintArray stride,   /* IN: int[] */
+jbyteArray buffer,  /* OUT: byte[] */
+jintArray buffer_size)  /* OUT: int[] */
 {
     intn rval;
     jbyte * dat;
@@ -905,28 +905,28 @@ jintArray buffer_size)	/* OUT: int[] */
     jchar * name;
     jboolean bb;
 
-    name =(jchar *) ENVPTR->GetStringUTFChars(ENVPAR filename,0);
-    strt = (jint *)ENVPTR->GetIntArrayElements(ENVPAR start,&bb);
-    siz = (jint *)ENVPTR->GetIntArrayElements(ENVPAR slab_size,&bb);
-    strd = (jint *)ENVPTR->GetIntArrayElements(ENVPAR stride,&bb);
-    bsize = (jint *)ENVPTR->GetIntArrayElements(ENVPAR buffer_size,&bb);
-    dat = (jbyte *)ENVPTR->GetByteArrayElements(ENVPAR buffer,&bb);
+    name =(jchar *) ENVPTR->GetStringUTFChars(ENVPAR, filename,0);
+    strt = (jint *)ENVPTR->GetIntArrayElements(ENVPAR, start,&bb);
+    siz = (jint *)ENVPTR->GetIntArrayElements(ENVPAR, slab_size,&bb);
+    strd = (jint *)ENVPTR->GetIntArrayElements(ENVPAR, stride,&bb);
+    bsize = (jint *)ENVPTR->GetIntArrayElements(ENVPAR, buffer_size,&bb);
+    dat = (jbyte *)ENVPTR->GetByteArrayElements(ENVPAR, buffer,&bb);
 
 
     rval = DFSDreadslab((char *)name, (int32 *)strt, (int32 *)siz, (int32 *)strd,
         (VOIDP) dat, (int32 *) bsize);
-    ENVPTR->ReleaseStringUTFChars(ENVPAR filename,(char *)name);
-    ENVPTR->ReleaseIntArrayElements(ENVPAR start,strt,JNI_ABORT); /* no write back */
-    ENVPTR->ReleaseIntArrayElements(ENVPAR slab_size,siz,JNI_ABORT); /* no write back */
-    ENVPTR->ReleaseIntArrayElements(ENVPAR stride,strd,JNI_ABORT); /* no write back */
+    ENVPTR->ReleaseStringUTFChars(ENVPAR, filename,(char *)name);
+    ENVPTR->ReleaseIntArrayElements(ENVPAR, start,strt,JNI_ABORT); /* no write back */
+    ENVPTR->ReleaseIntArrayElements(ENVPAR, slab_size,siz,JNI_ABORT); /* no write back */
+    ENVPTR->ReleaseIntArrayElements(ENVPAR, stride,strd,JNI_ABORT); /* no write back */
 
     if (rval==FAIL) {
-        ENVPTR->ReleaseByteArrayElements(ENVPAR buffer,dat,JNI_ABORT); /* no write back */
-        ENVPTR->ReleaseIntArrayElements(ENVPAR buffer_size,bsize,JNI_ABORT); /* no write back */
+        ENVPTR->ReleaseByteArrayElements(ENVPAR, buffer,dat,JNI_ABORT); /* no write back */
+        ENVPTR->ReleaseIntArrayElements(ENVPAR, buffer_size,bsize,JNI_ABORT); /* no write back */
         return JNI_FALSE;
     } else {
-        ENVPTR->ReleaseByteArrayElements(ENVPAR buffer,dat,0); /* write back */
-        ENVPTR->ReleaseIntArrayElements(ENVPAR buffer_size,bsize,0); /* write back */
+        ENVPTR->ReleaseByteArrayElements(ENVPAR, buffer,dat,0); /* write back */
+        ENVPTR->ReleaseIntArrayElements(ENVPAR, buffer_size,bsize,0); /* write back */
         return JNI_TRUE;
     }
 }
@@ -973,17 +973,17 @@ jstring coordsys)
     jchar * f;
     jchar * c;
 
-    l =(jchar *) ENVPTR->GetStringUTFChars(ENVPAR label,0);
-    u =(jchar *) ENVPTR->GetStringUTFChars(ENVPAR unit,0);
-    f =(jchar *) ENVPTR->GetStringUTFChars(ENVPAR format,0);
-    c =(jchar *) ENVPTR->GetStringUTFChars(ENVPAR coordsys,0);
+    l =(jchar *) ENVPTR->GetStringUTFChars(ENVPAR, label,0);
+    u =(jchar *) ENVPTR->GetStringUTFChars(ENVPAR, unit,0);
+    f =(jchar *) ENVPTR->GetStringUTFChars(ENVPAR, format,0);
+    c =(jchar *) ENVPTR->GetStringUTFChars(ENVPAR, coordsys,0);
 
     rval = DFSDsetdatastrs((char *)l, (char *)u, (char *)f, (char *)c);
 
-    ENVPTR->ReleaseStringUTFChars(ENVPAR label,(char *)l);
-    ENVPTR->ReleaseStringUTFChars(ENVPAR unit,(char *)u);
-    ENVPTR->ReleaseStringUTFChars(ENVPAR format,(char *)f);
-    ENVPTR->ReleaseStringUTFChars(ENVPAR coordsys,(char *)c);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR, label,(char *)l);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR, unit,(char *)u);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR, format,(char *)f);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR, coordsys,(char *)c);
 
     if (rval == FAIL) {
         return JNI_FALSE;
@@ -1002,15 +1002,15 @@ jintArray dimsizes)  /* IN:  int[] */
     jint *d;
     jboolean bb;
 
-    d = (jint *)ENVPTR->GetIntArrayElements(ENVPAR dimsizes,&bb);
+    d = (jint *)ENVPTR->GetIntArrayElements(ENVPAR, dimsizes,&bb);
 
     rval = DFSDsetdims ((intn) rank, (int32 *) d);
 
     if (rval == FAIL) {
-        ENVPTR->ReleaseIntArrayElements(ENVPAR dimsizes,d,JNI_ABORT); /* no write back */
+        ENVPTR->ReleaseIntArrayElements(ENVPAR, dimsizes,d,JNI_ABORT); /* no write back */
         return JNI_FALSE;
     } else {
-        ENVPTR->ReleaseIntArrayElements(ENVPAR dimsizes,d,0); /* write back */
+        ENVPTR->ReleaseIntArrayElements(ENVPAR, dimsizes,d,0); /* write back */
         return JNI_TRUE;
     }
 }
@@ -1027,14 +1027,14 @@ jintArray scale) /* IN: byte[] */
     jint *d;
     jboolean bb;
 
-    d = (jint *)ENVPTR->GetIntArrayElements(ENVPAR scale,&bb);
+    d = (jint *)ENVPTR->GetIntArrayElements(ENVPAR, scale,&bb);
 
     rval = DFSDsetdimscale ((intn) dim, (int32) dimsize, (VOIDP) d);
     if (rval == FAIL) {
-        ENVPTR->ReleaseIntArrayElements(ENVPAR scale,d,JNI_ABORT); /* no write back */
+        ENVPTR->ReleaseIntArrayElements(ENVPAR, scale,d,JNI_ABORT); /* no write back */
         return JNI_FALSE;
     } else {
-        ENVPTR->ReleaseIntArrayElements(ENVPAR scale,d,0); /* write back */
+        ENVPTR->ReleaseIntArrayElements(ENVPAR, scale,d,0); /* write back */
         return JNI_TRUE;
     }
 }
@@ -1052,15 +1052,15 @@ jstring format)
     jchar * u;
     jchar * f;
 
-    l =(jchar *) ENVPTR->GetStringUTFChars(ENVPAR label,0);
-    u =(jchar *) ENVPTR->GetStringUTFChars(ENVPAR unit,0);
-    f =(jchar *) ENVPTR->GetStringUTFChars(ENVPAR format,0);
+    l =(jchar *) ENVPTR->GetStringUTFChars(ENVPAR, label,0);
+    u =(jchar *) ENVPTR->GetStringUTFChars(ENVPAR, unit,0);
+    f =(jchar *) ENVPTR->GetStringUTFChars(ENVPAR, format,0);
 
     rval = DFSDsetdimstrs((intn) dim, (char *)l, (char *)u, (char *)f);
 
-    ENVPTR->ReleaseStringUTFChars(ENVPAR label,(char *)l);
-    ENVPTR->ReleaseStringUTFChars(ENVPAR unit,(char *)u);
-    ENVPTR->ReleaseStringUTFChars(ENVPAR format,(char *)f);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR, label,(char *)l);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR, unit,(char *)u);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR, format,(char *)f);
 
     if (rval == FAIL) {
         return JNI_FALSE;
@@ -1078,9 +1078,9 @@ jbyteArray fill_value)  /* IN: ?? */
     jbyte * fv;
     jboolean bb;
 
-    fv = (jbyte *)ENVPTR->GetByteArrayElements(ENVPAR fill_value,&bb);
+    fv = (jbyte *)ENVPTR->GetByteArrayElements(ENVPAR, fill_value,&bb);
     rval = DFSDsetfillvalue((VOIDP) fv);
-    ENVPTR->ReleaseByteArrayElements(ENVPAR fill_value,fv,JNI_ABORT); /* no write back */
+    ENVPTR->ReleaseByteArrayElements(ENVPAR, fill_value,fv,JNI_ABORT); /* no write back */
 
     if (rval == FAIL) {
         return JNI_FALSE;
@@ -1128,11 +1128,11 @@ jbyteArray min)/* IN: byte[] */
     jbyte * mn;
     jboolean bb;
 
-    mx = (jbyte *)ENVPTR->GetByteArrayElements(ENVPAR max,&bb);
-    mn = (jbyte *)ENVPTR->GetByteArrayElements(ENVPAR min,&bb);
+    mx = (jbyte *)ENVPTR->GetByteArrayElements(ENVPAR, max,&bb);
+    mn = (jbyte *)ENVPTR->GetByteArrayElements(ENVPAR, min,&bb);
     rval  = DFSDsetrange((VOIDP) mx, (VOIDP) mn);
-    ENVPTR->ReleaseByteArrayElements(ENVPAR max,mx,JNI_ABORT); /* no write back */
-    ENVPTR->ReleaseByteArrayElements(ENVPAR min,mn,JNI_ABORT); /* no write back */
+    ENVPTR->ReleaseByteArrayElements(ENVPAR, max,mx,JNI_ABORT); /* no write back */
+    ENVPTR->ReleaseByteArrayElements(ENVPAR, min,mn,JNI_ABORT); /* no write back */
 
     if (rval == FAIL) {
         return JNI_FALSE;
@@ -1149,11 +1149,11 @@ jstring filename)
     intn rval;
     jchar * f;
 
-    f =(jchar *) ENVPTR->GetStringUTFChars(ENVPAR filename,0);
+    f =(jchar *) ENVPTR->GetStringUTFChars(ENVPAR, filename,0);
 
     rval = DFSDstartslab((char *)f);
 
-    ENVPTR->ReleaseStringUTFChars(ENVPAR filename,(char *)f);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR, filename,(char *)f);
 
     if (rval == FAIL) {
         return JNI_FALSE;
@@ -1171,11 +1171,11 @@ jstring filename)
     intn rval;
     jchar * f;
 
-    f =(jchar *) ENVPTR->GetStringUTFChars(ENVPAR filename,0);
+    f =(jchar *) ENVPTR->GetStringUTFChars(ENVPAR, filename,0);
 
     rval = DFSDstartslice((char *)f);
 
-    ENVPTR->ReleaseStringUTFChars(ENVPAR filename,(char *)f);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR, filename,(char *)f);
 
     if (rval == FAIL) {
         return JNI_FALSE;
@@ -1194,11 +1194,11 @@ jshort ref)
     intn rval;
     jchar * f;
 
-    f =(jchar *) ENVPTR->GetStringUTFChars(ENVPAR filename,0);
+    f =(jchar *) ENVPTR->GetStringUTFChars(ENVPAR, filename,0);
 
     rval = DFSDwriteref((char *)f,(uint16)ref);
 
-    ENVPTR->ReleaseStringUTFChars(ENVPAR filename,(char *)f);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR, filename,(char *)f);
 
     if (rval == FAIL) {
         return JNI_FALSE;
@@ -1222,18 +1222,18 @@ jbyteArray data) /* IN: byte[] */
     jbyte *d;
     jboolean bb;
 
-    strt = (jint *)ENVPTR->GetIntArrayElements(ENVPAR start,&bb);
-    strd = (jint *)ENVPTR->GetIntArrayElements(ENVPAR stride,&bb);
-    cnt = (jint *)ENVPTR->GetIntArrayElements(ENVPAR count,&bb);
-    d = (jbyte *)ENVPTR->GetByteArrayElements(ENVPAR data,&bb);
+    strt = (jint *)ENVPTR->GetIntArrayElements(ENVPAR, start,&bb);
+    strd = (jint *)ENVPTR->GetIntArrayElements(ENVPAR, stride,&bb);
+    cnt = (jint *)ENVPTR->GetIntArrayElements(ENVPAR, count,&bb);
+    d = (jbyte *)ENVPTR->GetByteArrayElements(ENVPAR, data,&bb);
 
     rval = DFSDwriteslab((int32 *)strt, (int32 *) strd, (int32 *) cnt,
         (VOIDP)d);
 
-    ENVPTR->ReleaseIntArrayElements(ENVPAR start,strt,JNI_ABORT); /* no write back */
-    ENVPTR->ReleaseIntArrayElements(ENVPAR stride,strd,JNI_ABORT); /* no write back */
-    ENVPTR->ReleaseIntArrayElements(ENVPAR count,cnt,JNI_ABORT); /* no write back */
-    ENVPTR->ReleaseByteArrayElements(ENVPAR data,d,JNI_ABORT); /* no write back */
+    ENVPTR->ReleaseIntArrayElements(ENVPAR, start,strt,JNI_ABORT); /* no write back */
+    ENVPTR->ReleaseIntArrayElements(ENVPAR, stride,strd,JNI_ABORT); /* no write back */
+    ENVPTR->ReleaseIntArrayElements(ENVPAR, count,cnt,JNI_ABORT); /* no write back */
+    ENVPTR->ReleaseByteArrayElements(ENVPAR, data,d,JNI_ABORT); /* no write back */
 
     if (rval == FAIL) {
         return JNI_FALSE;

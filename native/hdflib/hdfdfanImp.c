@@ -33,7 +33,7 @@ extern "C" {
 #define ENVPAR 
 #else
 #define ENVPTR (*env)
-#define ENVPAR env,
+#define ENVPAR env
 #endif
 
 extern jboolean h4outOfMemory( JNIEnv *env, char *functName);
@@ -48,13 +48,13 @@ jint desc_len)
     intn rval;
     char * str;
 
-    str =(char *) ENVPTR->GetStringUTFChars(ENVPAR description,0);
+    str =(char *) ENVPTR->GetStringUTFChars(ENVPAR, description,0);
 
     /* should check that str is as long as desc_length.... */
 
     rval = DFANaddfds((int32) file_id, (char *)str, (int32) desc_len);
 
-    ENVPTR->ReleaseStringUTFChars(ENVPAR description,str);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR, description,str);
 
     if (rval == FAIL) {
         return JNI_FALSE;
@@ -72,13 +72,13 @@ jstring label)
     intn rval;
     char *str;
 
-    str =(char *) ENVPTR->GetStringUTFChars(ENVPAR label,0);
+    str =(char *) ENVPTR->GetStringUTFChars(ENVPAR, label,0);
 
     /* should check that str is as long as desc_length.... */
 
     rval = DFANaddfid((int32) file_id, (char *)str);
 
-    ENVPTR->ReleaseStringUTFChars(ENVPAR label,str);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR, label,str);
 
     if (rval == FAIL) {
         return JNI_FALSE;
@@ -127,7 +127,7 @@ jint buf_len)
         return JNI_FALSE;
     }
 
-    str =(char *) ENVPTR->GetStringUTFChars(ENVPAR filename,0);
+    str =(char *) ENVPTR->GetStringUTFChars(ENVPAR, filename,0);
 
     /* read annotation */
     rval = DFANgetdesc((char *)str, (uint16) tag, (uint16) ref,
@@ -137,32 +137,32 @@ jint buf_len)
 
     if (rval == FAIL) {
         if (data != NULL) HDfree((char *)data);
-        ENVPTR->ReleaseStringUTFChars(ENVPAR filename,str);
+        ENVPTR->ReleaseStringUTFChars(ENVPAR, filename,str);
         return JNI_FALSE;
     } else {
 
-        ENVPTR->ReleaseStringUTFChars(ENVPAR filename,str);
+        ENVPTR->ReleaseStringUTFChars(ENVPAR, filename,str);
 
-        rstring = ENVPTR->NewStringUTF(ENVPAR  data);
-        o = ENVPTR->GetObjectArrayElement(ENVPAR desc_buf,0);
+        rstring = ENVPTR->NewStringUTF(ENVPAR,  data);
+        o = ENVPTR->GetObjectArrayElement(ENVPAR, desc_buf,0);
         if (o == NULL) {
             if (data != NULL)
                 HDfree((char *)data);
             return JNI_FALSE;
         }
-        Sjc = ENVPTR->FindClass(ENVPAR  "java/lang/String");
+        Sjc = ENVPTR->FindClass(ENVPAR,  "java/lang/String");
         if (Sjc == NULL) {
             if (data != NULL)
                 HDfree((char *)data);
             return JNI_FALSE;
         }
-        bb = ENVPTR->IsInstanceOf(ENVPAR o,Sjc);
+        bb = ENVPTR->IsInstanceOf(ENVPAR, o,Sjc);
         if (bb == JNI_FALSE) {
             if (data != NULL)
                 HDfree((char *)data);
             return JNI_FALSE;
         }
-        ENVPTR->SetObjectArrayElement(ENVPAR desc_buf,0,(jobject)rstring);
+        ENVPTR->SetObjectArrayElement(ENVPAR, desc_buf,0,(jobject)rstring);
 
         if (data != NULL)
             HDfree((char *)data);
@@ -180,11 +180,11 @@ jshort ref)
     int32 rval;
     char * str;
 
-    str =(char *) ENVPTR->GetStringUTFChars(ENVPAR filename,0);
+    str =(char *) ENVPTR->GetStringUTFChars(ENVPAR, filename,0);
 
     rval = DFANgetdesclen((char *)str, (uint16) tag, (uint16) ref);
 
-    ENVPTR->ReleaseStringUTFChars(ENVPAR filename,str);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR, filename,str);
 
     return rval;
 }
@@ -223,26 +223,26 @@ jint isfirst)
             HDfree((char *)data);
     } else {
 
-        rstring = ENVPTR->NewStringUTF(ENVPAR  data);
-        o = ENVPTR->GetObjectArrayElement(ENVPAR desc_buf,0);
+        rstring = ENVPTR->NewStringUTF(ENVPAR,  data);
+        o = ENVPTR->GetObjectArrayElement(ENVPAR, desc_buf,0);
         if (o == NULL) {
             if (data != NULL)
                 HDfree((char *)data);
             return FAIL;
         }
-        Sjc = ENVPTR->FindClass(ENVPAR  "java/lang/String");
+        Sjc = ENVPTR->FindClass(ENVPAR,  "java/lang/String");
         if (Sjc == NULL) {
             if (data != NULL)
                 HDfree((char *)data);
             return FAIL;
         }
-        bb = ENVPTR->IsInstanceOf(ENVPAR o,Sjc);
+        bb = ENVPTR->IsInstanceOf(ENVPAR, o,Sjc);
         if (bb == JNI_FALSE) {
             if (data != NULL)
                 HDfree((char *)data);
             return FAIL;
         }
-        ENVPTR->SetObjectArrayElement(ENVPAR desc_buf,0,(jobject)rstring);
+        ENVPTR->SetObjectArrayElement(ENVPAR, desc_buf,0,(jobject)rstring);
 
         if (data != NULL)
             HDfree((char *)data);
@@ -295,26 +295,26 @@ jint isfirst)
             HDfree((char *)data);
     } else {
 
-        rstring = ENVPTR->NewStringUTF(ENVPAR  data);
-        o = ENVPTR->GetObjectArrayElement(ENVPAR desc_buf,0);
+        rstring = ENVPTR->NewStringUTF(ENVPAR,  data);
+        o = ENVPTR->GetObjectArrayElement(ENVPAR, desc_buf,0);
         if (o == NULL) {
             if (data != NULL)
                 HDfree((char *)data);
             return FAIL;
         }
-        Sjc = ENVPTR->FindClass(ENVPAR  "java/lang/String");
+        Sjc = ENVPTR->FindClass(ENVPAR,  "java/lang/String");
         if (Sjc == NULL) {
             if (data != NULL)
                 HDfree((char *)data);
             return FAIL;
         }
-        bb = ENVPTR->IsInstanceOf(ENVPAR o,Sjc);
+        bb = ENVPTR->IsInstanceOf(ENVPAR, o,Sjc);
         if (bb == JNI_FALSE) {
             if (data != NULL)
                 HDfree((char *)data);
             return FAIL;
         }
-        ENVPTR->SetObjectArrayElement(ENVPAR desc_buf,0,(jobject)rstring);
+        ENVPTR->SetObjectArrayElement(ENVPAR, desc_buf,0,(jobject)rstring);
 
         if (data != NULL)
             HDfree((char *)data);
@@ -359,7 +359,7 @@ jint buf_len)
 
     /* should check lenght of buffer */
 
-    str =(char *) ENVPTR->GetStringUTFChars(ENVPAR filename,0);
+    str =(char *) ENVPTR->GetStringUTFChars(ENVPAR, filename,0);
 
     rval = DFANgetlabel((char *)str, (uint16) tag, (uint16) ref,
         (char *)data, (int32) buf_len);
@@ -369,30 +369,30 @@ jint buf_len)
     if (rval == FAIL) {
         if (data != NULL)
             HDfree((char *)data);
-        ENVPTR->ReleaseStringUTFChars(ENVPAR filename,str);
+        ENVPTR->ReleaseStringUTFChars(ENVPAR, filename,str);
     } else {
 
-        ENVPTR->ReleaseStringUTFChars(ENVPAR filename,str);
-        rstring = ENVPTR->NewStringUTF(ENVPAR  data);
-        o = ENVPTR->GetObjectArrayElement(ENVPAR label_buf,0);
+        ENVPTR->ReleaseStringUTFChars(ENVPAR, filename,str);
+        rstring = ENVPTR->NewStringUTF(ENVPAR,  data);
+        o = ENVPTR->GetObjectArrayElement(ENVPAR, label_buf,0);
         if (o == NULL) {
             if (data != NULL)
                 HDfree((char *)data);
             return FAIL;
         }
-        Sjc = ENVPTR->FindClass(ENVPAR  "java/lang/String");
+        Sjc = ENVPTR->FindClass(ENVPAR,  "java/lang/String");
         if (Sjc == NULL) {
             if (data != NULL)
                 HDfree((char *)data);
             return FAIL;
         }
-        bb = ENVPTR->IsInstanceOf(ENVPAR o,Sjc);
+        bb = ENVPTR->IsInstanceOf(ENVPAR, o,Sjc);
         if (bb == JNI_FALSE) {
             if (data != NULL)
                 HDfree((char *)data);
             return FAIL;
         }
-        ENVPTR->SetObjectArrayElement(ENVPAR label_buf,0,(jobject)rstring);
+        ENVPTR->SetObjectArrayElement(ENVPAR, label_buf,0,(jobject)rstring);
 
         if (data != NULL)
             HDfree((char *)data);
@@ -410,11 +410,11 @@ jshort ref)
     int32 rval;
     char *str;
 
-    str =(char *) ENVPTR->GetStringUTFChars(ENVPAR filename,0);
+    str =(char *) ENVPTR->GetStringUTFChars(ENVPAR, filename,0);
 
     rval = DFANgetlablen((char *)str, (uint16) tag, (uint16) ref);
 
-    ENVPTR->ReleaseStringUTFChars(ENVPAR filename,str);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR, filename,str);
 
     return rval;
 
@@ -451,10 +451,10 @@ jint start_pos)
     }
 
 
-    sarr = ENVPTR->GetShortArrayElements(ENVPAR ref_list,&bb);
+    sarr = ENVPTR->GetShortArrayElements(ENVPAR, ref_list,&bb);
 
     /* should check length of buffer */
-    str =(char *) ENVPTR->GetStringUTFChars(ENVPAR filename,0);
+    str =(char *) ENVPTR->GetStringUTFChars(ENVPAR, filename,0);
 
 
     rval = DFANlablist((char *)str, (uint16) tag, (uint16 *) sarr,
@@ -465,33 +465,33 @@ jint start_pos)
     if (rval == FAIL) {
         if (data != NULL)
             HDfree((char *)data);
-        ENVPTR->ReleaseStringUTFChars(ENVPAR filename,str);
-        ENVPTR->ReleaseShortArrayElements(ENVPAR ref_list,(jshort *)sarr, JNI_ABORT);
+        ENVPTR->ReleaseStringUTFChars(ENVPAR, filename,str);
+        ENVPTR->ReleaseShortArrayElements(ENVPAR, ref_list,(jshort *)sarr, JNI_ABORT);
     } else {
 
-        ENVPTR->ReleaseStringUTFChars(ENVPAR filename,str);
-        ENVPTR->ReleaseShortArrayElements(ENVPAR ref_list,(jshort *)sarr, 0);
+        ENVPTR->ReleaseStringUTFChars(ENVPAR, filename,str);
+        ENVPTR->ReleaseShortArrayElements(ENVPAR, ref_list,(jshort *)sarr, 0);
 
-        rstring = ENVPTR->NewStringUTF(ENVPAR  data);
-        o = ENVPTR->GetObjectArrayElement(ENVPAR label_list,0);
+        rstring = ENVPTR->NewStringUTF(ENVPAR,  data);
+        o = ENVPTR->GetObjectArrayElement(ENVPAR, label_list,0);
         if (o == NULL) {
             if (data != NULL)
                 HDfree((char *)data);
             return FAIL;
         }
-        Sjc = ENVPTR->FindClass(ENVPAR  "java/lang/String");
+        Sjc = ENVPTR->FindClass(ENVPAR,  "java/lang/String");
         if (Sjc == NULL) {
             if (data != NULL)
                 HDfree((char *)data);
             return FAIL;
         }
-        bb = ENVPTR->IsInstanceOf(ENVPAR o,Sjc);
+        bb = ENVPTR->IsInstanceOf(ENVPAR, o,Sjc);
         if (bb == JNI_FALSE) {
             if (data != NULL)
                 HDfree((char *)data);
             return FAIL;
         }
-        ENVPTR->SetObjectArrayElement(ENVPAR label_list,0,(jobject)rstring);
+        ENVPTR->SetObjectArrayElement(ENVPAR, label_list,0,(jobject)rstring);
 
         if (data != NULL)
             HDfree((char *)data);
@@ -519,16 +519,16 @@ jint desc_len)
     char *fn;
     char *str;
 
-    fn =(char *) ENVPTR->GetStringUTFChars(ENVPAR filename,0);
-    str =(char *) ENVPTR->GetStringUTFChars(ENVPAR description,0);
+    fn =(char *) ENVPTR->GetStringUTFChars(ENVPAR, filename,0);
+    str =(char *) ENVPTR->GetStringUTFChars(ENVPAR, description,0);
 
     /* should check length of description */
 
     rval = DFANputdesc((char *)fn, (uint16) tag, (uint16) ref,
         (char *)str, (int32) desc_len);
 
-    ENVPTR->ReleaseStringUTFChars(ENVPAR filename,fn);
-    ENVPTR->ReleaseStringUTFChars(ENVPAR description,str);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR, filename,fn);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR, description,str);
 
     if (rval == FAIL) {
         return JNI_FALSE;
@@ -549,15 +549,15 @@ jstring label)
     char *fn;
     char *str;
 
-    fn =(char *) ENVPTR->GetStringUTFChars(ENVPAR filename,0);
-    str =(char *) ENVPTR->GetStringUTFChars(ENVPAR label,0);
+    fn =(char *) ENVPTR->GetStringUTFChars(ENVPAR, filename,0);
+    str =(char *) ENVPTR->GetStringUTFChars(ENVPAR, label,0);
 
     /* should check length of description */
 
     rval = DFANputlabel((char *)fn, (uint16) tag, (uint16) ref, (char *)str);
 
-    ENVPTR->ReleaseStringUTFChars(ENVPAR filename,fn);
-    ENVPTR->ReleaseStringUTFChars(ENVPAR label,str);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR, filename,fn);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR, label,str);
 
     if (rval == FAIL) {
         return JNI_FALSE;

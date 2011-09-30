@@ -33,7 +33,7 @@ extern "C" {
 #define ENVPAR 
 #else
 #define ENVPTR (*env)
-#define ENVPAR env,
+#define ENVPAR env
 #endif
 
 extern jboolean h4buildException( JNIEnv *env, jint HDFerr);
@@ -52,21 +52,21 @@ jint access)
     int errval;
     jclass jc;
 
-    file =(char *) ENVPTR->GetStringUTFChars(ENVPAR hdfFile,0);
+    file =(char *) ENVPTR->GetStringUTFChars(ENVPAR, hdfFile,0);
 
     if (file == NULL) {
         /* call failed? */
-        jc = ENVPTR->FindClass(ENVPAR  "ncsa/hdf/hdflib/HDFJavaException");
+        jc = ENVPTR->FindClass(ENVPAR,  "ncsa/hdf/hdflib/HDFJavaException");
         if (jc == NULL) {
             return -1; /* exception is raised */
         }
-        ENVPTR->ThrowNew(ENVPAR jc,"Hopen: GetStringUTFChars failed");
+        ENVPTR->ThrowNew(ENVPAR, jc,"Hopen: GetStringUTFChars failed");
     }
 
     /* open HDF file specified by ncsa_hdf_HDF_file */
     retVal = Hopen((char *)file, access, 0);
 
-    ENVPTR->ReleaseStringUTFChars(ENVPAR hdfFile,file);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR, hdfFile,file);
 
     if (retVal == FAIL) {
         /* check for error */
@@ -75,11 +75,11 @@ jint access)
         errval = HEvalue(1);
         if (errval != DFE_NONE) {
             h4buildException( env, errval );
-            jc = ENVPTR->FindClass(ENVPAR  "ncsa/hdf/hdflib/HDFLibraryException");
+            jc = ENVPTR->FindClass(ENVPAR,  "ncsa/hdf/hdflib/HDFLibraryException");
             if (jc == NULL) {
                 return -1; /* exception is raised */
             }
-            ENVPTR->ThrowNew(ENVPAR jc,HEstring((hdf_err_code_t)errval));
+            ENVPTR->ThrowNew(ENVPAR, jc,HEstring((hdf_err_code_t)errval));
         }
         return -1;
     }
@@ -135,11 +135,11 @@ jstring hdfFile)
     char * hfile;
     int  retVal;
 
-    hfile = (char *)ENVPTR->GetStringUTFChars(ENVPAR hdfFile,0);
+    hfile = (char *)ENVPTR->GetStringUTFChars(ENVPAR, hdfFile,0);
 
     /* open HDF file specified by ncsa_hdf_HDF_file */
     retVal = Hishdf((char *)hfile);
-    ENVPTR->ReleaseStringUTFChars(ENVPAR hdfFile,hfile);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR, hdfFile,hfile);
     if (retVal == FALSE) {
         return JNI_FALSE;
     } else {
@@ -200,33 +200,33 @@ jobjectArray string)  /* OUT: String[] */
     jboolean bb;
     jobject o;
 
-    theArgs = ENVPTR->GetIntArrayElements(ENVPAR vers,&bb);
+    theArgs = ENVPTR->GetIntArrayElements(ENVPAR, vers,&bb);
 
     rval = Hgetfileversion((int32) file_id, (uint32 *)&(theArgs[0]),
         (uint32 *)&(theArgs[1]), (uint32 *)&(theArgs[2]), s);
     s[LIBVSTR_LEN] = '\0';
 
     if (rval == FAIL) {
-        ENVPTR->ReleaseIntArrayElements(ENVPAR vers,theArgs,JNI_ABORT);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR, vers,theArgs,JNI_ABORT);
         return JNI_FALSE;
     } else {
-        ENVPTR->ReleaseIntArrayElements(ENVPAR vers,theArgs,0);
-        Sjc = ENVPTR->FindClass(ENVPAR  "java/lang/String");
+        ENVPTR->ReleaseIntArrayElements(ENVPAR, vers,theArgs,0);
+        Sjc = ENVPTR->FindClass(ENVPAR,  "java/lang/String");
         if (Sjc == NULL) {
             return JNI_FALSE;
         }
-        o = ENVPTR->GetObjectArrayElement(ENVPAR string,0);
+        o = ENVPTR->GetObjectArrayElement(ENVPAR, string,0);
         if (o == NULL) {
             return JNI_FALSE;
         }
-        bb = ENVPTR->IsInstanceOf(ENVPAR o,Sjc);
+        bb = ENVPTR->IsInstanceOf(ENVPAR, o,Sjc);
         if (bb == JNI_FALSE) {
             /* exception */
             return JNI_FALSE;
         }
-        name = ENVPTR->NewStringUTF(ENVPAR s);
+        name = ENVPTR->NewStringUTF(ENVPAR, s);
         if (name != NULL) {
-                        ENVPTR->SetObjectArrayElement(ENVPAR string,0,(jobject)name);
+                        ENVPTR->SetObjectArrayElement(ENVPAR, string,0,(jobject)name);
         }
         return JNI_TRUE;
     }
@@ -246,33 +246,33 @@ jobjectArray string)  /* OUT: String[] */
     jobject o;
     jboolean bb;
 
-    theArgs = ENVPTR->GetIntArrayElements(ENVPAR vers,&bb);
+    theArgs = ENVPTR->GetIntArrayElements(ENVPAR, vers,&bb);
     s[LIBVSTR_LEN] = '\0';
 
     rval = Hgetlibversion((uint32 *)&(theArgs[0]),
         (uint32 *)&(theArgs[1]), (uint32 *)&(theArgs[2]), s);
 
     if (rval == FAIL) {
-        ENVPTR->ReleaseIntArrayElements(ENVPAR vers,theArgs,JNI_ABORT);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR, vers,theArgs,JNI_ABORT);
         return JNI_FALSE;
     } else {
-        ENVPTR->ReleaseIntArrayElements(ENVPAR vers,theArgs,0);
-        Sjc = ENVPTR->FindClass(ENVPAR  "java/lang/String");
+        ENVPTR->ReleaseIntArrayElements(ENVPAR, vers,theArgs,0);
+        Sjc = ENVPTR->FindClass(ENVPAR,  "java/lang/String");
         if (Sjc == NULL) {
             return JNI_FALSE;
         }
-        o = ENVPTR->GetObjectArrayElement(ENVPAR string,0);
+        o = ENVPTR->GetObjectArrayElement(ENVPAR, string,0);
         if (o == NULL) {
             return JNI_FALSE;
         }
-        bb = ENVPTR->IsInstanceOf(ENVPAR o,Sjc);
+        bb = ENVPTR->IsInstanceOf(ENVPAR, o,Sjc);
         if (bb == JNI_FALSE) {
             /* exception */
             return JNI_FALSE;
         }
-        name = ENVPTR->NewStringUTF(ENVPAR s);
+        name = ENVPTR->NewStringUTF(ENVPAR, s);
         if (name != NULL) {
-                        ENVPTR->SetObjectArrayElement(ENVPAR string,0,(jobject)name);
+                        ENVPTR->SetObjectArrayElement(ENVPAR, string,0,(jobject)name);
         }
         return JNI_TRUE;
     }
@@ -337,11 +337,11 @@ jshort n_dds)
     int32 rval;
     char * str;
 
-        str =(char *) ENVPTR->GetStringUTFChars(ENVPAR filename,0);
+        str =(char *) ENVPTR->GetStringUTFChars(ENVPAR, filename,0);
 
     rval = HDFopen((char *)str, (intn) access, (int16) n_dds);
 
-    ENVPTR->ReleaseStringUTFChars(ENVPAR filename,str);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR, filename,str);
 
     return rval;
 }
@@ -376,7 +376,7 @@ jstring rstring;
       rval = HDgetNTdesc((int32) nt);
 
       if (rval != NULL) {
-              rstring = ENVPTR->NewStringUTF(ENVPAR  rval);
+              rstring = ENVPTR->NewStringUTF(ENVPAR,  rval);
       } else {
               rstring = NULL;
       }

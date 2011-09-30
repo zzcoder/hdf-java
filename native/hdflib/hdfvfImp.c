@@ -33,7 +33,7 @@ extern "C" {
 #define ENVPAR 
 #else
 #define ENVPTR (*env)
-#define ENVPAR env,
+#define ENVPAR env
 #endif
 
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_VFfieldesize
@@ -69,7 +69,7 @@ int field_index)
     /* check for error */
 
     /* convert it to java string */
-    rstring = ENVPTR->NewStringUTF(ENVPAR str);
+    rstring = ENVPTR->NewStringUTF(ENVPAR, str);
 
     return rstring;
 }

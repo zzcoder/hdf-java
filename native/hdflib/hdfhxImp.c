@@ -32,7 +32,7 @@ extern "C" {
 #define ENVPAR 
 #else
 #define ENVPTR (*env)
-#define ENVPAR env,
+#define ENVPAR env
 #endif
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_HXsetcreatedir
@@ -44,7 +44,7 @@ jstring dir)
     char *str;
 
     if (dir != NULL) {
-        str =(char *) ENVPTR->GetStringUTFChars(ENVPAR dir,0);
+        str =(char *) ENVPTR->GetStringUTFChars(ENVPAR, dir,0);
     } else {
         str = NULL;
     }
@@ -52,7 +52,7 @@ jstring dir)
     rval = HXsetcreatedir((char *)str);
 
     if (str != NULL) {
-        ENVPTR->ReleaseStringUTFChars(ENVPAR dir,str);
+        ENVPTR->ReleaseStringUTFChars(ENVPAR, dir,str);
     }
 
     if (rval == FAIL) {
@@ -71,7 +71,7 @@ jstring dir)
     char *str;
 
     if (dir != NULL) {
-        str =(char *) ENVPTR->GetStringUTFChars(ENVPAR dir,0);
+        str =(char *) ENVPTR->GetStringUTFChars(ENVPAR, dir,0);
     } else {
         str = NULL;
     }
@@ -79,7 +79,7 @@ jstring dir)
     rval = HXsetdir(str);
 
     if (str != NULL) {
-        ENVPTR->ReleaseStringUTFChars(ENVPAR dir,str);
+        ENVPTR->ReleaseStringUTFChars(ENVPAR, dir,str);
     }
 
     if (rval == FAIL) {

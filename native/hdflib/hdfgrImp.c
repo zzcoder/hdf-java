@@ -34,7 +34,7 @@ extern "C" {
 #define ENVPAR
 #else
 #define ENVPTR (*env)
-#define ENVPAR env,
+#define ENVPAR env
 #endif
 
 /* Name changed from MAX_GR_NAME to H4_MAX_GR_NAME in hdf4.2r2 */
@@ -95,16 +95,16 @@ jintArray argv)  /* OUT:  n_datasets, n_fileattrs */
     jint *theArgs;
     jboolean bb; /*  dummy */
 
-    theArgs = ENVPTR->GetIntArrayElements(ENVPAR argv,&bb);
+    theArgs = ENVPTR->GetIntArrayElements(ENVPAR, argv,&bb);
 
     rval = GRfileinfo((int32) gr_id, (int32 *)&(theArgs[0]),
         (int32 *)&(theArgs[1]));
 
     if (rval == FAIL) {
-        ENVPTR->ReleaseIntArrayElements(ENVPAR argv,theArgs,JNI_ABORT);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR, argv,theArgs,JNI_ABORT);
         return JNI_FALSE;
     } else {
-        ENVPTR->ReleaseIntArrayElements(ENVPAR argv,theArgs,0);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR, argv,theArgs,0);
         return JNI_TRUE;
     }
 }
@@ -127,11 +127,11 @@ jstring gr_name)
     int32 rval;
     char *str;
 
-    str =(char *) ENVPTR->GetStringUTFChars(ENVPAR gr_name,0);
+    str =(char *) ENVPTR->GetStringUTFChars(ENVPAR, gr_name,0);
 
     rval = GRnametoindex((int32) gr_id, (char *)str);
 
-    ENVPTR->ReleaseStringUTFChars(ENVPAR gr_name,str);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR, gr_name,str);
 
     return rval;
 }
@@ -152,11 +152,11 @@ jboolean bb;
 /*
     bzero((char *)&cdef, sizeof(cdef));
 */
-    flgs = ENVPTR->GetIntArrayElements(ENVPAR cflags,&bb);
+    flgs = ENVPTR->GetIntArrayElements(ENVPAR, cflags,&bb);
     rval = GRgetchunkinfo( (int32)grsid, &cdef, (int32 *)&(flgs[0]));
 
     if (rval == FAIL) {
-        ENVPTR->ReleaseIntArrayElements(ENVPAR cflags,(jint *)flgs,JNI_ABORT);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR, cflags,(jint *)flgs,JNI_ABORT);
         return JNI_FALSE;
     } else {
         stat = JNI_TRUE;
@@ -164,7 +164,7 @@ jboolean bb;
         /* convert cdef to HDFchunkinfo */
             stat = makeChunkInfo( env, chunk_def, *flgs, &cdef);
         }
-        ENVPTR->ReleaseIntArrayElements(ENVPAR cflags,(jint *)flgs,0);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR, cflags,(jint *)flgs,0);
         return stat/*JNI_TRUE*/;
     }
 
@@ -194,37 +194,37 @@ jintArray dim_sizes) /* OUT: int[2] */
     }
     /* check for out of memory error ... */
 
-    dims = ENVPTR->GetIntArrayElements(ENVPAR dim_sizes,&bb);
-    theArgs = ENVPTR->GetIntArrayElements(ENVPAR argv,&bb);
+    dims = ENVPTR->GetIntArrayElements(ENVPAR, dim_sizes,&bb);
+    theArgs = ENVPTR->GetIntArrayElements(ENVPAR, argv,&bb);
 
     rval = GRgetiminfo((int32) ri_id, (char *)str, (int32 *)&(theArgs[0]),
         (int32 *)&(theArgs[1]), (int32 *)&(theArgs[2]), (int32 *)dims,
         (int32 *)&(theArgs[3]));
 
     if (rval == FAIL) {
-        ENVPTR->ReleaseIntArrayElements(ENVPAR dim_sizes,dims,JNI_ABORT);
-        ENVPTR->ReleaseIntArrayElements(ENVPAR argv,theArgs,JNI_ABORT);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR, dim_sizes,dims,JNI_ABORT);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR, argv,theArgs,JNI_ABORT);
         if (str != NULL) HDfree(str);
         return JNI_FALSE;
     } else {
-        ENVPTR->ReleaseIntArrayElements(ENVPAR dim_sizes,dims,0);
-        ENVPTR->ReleaseIntArrayElements(ENVPAR argv,theArgs,0);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR, dim_sizes,dims,0);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR, argv,theArgs,0);
         if (str != NULL) {
             str[MAX_GR_NAME] = '\0';
-        rstring = ENVPTR->NewStringUTF(ENVPAR  str);
-        o = ENVPTR->GetObjectArrayElement(ENVPAR gr_name,0);
+        rstring = ENVPTR->NewStringUTF(ENVPAR,  str);
+        o = ENVPTR->GetObjectArrayElement(ENVPAR, gr_name,0);
         if (o == NULL) {
             return JNI_FALSE;
         }
-        Sjc = ENVPTR->FindClass(ENVPAR  "java/lang/String");
+        Sjc = ENVPTR->FindClass(ENVPAR,  "java/lang/String");
         if (Sjc == NULL) {
             return JNI_FALSE;
         }
-        bb = ENVPTR->IsInstanceOf(ENVPAR o,Sjc);
+        bb = ENVPTR->IsInstanceOf(ENVPAR, o,Sjc);
         if (bb == JNI_FALSE) {
             return JNI_FALSE;
         }
-        ENVPTR->SetObjectArrayElement(ENVPAR gr_name,0,(jobject)rstring);
+        ENVPTR->SetObjectArrayElement(ENVPAR, gr_name,0,(jobject)rstring);
 
         HDfree(str);
         }
@@ -249,15 +249,15 @@ jbyteArray data)  /* OUT: byte[] */
     jint *edg;
     jboolean bb;
 
-    arr = (jbyte *)ENVPTR->GetPrimitiveArrayCritical(ENVPAR data,&bb);
+    arr = (jbyte *)ENVPTR->GetPrimitiveArrayCritical(ENVPAR, data,&bb);
 
-    strt = ENVPTR->GetIntArrayElements(ENVPAR start,&bb);
+    strt = ENVPTR->GetIntArrayElements(ENVPAR, start,&bb);
     if (stride == NULL) {
         strd = NULL;
     } else {
-        strd = ENVPTR->GetIntArrayElements(ENVPAR stride,&bb);
+        strd = ENVPTR->GetIntArrayElements(ENVPAR, stride,&bb);
     }
-    edg = ENVPTR->GetIntArrayElements(ENVPAR edge,&bb);
+    edg = ENVPTR->GetIntArrayElements(ENVPAR, edge,&bb);
 
     if (strd == NULL) {
         rval = GRreadimage((int32) ri_id, (int32 *)strt, (int32 *)NULL,
@@ -267,17 +267,17 @@ jbyteArray data)  /* OUT: byte[] */
             (int32 *)edg, (VOIDP) arr);
     }
 
-    ENVPTR->ReleaseIntArrayElements(ENVPAR start,strt,JNI_ABORT);
+    ENVPTR->ReleaseIntArrayElements(ENVPAR, start,strt,JNI_ABORT);
     if (stride != NULL) {
-        ENVPTR->ReleaseIntArrayElements(ENVPAR stride,strd,JNI_ABORT);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR, stride,strd,JNI_ABORT);
     }
-    ENVPTR->ReleaseIntArrayElements(ENVPAR edge,edg,JNI_ABORT);
+    ENVPTR->ReleaseIntArrayElements(ENVPAR, edge,edg,JNI_ABORT);
 
     if (rval == FAIL) {
-        ENVPTR->ReleasePrimitiveArrayCritical(ENVPAR data,arr,JNI_ABORT);
+        ENVPTR->ReleasePrimitiveArrayCritical(ENVPAR, data,arr,JNI_ABORT);
         return JNI_FALSE;
     } else {
-        ENVPTR->ReleasePrimitiveArrayCritical(ENVPAR data,arr,0);
+        ENVPTR->ReleasePrimitiveArrayCritical(ENVPAR, data,arr,0);
         return JNI_TRUE;
     }
 }
@@ -356,7 +356,7 @@ jintArray argv) /* OUT:  ncomp, data_type, interlace, num_entries */
     jint * theArgs;
     jboolean bb; /* dummy */
 
-    theArgs = ENVPTR->GetIntArrayElements(ENVPAR argv,&bb);
+    theArgs = ENVPTR->GetIntArrayElements(ENVPAR, argv,&bb);
 
     rval = GRgetlutinfo((int32) ri_id, (int32 *)&(theArgs[0]),
         (int32 *)&(theArgs[1]), (int32 *)&(theArgs[2]),
@@ -364,10 +364,10 @@ jintArray argv) /* OUT:  ncomp, data_type, interlace, num_entries */
 
 
     if (rval == FAIL) {
-        ENVPTR->ReleaseIntArrayElements(ENVPAR argv,theArgs,JNI_ABORT);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR, argv,theArgs,JNI_ABORT);
         return JNI_FALSE;
     } else {
-        ENVPTR->ReleaseIntArrayElements(ENVPAR argv,theArgs,0);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR, argv,theArgs,0);
         return JNI_TRUE;
     }
 }
@@ -384,15 +384,15 @@ jbyteArray pal_data)  /* OUT: byte[] */
     jbyte *arr;
     jboolean bb;
 
-    arr = ENVPTR->GetByteArrayElements(ENVPAR pal_data,&bb);
+    arr = ENVPTR->GetByteArrayElements(ENVPAR, pal_data,&bb);
 
     rval = GRreadlut((int32) pal_id, (VOIDP) arr);
 
     if (rval == FAIL) {
-        ENVPTR->ReleaseByteArrayElements(ENVPAR pal_data,arr,JNI_ABORT);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR, pal_data,arr,JNI_ABORT);
         return JNI_FALSE;
     } else {
-        ENVPTR->ReleaseByteArrayElements(ENVPAR pal_data,arr,0);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR, pal_data,arr,0);
         return JNI_TRUE;
     }
 }
@@ -422,33 +422,33 @@ jintArray argv) /* OUT:  data_type, length */
         return JNI_FALSE;
     }
 
-    theArgs = ENVPTR->GetIntArrayElements(ENVPAR argv,&bb);
+    theArgs = ENVPTR->GetIntArrayElements(ENVPAR, argv,&bb);
 
     rval = GRattrinfo((int32) gr_id, (int32) attr_index,
         (char *)str, (int32 *)&(theArgs[0]), (int32 *)&(theArgs[1]));
 
 
     if (rval == FAIL) {
-        ENVPTR->ReleaseIntArrayElements(ENVPAR argv,theArgs,JNI_ABORT);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR, argv,theArgs,JNI_ABORT);
         return JNI_FALSE;
     } else {
-        ENVPTR->ReleaseIntArrayElements(ENVPAR argv,theArgs,0);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR, argv,theArgs,0);
         if (str != NULL) {
         str[MAX_GR_NAME] = '\0';
-        rstring = ENVPTR->NewStringUTF(ENVPAR  str);
-        o = ENVPTR->GetObjectArrayElement(ENVPAR name,0);
+        rstring = ENVPTR->NewStringUTF(ENVPAR,  str);
+        o = ENVPTR->GetObjectArrayElement(ENVPAR, name,0);
         if (o == NULL) {
             return JNI_FALSE;
         }
-        jc = ENVPTR->FindClass(ENVPAR  "java/lang/String");
+        jc = ENVPTR->FindClass(ENVPAR,  "java/lang/String");
         if (jc == NULL) {
             return JNI_FALSE;
         }
-        bb = ENVPTR->IsInstanceOf(ENVPAR o,jc);
+        bb = ENVPTR->IsInstanceOf(ENVPAR, o,jc);
         if (bb == JNI_FALSE) {
             return JNI_FALSE;
         }
-        ENVPTR->SetObjectArrayElement(ENVPAR name,0,(jobject)rstring);
+        ENVPTR->SetObjectArrayElement(ENVPAR, name,0,(jobject)rstring);
         HDfree(str);
         }
         return JNI_TRUE;
@@ -466,13 +466,13 @@ jbyteArray values)  /* OUT: byte[] */
     jbyte *arr;
     jboolean bb;
 
-    arr = ENVPTR->GetByteArrayElements(ENVPAR values,&bb);
+    arr = ENVPTR->GetByteArrayElements(ENVPAR, values,&bb);
     rval = GRgetattr((int32) gr_id, (int32) attr_index,  (VOIDP) arr);
     if (rval == FAIL) {
-        ENVPTR->ReleaseByteArrayElements(ENVPAR values,arr,JNI_ABORT);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR, values,arr,JNI_ABORT);
         return JNI_FALSE;
     } else {
-        ENVPTR->ReleaseByteArrayElements(ENVPAR values,arr,0);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR, values,arr,0);
         return JNI_TRUE;
     }
 }
@@ -486,11 +486,11 @@ jstring attr_name) /* IN */
     int32 rval;
     char *str;
 
-    str =(char *) ENVPTR->GetStringUTFChars(ENVPAR attr_name,0);
+    str =(char *) ENVPTR->GetStringUTFChars(ENVPAR, attr_name,0);
 
     rval = GRfindattr((int32) gr_id, (char *)str);
 
-    ENVPTR->ReleaseStringUTFChars(ENVPAR attr_name,str);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR, attr_name,str);
 
     return rval;
 }
@@ -510,14 +510,14 @@ jintArray dim_sizes)  /* IN: int[2] */
     char *str;
     jboolean bb;
 
-    dims = ENVPTR->GetIntArrayElements(ENVPAR dim_sizes,&bb);
-    str =(char *) ENVPTR->GetStringUTFChars(ENVPAR name,0);
+    dims = ENVPTR->GetIntArrayElements(ENVPAR, dim_sizes,&bb);
+    str =(char *) ENVPTR->GetStringUTFChars(ENVPAR, name,0);
 
     rval = GRcreate( (int32) gr_id, (char *) str, (int32) ncomp,
         (int32) data_type, (int32) interlace_mode, (int32 *)dims);
 
-    ENVPTR->ReleaseStringUTFChars(ENVPAR name,str);
-    ENVPTR->ReleaseIntArrayElements(ENVPAR dim_sizes,dims,JNI_ABORT);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR, name,str);
+    ENVPTR->ReleaseIntArrayElements(ENVPAR, dim_sizes,dims,JNI_ABORT);
 
     return rval;
 }
@@ -545,14 +545,14 @@ jstring values)  /* IN: String */
     char *str;
     char *val;
 
-    str =(char *) ENVPTR->GetStringUTFChars(ENVPAR attr_name,0);
-    val =(char *) ENVPTR->GetStringUTFChars(ENVPAR values,0);
+    str =(char *) ENVPTR->GetStringUTFChars(ENVPAR, attr_name,0);
+    val =(char *) ENVPTR->GetStringUTFChars(ENVPAR, values,0);
 
     rval = GRsetattr((int32) gr_id, (char *)str, (int32) data_type,
         (int32) count, (VOIDP) val);
 
-    ENVPTR->ReleaseStringUTFChars(ENVPAR attr_name,str);
-    ENVPTR->ReleaseStringUTFChars(ENVPAR values,val);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR, attr_name,str);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR, values,val);
 
     if (rval == FAIL) {
         return JNI_FALSE;
@@ -575,14 +575,14 @@ jbyteArray values)  /* IN: byte[] */
     char *str;
     jboolean bb;
 
-    arr = ENVPTR->GetByteArrayElements(ENVPAR values,&bb);
-    str =(char *) ENVPTR->GetStringUTFChars(ENVPAR attr_name,0);
+    arr = ENVPTR->GetByteArrayElements(ENVPAR, values,&bb);
+    str =(char *) ENVPTR->GetStringUTFChars(ENVPAR, attr_name,0);
 
     rval = GRsetattr((int32) gr_id, (char *)str, (int32) data_type,
         (int32) count, (VOIDP) arr);
 
-    ENVPTR->ReleaseStringUTFChars(ENVPAR attr_name,str);
-    ENVPTR->ReleaseByteArrayElements(ENVPAR values,arr,JNI_ABORT);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR, attr_name,str);
+    ENVPTR->ReleaseByteArrayElements(ENVPAR, values,arr,JNI_ABORT);
 
     if (rval == FAIL) {
         return JNI_FALSE;
@@ -689,11 +689,11 @@ jint offset)
     int32 rval;
     char *str;
 
-    str =(char *) ENVPTR->GetStringUTFChars(ENVPAR filename,0);
+    str =(char *) ENVPTR->GetStringUTFChars(ENVPAR, filename,0);
 
     rval = GRsetexternalfile((int32) ri_id, (char *)str, (int32) offset);
 
-    ENVPTR->ReleaseStringUTFChars(ENVPAR filename,str);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR, filename,str);
 
     if (rval == FAIL) {
         return JNI_FALSE;
@@ -718,14 +718,14 @@ jbyteArray data)  /* IN: byte[] */
     jint *edg;
     jboolean bb;
 
-    arr = ENVPTR->GetByteArrayElements(ENVPAR data,&bb);
-    strt = ENVPTR->GetIntArrayElements(ENVPAR start,&bb);
+    arr = ENVPTR->GetByteArrayElements(ENVPAR, data,&bb);
+    strt = ENVPTR->GetIntArrayElements(ENVPAR, start,&bb);
     if (stride == NULL) {
         strd = NULL;
     } else {
-        strd = ENVPTR->GetIntArrayElements(ENVPAR stride,&bb);
+        strd = ENVPTR->GetIntArrayElements(ENVPAR, stride,&bb);
     }
-    edg = ENVPTR->GetIntArrayElements(ENVPAR edge,&bb);
+    edg = ENVPTR->GetIntArrayElements(ENVPAR, edge,&bb);
 
     if (strd == NULL) {
         rval = GRwriteimage((int32) ri_id, (int32 *)strt, (int32  *)NULL,
@@ -735,12 +735,12 @@ jbyteArray data)  /* IN: byte[] */
             (int32 *)edg, (VOIDP) arr);
     }
 
-    ENVPTR->ReleaseIntArrayElements(ENVPAR start,strt,JNI_ABORT);
+    ENVPTR->ReleaseIntArrayElements(ENVPAR, start,strt,JNI_ABORT);
     if (stride != NULL) {
-        ENVPTR->ReleaseIntArrayElements(ENVPAR stride,strd,JNI_ABORT);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR, stride,strd,JNI_ABORT);
     }
-    ENVPTR->ReleaseIntArrayElements(ENVPAR edge,edg,JNI_ABORT);
-    ENVPTR->ReleaseByteArrayElements(ENVPAR data,arr,JNI_ABORT);
+    ENVPTR->ReleaseIntArrayElements(ENVPAR, edge,edg,JNI_ABORT);
+    ENVPTR->ReleaseByteArrayElements(ENVPAR, data,arr,JNI_ABORT);
 
 
     if (rval == FAIL) {
@@ -764,12 +764,12 @@ jbyteArray pal_data)  /* IN:  byte[] */
     jbyte *arr;
     jboolean bb;
 
-    arr = ENVPTR->GetByteArrayElements(ENVPAR pal_data,&bb);
+    arr = ENVPTR->GetByteArrayElements(ENVPAR, pal_data,&bb);
 
     rval = GRwritelut((int32) pal_id, (int32) ncomp, (int32) data_type,
         (int32) interlace, (int32) num_entries, (VOIDP) arr);
 
-    ENVPTR->ReleaseByteArrayElements(ENVPAR pal_data,arr,JNI_ABORT);
+    ENVPTR->ReleaseByteArrayElements(ENVPAR, pal_data,arr,JNI_ABORT);
 
     if (rval == FAIL) {
         return JNI_FALSE;
@@ -790,17 +790,17 @@ jbyte * s;
 jint *arr;
     jboolean bb;
 
-    arr = ENVPTR->GetIntArrayElements(ENVPAR origin,&bb);
-    s = ENVPTR->GetByteArrayElements(ENVPAR dat,&bb);
+    arr = ENVPTR->GetIntArrayElements(ENVPAR, origin,&bb);
+    s = ENVPTR->GetByteArrayElements(ENVPAR, dat,&bb);
 
     retVal = GRreadchunk((int32)grid,(int32 *)arr,s);
 
-    ENVPTR->ReleaseIntArrayElements(ENVPAR origin,arr,JNI_ABORT);
+    ENVPTR->ReleaseIntArrayElements(ENVPAR, origin,arr,JNI_ABORT);
     if (retVal == FAIL) {
-        ENVPTR->ReleaseByteArrayElements(ENVPAR dat,s,JNI_ABORT);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR, dat,s,JNI_ABORT);
         return JNI_FALSE;
     } else {
-        ENVPTR->ReleaseByteArrayElements(ENVPAR dat,s,0);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR, dat,s,0);
         return JNI_TRUE;
     }
 }
@@ -817,13 +817,13 @@ jbyte * s;
 jint * arr;
     jboolean bb;
 
-    s = ENVPTR->GetByteArrayElements(ENVPAR dat,&bb);
-    arr = ENVPTR->GetIntArrayElements(ENVPAR origin,&bb);
+    s = ENVPTR->GetByteArrayElements(ENVPAR, dat,&bb);
+    arr = ENVPTR->GetIntArrayElements(ENVPAR, origin,&bb);
 
     retVal = GRwritechunk((int32)grid,(int32 *)arr,(char *)s);
 
-    ENVPTR->ReleaseByteArrayElements(ENVPAR dat,s,JNI_ABORT);
-    ENVPTR->ReleaseIntArrayElements(ENVPAR origin,arr,JNI_ABORT);
+    ENVPTR->ReleaseByteArrayElements(ENVPAR, dat,s,JNI_ABORT);
+    ENVPTR->ReleaseIntArrayElements(ENVPAR, origin,arr,JNI_ABORT);
 
     if (retVal == FAIL) {
         return JNI_FALSE;
