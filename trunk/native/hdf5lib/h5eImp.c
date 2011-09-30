@@ -74,7 +74,7 @@ extern "C" {
             h5nullArgument( env, "H5Eregister_class: error class name is NULL");
             return ret_val;
         }
-        the_cls_name = (char *)ENVPTR->GetStringUTFChars(ENVPAR cls_name,&isCopy);
+        the_cls_name = (char *)ENVPTR->GetStringUTFChars(ENVPAR, cls_name,&isCopy);
         if (the_cls_name == NULL) {
             h5JNIFatalError( env, "H5Eregister_class: error class name not pinned");
             return ret_val;
@@ -83,7 +83,7 @@ extern "C" {
             h5nullArgument( env, "H5Eregister_class: client library or application name is NULL");
             return ret_val;
         }
-        the_lib_name = (char *)ENVPTR->GetStringUTFChars(ENVPAR lib_name,&isCopy);
+        the_lib_name = (char *)ENVPTR->GetStringUTFChars(ENVPAR, lib_name,&isCopy);
         if (the_lib_name == NULL) {
             h5JNIFatalError( env, "H5Eregister_class: client name not pinned");
             return ret_val;
@@ -92,15 +92,15 @@ extern "C" {
             h5nullArgument( env, "H5Eregister_class: version of the client library or application is NULL");
             return ret_val;
         }
-        the_version = (char *)ENVPTR->GetStringUTFChars(ENVPAR version,&isCopy);
+        the_version = (char *)ENVPTR->GetStringUTFChars(ENVPAR, version,&isCopy);
         if (the_version == NULL) {
             h5JNIFatalError( env, "H5Eregister_class: version not pinned");
             return ret_val;
         }
         ret_val = H5Eregister_class(the_cls_name, the_lib_name, the_version);
-        ENVPTR->ReleaseStringUTFChars(ENVPAR cls_name, the_cls_name);
-        ENVPTR->ReleaseStringUTFChars(ENVPAR lib_name, the_lib_name);
-        ENVPTR->ReleaseStringUTFChars(ENVPAR version, the_version);
+        ENVPTR->ReleaseStringUTFChars(ENVPAR, cls_name, the_cls_name);
+        ENVPTR->ReleaseStringUTFChars(ENVPAR, lib_name, the_lib_name);
+        ENVPTR->ReleaseStringUTFChars(ENVPAR, version, the_version);
         if (ret_val < 0) {
             h5libraryError(env);
         }
@@ -168,13 +168,13 @@ extern "C" {
             h5nullArgument( env, "H5Ecreate_msg: error message is NULL");
             return ret_val;
         }
-        the_err_msg = (char *)ENVPTR->GetStringUTFChars(ENVPAR err_msg,&isCopy);
+        the_err_msg = (char *)ENVPTR->GetStringUTFChars(ENVPAR, err_msg,&isCopy);
         if (the_err_msg == NULL) {
             h5JNIFatalError( env, "H5Ecreate_msg: error message not pinned");
             return ret_val;
         }
         ret_val = H5Ecreate_msg((hid_t)err_id, error_msg_type, the_err_msg);
-        ENVPTR->ReleaseStringUTFChars(ENVPAR err_msg, the_err_msg);
+        ENVPTR->ReleaseStringUTFChars(ENVPAR, err_msg, the_err_msg);
         if (ret_val < 0) {
             h5libraryError(env);
             return ret_val;
@@ -319,7 +319,7 @@ extern "C" {
             return NULL;
         }
 
-        str = ENVPTR->NewStringUTF(ENVPAR namePtr);
+        str = ENVPTR->NewStringUTF(ENVPAR, namePtr);
         free(namePtr);
 
         return str;
@@ -429,7 +429,7 @@ extern "C" {
             h5nullArgument( env, "H5Eget_msg:  error_msg_type_list is NULL");
             return NULL;
         }
-        theArray = (jint *)ENVPTR->GetIntArrayElements(ENVPAR error_msg_type_list,&isCopy);
+        theArray = (jint *)ENVPTR->GetIntArrayElements(ENVPAR, error_msg_type_list,&isCopy);
         if (theArray == NULL) {
             h5JNIFatalError( env, "H5Eget_msg:  error_msg_type_list not pinned");
             return NULL;
@@ -439,14 +439,14 @@ extern "C" {
 
         if (buf_size < 0) {
             free(namePtr);
-            ENVPTR->ReleaseIntArrayElements(ENVPAR error_msg_type_list,theArray,JNI_ABORT);
+            ENVPTR->ReleaseIntArrayElements(ENVPAR, error_msg_type_list,theArray,JNI_ABORT);
             h5libraryError(env);
             return NULL;
         }
         theArray[0] = error_msg_type;
-        ENVPTR->ReleaseIntArrayElements(ENVPAR error_msg_type_list,theArray,0);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR, error_msg_type_list,theArray,0);
 
-        str = ENVPTR->NewStringUTF(ENVPAR namePtr);
+        str = ENVPTR->NewStringUTF(ENVPAR, namePtr);
         free(namePtr);
 
         return str;

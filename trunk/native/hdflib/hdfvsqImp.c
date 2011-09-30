@@ -34,7 +34,7 @@ extern "C" {
 #define ENVPAR 
 #else
 #define ENVPTR (*env)
-#define ENVPAR env,
+#define ENVPAR env
 #endif
 
 extern jboolean h4outOfMemory( JNIEnv *env, char *functName);
@@ -49,15 +49,15 @@ jintArray n_records) /* OUT: int */
     jint * theArg;
         jboolean bb;
 
-        theArg = ENVPTR->GetIntArrayElements(ENVPAR n_records,&bb);
+        theArg = ENVPTR->GetIntArrayElements(ENVPAR, n_records,&bb);
 
     rval = VSQuerycount((int32) vdata_id, (int32 *)&(theArg[0]));
 
         if (rval == FAIL) {
-        ENVPTR->ReleaseIntArrayElements(ENVPAR n_records,theArg,JNI_ABORT);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR, n_records,theArg,JNI_ABORT);
                 return JNI_FALSE;
         } else {
-        ENVPTR->ReleaseIntArrayElements(ENVPAR n_records,theArg,0);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR, n_records,theArg,0);
                 return JNI_TRUE;
         }
 
@@ -84,22 +84,22 @@ jobjectArray fields)  /* OUT: String */
         return JNI_FALSE;
     } else {
         /* convert it to java string */
-        rstring = ENVPTR->NewStringUTF(ENVPAR flds);
+        rstring = ENVPTR->NewStringUTF(ENVPAR, flds);
 
         /*  create a Java String object in the calling environment... */
-        jc = ENVPTR->FindClass(ENVPAR  "java/lang/String");
+        jc = ENVPTR->FindClass(ENVPAR,  "java/lang/String");
         if (jc == NULL) {
             return JNI_FALSE; /* exception is raised */
         }
-        o = ENVPTR->GetObjectArrayElement(ENVPAR fields,0);
+        o = ENVPTR->GetObjectArrayElement(ENVPAR, fields,0);
         if (o == NULL) {
             return JNI_FALSE;
         }
-        bb = ENVPTR->IsInstanceOf(ENVPAR o,jc);
+        bb = ENVPTR->IsInstanceOf(ENVPAR, o,jc);
         if (bb == JNI_FALSE) {
             return JNI_FALSE;
         }
-        ENVPTR->SetObjectArrayElement(ENVPAR fields,0,(jobject)rstring);
+        ENVPTR->SetObjectArrayElement(ENVPAR, fields,0,(jobject)rstring);
         return JNI_TRUE;
     }
 }
@@ -114,15 +114,15 @@ jintArray interlace) /* OUT: int */
     jint * theArg;
         jboolean bb;
 
-        theArg = ENVPTR->GetIntArrayElements(ENVPAR interlace,&bb);
+        theArg = ENVPTR->GetIntArrayElements(ENVPAR, interlace,&bb);
 
     rval = VSQueryinterlace((int32) vdata_id, (int32 *)&(theArg[0]));
 
         if (rval == FAIL) {
-        ENVPTR->ReleaseIntArrayElements(ENVPAR interlace,theArg,JNI_ABORT);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR, interlace,theArg,JNI_ABORT);
                 return JNI_FALSE;
         } else {
-        ENVPTR->ReleaseIntArrayElements(ENVPAR interlace,theArg,0);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR, interlace,theArg,0);
         return JNI_TRUE;
         }
 
@@ -156,25 +156,25 @@ jobjectArray vdata_name)  /* OUT: String */
         return JNI_FALSE;
     } else {
         /* convert it to java string */
-        rstring = ENVPTR->NewStringUTF(ENVPAR nm);
+        rstring = ENVPTR->NewStringUTF(ENVPAR, nm);
 
         /*  create a Java String object in the calling environment... */
-        jc = ENVPTR->FindClass(ENVPAR  "java/lang/String");
+        jc = ENVPTR->FindClass(ENVPAR,  "java/lang/String");
         if (jc == NULL) {
             free(nm);
             return JNI_FALSE; /* exception is raised */
         }
-        o = ENVPTR->GetObjectArrayElement(ENVPAR vdata_name,0);
+        o = ENVPTR->GetObjectArrayElement(ENVPAR, vdata_name,0);
         if (o == NULL) {
             free(nm);
             return JNI_FALSE;
         }
-        bb = ENVPTR->IsInstanceOf(ENVPAR o,jc);
+        bb = ENVPTR->IsInstanceOf(ENVPAR, o,jc);
         if (bb == JNI_FALSE) {
             free(nm);
             return JNI_FALSE;
         }
-        ENVPTR->SetObjectArrayElement(ENVPAR vdata_name,0,(jobject)rstring);
+        ENVPTR->SetObjectArrayElement(ENVPAR, vdata_name,0,(jobject)rstring);
         free(nm);
         return JNI_TRUE;
     }
@@ -206,15 +206,15 @@ jintArray vdata_size) /* OUT: int */
     jint * theArg;
         jboolean bb;
 
-        theArg = ENVPTR->GetIntArrayElements(ENVPAR vdata_size,&bb);
+        theArg = ENVPTR->GetIntArrayElements(ENVPAR, vdata_size,&bb);
 
     rval = VSQueryvsize((int32) vdata_id, (int32 *)&(theArg[0]));
 
         if (rval == FAIL) {
-        ENVPTR->ReleaseIntArrayElements(ENVPAR vdata_size,theArg,JNI_ABORT);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR, vdata_size,theArg,JNI_ABORT);
                 return JNI_FALSE;
         } else {
-        ENVPTR->ReleaseIntArrayElements(ENVPAR vdata_size,theArg,0);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR, vdata_size,theArg,0);
                 return JNI_TRUE;
         }
 }

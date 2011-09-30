@@ -39,7 +39,7 @@ extern "C" {
 #define ENVPAR 
 #else
 #define ENVPTR (*env)
-#define ENVPAR env,
+#define ENVPAR env
 #endif
 
 extern jboolean h4outOfMemory( JNIEnv *env, char *functName);
@@ -66,25 +66,25 @@ jbyteArray bdata)  /* IN: array of bytes */
         h4raiseException( env, "byteToInt: bdata is NULL?");
         return NULL;
     }
-    barr = ENVPTR->GetByteArrayElements(ENVPAR bdata,&bb);
+    barr = ENVPTR->GetByteArrayElements(ENVPAR, bdata,&bb);
     if (barr == NULL) {
         h4JNIFatalError( env, "byteToInt: pin failed");
         return NULL;
     }
 
-    blen = ENVPTR->GetArrayLength(ENVPAR bdata);
+    blen = ENVPTR->GetArrayLength(ENVPAR, bdata);
 
     len = blen/sizeof(jint);
-    rarray = ENVPTR->NewIntArray(ENVPAR len);
+    rarray = ENVPTR->NewIntArray(ENVPAR, len);
     if (rarray == NULL) {
-        ENVPTR->ReleaseByteArrayElements(ENVPAR bdata,barr,JNI_ABORT);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR, bdata,barr,JNI_ABORT);
         h4outOfMemory( env, "byteToInt" );
         return NULL;
     }
 
-    iarray = ENVPTR->GetIntArrayElements(ENVPAR rarray,&bb);
+    iarray = ENVPTR->GetIntArrayElements(ENVPAR, rarray,&bb);
     if (iarray == NULL) {
-        ENVPTR->ReleaseByteArrayElements(ENVPAR bdata,barr,JNI_ABORT);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR, bdata,barr,JNI_ABORT);
         h4JNIFatalError( env, "byteToInt: pin iarray failed");
         return NULL;
     }
@@ -97,8 +97,8 @@ jbyteArray bdata)  /* IN: array of bytes */
         bp += sizeof(jint);
     }
 
-    ENVPTR->ReleaseIntArrayElements(ENVPAR rarray,iarray, 0);
-    ENVPTR->ReleaseByteArrayElements(ENVPAR bdata,barr,JNI_ABORT);
+    ENVPTR->ReleaseIntArrayElements(ENVPAR, rarray,iarray, 0);
+    ENVPTR->ReleaseByteArrayElements(ENVPAR, bdata,barr,JNI_ABORT);
 
     return rarray;
 
@@ -124,23 +124,23 @@ jbyteArray bdata)  /* IN: array of bytes */
         h4raiseException( env, "byteToFloat: bdata is NULL?");
         return NULL;
     }
-    barr = ENVPTR->GetByteArrayElements(ENVPAR bdata,&bb);
+    barr = ENVPTR->GetByteArrayElements(ENVPAR, bdata,&bb);
     if (barr == NULL) {
         h4JNIFatalError( env, "byteToFloat: pin failed");
         return NULL;
     }
-    blen = ENVPTR->GetArrayLength(ENVPAR bdata);
+    blen = ENVPTR->GetArrayLength(ENVPAR, bdata);
 
     len = blen/sizeof(jfloat);
-    rarray = ENVPTR->NewFloatArray(ENVPAR len);
+    rarray = ENVPTR->NewFloatArray(ENVPAR, len);
     if (rarray == NULL) {
-        ENVPTR->ReleaseByteArrayElements(ENVPAR bdata,barr,JNI_ABORT);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR, bdata,barr,JNI_ABORT);
         h4outOfMemory( env, "byteToFloat" );
         return NULL;
     }
-    farray = ENVPTR->GetFloatArrayElements(ENVPAR rarray,&bb);
+    farray = ENVPTR->GetFloatArrayElements(ENVPAR, rarray,&bb);
     if (farray == NULL) {
-        ENVPTR->ReleaseByteArrayElements(ENVPAR bdata,barr,JNI_ABORT);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR, bdata,barr,JNI_ABORT);
         h4JNIFatalError( env, "byteToFloat: pin farray failed");
         return NULL;
     }
@@ -153,8 +153,8 @@ jbyteArray bdata)  /* IN: array of bytes */
         bp += sizeof(jfloat);
     }
 
-    ENVPTR->ReleaseFloatArrayElements(ENVPAR rarray,farray, 0);
-    ENVPTR->ReleaseByteArrayElements(ENVPAR bdata,barr,JNI_ABORT);
+    ENVPTR->ReleaseFloatArrayElements(ENVPAR, rarray,farray, 0);
+    ENVPTR->ReleaseByteArrayElements(ENVPAR, bdata,barr,JNI_ABORT);
 
     return rarray;
 
@@ -180,25 +180,25 @@ jbyteArray bdata)  /* IN: array of bytes */
         h4raiseException( env, "byteToShort: bdata is NULL?");
         return NULL;
     }
-    barr = ENVPTR->GetByteArrayElements(ENVPAR bdata,&bb);
+    barr = ENVPTR->GetByteArrayElements(ENVPAR, bdata,&bb);
     if (barr == NULL) {
         h4JNIFatalError( env, "byteToShort: pin failed");
         return NULL;
     }
 
-    blen = ENVPTR->GetArrayLength(ENVPAR bdata);
+    blen = ENVPTR->GetArrayLength(ENVPAR, bdata);
 
     len = blen/sizeof(jshort);
-    rarray = ENVPTR->NewShortArray(ENVPAR len);
+    rarray = ENVPTR->NewShortArray(ENVPAR, len);
     if (rarray == NULL) {
-        ENVPTR->ReleaseByteArrayElements(ENVPAR bdata,barr,JNI_ABORT);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR, bdata,barr,JNI_ABORT);
         h4outOfMemory( env, "byteToShort" );
         return NULL;
     }
 
-    sarray = ENVPTR->GetShortArrayElements(ENVPAR rarray,&bb);
+    sarray = ENVPTR->GetShortArrayElements(ENVPAR, rarray,&bb);
     if (sarray == NULL) {
-        ENVPTR->ReleaseByteArrayElements(ENVPAR bdata,barr,JNI_ABORT);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR, bdata,barr,JNI_ABORT);
         h4JNIFatalError( env, "byteToShort: pin sarray failed");
         return NULL;
     }
@@ -211,8 +211,8 @@ jbyteArray bdata)  /* IN: array of bytes */
         bp += sizeof(jshort);
     }
 
-    ENVPTR->ReleaseShortArrayElements(ENVPAR rarray,sarray, 0);
-    ENVPTR->ReleaseByteArrayElements(ENVPAR bdata,barr,JNI_ABORT);
+    ENVPTR->ReleaseShortArrayElements(ENVPAR, rarray,sarray, 0);
+    ENVPTR->ReleaseByteArrayElements(ENVPAR, bdata,barr,JNI_ABORT);
 
     return rarray;
 
@@ -239,24 +239,24 @@ jbyteArray bdata)  /* IN: array of bytes */
         h4raiseException( env, "byteToLong: bdata is NULL?");
         return NULL;
     }
-    barr = ENVPTR->GetByteArrayElements(ENVPAR bdata,&bb);
+    barr = ENVPTR->GetByteArrayElements(ENVPAR, bdata,&bb);
     if (barr == NULL) {
         h4JNIFatalError( env, "byteToLong: pin failed");
         return NULL;
     }
-    blen = ENVPTR->GetArrayLength(ENVPAR bdata);
+    blen = ENVPTR->GetArrayLength(ENVPAR, bdata);
 
     len = blen/sizeof(jlong);
-    rarray = ENVPTR->NewLongArray(ENVPAR len);
+    rarray = ENVPTR->NewLongArray(ENVPAR, len);
     if (rarray == NULL) {
-        ENVPTR->ReleaseByteArrayElements(ENVPAR bdata,barr,JNI_ABORT);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR, bdata,barr,JNI_ABORT);
         h4outOfMemory( env, "byteToLong" );
         return NULL;
     }
 
-    larray = ENVPTR->GetLongArrayElements(ENVPAR rarray,&bb);
+    larray = ENVPTR->GetLongArrayElements(ENVPAR, rarray,&bb);
     if (larray == NULL) {
-        ENVPTR->ReleaseByteArrayElements(ENVPAR bdata,barr,JNI_ABORT);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR, bdata,barr,JNI_ABORT);
         h4JNIFatalError( env, "byteToLong: pin larray failed");
         return NULL;
     }
@@ -268,8 +268,8 @@ jbyteArray bdata)  /* IN: array of bytes */
         iap++;
         bp += sizeof(jlong);
     }
-    ENVPTR->ReleaseLongArrayElements(ENVPAR rarray,larray, 0);
-    ENVPTR->ReleaseByteArrayElements(ENVPAR bdata,barr,JNI_ABORT);
+    ENVPTR->ReleaseLongArrayElements(ENVPAR, rarray,larray, 0);
+    ENVPTR->ReleaseByteArrayElements(ENVPAR, bdata,barr,JNI_ABORT);
 
     return rarray;
 
@@ -296,24 +296,24 @@ jbyteArray bdata)  /* IN: array of bytes */
         h4raiseException( env, "byteToDouble: bdata is NULL?");
         return NULL;
     }
-    barr = ENVPTR->GetByteArrayElements(ENVPAR bdata,&bb);
+    barr = ENVPTR->GetByteArrayElements(ENVPAR, bdata,&bb);
     if (barr == NULL) {
         h4JNIFatalError( env, "byteToDouble: pin failed");
         return NULL;
     }
-    blen = ENVPTR->GetArrayLength(ENVPAR bdata);
+    blen = ENVPTR->GetArrayLength(ENVPAR, bdata);
 
     len = blen/sizeof(jdouble);
-    rarray = ENVPTR->NewDoubleArray(ENVPAR len);
+    rarray = ENVPTR->NewDoubleArray(ENVPAR, len);
     if (rarray == NULL) {
-        ENVPTR->ReleaseByteArrayElements(ENVPAR bdata,barr,JNI_ABORT);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR, bdata,barr,JNI_ABORT);
         h4outOfMemory( env, "byteToDouble" );
         return NULL;
     }
 
-    darray = ENVPTR->GetDoubleArrayElements(ENVPAR rarray,&bb);
+    darray = ENVPTR->GetDoubleArrayElements(ENVPAR, rarray,&bb);
     if (darray == NULL) {
-        ENVPTR->ReleaseByteArrayElements(ENVPAR bdata,barr,JNI_ABORT);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR, bdata,barr,JNI_ABORT);
         h4JNIFatalError( env, "byteToDouble: pin darray failed");
         return NULL;
     }
@@ -326,8 +326,8 @@ jbyteArray bdata)  /* IN: array of bytes */
         bp += sizeof(jdouble);
     }
 
-    ENVPTR->ReleaseDoubleArrayElements(ENVPAR rarray,darray,0);
-    ENVPTR->ReleaseByteArrayElements(ENVPAR bdata,barr,JNI_ABORT);
+    ENVPTR->ReleaseDoubleArrayElements(ENVPAR, rarray,darray,0);
+    ENVPTR->ReleaseByteArrayElements(ENVPAR, bdata,barr,JNI_ABORT);
 
     return rarray;
 }
@@ -354,31 +354,31 @@ jbyteArray bdata)  /* IN: array of bytes */
         h4raiseException( env, "byteToInt: bdata is NULL?");
         return NULL;
     }
-    barr = ENVPTR->GetByteArrayElements(ENVPAR bdata,&bb);
+    barr = ENVPTR->GetByteArrayElements(ENVPAR, bdata,&bb);
     if (barr == NULL) {
         h4JNIFatalError( env, "byteToInt: pin failed");
         return NULL;
     }
 
-    blen = ENVPTR->GetArrayLength(ENVPAR bdata);
+    blen = ENVPTR->GetArrayLength(ENVPAR, bdata);
     if ((start < 0) || ((int)(start + (len*sizeof(jint))) > blen)) {
-        ENVPTR->ReleaseByteArrayElements(ENVPAR bdata,barr,JNI_ABORT);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR, bdata,barr,JNI_ABORT);
         h4JNIFatalError( env, "byteToInt: getLen failed");
         return NULL;
     }
 
     bp = (char *)barr + start;
 
-    rarray = ENVPTR->NewIntArray(ENVPAR len);
+    rarray = ENVPTR->NewIntArray(ENVPAR, len);
     if (rarray == NULL) {
-        ENVPTR->ReleaseByteArrayElements(ENVPAR bdata,barr,JNI_ABORT);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR, bdata,barr,JNI_ABORT);
         h4outOfMemory( env, "byteToInt" );
         return NULL;
     }
 
-    iarray = ENVPTR->GetIntArrayElements(ENVPAR rarray,&bb);
+    iarray = ENVPTR->GetIntArrayElements(ENVPAR, rarray,&bb);
     if (iarray == NULL) {
-        ENVPTR->ReleaseByteArrayElements(ENVPAR bdata,barr,JNI_ABORT);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR, bdata,barr,JNI_ABORT);
         h4JNIFatalError( env, "byteToInt: pin iarray failed");
         return NULL;
     }
@@ -390,8 +390,8 @@ jbyteArray bdata)  /* IN: array of bytes */
         bp += sizeof(jint);
     }
 
-    ENVPTR->ReleaseIntArrayElements(ENVPAR rarray,iarray, 0);
-    ENVPTR->ReleaseByteArrayElements(ENVPAR bdata,barr,JNI_ABORT);
+    ENVPTR->ReleaseIntArrayElements(ENVPAR, rarray,iarray, 0);
+    ENVPTR->ReleaseByteArrayElements(ENVPAR, bdata,barr,JNI_ABORT);
 
     return rarray;
 
@@ -418,31 +418,31 @@ jbyteArray bdata)  /* IN: array of bytes */
         h4raiseException( env, "byteToShort: bdata is NULL?");
         return NULL;
     }
-    barr = ENVPTR->GetByteArrayElements(ENVPAR bdata,&bb);
+    barr = ENVPTR->GetByteArrayElements(ENVPAR, bdata,&bb);
     if (barr == NULL) {
         h4JNIFatalError( env, "byteToShort: getByte failed?");
         return NULL;
     }
 
-    blen = ENVPTR->GetArrayLength(ENVPAR bdata);
+    blen = ENVPTR->GetArrayLength(ENVPAR, bdata);
     if ((start < 0) || ((int)(start + (len*(sizeof(jshort)))) > blen)) {
-        ENVPTR->ReleaseByteArrayElements(ENVPAR bdata,barr,JNI_ABORT);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR, bdata,barr,JNI_ABORT);
         h4raiseException( env, "byteToShort: start or len is out of bounds");
         return NULL;
     }
 
     bp = (char *)barr + start;
 
-    rarray = ENVPTR->NewShortArray(ENVPAR len);
+    rarray = ENVPTR->NewShortArray(ENVPAR, len);
     if (rarray == NULL) {
-        ENVPTR->ReleaseByteArrayElements(ENVPAR bdata,barr,JNI_ABORT);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR, bdata,barr,JNI_ABORT);
         h4outOfMemory( env, "byteToShort" );
         return NULL;
     }
 
-    iarray = ENVPTR->GetShortArrayElements(ENVPAR rarray,&bb);
+    iarray = ENVPTR->GetShortArrayElements(ENVPAR, rarray,&bb);
     if (iarray == NULL) {
-        ENVPTR->ReleaseByteArrayElements(ENVPAR bdata,barr,JNI_ABORT);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR, bdata,barr,JNI_ABORT);
         h4JNIFatalError( env, "byteToShort: getShort failed?");
         return NULL;
     }
@@ -454,8 +454,8 @@ jbyteArray bdata)  /* IN: array of bytes */
         bp += sizeof(jshort);
     }
 
-    ENVPTR->ReleaseShortArrayElements(ENVPAR rarray,iarray, 0);
-    ENVPTR->ReleaseByteArrayElements(ENVPAR bdata,barr,JNI_ABORT);
+    ENVPTR->ReleaseShortArrayElements(ENVPAR, rarray,iarray, 0);
+    ENVPTR->ReleaseByteArrayElements(ENVPAR, bdata,barr,JNI_ABORT);
 
     return rarray;
 
@@ -482,31 +482,31 @@ jbyteArray bdata)  /* IN: array of bytes */
         h4raiseException( env, "byteToFloat: bdata is NULL?");
         return NULL;
     }
-    barr = ENVPTR->GetByteArrayElements(ENVPAR bdata,&bb);
+    barr = ENVPTR->GetByteArrayElements(ENVPAR, bdata,&bb);
     if (barr == NULL) {
         h4JNIFatalError( env, "byteToFloat: getByte failed?");
         return NULL;
     }
 
-    blen = ENVPTR->GetArrayLength(ENVPAR bdata);
+    blen = ENVPTR->GetArrayLength(ENVPAR, bdata);
     if ((start < 0) || ((int)(start + (len*(sizeof(jfloat)))) > blen)) {
-        ENVPTR->ReleaseByteArrayElements(ENVPAR bdata,barr,JNI_ABORT);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR, bdata,barr,JNI_ABORT);
         h4raiseException( env, "byteToFloat: start or len is out of bounds");
         return NULL;
     }
 
     bp = (char *)barr + start;
 
-    rarray = ENVPTR->NewFloatArray(ENVPAR len);
+    rarray = ENVPTR->NewFloatArray(ENVPAR, len);
     if (rarray == NULL) {
-        ENVPTR->ReleaseByteArrayElements(ENVPAR bdata,barr,JNI_ABORT);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR, bdata,barr,JNI_ABORT);
         h4outOfMemory( env, "byteToFloat" );
         return NULL;
     }
 
-    iarray = ENVPTR->GetFloatArrayElements(ENVPAR rarray,&bb);
+    iarray = ENVPTR->GetFloatArrayElements(ENVPAR, rarray,&bb);
     if (iarray == NULL) {
-        ENVPTR->ReleaseByteArrayElements(ENVPAR bdata,barr,JNI_ABORT);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR, bdata,barr,JNI_ABORT);
         h4JNIFatalError( env, "byteToFloat: getFloat failed?");
         return NULL;
     }
@@ -518,8 +518,8 @@ jbyteArray bdata)  /* IN: array of bytes */
         bp += sizeof(jfloat);
     }
 
-    ENVPTR->ReleaseFloatArrayElements(ENVPAR rarray,iarray, 0);
-    ENVPTR->ReleaseByteArrayElements(ENVPAR bdata,barr,JNI_ABORT);
+    ENVPTR->ReleaseFloatArrayElements(ENVPAR, rarray,iarray, 0);
+    ENVPTR->ReleaseByteArrayElements(ENVPAR, bdata,barr,JNI_ABORT);
 
     return rarray;
 
@@ -546,31 +546,31 @@ jbyteArray bdata)  /* IN: array of bytes */
         h4raiseException( env, "byteToLong: bdata is NULL?");
         return NULL;
     }
-    barr = ENVPTR->GetByteArrayElements(ENVPAR bdata,&bb);
+    barr = ENVPTR->GetByteArrayElements(ENVPAR, bdata,&bb);
     if (barr == NULL) {
         h4JNIFatalError( env, "byteToLong: getByte failed?");
         return NULL;
     }
 
-    blen = ENVPTR->GetArrayLength(ENVPAR bdata);
+    blen = ENVPTR->GetArrayLength(ENVPAR, bdata);
     if ((start < 0) || ((int)(start + (len*(sizeof(jlong)))) > blen)) {
-        ENVPTR->ReleaseByteArrayElements(ENVPAR bdata,barr,JNI_ABORT);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR, bdata,barr,JNI_ABORT);
         h4raiseException( env, "byteToLong: start or len is out of bounds");
         return NULL;
     }
 
     bp = (char *)barr + start;
 
-    rarray = ENVPTR->NewLongArray(ENVPAR len);
+    rarray = ENVPTR->NewLongArray(ENVPAR, len);
     if (rarray == NULL) {
-        ENVPTR->ReleaseByteArrayElements(ENVPAR bdata,barr,JNI_ABORT);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR, bdata,barr,JNI_ABORT);
         h4outOfMemory( env, "byteToLong" );
         return NULL;
     }
 
-    iarray = ENVPTR->GetLongArrayElements(ENVPAR rarray,&bb);
+    iarray = ENVPTR->GetLongArrayElements(ENVPAR, rarray,&bb);
     if (iarray == NULL) {
-        ENVPTR->ReleaseByteArrayElements(ENVPAR bdata,barr,JNI_ABORT);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR, bdata,barr,JNI_ABORT);
         h4JNIFatalError( env, "byteToLong: getLong failed?");
         return NULL;
     }
@@ -583,8 +583,8 @@ jbyteArray bdata)  /* IN: array of bytes */
         bp += sizeof(jlong);
     }
 
-    ENVPTR->ReleaseLongArrayElements(ENVPAR rarray,iarray, 0);
-    ENVPTR->ReleaseByteArrayElements(ENVPAR bdata,barr,JNI_ABORT);
+    ENVPTR->ReleaseLongArrayElements(ENVPAR, rarray,iarray, 0);
+    ENVPTR->ReleaseByteArrayElements(ENVPAR, bdata,barr,JNI_ABORT);
 
     return rarray;
 
@@ -611,32 +611,32 @@ jbyteArray bdata)  /* IN: array of bytes */
         h4raiseException( env, "byteToDouble: bdata is NULL?");
         return NULL;
     }
-    barr = ENVPTR->GetByteArrayElements(ENVPAR bdata,&bb);
+    barr = ENVPTR->GetByteArrayElements(ENVPAR, bdata,&bb);
     if (barr == NULL) {
         h4JNIFatalError( env, "byteToDouble: getByte failed?");
         return NULL;
     }
 
-    blen = ENVPTR->GetArrayLength(ENVPAR bdata);
+    blen = ENVPTR->GetArrayLength(ENVPAR, bdata);
     if ((start < 0) || ((int)(start + (len*(sizeof(jdouble)))) > blen)) {
-        ENVPTR->ReleaseByteArrayElements(ENVPAR bdata,barr,JNI_ABORT);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR, bdata,barr,JNI_ABORT);
         h4raiseException( env, "byteToDouble: start or len is out of bounds");
         return NULL;
     }
 
     bp = (char *)barr + start;
 
-    rarray = ENVPTR->NewDoubleArray(ENVPAR len);
+    rarray = ENVPTR->NewDoubleArray(ENVPAR, len);
     if (rarray == NULL) {
-        ENVPTR->ReleaseByteArrayElements(ENVPAR bdata,barr,JNI_ABORT);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR, bdata,barr,JNI_ABORT);
         h4outOfMemory( env, "byteToDouble" );
         return NULL;
     }
 
-    iarray = ENVPTR->GetDoubleArrayElements(ENVPAR rarray,&bb);
+    iarray = ENVPTR->GetDoubleArrayElements(ENVPAR, rarray,&bb);
     if (iarray == NULL) {
         h4JNIFatalError( env, "byteToDouble: getDouble failed?");
-        ENVPTR->ReleaseByteArrayElements(ENVPAR bdata,barr,JNI_ABORT);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR, bdata,barr,JNI_ABORT);
         return NULL;
     }
 
@@ -647,8 +647,8 @@ jbyteArray bdata)  /* IN: array of bytes */
         bp += sizeof(jdouble);
     }
 
-    ENVPTR->ReleaseDoubleArrayElements(ENVPAR rarray,iarray, 0);
-    ENVPTR->ReleaseByteArrayElements(ENVPAR bdata,barr,JNI_ABORT);
+    ENVPTR->ReleaseDoubleArrayElements(ENVPAR, rarray,iarray, 0);
+    ENVPTR->ReleaseByteArrayElements(ENVPAR, bdata,barr,JNI_ABORT);
 
     return rarray;
 }
@@ -680,15 +680,15 @@ jintArray idata)  /* IN: array of int */
         h4raiseException( env, "intToByte: idata is NULL?");
         return NULL;
     }
-    iarr = ENVPTR->GetIntArrayElements(ENVPAR idata,&bb);
+    iarr = ENVPTR->GetIntArrayElements(ENVPAR, idata,&bb);
     if (iarr == NULL) {
         h4JNIFatalError( env, "intToByte: getInt failed?");
         return NULL;
     }
 
-    ilen = ENVPTR->GetArrayLength(ENVPAR idata);
+    ilen = ENVPTR->GetArrayLength(ENVPAR, idata);
     if ((start < 0) || (((start + len)) > ilen)) {
-        ENVPTR->ReleaseIntArrayElements(ENVPAR idata,iarr,JNI_ABORT);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR, idata,iarr,JNI_ABORT);
         h4raiseException( env, "intToByte: start or len is out of bounds");
         return NULL;
     }
@@ -696,16 +696,16 @@ jintArray idata)  /* IN: array of int */
     ip = iarr + start;
 
     blen = ilen * sizeof(jint);
-    rarray = ENVPTR->NewByteArray(ENVPAR blen);
+    rarray = ENVPTR->NewByteArray(ENVPAR, blen);
     if (rarray == NULL) {
-        ENVPTR->ReleaseIntArrayElements(ENVPAR idata,iarr,JNI_ABORT);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR, idata,iarr,JNI_ABORT);
         h4outOfMemory( env, "intToByte" );
         return NULL;
     }
 
-    barray = ENVPTR->GetByteArrayElements(ENVPAR rarray,&bb);
+    barray = ENVPTR->GetByteArrayElements(ENVPAR, rarray,&bb);
     if (barray == NULL) {
-        ENVPTR->ReleaseIntArrayElements(ENVPAR idata,iarr,JNI_ABORT);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR, idata,iarr,JNI_ABORT);
         h4JNIFatalError( env, "intToByte: getByte failed?");
         return NULL;
     }
@@ -719,8 +719,8 @@ jintArray idata)  /* IN: array of int */
         }
     }
 
-    ENVPTR->ReleaseByteArrayElements(ENVPAR rarray,barray, 0);
-    ENVPTR->ReleaseIntArrayElements(ENVPAR idata,iarr,JNI_ABORT);
+    ENVPTR->ReleaseByteArrayElements(ENVPAR, rarray,barray, 0);
+    ENVPTR->ReleaseIntArrayElements(ENVPAR, idata,iarr,JNI_ABORT);
 
     return rarray;
 
@@ -753,15 +753,15 @@ jshortArray idata)  /* IN: array of short */
         h4raiseException( env, "shortToByte: idata is NULL?");
         return NULL;
     }
-    iarr = ENVPTR->GetShortArrayElements(ENVPAR idata,&bb);
+    iarr = ENVPTR->GetShortArrayElements(ENVPAR, idata,&bb);
     if (iarr == NULL) {
         h4JNIFatalError( env, "shortToByte: getShort failed?");
         return NULL;
     }
 
-    ilen = ENVPTR->GetArrayLength(ENVPAR idata);
+    ilen = ENVPTR->GetArrayLength(ENVPAR, idata);
     if ((start < 0) || (((start + len)) > ilen)) {
-        ENVPTR->ReleaseShortArrayElements(ENVPAR idata,iarr,JNI_ABORT);
+        ENVPTR->ReleaseShortArrayElements(ENVPAR, idata,iarr,JNI_ABORT);
         h4raiseException( env, "shortToByte: start or len is out of bounds");
         return NULL;
     }
@@ -769,16 +769,16 @@ jshortArray idata)  /* IN: array of short */
     ip = iarr + start;
 
     blen = ilen * sizeof(jshort);
-    rarray = ENVPTR->NewByteArray(ENVPAR blen);
+    rarray = ENVPTR->NewByteArray(ENVPAR, blen);
     if (rarray == NULL) {
-        ENVPTR->ReleaseShortArrayElements(ENVPAR idata,iarr,JNI_ABORT);
+        ENVPTR->ReleaseShortArrayElements(ENVPAR, idata,iarr,JNI_ABORT);
         h4outOfMemory( env, "shortToByte" );
         return NULL;
     }
 
-    barray = ENVPTR->GetByteArrayElements(ENVPAR rarray,&bb);
+    barray = ENVPTR->GetByteArrayElements(ENVPAR, rarray,&bb);
     if (barray == NULL) {
-        ENVPTR->ReleaseShortArrayElements(ENVPAR idata,iarr,JNI_ABORT);
+        ENVPTR->ReleaseShortArrayElements(ENVPAR, idata,iarr,JNI_ABORT);
         h4JNIFatalError( env, "shortToByte: getByte failed?");
         return NULL;
     }
@@ -792,8 +792,8 @@ jshortArray idata)  /* IN: array of short */
         }
     }
 
-    ENVPTR->ReleaseByteArrayElements(ENVPAR rarray,barray, 0);
-    ENVPTR->ReleaseShortArrayElements(ENVPAR idata,iarr,JNI_ABORT);
+    ENVPTR->ReleaseByteArrayElements(ENVPAR, rarray,barray, 0);
+    ENVPTR->ReleaseShortArrayElements(ENVPAR, idata,iarr,JNI_ABORT);
 
     return rarray;
 
@@ -826,15 +826,15 @@ jfloatArray idata)  /* IN: array of float */
         h4raiseException( env, "floatToByte: idata is NULL?");
         return NULL;
     }
-    iarr = ENVPTR->GetFloatArrayElements(ENVPAR idata,&bb);
+    iarr = ENVPTR->GetFloatArrayElements(ENVPAR, idata,&bb);
     if (iarr == NULL) {
         h4JNIFatalError( env, "floatToByte: getFloat failed?");
         return NULL;
     }
 
-    ilen = ENVPTR->GetArrayLength(ENVPAR idata);
+    ilen = ENVPTR->GetArrayLength(ENVPAR, idata);
     if ((start < 0) || (((start + len)) > ilen)) {
-        ENVPTR->ReleaseFloatArrayElements(ENVPAR idata,iarr,JNI_ABORT);
+        ENVPTR->ReleaseFloatArrayElements(ENVPAR, idata,iarr,JNI_ABORT);
         h4raiseException( env, "floatToByte: start or len is out of bounds");
         return NULL;
     }
@@ -842,16 +842,16 @@ jfloatArray idata)  /* IN: array of float */
     ip = iarr + start;
 
     blen = ilen * sizeof(jfloat);
-    rarray = ENVPTR->NewByteArray(ENVPAR blen);
+    rarray = ENVPTR->NewByteArray(ENVPAR, blen);
     if (rarray == NULL) {
-        ENVPTR->ReleaseFloatArrayElements(ENVPAR idata,iarr,JNI_ABORT);
+        ENVPTR->ReleaseFloatArrayElements(ENVPAR, idata,iarr,JNI_ABORT);
         h4outOfMemory( env, "floatToByte" );
         return NULL;
     }
 
-    barray = ENVPTR->GetByteArrayElements(ENVPAR rarray,&bb);
+    barray = ENVPTR->GetByteArrayElements(ENVPAR, rarray,&bb);
     if (barray == NULL) {
-        ENVPTR->ReleaseFloatArrayElements(ENVPAR idata,iarr,JNI_ABORT);
+        ENVPTR->ReleaseFloatArrayElements(ENVPAR, idata,iarr,JNI_ABORT);
         h4JNIFatalError( env, "floatToByte: getByte failed?");
         return NULL;
     }
@@ -865,8 +865,8 @@ jfloatArray idata)  /* IN: array of float */
         }
     }
 
-    ENVPTR->ReleaseByteArrayElements(ENVPAR rarray,barray, 0);
-    ENVPTR->ReleaseFloatArrayElements(ENVPAR idata,iarr,JNI_ABORT);
+    ENVPTR->ReleaseByteArrayElements(ENVPAR, rarray,barray, 0);
+    ENVPTR->ReleaseFloatArrayElements(ENVPAR, idata,iarr,JNI_ABORT);
 
     return rarray;
 
@@ -899,15 +899,15 @@ jdoubleArray idata)  /* IN: array of double */
         h4raiseException( env, "doubleToByte: idata is NULL?");
         return NULL;
     }
-    iarr = ENVPTR->GetDoubleArrayElements(ENVPAR idata,&bb);
+    iarr = ENVPTR->GetDoubleArrayElements(ENVPAR, idata,&bb);
     if (iarr == NULL) {
         h4JNIFatalError( env, "doubleToByte: getDouble failed?");
         return NULL;
     }
 
-    ilen = ENVPTR->GetArrayLength(ENVPAR idata);
+    ilen = ENVPTR->GetArrayLength(ENVPAR, idata);
     if ((start < 0) || (((start + len)) > ilen)) {
-        ENVPTR->ReleaseDoubleArrayElements(ENVPAR idata,iarr,JNI_ABORT);
+        ENVPTR->ReleaseDoubleArrayElements(ENVPAR, idata,iarr,JNI_ABORT);
         h4raiseException( env, "doubleToByte: start or len is out of bounds");
         return NULL;
     }
@@ -915,16 +915,16 @@ jdoubleArray idata)  /* IN: array of double */
     ip = iarr + start;
 
     blen = ilen * sizeof(jdouble);
-    rarray = ENVPTR->NewByteArray(ENVPAR blen);
+    rarray = ENVPTR->NewByteArray(ENVPAR, blen);
     if (rarray == NULL) {
-        ENVPTR->ReleaseDoubleArrayElements(ENVPAR idata,iarr,JNI_ABORT);
+        ENVPTR->ReleaseDoubleArrayElements(ENVPAR, idata,iarr,JNI_ABORT);
         h4outOfMemory( env, "doubleToByte" );
         return NULL;
     }
 
-    barray = ENVPTR->GetByteArrayElements(ENVPAR rarray,&bb);
+    barray = ENVPTR->GetByteArrayElements(ENVPAR, rarray,&bb);
     if (barray == NULL) {
-        ENVPTR->ReleaseDoubleArrayElements(ENVPAR idata,iarr,JNI_ABORT);
+        ENVPTR->ReleaseDoubleArrayElements(ENVPAR, idata,iarr,JNI_ABORT);
         h4JNIFatalError( env, "doubleToByte: getByte failed?");
         return NULL;
     }
@@ -938,8 +938,8 @@ jdoubleArray idata)  /* IN: array of double */
         }
     }
 
-    ENVPTR->ReleaseByteArrayElements(ENVPAR rarray,barray, 0);
-    ENVPTR->ReleaseDoubleArrayElements(ENVPAR idata,iarr,JNI_ABORT);
+    ENVPTR->ReleaseByteArrayElements(ENVPAR, rarray,barray, 0);
+    ENVPTR->ReleaseDoubleArrayElements(ENVPAR, idata,iarr,JNI_ABORT);
 
     return rarray;
 
@@ -973,15 +973,15 @@ jlongArray idata)  /* IN: array of long */
         h4raiseException( env, "longToByte: idata is NULL?");
         return NULL;
     }
-    iarr = ENVPTR->GetLongArrayElements(ENVPAR idata,&bb);
+    iarr = ENVPTR->GetLongArrayElements(ENVPAR, idata,&bb);
     if (iarr == NULL) {
         h4JNIFatalError( env, "longToByte: getLong failed?");
         return NULL;
     }
 
-    ilen = ENVPTR->GetArrayLength(ENVPAR idata);
+    ilen = ENVPTR->GetArrayLength(ENVPAR, idata);
     if ((start < 0) || (((start + len)) > ilen)) {
-        ENVPTR->ReleaseLongArrayElements(ENVPAR idata,iarr,JNI_ABORT);
+        ENVPTR->ReleaseLongArrayElements(ENVPAR, idata,iarr,JNI_ABORT);
         h4raiseException( env, "longToByte: start or len is out of bounds?\n");
         return NULL;
     }
@@ -989,16 +989,16 @@ jlongArray idata)  /* IN: array of long */
     ip = iarr + start;
 
     blen = ilen * sizeof(jlong);
-    rarray = ENVPTR->NewByteArray(ENVPAR blen);
+    rarray = ENVPTR->NewByteArray(ENVPAR, blen);
     if (rarray == NULL) {
-        ENVPTR->ReleaseLongArrayElements(ENVPAR idata,iarr,JNI_ABORT);
+        ENVPTR->ReleaseLongArrayElements(ENVPAR, idata,iarr,JNI_ABORT);
         h4outOfMemory( env, "longToByte" );
         return NULL;
     }
 
-    barray = ENVPTR->GetByteArrayElements(ENVPAR rarray,&bb);
+    barray = ENVPTR->GetByteArrayElements(ENVPAR, rarray,&bb);
     if (barray == NULL) {
-        ENVPTR->ReleaseLongArrayElements(ENVPAR idata,iarr,JNI_ABORT);
+        ENVPTR->ReleaseLongArrayElements(ENVPAR, idata,iarr,JNI_ABORT);
         h4JNIFatalError( env, "longToByte: getByte failed?");
         return NULL;
     }
@@ -1012,8 +1012,8 @@ jlongArray idata)  /* IN: array of long */
         }
     }
 
-    ENVPTR->ReleaseByteArrayElements(ENVPAR rarray,barray, 0);
-    ENVPTR->ReleaseLongArrayElements(ENVPAR idata,iarr,JNI_ABORT);
+    ENVPTR->ReleaseByteArrayElements(ENVPAR, rarray,barray, 0);
+    ENVPTR->ReleaseLongArrayElements(ENVPAR, idata,iarr,JNI_ABORT);
 
     return rarray;
 
@@ -1037,13 +1037,13 @@ jint idata)  /* IN: int */
         char bytes[sizeof(int)];
     } u;
 
-    rarray = ENVPTR->NewByteArray(ENVPAR sizeof(jint));
+    rarray = ENVPTR->NewByteArray(ENVPAR, sizeof(jint));
     if (rarray == NULL) {
         h4outOfMemory( env, "intToByte" );
         return NULL;
     }
 
-    barray = ENVPTR->GetByteArrayElements(ENVPAR rarray,&bb);
+    barray = ENVPTR->GetByteArrayElements(ENVPAR, rarray,&bb);
     if (barray == NULL) {
         h4JNIFatalError( env, "intToByte: getByte failed?");
         return NULL;
@@ -1056,7 +1056,7 @@ jint idata)  /* IN: int */
         bap++;
     }
 
-    ENVPTR->ReleaseByteArrayElements(ENVPAR rarray,barray, 0);
+    ENVPTR->ReleaseByteArrayElements(ENVPAR, rarray,barray, 0);
     return rarray;
 
 }
@@ -1077,13 +1077,13 @@ jfloat idata)  /* IN: int */
         char bytes[sizeof(float)];
     } u;
 
-    rarray = ENVPTR->NewByteArray(ENVPAR sizeof(jfloat));
+    rarray = ENVPTR->NewByteArray(ENVPAR, sizeof(jfloat));
     if (rarray == NULL) {
         h4outOfMemory( env, "floatToByte" );
         return NULL;
     }
 
-    barray = ENVPTR->GetByteArrayElements(ENVPAR rarray,&bb);
+    barray = ENVPTR->GetByteArrayElements(ENVPAR, rarray,&bb);
     if (barray == NULL) {
         h4JNIFatalError( env, "floatToByte: getByte failed?");
         return NULL;
@@ -1096,7 +1096,7 @@ jfloat idata)  /* IN: int */
         bap++;
     }
 
-    ENVPTR->ReleaseByteArrayElements(ENVPAR rarray,(jbyte *)barray, 0);
+    ENVPTR->ReleaseByteArrayElements(ENVPAR, rarray,(jbyte *)barray, 0);
     return rarray;
 
 }
@@ -1117,13 +1117,13 @@ jshort idata)  /* IN: short */
         char bytes[sizeof(short)];
     } u;
 
-    rarray = ENVPTR->NewByteArray(ENVPAR sizeof(jshort));
+    rarray = ENVPTR->NewByteArray(ENVPAR, sizeof(jshort));
     if (rarray == NULL) {
         h4outOfMemory( env, "shortToByte" );
         return NULL;
     }
 
-    barray = ENVPTR->GetByteArrayElements(ENVPAR rarray,&bb);
+    barray = ENVPTR->GetByteArrayElements(ENVPAR, rarray,&bb);
     if (barray == NULL) {
         h4JNIFatalError( env, "shortToByte: getShort failed?");
         return NULL;
@@ -1136,7 +1136,7 @@ jshort idata)  /* IN: short */
         bap++;
     }
 
-    ENVPTR->ReleaseByteArrayElements(ENVPAR rarray,(jbyte *)barray, 0);
+    ENVPTR->ReleaseByteArrayElements(ENVPAR, rarray,(jbyte *)barray, 0);
 
     return rarray;
 
@@ -1159,13 +1159,13 @@ jdouble idata)  /* IN: double */
         char bytes[sizeof(double)];
     } u;
 
-    rarray = ENVPTR->NewByteArray(ENVPAR sizeof(jdouble));
+    rarray = ENVPTR->NewByteArray(ENVPAR, sizeof(jdouble));
     if (rarray == NULL) {
         h4outOfMemory( env, "doubleToByte" );
         return NULL;
     }
 
-    barray = ENVPTR->GetByteArrayElements(ENVPAR rarray,&bb);
+    barray = ENVPTR->GetByteArrayElements(ENVPAR, rarray,&bb);
     if (barray == NULL) {
         h4JNIFatalError( env, "doubleToByte: getDouble failed?");
         return NULL;
@@ -1178,7 +1178,7 @@ jdouble idata)  /* IN: double */
         bap++;
     }
 
-    ENVPTR->ReleaseByteArrayElements(ENVPAR rarray,(jbyte *)barray, 0);
+    ENVPTR->ReleaseByteArrayElements(ENVPAR, rarray,(jbyte *)barray, 0);
 
     return rarray;
 }
@@ -1200,13 +1200,13 @@ jlong idata)  /* IN: array of long */
         char bytes[sizeof(jlong)];
     } u;
 
-    rarray = ENVPTR->NewByteArray(ENVPAR sizeof(jlong));
+    rarray = ENVPTR->NewByteArray(ENVPAR, sizeof(jlong));
     if (rarray == NULL) {
         h4outOfMemory( env, "longToByte" );
         return NULL;
     }
 
-    barray = ENVPTR->GetByteArrayElements(ENVPAR rarray,&bb);
+    barray = ENVPTR->GetByteArrayElements(ENVPAR, rarray,&bb);
     if (barray == NULL) {
         h4JNIFatalError( env, "longToByte: getLong failed?");
         return NULL;
@@ -1219,7 +1219,7 @@ jlong idata)  /* IN: array of long */
         bap++;
     }
 
-    ENVPTR->ReleaseByteArrayElements(ENVPAR rarray,(jbyte *)barray, 0);
+    ENVPTR->ReleaseByteArrayElements(ENVPAR, rarray,(jbyte *)barray, 0);
 
     return rarray;
 
@@ -1241,13 +1241,13 @@ jbyte idata)  /* IN: array of long */
         char bytes[sizeof(jbyte)];
     } u;
 
-    rarray = ENVPTR->NewByteArray(ENVPAR sizeof(jbyte));
+    rarray = ENVPTR->NewByteArray(ENVPAR, sizeof(jbyte));
     if (rarray == NULL) {
         h4outOfMemory( env, "byteToByte" );
         return NULL;
     }
 
-    barray = ENVPTR->GetByteArrayElements(ENVPAR rarray,&bb);
+    barray = ENVPTR->GetByteArrayElements(ENVPAR, rarray,&bb);
     if (barray == NULL) {
         h4JNIFatalError( env, "byteToByte: getByte failed?");
         return NULL;
@@ -1260,7 +1260,7 @@ jbyte idata)  /* IN: array of long */
         bap++;
     }
 
-    ENVPTR->ReleaseByteArrayElements(ENVPAR rarray,(jbyte *)barray, 0);
+    ENVPTR->ReleaseByteArrayElements(ENVPAR, rarray,(jbyte *)barray, 0);
 
     return rarray;
 }

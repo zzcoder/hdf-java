@@ -34,7 +34,7 @@ extern "C" {
 #define ENVPAR 
 #else
 #define ENVPTR (*env)
-#define ENVPAR env,
+#define ENVPAR env
 #endif
 
 extern jboolean h4NotImplemented( JNIEnv *env, char *functName);
@@ -70,7 +70,7 @@ jshort error_code)
 
     str = (char *)HEstring((hdf_err_code_t)error_code);
 
-    rstring = ENVPTR->NewStringUTF(ENVPAR str);
+    rstring = ENVPTR->NewStringUTF(ENVPAR, str);
 
     return rstring;
 }

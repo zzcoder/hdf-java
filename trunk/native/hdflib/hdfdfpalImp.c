@@ -33,7 +33,7 @@ extern "C" {
 #define ENVPAR 
 #else
 #define ENVPTR (*env)
-#define ENVPAR env,
+#define ENVPAR env
 #endif
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_DFPaddpal
@@ -47,13 +47,13 @@ jbyteArray palette)  /* IN:  byte[] */
     jbyte *dat;
     jboolean bb;
 
-    f = (char *) ENVPTR->GetStringUTFChars(ENVPAR filename,0);
-    dat = ENVPTR->GetByteArrayElements(ENVPAR palette,&bb);
+    f = (char *) ENVPTR->GetStringUTFChars(ENVPAR, filename,0);
+    dat = ENVPTR->GetByteArrayElements(ENVPAR, palette,&bb);
 
     rval = DFPaddpal((char *)f, (VOIDP) dat);
 
-    ENVPTR->ReleaseStringUTFChars(ENVPAR filename,f);
-    ENVPTR->ReleaseByteArrayElements(ENVPAR palette,dat,JNI_ABORT);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR, filename,f);
+    ENVPTR->ReleaseByteArrayElements(ENVPAR, palette,dat,JNI_ABORT);
     if (rval == FAIL) {
         return JNI_FALSE;
     } else {
@@ -72,17 +72,17 @@ jbyteArray palette)  /* OUT:  byte[] */
     jbyte *dat;
     jboolean bb;
 
-    f = (char *) ENVPTR->GetStringUTFChars(ENVPAR filename,0);
-    dat = ENVPTR->GetByteArrayElements(ENVPAR palette,&bb);
+    f = (char *) ENVPTR->GetStringUTFChars(ENVPAR, filename,0);
+    dat = ENVPTR->GetByteArrayElements(ENVPAR, palette,&bb);
 
     rval = DFPgetpal((char *)f, (VOIDP) dat);
 
-    ENVPTR->ReleaseStringUTFChars(ENVPAR filename,f);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR, filename,f);
     if (rval == FAIL) {
-        ENVPTR->ReleaseByteArrayElements(ENVPAR palette,dat,JNI_ABORT);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR, palette,dat,JNI_ABORT);
         return JNI_FALSE;
     } else {
-        ENVPTR->ReleaseByteArrayElements(ENVPAR palette,dat,0);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR, palette,dat,0);
         return JNI_TRUE;
     }
 }
@@ -101,10 +101,10 @@ jstring filename)
 {
     intn rval;
     char * f;
-    f = (char *) ENVPTR->GetStringUTFChars(ENVPAR filename,0);
+    f = (char *) ENVPTR->GetStringUTFChars(ENVPAR, filename,0);
     rval = DFPnpals((char *)f);
 
-    ENVPTR->ReleaseStringUTFChars(ENVPAR filename,f);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR, filename,f);
     return rval;
 }
 
@@ -122,15 +122,15 @@ jstring filemode)
     jbyte *dat;
     jboolean bb;
 
-    f = (char *) ENVPTR->GetStringUTFChars(ENVPAR filename,0);
-    m = (char *) ENVPTR->GetStringUTFChars(ENVPAR filemode,0);
-    dat = ENVPTR->GetByteArrayElements(ENVPAR palette,&bb);
+    f = (char *) ENVPTR->GetStringUTFChars(ENVPAR, filename,0);
+    m = (char *) ENVPTR->GetStringUTFChars(ENVPAR, filemode,0);
+    dat = ENVPTR->GetByteArrayElements(ENVPAR, palette,&bb);
 
     rval = DFPputpal ((char *)f, (VOIDP) dat, (intn) overwrite, (char *)m);
 
-    ENVPTR->ReleaseStringUTFChars(ENVPAR filename,f);
-    ENVPTR->ReleaseStringUTFChars(ENVPAR filemode,m);
-    ENVPTR->ReleaseByteArrayElements(ENVPAR palette,dat,JNI_ABORT);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR, filename,f);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR, filemode,m);
+    ENVPTR->ReleaseByteArrayElements(ENVPAR, palette,dat,JNI_ABORT);
     if (rval == FAIL) {
         return JNI_FALSE;
     } else {
@@ -146,10 +146,10 @@ jshort ref)
 {
     intn rval;
     char * f;
-    f = (char *) ENVPTR->GetStringUTFChars(ENVPAR filename,0);
+    f = (char *) ENVPTR->GetStringUTFChars(ENVPAR, filename,0);
 
     rval = DFPreadref((char *)f, (uint16) ref);
-    ENVPTR->ReleaseStringUTFChars(ENVPAR filename,f);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR, filename,f);
     if (rval == FAIL) {
         return JNI_FALSE;
     } else {
@@ -172,11 +172,11 @@ jshort ref)
 {
     intn rval;
     char * f;
-    f = (char *) ENVPTR->GetStringUTFChars(ENVPAR filename,0);
+    f = (char *) ENVPTR->GetStringUTFChars(ENVPAR, filename,0);
 
     rval = DFPwriteref((char *)f, (uint16) ref);
 
-    ENVPTR->ReleaseStringUTFChars(ENVPAR filename,f);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR, filename,f);
 
     if (rval == FAIL) {
         return JNI_FALSE;

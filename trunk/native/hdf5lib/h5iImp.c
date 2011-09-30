@@ -34,7 +34,7 @@ extern "C" {
 #define ENVPAR 
 #else
 #define ENVPTR (*env)
-#define ENVPAR env,
+#define ENVPAR env
 #endif
 
 extern jboolean h5outOfMemory( JNIEnv *env, char *functName);
@@ -98,8 +98,8 @@ JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Iget_1name
         /*  exception, returns immediately */
     }
     /* successful return -- save the string; */
-    str = ENVPTR->NewStringUTF(ENVPAR aName);
-    ENVPTR->SetObjectArrayElement(ENVPAR name,0,str);
+    str = ENVPTR->NewStringUTF(ENVPAR, aName);
+    ENVPTR->SetObjectArrayElement(ENVPAR, name,0,str);
 
     free(aName);
     return (jlong)size;
