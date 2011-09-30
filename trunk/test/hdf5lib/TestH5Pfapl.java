@@ -413,12 +413,22 @@ public class TestH5Pfapl {
             H5.H5Pset_elink_fapl(plapl_id, fapl_id );
             elink_fapl_id = H5.H5Pget_elink_fapl(plapl_id);
             assertTrue("H5P_elink_file_cache_size", elink_fapl_id >= 0);
-            efc_size = H5.H5Pget_elink_file_cache_size(elink_fapl_id);
-            assertTrue("H5P_elink_file_cache_size default", efc_size == 0);
-            efc_size = 8;
-            H5.H5Pset_elink_file_cache_size(elink_fapl_id, efc_size);
-            efc_size = H5.H5Pget_elink_file_cache_size(elink_fapl_id);
-            assertTrue("H5P_elink_file_cache_size 8", efc_size == 8);
+            try {
+                efc_size = H5.H5Pget_elink_file_cache_size(elink_fapl_id);
+                assertTrue("H5P_elink_file_cache_size default", efc_size == 0);
+            }
+            catch (HDF5LibraryException err) {
+                err.printStackTrace();
+            }
+            try {
+                efc_size = 8;
+                H5.H5Pset_elink_file_cache_size(elink_fapl_id, efc_size);
+                efc_size = H5.H5Pget_elink_file_cache_size(elink_fapl_id);
+                assertTrue("H5P_elink_file_cache_size 8", efc_size == 8);
+            }
+            catch (HDF5LibraryException err) {
+                err.printStackTrace();
+            }
         }
         catch (Throwable err) {
             err.printStackTrace();

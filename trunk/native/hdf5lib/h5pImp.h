@@ -141,12 +141,28 @@ extern "C" {
 
     /*
      * Class:     ncsa_hdf_hdf5lib_H5
+     * Method:    H5Pget_buffer_size
+     * Signature: (I)J
+     */
+    JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1buffer_1size
+      (JNIEnv *env, jclass clss, jint plist);
+
+    /*
+     * Class:     ncsa_hdf_hdf5lib_H5
      * Method:    H5Pget_cache
      * Signature: (I[I[J[J[D)I
      */
     JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1cache
       (JNIEnv *env, jclass clss, jint plist, jintArray mdc_nelmts,
       jlongArray rdcc_nelmts, jlongArray rdcc_nbytes, jdoubleArray rdcc_w0);
+
+    /*
+     * Class:     ncsa_hdf_hdf5lib_H5
+     * Method:    H5Pget_char_encoding
+     * Signature: (I)I
+     */
+    JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1char_1encoding
+      (JNIEnv *env, jclass clss, jint acpl);
 
     /*
      * Class:     ncsa_hdf_hdf5lib_H5
@@ -509,6 +525,14 @@ extern "C" {
 
     /*
      * Class:     ncsa_hdf_hdf5lib_H5
+     * Method:    H5Pget_obj_track_times
+     * Signature: (I)Z  
+     */
+    JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1obj_1track_1times
+      (JNIEnv *env, jclass clss, jint objplid);
+
+    /*
+     * Class:     ncsa_hdf_hdf5lib_H5
      * Method:    H5Pget_preserve
      * Signature: (I)I
      */
@@ -686,12 +710,28 @@ extern "C" {
 
     /*
      * Class:     ncsa_hdf_hdf5lib_H5
+     * Method:    H5Pset_buffer_size
+     * Signature: (IJ)V
+     */
+    JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1buffer_1size
+      (JNIEnv *env, jclass clss, jint plist, jlong size);
+
+    /*
+     * Class:     ncsa_hdf_hdf5lib_H5
      * Method:    H5Pset_cache
      * Signature: (IIJJD)I
      */
     JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1cache
       (JNIEnv *env, jclass clss, jint plist, jint mdc_nelmts, jlong rdcc_nelmts,
       jlong rdcc_nbytes, jdouble rdcc_w0);
+
+    /*
+     * Class:     ncsa_hdf_hdf5lib_H5
+     * Method:    H5Pset_char_encoding
+     * Signature: (II)V
+     */
+    JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1char_1encoding
+      (JNIEnv *env, jclass clss, jint acpl, jint encoding);
 
     /*
      * Class:     ncsa_hdf_hdf5lib_H5
@@ -1022,6 +1062,14 @@ extern "C" {
      */
     JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1nlinks
       (JNIEnv *env, jclass clss, jint lapl_id, jlong nlinks);
+
+    /*
+     * Class:     ncsa_hdf_hdf5lib_H5
+     * Method:    H5Pset_obj_track_times
+     * Signature: (IZ)V
+     */
+    JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1obj_1track_1times
+      (JNIEnv *env, jclass clss, jint objplid, jboolean track_times);
 
     /*
      * Class:     ncsa_hdf_hdf5lib_H5

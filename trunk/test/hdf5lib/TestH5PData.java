@@ -133,4 +133,22 @@ public class TestH5PData {
                 assertTrue("H5Pdata_transform: <"+row+","+col+">"+Fread+"="+Cstr, Fread.compareTo(Cstr)==0);
             }
     }
+    
+    @Test
+    public void testH5P_buffer() throws Throwable, HDF5LibraryException, IllegalArgumentException {
+        long default_size = 0;
+        long size = 0;
+
+        try {
+            default_size = H5.H5Pget_buffer_size(plist_id);  
+            H5.H5Pset_buffer_size(plist_id, DIM_X*DIM_Y);  
+            size = H5.H5Pget_buffer_size(plist_id);  
+        } 
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5P_buffer: " + err);
+        }
+        assertTrue("H5P_buffer default: "+default_size, default_size==1024*1024);
+        assertTrue("H5P_buffer default: "+size, size==DIM_X*DIM_Y);
+    }
 }

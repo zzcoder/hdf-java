@@ -1,6 +1,7 @@
 package test.hdf5lib;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -34,6 +35,7 @@ public class TestH5P {
     int plist_id = -1;
     int gapl_id = -1;
     int gcpl_id = -1;
+    int acpl_id = -1;
 
     private final void _deleteFile(String filename) {
         File file = new File(filename);
@@ -105,6 +107,7 @@ public class TestH5P {
             plist_id = H5.H5Pcreate(HDF5Constants.H5P_DATASET_XFER);
             gapl_id = H5.H5Pcreate(HDF5Constants.H5P_GROUP_ACCESS);
             gcpl_id = H5.H5Pcreate(HDF5Constants.H5P_GROUP_CREATE);
+            acpl_id = H5.H5Pcreate(HDF5Constants.H5P_ATTRIBUTE_CREATE);
         }
         catch (Throwable err) {
             err.printStackTrace();
@@ -120,6 +123,7 @@ public class TestH5P {
         assertTrue(plist_id > 0);
         assertTrue(gapl_id > 0);
         assertTrue(gcpl_id >0);
+        assertTrue(acpl_id >0);
     }
 
     @After
@@ -144,6 +148,8 @@ public class TestH5P {
             H5.H5Pclose(gapl_id);
         if (gcpl_id >0)
             H5.H5Pclose(gcpl_id);
+        if (acpl_id >0)
+            H5.H5Pclose(acpl_id);
         if (H5dsid > 0) 
             H5.H5Sclose(H5dsid);
         if (H5did > 0) 
@@ -1016,5 +1022,45 @@ public class TestH5P {
         assertTrue("symbol table version: "+version_info[2], version_info[2] == 0);
         assertTrue("shared object header version: "+version_info[3], version_info[3] == 0);
         assertTrue("chunked storage b-tree 1/2-rank: "+size[0], size[0] == 64);
+    }
+    
+    @Test
+    public void testH5P_obj_track_times() throws Throwable, HDF5LibraryException {
+        boolean default_ret_val = false;
+        boolean ret_val = true;
+        try {
+            default_ret_val = H5.H5Pget_obj_track_times(ocpl_id);
+            H5.H5Pset_obj_track_times(ocpl_id, false);
+            ret_val = H5.H5Pget_obj_track_times(ocpl_id);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5Pget_obj_track_times: " + err);
+        }
+        assertTrue("H5Pget_obj_track_times default", default_ret_val);    
+        assertFalse("H5Pget_obj_track_times", ret_val);    
+    }
+    
+    @Test
+    public void testH5Pget_char_encoding() throws Throwable, HDF5LibraryException {
+        int char_encoding = 0;
+
+        try {
+            char_encoding = H5.H5Pget_char_encoding(acpl_id);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5Pget_char_encoding: " + err);
+        } 
+        assertTrue("testH5Pget_char_encoding", char_encoding == HDF5Constants.H5T_CSET_ASCII);
+        try {
+            H5.H5Pset_char_encoding(acpl_id, HDF5Constants.H5T_CSET_UTF8);
+            char_encoding = H5.H5Pget_char_encoding(acpl_id);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5Pget_char_encoding: " + err);
+        } 
+        assertTrue("testH5Pget_char_encoding", char_encoding == HDF5Constants.H5T_CSET_UTF8);
     }
 }

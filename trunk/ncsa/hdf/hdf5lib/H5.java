@@ -5080,6 +5080,8 @@ public synchronized static native int H5Pset_btree_ratios(int plist_id,
 public synchronized static native int H5Pget_buffer(int plist,
         byte[] tconv, byte[] bkg)
         throws HDF5LibraryException, IllegalArgumentException;
+public synchronized static native long H5Pget_buffer_size(int plist)
+        throws HDF5LibraryException, IllegalArgumentException;
 
 /**
  * H5Pset_buffer sets type conversion and background buffers. status to TRUE
@@ -5120,8 +5122,7 @@ public synchronized static native int H5Pget_buffer(int plist,
  * @exception IllegalArgumentException
  *                - plist is invalid.
  **/
-public synchronized static native int H5Pset_buffer(int plist, long size,
-        byte[] tconv, byte[] bkg)
+public synchronized static native void H5Pset_buffer_size(int plist, long size)
         throws HDF5LibraryException, IllegalArgumentException;
 
 /**
@@ -5181,8 +5182,10 @@ public synchronized static native int H5Pset_cache(int plist,
         int mdc_nelmts, long rdcc_nelmts, long rdcc_nbytes, double rdcc_w0)
         throws HDF5LibraryException;
 
-//herr_t H5Pget_char_encoding( hid_t plist_id, H5T_cset_t encoding )
-//herr_t H5Pset_char_encoding( hid_t plist_id, H5T_cset_t encoding ) 
+public synchronized static native int H5Pget_char_encoding(int plist_id)
+        throws HDF5LibraryException;
+public synchronized static native void H5Pset_char_encoding(int plist_id, int encoding) 
+        throws HDF5LibraryException;
 
 /**
  * H5Pget_chunk retrieves the size of chunks for the raw data of a chunked
@@ -5476,7 +5479,9 @@ public synchronized static native int H5Pset_elink_acc_flags(int lapl_id, int fl
 //herr_t H5Pset_elink_cb( hid_t lapl_id, H5L_elink_traverse_t func, void *op_data ) 
 
 /**
-* H5Pget_elink_fapl Retrieves the file access property list identifier associated with the link access property list.   
+* H5Pget_elink_fapl Retrieves the file access property list identifier associated with 
+* the link access property list.   
+* 
 * @param lapl_id                IN: Link access property list identifier
 *  
 * @return a non-negative value if successful; otherwise returns a negative value.
@@ -5497,9 +5502,11 @@ private synchronized static native int _H5Pget_elink_fapl(int lapl_id)
         throws HDF5LibraryException;
 
 /**
- * H5Pset_elink_fapl sets a file access property list for use in accessing a file pointed to by an external link.  
+ * H5Pset_elink_fapl sets a file access property list for use in accessing a 
+ * file pointed to by an external link.  
+ * 
  * @param lapl_id                IN: Link access property list identifier
- * @param fapl_id                 IN: File access property list identifier
+ * @param fapl_id                IN: File access property list identifier
  *  
  * @return a non-negative value if successful; otherwise returns a negative value.
  * 
@@ -6483,8 +6490,35 @@ public synchronized static native int H5Pset_preserve(int plist,
         boolean status)
         throws HDF5LibraryException, IllegalArgumentException;
 
-//herr_t H5Pget_obj_track_times( hid_t ocpl_id, hbool_t *track_times ) 
-//herr_t H5Pset_obj_track_times( hid_t ocpl_id, hbool_t track_times ) 
+/**
+ * H5Pget_obj_track_times queries the object creation property list, ocpl_id, 
+ * to determine whether object times are being recorded. 
+ * 
+ * @param ocpl_id   IN: Object creation property list identifier
+ * 
+ * @return TRUE or FALSE, specifying whether object times are being recorded
+ * 
+ * @exception HDF5LibraryException - Error from the HDF-5 Library.
+ * 
+ **/
+public synchronized static native boolean H5Pget_obj_track_times(int ocpl_id)
+        throws HDF5LibraryException;
+
+/**
+ * H5Pset_obj_track_times sets a property in the object creation property list, ocpl_id, 
+ * that governs the recording of times associated with an object. 
+ * 
+ * @param ocpl_id     IN: Object creation property list identifier
+ * 
+ * @param track_times IN: TRUE or FALSE, specifying whether object times are to be tracked 
+ * 
+ * @return none
+ * 
+ * @exception HDF5LibraryException - Error from the HDF-5 Library.
+ * 
+ **/
+public synchronized static native void H5Pset_obj_track_times(int ocpl_id, boolean track_times)
+        throws HDF5LibraryException;
 
 /**
 * H5Pget_shared_mesg_index Retrieves the configuration settings for a shared message index.  
