@@ -27,20 +27,7 @@ extern "C" {
 #include "hdf5.h"
 #include <jni.h>
 #include <stdlib.h>
-
-#ifdef __cplusplus
-#define ENVPTR (env)
-#define ENVPAR 
-#else
-#define ENVPTR (*env)
-#define ENVPAR env
-#endif
-
-extern jboolean h5outOfMemory( JNIEnv *env, char *functName);
-extern jboolean h5JNIFatalError( JNIEnv *env, char *functName);
-extern jboolean h5nullArgument( JNIEnv *env, char *functName);
-extern jboolean h5libraryError( JNIEnv *env );
-extern jboolean h5badArgument( JNIEnv *env, char *functName);
+#include "h5jni.h"
 
 
 /*
@@ -66,12 +53,12 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Rcreate
         return -1;
     }
     if (ref_type == H5R_OBJECT) {
-        if (ENVPTR->GetArrayLength(ENVPAR, ref) != H5R_OBJ_REF_BUF_SIZE) {
+        if (ENVPTR->GetArrayLength(ENVPAR ref) != H5R_OBJ_REF_BUF_SIZE) {
             h5badArgument( env, "H5Rcreate:  ref input array != H5R_OBJ_REF_BUF_SIZE");
             return -1;
         }
     } else if (ref_type == H5R_DATASET_REGION) {
-        if (ENVPTR->GetArrayLength(ENVPAR, ref) != H5R_DSET_REG_REF_BUF_SIZE) {
+        if (ENVPTR->GetArrayLength(ENVPAR ref) != H5R_DSET_REG_REF_BUF_SIZE) {
             h5badArgument( env, "H5Rcreate:  region ref input array != H5R_DSET_REG_REF_BUF_SIZE");
             return -1;
         }
@@ -80,26 +67,26 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Rcreate
         return -1;
     }
 
-    refP = (jbyte *)ENVPTR->GetByteArrayElements(ENVPAR, ref,&isCopy);
+    refP = (jbyte *)ENVPTR->GetByteArrayElements(ENVPAR ref,&isCopy);
     if (refP == NULL) {
         h5JNIFatalError(env,  "H5Rcreate:  ref not pinned");
         return -1;
     }
-    rName = (char *)ENVPTR->GetStringUTFChars(ENVPAR, name,&isCopy);
+    rName = (char *)ENVPTR->GetStringUTFChars(ENVPAR name,&isCopy);
     if (rName == NULL) {
-        ENVPTR->ReleaseByteArrayElements(ENVPAR, ref,refP,JNI_ABORT);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR ref,refP,JNI_ABORT);
         h5JNIFatalError(env,  "H5Rcreate:  name not pinned");
         return -1;
     }
 
     status = H5Rcreate(refP, loc_id, rName, (H5R_type_t)ref_type, space_id);
     if (status < 0) {
-        ENVPTR->ReleaseStringUTFChars(ENVPAR, name,rName);
-        ENVPTR->ReleaseByteArrayElements(ENVPAR, ref,refP,JNI_ABORT);
+        ENVPTR->ReleaseStringUTFChars(ENVPAR name,rName);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR ref,refP,JNI_ABORT);
         h5libraryError(env);
     } else {
-        ENVPTR->ReleaseStringUTFChars(ENVPAR, name,rName);
-        ENVPTR->ReleaseByteArrayElements(ENVPAR, ref,refP,0);
+        ENVPTR->ReleaseStringUTFChars(ENVPAR name,rName);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR ref,refP,0);
     }
 
     return (jint)status;
@@ -122,15 +109,15 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Rdereference
         h5nullArgument( env, "H5Rdereference:  ref is NULL");
         return -1;
     }
-    if ((ref_type == H5R_OBJECT) && ENVPTR->GetArrayLength(ENVPAR, ref) != H5R_OBJ_REF_BUF_SIZE) {
+    if ((ref_type == H5R_OBJECT) && ENVPTR->GetArrayLength(ENVPAR ref) != H5R_OBJ_REF_BUF_SIZE) {
         h5badArgument( env, "H5Rdereference:  obj ref input array != H5R_OBJ_REF_BUF_SIZE");
         return -1;
     } else if ((ref_type == H5R_DATASET_REGION)
-        && ENVPTR->GetArrayLength(ENVPAR, ref) != H5R_DSET_REG_REF_BUF_SIZE) {
+        && ENVPTR->GetArrayLength(ENVPAR ref) != H5R_DSET_REG_REF_BUF_SIZE) {
         h5badArgument( env, "H5Rdereference:  region ref input array != H5R_DSET_REG_REF_BUF_SIZE");
         return -1;
     }
-    refP = (jbyte *)ENVPTR->GetByteArrayElements(ENVPAR, ref,&isCopy);
+    refP = (jbyte *)ENVPTR->GetByteArrayElements(ENVPAR ref,&isCopy);
     if (refP == NULL) {
         h5JNIFatalError(env,  "H5Rderefernce:  ref not pinned");
         return -1;
@@ -138,7 +125,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Rdereference
 
     status = H5Rdereference((hid_t)dataset, (H5R_type_t)ref_type, refP);
 
-    ENVPTR->ReleaseByteArrayElements(ENVPAR, ref,refP,0);
+    ENVPTR->ReleaseByteArrayElements(ENVPAR ref,refP,0);
 
     if (status < 0) {
         h5libraryError(env);
@@ -168,11 +155,11 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Rget_1region
         h5nullArgument( env, "H5Rget_region:  ref is NULL");
         return -1;
     }
-    if ( ENVPTR->GetArrayLength(ENVPAR, ref) != H5R_DSET_REG_REF_BUF_SIZE) {
+    if ( ENVPTR->GetArrayLength(ENVPAR ref) != H5R_DSET_REG_REF_BUF_SIZE) {
         h5badArgument( env, "H5Rget_region:  region ref input array != H5R_DSET_REG_REF_BUF_SIZE");
         return -1;
     }
-    refP = (jbyte *)ENVPTR->GetByteArrayElements(ENVPAR, ref,&isCopy);
+    refP = (jbyte *)ENVPTR->GetByteArrayElements(ENVPAR ref,&isCopy);
     if (refP == NULL) {
         h5JNIFatalError(env,  "H5Rget_region:  ref not pinned");
         return -1;
@@ -180,7 +167,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Rget_1region
 
     status = H5Rget_region((hid_t)dataset, (H5R_type_t)ref_type, refP);
 
-    ENVPTR->ReleaseByteArrayElements(ENVPAR, ref,refP,0);
+    ENVPTR->ReleaseByteArrayElements(ENVPAR ref,refP,0);
 
     if (status < 0) {
         h5libraryError(env);
@@ -207,7 +194,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Rget_1obj_1type
         return -1;
     }
 
-    refP = (jbyte *)ENVPTR->GetByteArrayElements(ENVPAR, ref,&isCopy);
+    refP = (jbyte *)ENVPTR->GetByteArrayElements(ENVPAR ref,&isCopy);
     if (refP == NULL) {
         h5JNIFatalError(env,  "H5Rget_object_type:  ref not pinned");
         return -1;
@@ -217,7 +204,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Rget_1obj_1type
     if(retVal >= 0)
         retVal = object_info;
 
-    ENVPTR->ReleaseByteArrayElements(ENVPAR, ref,refP,0);
+    ENVPTR->ReleaseByteArrayElements(ENVPAR ref,refP,0);
 
     if (retVal < 0) {
         h5libraryError(env);
@@ -238,7 +225,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Rget_1obj_1type2
     jboolean isCopy;
     jbyte *refP;
     jint *ref_objP;
-	int retVal;
+  int retVal;
 
 
     if (ref == NULL) {
@@ -250,14 +237,14 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Rget_1obj_1type2
         return -1;
     }
 
-    refP = (jbyte *)ENVPTR->GetByteArrayElements(ENVPAR, ref,&isCopy);
+    refP = (jbyte *)ENVPTR->GetByteArrayElements(ENVPAR ref,&isCopy);
     if (refP == NULL) {
         h5JNIFatalError(env,  "H5Rget_object_type:  ref not pinned");
         return -1;
     }
-    ref_objP = (jint *)ENVPTR->GetIntArrayElements(ENVPAR, ref_obj,&isCopy);
+    ref_objP = (jint *)ENVPTR->GetIntArrayElements(ENVPAR ref_obj,&isCopy);
     if (ref_objP == NULL) {
-        ENVPTR->ReleaseByteArrayElements(ENVPAR, ref,refP,0);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR ref,refP,0);
         h5JNIFatalError(env,  "H5Rget_object_type:  ref_obj not pinned");
         return -1;
     }
@@ -266,13 +253,13 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Rget_1obj_1type2
     retVal = ref_objP[0];
 
     if (status < 0) {
-        ENVPTR->ReleaseByteArrayElements(ENVPAR, ref,refP,JNI_ABORT);
-        ENVPTR->ReleaseIntArrayElements(ENVPAR, ref_obj,ref_objP,JNI_ABORT);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR ref,refP,JNI_ABORT);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR ref_obj,ref_objP,JNI_ABORT);
         h5libraryError(env);
     } 
     else {
-        ENVPTR->ReleaseByteArrayElements(ENVPAR, ref,refP,0);
-        ENVPTR->ReleaseIntArrayElements(ENVPAR, ref_obj,ref_objP,0);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR ref,refP,0);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR ref_obj,ref_objP,0);
     }
     return (jint)retVal;
 }
@@ -285,10 +272,10 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Rget_1obj_1type2
 JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Rget_1name
   (JNIEnv *env, jclass clss, jint loc_id, jint ref_type, jbyteArray ref, jobjectArray name, jlong size)
 {
-	jlong ret_val = -1;
+  jlong ret_val = -1;
     jbyte *refP;
-	jboolean isCopy;
-	char *aName=NULL;
+  jboolean isCopy;
+  char *aName=NULL;
     jstring str;
     size_t bs;
 
@@ -298,50 +285,50 @@ JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Rget_1name
         return -1;
     }
 
-	if (ref == NULL) {
+  if (ref == NULL) {
         h5nullArgument( env, "H5Rget_name:  ref is NULL");
         return -1;
-	}
-	
-    if ((ref_type == H5R_OBJECT) && ENVPTR->GetArrayLength(ENVPAR, ref) != H5R_OBJ_REF_BUF_SIZE) {
+  }
+  
+    if ((ref_type == H5R_OBJECT) && ENVPTR->GetArrayLength(ENVPAR ref) != H5R_OBJ_REF_BUF_SIZE) {
         h5badArgument( env, "H5Rdereference:  obj ref input array != H5R_OBJ_REF_BUF_SIZE");
         return -1;
     } 
     else if ((ref_type == H5R_DATASET_REGION)
-        && ENVPTR->GetArrayLength(ENVPAR, ref) != H5R_DSET_REG_REF_BUF_SIZE) {
+        && ENVPTR->GetArrayLength(ENVPAR ref) != H5R_DSET_REG_REF_BUF_SIZE) {
         h5badArgument( env, "H5Rdereference:  region ref input array != H5R_DSET_REG_REF_BUF_SIZE");
         return -1;
     }
 
-    refP = (jbyte *)ENVPTR->GetByteArrayElements(ENVPAR, ref,&isCopy);
+    refP = (jbyte *)ENVPTR->GetByteArrayElements(ENVPAR ref,&isCopy);
     if (refP == NULL) {
         h5JNIFatalError(env,  "H5Rcreate:  ref not pinned");
         return -1;
     }
-	
-	aName = (char*)malloc(sizeof(char)*bs);
+  
+  aName = (char*)malloc(sizeof(char)*bs);
     if (aName == NULL) {
-        ENVPTR->ReleaseByteArrayElements(ENVPAR, ref,refP,JNI_ABORT);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR ref,refP,JNI_ABORT);
         h5outOfMemory( env, "H5Aget_name:  malloc failed");
         return -1;
     }
 
     ret_val = (jlong) H5Rget_name( (hid_t)loc_id, (H5R_type_t) ref_type, refP, aName, bs) ;
 
-	if (ret_val < 0) {
-        ENVPTR->ReleaseByteArrayElements(ENVPAR, ref,refP,JNI_ABORT);
-		free(aName);
+  if (ret_val < 0) {
+        ENVPTR->ReleaseByteArrayElements(ENVPAR ref,refP,JNI_ABORT);
+    free(aName);
         h5libraryError(env);
         return -1;
-	}
+  }
 
-    str = ENVPTR->NewStringUTF(ENVPAR, aName);
-	ENVPTR->SetObjectArrayElement(ENVPAR, name,0,str);
+    str = ENVPTR->NewStringUTF(ENVPAR aName);
+  ENVPTR->SetObjectArrayElement(ENVPAR name,0,str);
 
-    ENVPTR->ReleaseByteArrayElements(ENVPAR, ref,refP,0);
-	if (aName) free (aName);
+    ENVPTR->ReleaseByteArrayElements(ENVPAR ref,refP,0);
+  if (aName) free (aName);
 
-	return ret_val;
+  return ret_val;
 }
 
 

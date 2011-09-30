@@ -30,9 +30,11 @@ extern "C" {
 #ifdef __cplusplus
 #define ENVPTR (env)
 #define ENVPAR
+#define ENVONLY
 #else
 #define ENVPTR (*env)
-#define ENVPAR env
+#define ENVPAR env,
+#define ENVONLY env
 #endif
 
 extern jboolean getOldCompInfo( JNIEnv *env, jobject ciobj, comp_info *cinf);
@@ -50,19 +52,19 @@ jintArray argv) /* OUT: width, height, il */
     jint *theArgs;
     jboolean bb;
 
-    theArgs = ENVPTR->GetIntArrayElements(ENVPAR, argv,&bb);
-    hdf_file =(char *) ENVPTR->GetStringUTFChars(ENVPAR, filename,0);
+    theArgs = ENVPTR->GetIntArrayElements(ENVPAR argv,&bb);
+    hdf_file =(char *) ENVPTR->GetStringUTFChars(ENVPAR filename,0);
 
     /* get image dimension information */
     rval = DF24getdims(hdf_file, (int32 *)&(theArgs[0]),
         (int32 *)&(theArgs[1]), (intn *)&(theArgs[2]));
 
-    ENVPTR->ReleaseStringUTFChars(ENVPAR, filename,hdf_file);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR filename,hdf_file);
     if (rval == FAIL) {
-        ENVPTR->ReleaseIntArrayElements(ENVPAR, argv,theArgs,JNI_ABORT);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR argv,theArgs,JNI_ABORT);
         return JNI_FALSE;
     } else {
-        ENVPTR->ReleaseIntArrayElements(ENVPAR, argv,theArgs,0);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR argv,theArgs,0);
         return JNI_TRUE;
     }
 }
@@ -80,17 +82,17 @@ jint height)
     jbyte *dat;
     jboolean bb;
 
-    hdf_file =(char *) ENVPTR->GetStringUTFChars(ENVPAR, filename,0);
-    dat = (jbyte *)ENVPTR->GetPrimitiveArrayCritical(ENVPAR, image,&bb);
+    hdf_file =(char *) ENVPTR->GetStringUTFChars(ENVPAR filename,0);
+    dat = (jbyte *)ENVPTR->GetPrimitiveArrayCritical(ENVPAR image,&bb);
 
     rval =  DF24getimage((char *)hdf_file, (VOIDP) dat, (int32) width, (int32) height);
 
-    ENVPTR->ReleaseStringUTFChars(ENVPAR, filename,hdf_file);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR filename,hdf_file);
     if (rval == FAIL) {
-        ENVPTR->ReleasePrimitiveArrayCritical(ENVPAR, image,dat,JNI_ABORT);
+        ENVPTR->ReleasePrimitiveArrayCritical(ENVPAR image,dat,JNI_ABORT);
         return JNI_FALSE;
     } else {
-        ENVPTR->ReleasePrimitiveArrayCritical(ENVPAR, image,dat,0);
+        ENVPTR->ReleasePrimitiveArrayCritical(ENVPAR image,dat,0);
         return JNI_TRUE;
     }
 
@@ -111,11 +113,11 @@ jshort ref)
 {
     int  retVal;
     char *filePtr;
-    filePtr =(char *) ENVPTR->GetStringUTFChars(ENVPAR, filename,0);
+    filePtr =(char *) ENVPTR->GetStringUTFChars(ENVPAR filename,0);
 
     retVal = DF24readref(filePtr, (short)ref);
 
-    ENVPTR->ReleaseStringUTFChars(ENVPAR, filename,filePtr);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR filename,filePtr);
     if (retVal == FAIL) {
         return JNI_FALSE;
     } else {
@@ -144,7 +146,7 @@ jstring hdfFile)
 {
     char  *hdf_file;
 
-    hdf_file =(char *) ENVPTR->GetStringUTFChars(ENVPAR, hdfFile,0);
+    hdf_file =(char *) ENVPTR->GetStringUTFChars(ENVPAR hdfFile,0);
     return(DF24nimages(hdf_file));
 }
 
@@ -169,13 +171,13 @@ jint height)
     jbyte *dat;
     jboolean bb;
 
-    f =(char *) ENVPTR->GetStringUTFChars(ENVPAR, filename,0);
-    dat = ENVPTR->GetByteArrayElements(ENVPAR, image,&bb);
+    f =(char *) ENVPTR->GetStringUTFChars(ENVPAR filename,0);
+    dat = ENVPTR->GetByteArrayElements(ENVPAR image,&bb);
 
     rval = DF24addimage((char *)f, (VOIDP) dat, (int32) width, (int32) height);
 
-    ENVPTR->ReleaseStringUTFChars(ENVPAR, filename,f);
-    ENVPTR->ReleaseByteArrayElements(ENVPAR, image,dat,JNI_ABORT);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR filename,f);
+    ENVPTR->ReleaseByteArrayElements(ENVPAR image,dat,JNI_ABORT);
     if (rval == FAIL) {
         return JNI_FALSE;
     } else {
@@ -197,13 +199,13 @@ jint height)
     jbyte *dat;
     jboolean bb;
 
-    f =(char *) ENVPTR->GetStringUTFChars(ENVPAR, filename,0);
-    dat = ENVPTR->GetByteArrayElements(ENVPAR, image,&bb);
+    f =(char *) ENVPTR->GetStringUTFChars(ENVPAR filename,0);
+    dat = ENVPTR->GetByteArrayElements(ENVPAR image,&bb);
 
     rval = DF24putimage((char *)f, (VOIDP) dat, (int32) width, (int32) height);
 
-    ENVPTR->ReleaseStringUTFChars(ENVPAR, filename,f);
-    ENVPTR->ReleaseByteArrayElements(ENVPAR, image,dat,JNI_ABORT);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR filename,f);
+    ENVPTR->ReleaseByteArrayElements(ENVPAR image,dat,JNI_ABORT);
     if (rval == FAIL) {
         return JNI_FALSE;
     } else {

@@ -25,14 +25,7 @@ extern "C" {
 #include <stdio.h>
 #include <stdlib.h>
 #include "jni.h"
-
-#ifdef __cplusplus
-#define ENVPTR (env)
-#define ENVPAR 
-#else
-#define ENVPTR (*env)
-#define ENVPAR env
-#endif
+#include "h5jni.h"
 
 /*
 #include "H5Eprivate.h"
@@ -114,10 +107,10 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_exceptions_HDF5LibraryException_pri
         H5Eprint2(H5E_DEFAULT, stderr);
     }
     else {
-        file = (char *)ENVPTR->GetStringUTFChars(ENVPAR, file_name,0);
+        file = (char *)ENVPTR->GetStringUTFChars(ENVPAR file_name,0);
         stream = fopen(file, "a+");
         H5Eprint2(H5E_DEFAULT, stream);
-        ENVPTR->ReleaseStringUTFChars(ENVPAR, file_name, file);
+        ENVPTR->ReleaseStringUTFChars(ENVPAR file_name, file);
         if (stream) fclose(stream);
     }
 }
@@ -210,21 +203,21 @@ jboolean h5outOfMemory( JNIEnv *env, char *functName)
     jstring str;
     int rval;
 
-    jc = ENVPTR->FindClass(ENVPAR, "java/lang/OutOfMemoryError");
+    jc = ENVPTR->FindClass(ENVPAR "java/lang/OutOfMemoryError");
     if (jc == NULL) {
         return JNI_FALSE;
     }
-    jm = ENVPTR->GetMethodID(ENVPAR, jc, "<init>", "(Ljava/lang/String;)V");
+    jm = ENVPTR->GetMethodID(ENVPAR jc, "<init>", "(Ljava/lang/String;)V");
     if (jm == NULL) {
         return JNI_FALSE;
     }
 
-    str = ENVPTR->NewStringUTF(ENVPAR, functName);
+    str = ENVPTR->NewStringUTF(ENVPAR functName);
     args[0] = (char *)str;
     args[1] = 0;
 
-    ex = ENVPTR->NewObjectA (ENVPAR, jc, jm, (jvalue *)args );
-    rval = ENVPTR->Throw(ENVPAR, (jthrowable ) ex );
+    ex = ENVPTR->NewObjectA (ENVPAR jc, jm, (jvalue *)args );
+    rval = ENVPTR->Throw(ENVPAR (jthrowable ) ex );
     if (rval < 0) {
         printf("FATAL ERROR:  OutOfMemoryError: Throw failed\n");
         return JNI_FALSE;
@@ -251,20 +244,20 @@ jboolean h5JNIFatalError( JNIEnv *env, char *functName)
     jstring str;
     int rval;
 
-    jc = ENVPTR->FindClass(ENVPAR, "java/lang/InternalError");
+    jc = ENVPTR->FindClass(ENVPAR "java/lang/InternalError");
     if (jc == NULL) {
         return JNI_FALSE;
     }
-    jm = ENVPTR->GetMethodID(ENVPAR, jc, "<init>", "(Ljava/lang/String;)V");
+    jm = ENVPTR->GetMethodID(ENVPAR jc, "<init>", "(Ljava/lang/String;)V");
     if (jm == NULL) {
         return JNI_FALSE;
     }
 
-    str = ENVPTR->NewStringUTF(ENVPAR, functName);
+    str = ENVPTR->NewStringUTF(ENVPAR functName);
     args[0] = (char *)str;
     args[1] = 0;
-    ex = ENVPTR->NewObjectA (ENVPAR, jc, jm, (jvalue *)args );
-    rval = ENVPTR->Throw(ENVPAR,  (jthrowable) ex );
+    ex = ENVPTR->NewObjectA (ENVPAR jc, jm, (jvalue *)args );
+    rval = ENVPTR->Throw(ENVPAR  (jthrowable) ex );
     if (rval < 0) {
         printf("FATAL ERROR:  JNIFatal: Throw failed\n");
         return JNI_FALSE;
@@ -290,20 +283,20 @@ jboolean h5nullArgument( JNIEnv *env, char *functName)
     jstring str;
     int rval;
 
-    jc = ENVPTR->FindClass(ENVPAR, "java/lang/NullPointerException");
+    jc = ENVPTR->FindClass(ENVPAR "java/lang/NullPointerException");
     if (jc == NULL) {
         return JNI_FALSE;
     }
-    jm = ENVPTR->GetMethodID(ENVPAR, jc, "<init>", "(Ljava/lang/String;)V");
+    jm = ENVPTR->GetMethodID(ENVPAR jc, "<init>", "(Ljava/lang/String;)V");
     if (jm == NULL) {
         return JNI_FALSE;
     }
 
-    str = ENVPTR->NewStringUTF(ENVPAR, functName);
+    str = ENVPTR->NewStringUTF(ENVPAR functName);
     args[0] = (char *)str;
     args[1] = 0;
-    ex = ENVPTR->NewObjectA (ENVPAR, jc, jm, (jvalue *)args );
-    rval = ENVPTR->Throw(ENVPAR, (jthrowable) ex );
+    ex = ENVPTR->NewObjectA (ENVPAR jc, jm, (jvalue *)args );
+    rval = ENVPTR->Throw(ENVPAR (jthrowable) ex );
 
     if (rval < 0) {
         printf("FATAL ERROR:  NullPoitner: Throw failed\n");
@@ -330,20 +323,20 @@ jboolean h5badArgument( JNIEnv *env, char *functName)
     jstring str;
     int rval;
 
-    jc = ENVPTR->FindClass(ENVPAR, "java/lang/IllegalArgumentException");
+    jc = ENVPTR->FindClass(ENVPAR "java/lang/IllegalArgumentException");
     if (jc == NULL) {
         return JNI_FALSE;
     }
-    jm = ENVPTR->GetMethodID(ENVPAR, jc, "<init>", "(Ljava/lang/String;)V");
+    jm = ENVPTR->GetMethodID(ENVPAR jc, "<init>", "(Ljava/lang/String;)V");
     if (jm == NULL) {
         return JNI_FALSE;
     }
 
-    str = ENVPTR->NewStringUTF(ENVPAR, functName);
+    str = ENVPTR->NewStringUTF(ENVPAR functName);
     args[0] = (char *)str;
     args[1] = 0;
-    ex = ENVPTR->NewObjectA (ENVPAR, jc, jm, (jvalue *)args );
-    rval = ENVPTR->Throw(ENVPAR, (jthrowable) ex );
+    ex = ENVPTR->NewObjectA (ENVPAR jc, jm, (jvalue *)args );
+    rval = ENVPTR->Throw(ENVPAR (jthrowable) ex );
     if (rval < 0) {
         printf("FATAL ERROR:  BadArgument: Throw failed\n");
         return JNI_FALSE;
@@ -369,20 +362,20 @@ jboolean h5unimplemented( JNIEnv *env, char *functName)
     jstring str;
     int rval;
 
-    jc = ENVPTR->FindClass(ENVPAR, "java/lang/UnsupportedOperationException");
+    jc = ENVPTR->FindClass(ENVPAR "java/lang/UnsupportedOperationException");
     if (jc == NULL) {
         return JNI_FALSE;
     }
-    jm = ENVPTR->GetMethodID(ENVPAR, jc, "<init>", "(Ljava/lang/String;)V");
+    jm = ENVPTR->GetMethodID(ENVPAR jc, "<init>", "(Ljava/lang/String;)V");
     if (jm == NULL) {
         return JNI_FALSE;
     }
 
-    str = ENVPTR->NewStringUTF(ENVPAR, functName);
+    str = ENVPTR->NewStringUTF(ENVPAR functName);
     args[0] = (char *)str;
     args[1] = 0;
-    ex = ENVPTR->NewObjectA (ENVPAR, jc, jm, (jvalue *)args );
-    rval = ENVPTR->Throw(ENVPAR, (jthrowable) ex );
+    ex = ENVPTR->NewObjectA (ENVPAR jc, jm, (jvalue *)args );
+    rval = ENVPTR->Throw(ENVPAR (jthrowable) ex );
     if (rval < 0) {
         printf("FATAL ERROR:  Unsupported: Throw failed\n");
         return JNI_FALSE;
@@ -427,11 +420,11 @@ jboolean h5libraryError( JNIEnv *env )
     maj_num = exceptionNumbers.maj_num;
     min_num = exceptionNumbers.min_num;
     exception = (char *)defineHDF5LibraryException(maj_num);
-    jc = ENVPTR->FindClass(ENVPAR, exception);
+    jc = ENVPTR->FindClass(ENVPAR exception);
     if (jc == NULL) {
         return JNI_FALSE;
     }
-    jm = ENVPTR->GetMethodID(ENVPAR, jc, "<init>", "(Ljava/lang/String;)V");
+    jm = ENVPTR->GetMethodID(ENVPAR jc, "<init>", "(Ljava/lang/String;)V");
     if (jm == NULL) {
         return JNI_FALSE;
     }
@@ -442,7 +435,7 @@ jboolean h5libraryError( JNIEnv *env )
         msg_str = (char*)malloc(sizeof(char)*msg_size);
         if(msg_str) {
             msg_size = H5Eget_msg((hid_t)min_num, &error_msg_type, (char *)msg_str, (size_t)msg_size);
-            str = ENVPTR->NewStringUTF(ENVPAR, msg_str);
+            str = ENVPTR->NewStringUTF(ENVPAR msg_str);
             free(msg_str);
         }
     }
@@ -452,8 +445,8 @@ jboolean h5libraryError( JNIEnv *env )
 
     args[0] = (char *)str;
     args[1] = 0;
-    ex = ENVPTR->NewObjectA (ENVPAR, jc, jm, (jvalue *)args );
-    rval = ENVPTR->Throw(ENVPAR, (jthrowable) ex );
+    ex = ENVPTR->NewObjectA (ENVPAR jc, jm, (jvalue *)args );
+    rval = ENVPTR->Throw(ENVPAR (jthrowable) ex );
     if (rval < 0) {
         printf("FATAL ERROR:  h5libraryError: Throw failed\n");
         return JNI_FALSE;
@@ -479,20 +472,20 @@ jboolean h5raiseException( JNIEnv *env, char *exception, char *message)
     jstring str;
     int rval;
 
-    jc = ENVPTR->FindClass(ENVPAR, exception);
+    jc = ENVPTR->FindClass(ENVPAR exception);
     if (jc == NULL) {
         return JNI_FALSE;
     }
-    jm = ENVPTR->GetMethodID(ENVPAR, jc, "<init>", "(Ljava/lang/String;)V");
+    jm = ENVPTR->GetMethodID(ENVPAR jc, "<init>", "(Ljava/lang/String;)V");
     if (jm == NULL) {
         return JNI_FALSE;
     }
 
-    str = ENVPTR->NewStringUTF(ENVPAR, message);
+    str = ENVPTR->NewStringUTF(ENVPAR message);
     args[0] = (char *)str;
     args[1] = 0;
-    ex = ENVPTR->NewObjectA (ENVPAR, jc, jm, (jvalue *)args );
-    rval = ENVPTR->Throw(ENVPAR, (jthrowable)ex );
+    ex = ENVPTR->NewObjectA (ENVPAR jc, jm, (jvalue *)args );
+    rval = ENVPTR->Throw(ENVPAR (jthrowable)ex );
     if (rval < 0) {
         printf("FATAL ERROR:  raiseException: Throw failed\n");
         return JNI_FALSE;
@@ -511,20 +504,20 @@ jboolean buildException( JNIEnv *env, char *exception, jint HDFerr)
     int rval;
 
 
-    jc = ENVPTR->FindClass(ENVPAR, exception);
+    jc = ENVPTR->FindClass(ENVPAR exception);
     if (jc == NULL) {
         return JNI_FALSE;
     }
-    jm = ENVPTR->GetMethodID(ENVPAR, jc, "<init>", "(I)V");
+    jm = ENVPTR->GetMethodID(ENVPAR jc, "<init>", "(I)V");
     if (jm == NULL) {
         return JNI_FALSE;
     }
     args[0] = HDFerr;
     args[1] = 0;
 
-    ex = ENVPTR->NewObjectA (ENVPAR, jc, jm, (jvalue *)args );
+    ex = ENVPTR->NewObjectA (ENVPAR jc, jm, (jvalue *)args );
 
-    rval = ENVPTR->Throw(ENVPAR,  ex );
+    rval = ENVPTR->Throw(ENVPAR  ex );
     if (rval < 0) {
         printf("FATAL ERROR:  raiseException: Throw failed\n");
         return JNI_FALSE;

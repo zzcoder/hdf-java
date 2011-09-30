@@ -29,10 +29,12 @@ extern "C" {
 
 #ifdef __cplusplus
 #define ENVPTR (env)
-#define ENVPAR 
+#define ENVPAR
+#define ENVONLY
 #else
 #define ENVPTR (*env)
-#define ENVPAR env
+#define ENVPAR env,
+#define ENVONLY env
 #endif
 
 extern jboolean h4outOfMemory( JNIEnv *env, char *functName);
@@ -72,17 +74,17 @@ jintArray info)  /* OUT: n_file_label, n_file_desc, n_data_label, n_data_desc */
     jint *theArgs;
     jboolean bb;
 
-    theArgs = ENVPTR->GetIntArrayElements(ENVPAR, info,&bb);
+    theArgs = ENVPTR->GetIntArrayElements(ENVPAR info,&bb);
 
     retVal = ANfileinfo((int32)anid, (int32 *)&(theArgs[0]),
         (int32 *)&(theArgs[1]), (int32 *)&(theArgs[2]),
         (int32 *)&(theArgs[3]));
 
     if (retVal == FAIL) {
-        ENVPTR->ReleaseIntArrayElements(ENVPAR, info,theArgs,JNI_ABORT);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR info,theArgs,JNI_ABORT);
         return JNI_FALSE;
     } else {
-        ENVPTR->ReleaseIntArrayElements(ENVPAR, info,theArgs,0);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR info,theArgs,0);
         return JNI_TRUE;
     }
 }
@@ -157,15 +159,15 @@ jintArray annlist  /* OUT: int[] */
     jint *iarr;
     jboolean bb;
 
-    iarr = ENVPTR->GetIntArrayElements(ENVPAR, annlist,&bb);
+    iarr = ENVPTR->GetIntArrayElements(ENVPAR annlist,&bb);
 
     retVal = ANannlist((int32)an_id, (ann_type)anntype,
         (uint16)tag,(uint16)ref,(int32 *)iarr);
 
     if (retVal == FAIL) {
-        ENVPTR->ReleaseIntArrayElements(ENVPAR, annlist,iarr,JNI_ABORT);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR annlist,iarr,JNI_ABORT);
     } else {
-        ENVPTR->ReleaseIntArrayElements(ENVPAR, annlist,iarr,0);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR annlist,iarr,0);
     }
     return (jint)retVal;
 }
@@ -209,24 +211,24 @@ jint maxlen)
         return JNI_FALSE;
     } else {
 
-        o = ENVPTR->GetObjectArrayElement(ENVPAR, annbuf,0);
+        o = ENVPTR->GetObjectArrayElement(ENVPAR annbuf,0);
         if (o == NULL) {
             if (data != NULL) HDfree((char *)data);
             return JNI_FALSE;
         }
-        Sjc = ENVPTR->FindClass(ENVPAR,  "java/lang/String");
+        Sjc = ENVPTR->FindClass(ENVPAR  "java/lang/String");
         if (Sjc == NULL) {
             if (data != NULL) HDfree((char *)data);
             return JNI_FALSE;
         }
-        bb = ENVPTR->IsInstanceOf(ENVPAR, o,Sjc);
+        bb = ENVPTR->IsInstanceOf(ENVPAR o,Sjc);
         if (bb == JNI_FALSE) {
             if (data != NULL) HDfree((char *)data);
             return JNI_FALSE;
         }
 
-        rstring = ENVPTR->NewStringUTF(ENVPAR,  data);
-        ENVPTR->SetObjectArrayElement(ENVPAR, annbuf,0,(jobject)rstring);
+        rstring = ENVPTR->NewStringUTF(ENVPAR  data);
+        ENVPTR->SetObjectArrayElement(ENVPAR annbuf,0,(jobject)rstring);
 
         if (data != NULL)
             HDfree((char *)data);
@@ -268,14 +270,14 @@ jshortArray tagref) /* OUT: short tag, ref */
     short *theArgs;
     jboolean bb;
 
-    theArgs = ENVPTR->GetShortArrayElements(ENVPAR, tagref,&bb);
+    theArgs = ENVPTR->GetShortArrayElements(ENVPAR tagref,&bb);
 
     rval = ANget_tagref((int32) an_id, (int32) index,  (ann_type) type, (uint16 *)&(theArgs[0]), (uint16 *)&(theArgs[1]));
 
     if (rval == FAIL) {
-        ENVPTR->ReleaseShortArrayElements(ENVPAR, tagref,theArgs,JNI_ABORT);
+        ENVPTR->ReleaseShortArrayElements(ENVPAR tagref,theArgs,JNI_ABORT);
     } else {
-        ENVPTR->ReleaseShortArrayElements(ENVPAR, tagref,theArgs,0);
+        ENVPTR->ReleaseShortArrayElements(ENVPAR tagref,theArgs,0);
     }
     return rval;
 }
@@ -290,16 +292,16 @@ jshortArray tagref) /* OUT: short tag, ref */
     short *theArgs;
     jboolean bb;
 
-    theArgs = ENVPTR->GetShortArrayElements(ENVPAR, tagref,&bb);
+    theArgs = ENVPTR->GetShortArrayElements(ENVPAR tagref,&bb);
 
     rval =  ANid2tagref((int32) an_id, (uint16 *)&(theArgs[0]),
         (uint16 *)&(theArgs[1]));
 
     if (rval == FAIL) {
-        ENVPTR->ReleaseShortArrayElements(ENVPAR, tagref,theArgs,JNI_ABORT);
+        ENVPTR->ReleaseShortArrayElements(ENVPAR tagref,theArgs,JNI_ABORT);
         return JNI_FALSE;
     } else {
-        ENVPTR->ReleaseShortArrayElements(ENVPAR, tagref,theArgs,0);
+        ENVPTR->ReleaseShortArrayElements(ENVPAR tagref,theArgs,0);
         return JNI_TRUE;
     }
 }
@@ -326,13 +328,13 @@ jint ann_length)
     intn rval;
     char * str;
 
-    str =(char *) ENVPTR->GetStringUTFChars(ENVPAR, label,0);
+    str =(char *) ENVPTR->GetStringUTFChars(ENVPAR label,0);
 
     /* should check that str is as long as ann_length.... */
 
     rval = ANwriteann((int32) ann_id, str, (int32) ann_length);
 
-    ENVPTR->ReleaseStringUTFChars(ENVPAR, label,str);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR label,str);
 
     if (rval == FAIL) {
         return JNI_FALSE;

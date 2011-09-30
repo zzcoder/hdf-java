@@ -1063,4 +1063,24 @@ public class TestH5P {
         } 
         assertTrue("testH5Pget_char_encoding", char_encoding == HDF5Constants.H5T_CSET_UTF8);
     }
+    
+    @Test
+    public void testH5P_fill_time() throws Throwable, HDF5LibraryException, NullPointerException{
+        int[] fill_time = {0};
+
+        try {
+            H5.H5Pget_fill_time(ocpl_id, fill_time);
+            assertTrue("fill_time: "+fill_time[0], fill_time[0] == HDF5Constants.H5D_FILL_TIME_IFSET);
+            H5.H5Pset_fill_time(ocpl_id, HDF5Constants.H5D_FILL_TIME_ALLOC);
+            H5.H5Pget_fill_time(ocpl_id, fill_time);
+            assertTrue("fill_time: "+fill_time[0], fill_time[0] == HDF5Constants.H5D_FILL_TIME_ALLOC);
+            H5.H5Pset_fill_time(ocpl_id, HDF5Constants.H5D_FILL_TIME_NEVER);
+            H5.H5Pget_fill_time(ocpl_id, fill_time);
+            assertTrue("fill_time: "+fill_time[0], fill_time[0] == HDF5Constants.H5D_FILL_TIME_NEVER);
+        } 
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5Pget_fill_time: " + err);
+        }
+    }
 }

@@ -60,22 +60,24 @@ public class HDF5Constants {
     public static final int H5C_decr_threshold = H5C_decr_threshold();
     public static final int H5C_decr_age_out = H5C_decr_age_out();
     public static final int H5C_decr_age_out_with_threshold = H5C_decr_age_out_with_threshold();
+    public static final int H5D_CHUNK_BTREE = H5D_CHUNK_BTREE();
     public static final int H5D_ALLOC_TIME_DEFAULT = H5D_ALLOC_TIME_DEFAULT();
     public static final int H5D_ALLOC_TIME_EARLY = H5D_ALLOC_TIME_EARLY();
     public static final int H5D_ALLOC_TIME_ERROR = H5D_ALLOC_TIME_ERROR();
     public static final int H5D_ALLOC_TIME_INCR = H5D_ALLOC_TIME_INCR();
     public static final int H5D_ALLOC_TIME_LATE = H5D_ALLOC_TIME_LATE();
-    public static final int H5D_CHUNKED = H5D_CHUNKED();
-    public static final int H5D_COMPACT = H5D_COMPACT();
-    public static final int H5D_CONTIGUOUS = H5D_CONTIGUOUS();
-    public static final int H5D_FILL_TIME_ALLOC = H5D_FILL_TIME_ALLOC();
     public static final int H5D_FILL_TIME_ERROR = H5D_FILL_TIME_ERROR();
+    public static final int H5D_FILL_TIME_ALLOC = H5D_FILL_TIME_ALLOC();
     public static final int H5D_FILL_TIME_NEVER = H5D_FILL_TIME_NEVER();
+    public static final int H5D_FILL_TIME_IFSET = H5D_FILL_TIME_IFSET();
     public static final int H5D_FILL_VALUE_DEFAULT = H5D_FILL_VALUE_DEFAULT();
     public static final int H5D_FILL_VALUE_ERROR = H5D_FILL_VALUE_ERROR();
     public static final int H5D_FILL_VALUE_UNDEFINED = H5D_FILL_VALUE_UNDEFINED();
     public static final int H5D_FILL_VALUE_USER_DEFINED = H5D_FILL_VALUE_USER_DEFINED();
     public static final int H5D_LAYOUT_ERROR = H5D_LAYOUT_ERROR();
+    public static final int H5D_CHUNKED = H5D_CHUNKED();
+    public static final int H5D_COMPACT = H5D_COMPACT();
+    public static final int H5D_CONTIGUOUS = H5D_CONTIGUOUS();
     public static final int H5D_NLAYOUTS = H5D_NLAYOUTS();
     public static final int H5D_SPACE_STATUS_ALLOCATED = H5D_SPACE_STATUS_ALLOCATED();
     public static final int H5D_SPACE_STATUS_ERROR = H5D_SPACE_STATUS_ERROR();
@@ -676,6 +678,8 @@ public class HDF5Constants {
 
     private static native final int H5C_decr_age_out_with_threshold();
 
+    private static native final int H5D_CHUNK_BTREE();
+
     private static native final int H5D_ALLOC_TIME_DEFAULT();
 
     private static native final int H5D_ALLOC_TIME_EARLY();
@@ -686,17 +690,13 @@ public class HDF5Constants {
 
     private static native final int H5D_ALLOC_TIME_LATE();
 
-    private static native final int H5D_CHUNKED();
-
-    private static native final int H5D_COMPACT();
-
-    private static native final int H5D_CONTIGUOUS();
+    private static native final int H5D_FILL_TIME_ERROR();
 
     private static native final int H5D_FILL_TIME_ALLOC();
 
-    private static native final int H5D_FILL_TIME_ERROR();
-
     private static native final int H5D_FILL_TIME_NEVER();
+
+    private static native final int H5D_FILL_TIME_IFSET();
 
     private static native final int H5D_FILL_VALUE_DEFAULT();
 
@@ -707,6 +707,12 @@ public class HDF5Constants {
     private static native final int H5D_FILL_VALUE_USER_DEFINED();
 
     private static native final int H5D_LAYOUT_ERROR();
+
+    private static native final int H5D_CHUNKED();
+
+    private static native final int H5D_COMPACT();
+
+    private static native final int H5D_CONTIGUOUS();
 
     private static native final int H5D_NLAYOUTS();
 
