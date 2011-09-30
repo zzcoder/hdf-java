@@ -418,7 +418,7 @@ public class TestH5Pfapl {
                 assertTrue("H5P_elink_file_cache_size default", efc_size == 0);
             }
             catch (UnsupportedOperationException err) {
-                err.printStackTrace();
+                System.out.println(err.getMessage());
             }
             try {
                 efc_size = 8;
@@ -427,7 +427,7 @@ public class TestH5Pfapl {
                 assertTrue("H5P_elink_file_cache_size 8", efc_size == 8);
             }
             catch (UnsupportedOperationException err) {
-                err.printStackTrace();
+                System.out.println(err.getMessage());
             }
         }
         catch (Throwable err) {
