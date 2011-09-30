@@ -57,60 +57,8 @@ jint hres, /* IN */
 jint vres,  /* IN */
 jint compress) /* IN */
 {
-#ifndef WIN32
-    int rval;
-    float *hs;
-    float *vs;
-    char * arr;
-    char * pal;
-    char *file;
-    jboolean bb;
-
-    if (hscale == NULL) {
-        hs = NULL;
-    } else {
-        hs = (float *)ENVPTR->GetFloatArrayElements(ENVPAR hscale,&bb);
-    }
-    if (vscale == NULL) {
-        vs = NULL;
-    } else {
-        vs = (float *)ENVPTR->GetFloatArrayElements(ENVPAR vscale,&bb);
-    }
-    arr = (char *)ENVPTR->GetByteArrayElements(ENVPAR data,&bb);
-    if (palette == NULL) {
-        pal = NULL;
-    } else {
-        pal = (char *)ENVPTR->GetByteArrayElements(ENVPAR palette,&bb);
-    }
-    file =(char *) ENVPTR->GetStringUTFChars(ENVPAR outfile,0);
-
-    rval = DFUfptoimage((int32) hdim, (int32) vdim,
-        (float32) max, (float32) min, (float32 *)hs, (float32 *)vs,
-        (float32 *)arr, (uint8 *)pal,
-        (char *)file, (int) ct_method,
-        (int32) hres, (int32) vres,
-        (int) compress);
-
-    if (hs != NULL) {
-        ENVPTR->ReleaseFloatArrayElements(ENVPAR hscale,hs,JNI_ABORT);
-    }
-    if (vs != NULL) {
-        ENVPTR->ReleaseFloatArrayElements(ENVPAR vscale,vs,JNI_ABORT);
-    }
-    ENVPTR->ReleaseByteArrayElements(ENVPAR data,(jbyte *)arr,JNI_ABORT);
-    if (pal != NULL) {
-        ENVPTR->ReleaseByteArrayElements(ENVPAR palette,(jbyte *)pal,JNI_ABORT);
-    }
-    ENVPTR->ReleaseStringUTFChars(ENVPAR outfile,arr);
-    if (rval == FAIL) {
-        return JNI_FALSE;
-    } else {
-        return JNI_TRUE;
-    }
-#else
-    h4NotImplemented(ENVPAR  "DFUfptoimage (windows)");
+    h4NotImplemented(env, "DFUfptoimage (windows)");
     return JNI_TRUE;
-#endif
 }
 
 
