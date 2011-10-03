@@ -4268,7 +4268,6 @@ JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1meta_1block_1size
   (JNIEnv *env, jclass clss, jint plist)
 {
     herr_t   status;
-    jboolean isCopy;
     hsize_t  s;
 
     status = H5Pget_meta_block_size((hid_t)plist, &s);
@@ -4308,7 +4307,6 @@ JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1sieve_1buf_1size
   (JNIEnv *env, jclass clss, jint plist)
 {
     herr_t   status;
-    jboolean isCopy;
     size_t  s;
 
     status = H5Pget_sieve_buf_size((hid_t)plist, &s);
