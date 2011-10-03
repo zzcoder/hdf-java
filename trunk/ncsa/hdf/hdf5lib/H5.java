@@ -5793,7 +5793,7 @@ public synchronized static native int H5Pset_fill_time(int plist_id,
 
 /**
  * H5Pget_fill_value queries the fill value property of a dataset creation
- * property list. <b>NOT IMPLEMENTED YET</B>
+ * property list.
  * 
  * @param plist_id
  *            IN: Property list identifier.
@@ -5810,7 +5810,7 @@ public synchronized static native int H5Pget_fill_value(int plist_id,
 
 /**
  * H5Pget_fill_value queries the fill value property of a dataset creation
- * property list. <b>NOT IMPLEMENTED YET</B>
+ * property list.
  * 
  * @param plist_id
  *            IN: Property list identifier.
