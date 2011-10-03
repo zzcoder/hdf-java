@@ -17,10 +17,14 @@
 ##  Edit these paths to debug
 ##
 
+# where the new builds exist
+HDFBLD_HOME=@abs_top_builddir@
+export HDFBLD_HOME
+
 JH5INSTALLDIR=@JH5INST@
 RM=@RM@
 
-LIBDIR=$JH5INSTALLDIR"/lib"
+LIBDIR=$HDFBLD_HOME"/lib"
 
 CLASSPATH="..:"$LIBDIR"/jhdf5.jar"
 
