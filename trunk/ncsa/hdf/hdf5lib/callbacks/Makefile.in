@@ -34,6 +34,8 @@ Callbacks.java \
 H5L_iterate_cb.java \
 H5L_iterate_t.java \
 H5O_iterate_cb.java \
-H5O_iterate_t.java
+H5O_iterate_t.java \
+H5D_iterate_cb.java \
+H5D_iterate_t.java
 
 include $(TOP)/Config/Rules.mk

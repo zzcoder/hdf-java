@@ -35,6 +35,7 @@ H5A_info_t.java \
 H5G_info_t.java \
 H5L_info_t.java \
 H5O_info_t.java \
-H5O_hdr_info_t.java
+H5O_hdr_info_t.java \
+H5AC_cache_config_t.java
 
 include $(TOP)/Config/Rules.mk

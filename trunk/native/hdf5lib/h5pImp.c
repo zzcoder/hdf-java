@@ -1516,7 +1516,6 @@ JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1small_1data_1block_1siz
   (JNIEnv *env, jclass clss, jint plist)
 {
     herr_t   status;
-    jboolean isCopy;
     hsize_t  s;
 
     status = H5Pget_small_data_block_size((hid_t)plist, &s);
@@ -4095,7 +4094,7 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1fapl_1multi
                 ENVPTR->DeleteLocalRef(ENVPAR obj);
             }
         }
-        mName = member_name;
+        mName = (const char **)member_name;
     }
     
     status = H5Pset_fapl_multi((hid_t)tid, (const H5FD_mem_t *)themapArray, (const hid_t *)thefaplArray, mName, (const haddr_t *)theaddrArray, (hbool_t)relax);
@@ -4380,7 +4379,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1elink_1file_1cache_1size
 JNIEXPORT jobject JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1mdc_1config
   (JNIEnv *env, jclass clss, jint plist)
 {
-    herr_t     status;
+    herr_t     status = -1;
     H5AC_cache_config_t cacheinfo;
     jclass     cls;
     jmethodID  constructor;
@@ -4388,6 +4387,7 @@ JNIEXPORT jobject JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1mdc_1config
     jstring    j_str = NULL;
     jobject    ret_info_t = NULL;
 
+    memset(&cacheinfo, 0, sizeof(H5AC_cache_config_t));
     cacheinfo.version = H5AC__CURR_CACHE_CONFIG_VERSION;
     status = H5Pget_mdc_config((hid_t)plist, (H5AC_cache_config_t*)&cacheinfo);
 
@@ -4410,16 +4410,16 @@ JNIEXPORT jobject JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1mdc_1config
     args[4].l = j_str;
     args[5].z = cacheinfo.evictions_enabled;
     args[6].z = cacheinfo.set_initial_size;
-    args[7].j = cacheinfo.initial_size;
+    args[7].j = (jlong)cacheinfo.initial_size;
     args[8].d = cacheinfo.min_clean_fraction;
-    args[9].j = cacheinfo.max_size;
-    args[10].j = cacheinfo.min_size;
+    args[9].j = (jlong)cacheinfo.max_size;
+    args[10].j = (jlong)cacheinfo.min_size;
     args[11].j = cacheinfo.epoch_length;
     args[12].i = cacheinfo.incr_mode;
     args[13].d = cacheinfo.lower_hr_threshold;
     args[14].d = cacheinfo.increment;
     args[15].z = cacheinfo.apply_max_increment;
-    args[16].j = cacheinfo.max_increment;
+    args[16].j = (jlong)cacheinfo.max_increment;
     args[17].i = cacheinfo.flash_incr_mode;
     args[18].d = cacheinfo.flash_multiple;
     args[19].d = cacheinfo.flash_threshold;
@@ -4427,7 +4427,7 @@ JNIEXPORT jobject JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1mdc_1config
     args[21].d = cacheinfo.upper_hr_threshold;
     args[22].d = cacheinfo.decrement;
     args[23].z = cacheinfo.apply_max_decrement;
-    args[24].j = cacheinfo.max_decrement;
+    args[24].j = (jlong)cacheinfo.max_decrement;
     args[25].i = cacheinfo.epochs_before_eviction;
     args[26].z = cacheinfo.apply_empty_reserve;
     args[27].d = cacheinfo.empty_reserve;
@@ -4502,7 +4502,7 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1mdc_1config
         h5badArgument(env, "H5Pset_mdc_config:  trace_file_name");
         return;
     }
-    j_str = ENVPTR->GetObjectField(ENVPAR cache_config, fid);
+    j_str = (jstring)ENVPTR->GetObjectField(ENVPAR cache_config, fid);
     str = ENVPTR->GetStringUTFChars(ENVPAR j_str, NULL);
     if (str == NULL) {
         h5JNIFatalError(env, "H5Pset_mdc_config: out of memory trace_file_name");
