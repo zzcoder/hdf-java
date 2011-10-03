@@ -12,7 +12,7 @@
 # ****************************************************************************/
  
 TOP = ../..
-DIR	= test/object
+DIR	= test/uitest
 SUBDIRS = NULL
 
 JAVAC           = @JAVAC@
@@ -33,8 +33,7 @@ JAVA_SRCS = \
 TestHDFView.java \
 AllTests.java 
 
+include $(TOP)/Config/Rules.mk
 
 check: all
 	chmod u+x junit.sh; ./junit.sh
-
-include $(TOP)/Config/Rules.mk

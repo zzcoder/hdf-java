@@ -47,9 +47,9 @@ HObjectTest.java \
 MetadataTest.java \
 ScalarDSTest.java
 
+include $(TOP)/Config/Rules.mk
+
 check: all
 	cp h5ex_d_extern.data $(TOP)/lib/$(DIR)
 	cp h5ex_d_extern.hdf5 $(TOP)/lib/$(DIR)
 	chmod u+x unittests.sh; ./unittests.sh
-
-include $(TOP)/Config/Rules.mk
