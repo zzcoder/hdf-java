@@ -1083,4 +1083,84 @@ public class TestH5P {
             fail("H5Pget_fill_time: " + err);
         }
     }
+    
+    @Test
+    public void testH5P_alloc_time() throws Throwable, HDF5LibraryException, NullPointerException{
+        int[] alloc_time = {0};
+
+        try {
+            H5.H5Pget_alloc_time(ocpl_id, alloc_time);
+            assertTrue("alloc_time: "+alloc_time[0], alloc_time[0] == HDF5Constants.H5D_ALLOC_TIME_LATE);
+            H5.H5Pset_alloc_time(ocpl_id, HDF5Constants.H5D_ALLOC_TIME_EARLY);
+            H5.H5Pget_alloc_time(ocpl_id, alloc_time);
+            assertTrue("alloc_time: "+alloc_time[0], alloc_time[0] == HDF5Constants.H5D_ALLOC_TIME_EARLY);
+            H5.H5Pset_alloc_time(ocpl_id, HDF5Constants.H5D_ALLOC_TIME_INCR);
+            H5.H5Pget_alloc_time(ocpl_id, alloc_time);
+            assertTrue("alloc_time: "+alloc_time[0], alloc_time[0] == HDF5Constants.H5D_ALLOC_TIME_INCR);
+        } 
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5Pget_alloc_time: " + err);
+        }
+    }
+    
+    @Test
+    public void testH5P_fill_value() throws Throwable, HDF5LibraryException, NullPointerException{
+        int[] fill_value = {-1};
+        int[] fill_value_status = {-1};
+
+        try {
+            H5.H5Pfill_value_defined(ocpl_id, fill_value_status);
+            assertTrue("fill_value_status: "+fill_value_status[0], fill_value_status[0] == HDF5Constants.H5D_FILL_VALUE_DEFAULT);
+            H5.H5Pget_fill_value(ocpl_id, HDF5Constants.H5T_NATIVE_INT, fill_value);
+            assertTrue("fill_value: "+fill_value[0], fill_value[0] == 0);
+            fill_value[0] = 255;
+            H5.H5Pset_fill_value(ocpl_id, HDF5Constants.H5T_NATIVE_INT, fill_value);
+            H5.H5Pget_fill_value(ocpl_id, HDF5Constants.H5T_NATIVE_INT, fill_value);
+            assertTrue("fill_value: "+fill_value[0], fill_value[0] == 255);
+            H5.H5Pfill_value_defined(ocpl_id, fill_value_status);
+            assertTrue("fill_value_status: "+fill_value_status[0], fill_value_status[0] == HDF5Constants.H5D_FILL_VALUE_USER_DEFINED);
+        } 
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5Pget_fill_value: " + err);
+        }
+    }
+    
+    @Test
+    public void testH5P_layout() throws Throwable, HDF5LibraryException, NullPointerException{
+        int layout_type = -1;
+
+        try {
+            layout_type = H5.H5Pget_layout(ocpl_id);
+            assertTrue("layout: "+layout_type, layout_type == HDF5Constants.H5D_CONTIGUOUS);
+            H5.H5Pset_layout(ocpl_id, HDF5Constants.H5D_COMPACT);
+            layout_type = H5.H5Pget_layout(ocpl_id);
+            assertTrue("layout: "+layout_type, layout_type == HDF5Constants.H5D_COMPACT);
+        } 
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5Pget_layout: " + err);
+        }
+    }
+    
+    @Test
+    public void testH5P_chunk() throws Throwable, HDF5LibraryException, NullPointerException{
+        long[] chunk_size = {0,0};
+        long[] chunk_new_size = {2,3};
+        int layout_type = -1;
+
+        try {
+            H5.H5Pset_chunk(ocpl_id, 2, chunk_new_size);
+            H5.H5Pget_chunk(ocpl_id, 2, chunk_size);
+            assertTrue("chunk: "+chunk_size[0], chunk_size[0] == chunk_new_size[0]);
+            assertTrue("chunk: "+chunk_size[1], chunk_size[1] == chunk_new_size[1]);
+            layout_type = H5.H5Pget_layout(ocpl_id);
+            assertTrue("layout: "+layout_type, layout_type == HDF5Constants.H5D_CHUNKED);
+        } 
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5Pget_chunk: " + err);
+        }
+    }
 }
