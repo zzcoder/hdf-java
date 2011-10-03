@@ -4130,7 +4130,6 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1fapl_1multi
                 free(member_name[i]);
             }
         }
-        free(member_name);
     }
 }
 
