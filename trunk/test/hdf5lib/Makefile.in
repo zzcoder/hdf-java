@@ -60,6 +60,7 @@ TestH5Oparams.java \
 TestH5Obasic.java \
 TestH5Ocreate.java \
 TestH5Ocopy.java \
+TestH5Z.java \
 TestAll.java 
 
 check: all
