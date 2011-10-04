@@ -43,6 +43,7 @@ SET (HDFJAVA_TEST_HDF5LIB_SRCS
     TestH5Obasic.java
     TestH5Ocreate.java
     TestH5Ocopy.java
+    TestH5Z.java
     TestAll.java
 )
 
