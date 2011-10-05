@@ -96,6 +96,7 @@ import ncsa.hdf.object.Datatype;
 import ncsa.hdf.object.Group;
 import ncsa.hdf.object.HObject;
 import ncsa.hdf.object.ScalarDS;
+import ncsa.hdf.view.ViewProperties.BITMASK_OP;
 
 /**
  * ImageView displays an HDF dataset as an image.
@@ -253,6 +254,7 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
 
     private BitSet bitmask;
     private boolean convertByteData = false;
+    private BITMASK_OP bitmaskOP = BITMASK_OP.EXTRACT;
     
     /* image origin: 0-UL, 1-LL, 2-UR, 3-LR */
     private int origin = 0;
@@ -325,6 +327,8 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
         if (map != null) {
             hobject = (HObject) map.get(ViewProperties.DATA_VIEW_KEY.OBJECT);
             bitmask = (BitSet) map.get(ViewProperties.DATA_VIEW_KEY.BITMASK);
+            bitmaskOP = (BITMASK_OP)map.get(ViewProperties.DATA_VIEW_KEY.BITMASKOP);
+
             Boolean b = (Boolean) map
                     .get(ViewProperties.DATA_VIEW_KEY.CONVERTBYTE);
             if (b != null)
@@ -925,12 +929,16 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
 
         data = dataset.getData();
         if (bitmask != null) {
-            if (Tools.applyBitmask(data, bitmask)) {
+            if (Tools.applyBitmask(data, bitmask, bitmaskOP)) {
+                String opName = "Extract bits ";
+                if (bitmaskOP==ViewProperties.BITMASK_OP.AND)
+                	opName = "Apply bitwise AND ";
+                
                 Border border = BorderFactory.createCompoundBorder(
                         BorderFactory.createRaisedBevelBorder(), BorderFactory
                                 .createTitledBorder(BorderFactory
-                                        .createLineBorder(Color.BLUE, 3),
-                                        "By bitmask " + bitmask,
+                                        .createLineBorder(Color.BLUE, 1),
+                                        opName + bitmask,
                                         TitledBorder.RIGHT, TitledBorder.TOP,
                                         this.getFont(), Color.RED));
                 doAutoContrast = false;

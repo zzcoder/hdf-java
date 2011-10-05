@@ -119,6 +119,7 @@ import ncsa.hdf.object.FileFormat;
 import ncsa.hdf.object.Group;
 import ncsa.hdf.object.HObject;
 import ncsa.hdf.object.ScalarDS;
+import ncsa.hdf.view.ViewProperties.BITMASK_OP;
 
 /**
  * TableView displays an HDF dataset as a two-dimensional table.
@@ -200,6 +201,8 @@ implements TableView, ActionListener, MouseListener
     
     private BitSet bitmask;
     
+    private BITMASK_OP bitmaskOP = BITMASK_OP.EXTRACT;
+    
     private int binaryOrder;
     
     private int indexBase = 0;
@@ -267,6 +270,7 @@ implements TableView, ActionListener, MouseListener
             hobject = (HObject)map.get(ViewProperties.DATA_VIEW_KEY.OBJECT);
             
             bitmask = (BitSet)map.get(ViewProperties.DATA_VIEW_KEY.BITMASK);
+            bitmaskOP = (BITMASK_OP)map.get(ViewProperties.DATA_VIEW_KEY.BITMASKOP);
             
             Boolean b = (Boolean) map.get(ViewProperties.DATA_VIEW_KEY.CHAR);
             if (b != null)
@@ -1491,13 +1495,17 @@ implements TableView, ActionListener, MouseListener
         try {
             dataValue = d.getData();
             
-            if (Tools.applyBitmask(dataValue, bitmask) ) {
+            if (Tools.applyBitmask(dataValue, bitmask, bitmaskOP) ) {
                 isReadOnly = true;
+                String opName = "Extract bits ";
+                if (bitmaskOP==ViewProperties.BITMASK_OP.AND)
+                	opName = "Apply bitwise AND ";
+                
                 Border border = BorderFactory.createCompoundBorder(
                         BorderFactory.createRaisedBevelBorder(),
                         BorderFactory.createTitledBorder(
                                 BorderFactory.createLineBorder(Color.BLUE, 1),
-                                "bitmask "+bitmask, 
+                                opName+bitmask, 
                                 TitledBorder.RIGHT, 
                                 TitledBorder.TOP,
                                 this.getFont(),
