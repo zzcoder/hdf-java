@@ -40,6 +40,8 @@ import ncsa.hdf.object.Datatype;
 import ncsa.hdf.object.FileFormat;
 import ncsa.hdf.object.Group;
 import ncsa.hdf.object.ScalarDS;
+import ncsa.hdf.view.ViewProperties;
+import ncsa.hdf.view.ViewProperties.BITMASK_OP;
 
 /**
  * The "Tools" class contains various of tools for HDF files such as jpeg to HDF
@@ -1927,7 +1929,9 @@ public final class Tools {
      *            the bitmask to be applied to the data array.
      * @return true if bitmask is applied successfuly; otherwise, false.
      */
-    public static final boolean applyBitmask(Object theData, BitSet theMask) {
+    public static final boolean applyBitmask(Object theData, BitSet theMask, 
+    		ViewProperties.BITMASK_OP op) 
+    {
         if (theData == null || Array.getLength(theData) <= 0 || theMask == null)
             return false;
 
@@ -1954,28 +1958,33 @@ public final class Tools {
         
         for (int i = 0; i < len; i++) {
         	if (nt == 'B')
-                theValue = ((byte[])theData)[i] & bmask;
+        		theValue = ((byte[])theData)[i] & bmask;
         	else
-                theValue = ((short[])theData)[i] & bmask;
+        		theValue = ((short[])theData)[i] & bmask;
 
-            // pack 1's bits
-            packedValue = 0;
-            int bitPosition=0, bitValue=0;;
-            for (int j=0; j<nbits;j++) {
-                if (theMask.get(j)) {
-                	bitValue = (theValue & 1);
-                	packedValue += (bitValue<<bitPosition);
-                	bitPosition++;
-                }
-                // move to the next bit
-                theValue = theValue >> 1;
-            }
+        	// apply bitmask only
+        	if (op==BITMASK_OP.AND)
+        		packedValue = theValue;
+        	else {
+        		// extract bits
+        		packedValue = 0;
+        		int bitPosition=0, bitValue=0;;
+        		for (int j=0; j<nbits;j++) {
+        			if (theMask.get(j)) {
+        				bitValue = (theValue & 1);
+        				packedValue += (bitValue<<bitPosition);
+        				bitPosition++;
+        			}
+        			// move to the next bit
+        			theValue = theValue >> 1;
+        		}
+        	}
 
         	if (nt == 'B')
-                ((byte[])theData)[i] = (byte) packedValue;
+        		((byte[])theData)[i] = (byte) packedValue;
         	else
-                ((short[])theData)[i] = (short) packedValue;
-         } /*  for (int i = 0; i < len; i++) */
+        		((short[])theData)[i] = (short) packedValue;
+        } /*  for (int i = 0; i < len; i++) */
 
         return true;
     } /* public static final boolean applyBitmask() */

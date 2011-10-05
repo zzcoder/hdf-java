@@ -108,10 +108,10 @@ public class DataOptionDialog extends JDialog implements ActionListener,
 
     private JRadioButton spreadsheetButton, imageButton;
 
-    // use plugin to deal with bitmask
     private JRadioButton[] bitmaskButtons;
-    
-    private JCheckBox charCheckbox, bitmaskCheckbox;
+    private JRadioButton applyBitmaskButton, extractBitButton;
+   
+    private JCheckBox charCheckbox;
     
     private BitSet bitmask;
     
@@ -245,18 +245,22 @@ public class DataOptionDialog extends JDialog implements ActionListener,
         charCheckbox.setMnemonic(KeyEvent.VK_C);
         charCheckbox.setEnabled(false);
         charCheckbox.addItemListener(this);
-        
-        bitmaskCheckbox = new JCheckBox("Apply Bitmask", false);
-        bitmaskCheckbox.setMnemonic(KeyEvent.VK_B);
-        bitmaskCheckbox.setEnabled(false);
-        bitmaskCheckbox.addItemListener(this);
 
+        extractBitButton = new JRadioButton("Extract Bit(s)", false);
+        extractBitButton.setMnemonic(KeyEvent.VK_E);
+        extractBitButton.setEnabled(false);
+        extractBitButton.addItemListener(this);
+
+        applyBitmaskButton = new JRadioButton("Apply Bitmask Only", false);
+        applyBitmaskButton.setMnemonic(KeyEvent.VK_A);
+        applyBitmaskButton.setEnabled(false);
+        applyBitmaskButton.addItemListener(this);
+        
         bitmaskHelp = new JButton(ViewProperties.getHelpIcon());
         bitmaskHelp.setToolTipText("Help on how to set bitmask");
         bitmaskHelp.setMargin(new Insets(0, 0, 0, 0));
         bitmaskHelp.addActionListener(this);
         bitmaskHelp.setActionCommand("Help on how to set bitmask");
-         
 
         // layout the components
         JPanel contentPane = (JPanel) getContentPane();
@@ -420,11 +424,16 @@ public class DataOptionDialog extends JDialog implements ActionListener,
                     sheetP2.add(tmpP, BorderLayout.CENTER);
                     sheetP2.add(new JLabel(), BorderLayout.NORTH);
 
+                    JPanel tmpP2 = new JPanel();
+                    tmpP2.add(extractBitButton);
+                    tmpP2.add(applyBitmaskButton);
                     tmpP = new JPanel();
                     tmpP.setLayout(new BorderLayout());
-                    tmpP.add(bitmaskCheckbox, BorderLayout.WEST);
-                    tmpP.add(bitmaskHelp, BorderLayout.EAST);
-                    sheetP2.add(tmpP, BorderLayout.SOUTH);
+                    tmpP.add(tmpP2, BorderLayout.CENTER);
+                    tmpP2 = new JPanel();
+                    tmpP2.add(bitmaskHelp);
+                    tmpP.add(tmpP2, BorderLayout.EAST);
+                    sheetP2.add(tmpP, BorderLayout.NORTH);
                 }
 
                 contentPane.add(northP, BorderLayout.NORTH);
@@ -638,161 +647,140 @@ public class DataOptionDialog extends JDialog implements ActionListener,
             }
         } // else if (cmd.equals("Select more dimensions"))
         else if (cmd.equals("Help on how to set bitmask")) {
-            String msg = "The bitmask is used to extract the value(s) of specific bit(s) from a byte data.\n"
-                    + "The bitwise AND is used to perform the bit mask operation. This operation is used\n"
-                    + "to isolate part of a string of bits, or to determine whether a particular bit is 1 or 0.\n"
-                    + "\nFor example, \n"
-                    + "        bit pattern \"00100000\"  determines whether the third bit is 1.\n"
-                    + "        bit pattern \"00000011\"  determines whether the last two bits are 1.\n"
-                    + "\nA valid bitmask MUST be a string of 8 or less bits of 1's and 0's. For example,\n"
-                    + "        00000001\n        10000001\n         1 (same as 00000001)\n        11 (same as 00000011)\n\n";
+            String msg ="" 
+            + "\"Apply Bitmask Only\" applies bitwise \"AND\" to the original data.\n"
+            + "For example, bits 2, 3, and 4 are selected for the bitmask\n"
+            + "         10010101 (data)\n"
+            + "AND 00011100 (mask)  \n"
+            + "  =     00010100 (result) ==> the decimal value is 20. \n"
+            + "\n"
+            + "\"Extract Bit(s)\" removes all the bits from the result above where\n"
+            + "their corresponding bits in the bitmask are 0. \nFor the same example above, "
+            + "the result is \n101 ==> the decimal value is 5.\n\n";
+
+
 
             JOptionPane.showMessageDialog((JFrame) viewer, msg);
         }
     }
 
     public void itemStateChanged(ItemEvent e) {
-        Object source = e.getSource();
+    	Object source = e.getSource();
 
-  //     if (source instanceof JRadioButton) {
-        if (source.equals(imageButton) || source.equals(spreadsheetButton)) {
-            choicePalette.setEnabled(imageButton.isSelected()
-                    && !isTrueColorImage);
+    	if (source.equals(imageButton))
+    	{
+    		choicePalette.setEnabled(!isTrueColorImage);
+    		choiceImageView.setEnabled(true);
+    		choiceTableView.setEnabled(false);
+    		charCheckbox.setSelected(false);
+    		charCheckbox.setEnabled(false);
+    	} else if (source.equals(spreadsheetButton)) {
+    		choicePalette.setEnabled(false);
+    		choiceImageView.setEnabled(false);
+    		choiceTableView.setEnabled(true);
 
-            if (imageButton.isSelected()) {
-                choiceImageView.setEnabled(true);
-                choiceTableView.setEnabled(false);
-            }
-            else {
-                choiceImageView.setEnabled(false);
-                choiceTableView.setEnabled(true);
-            }
+    		Datatype dtype = dataset.getDatatype();
+    		int tclass = dtype.getDatatypeClass();
+    		charCheckbox.setEnabled((tclass == Datatype.CLASS_CHAR || 
+    				tclass == Datatype.CLASS_INTEGER)&&
+    				(dtype.getDatatypeSize() == 1));
+    	} else if (source.equals(applyBitmaskButton)) {
+    		if (applyBitmaskButton.isSelected())
+    			extractBitButton.setSelected(false);
+    	} else if (source.equals(extractBitButton)) {
+    		if (extractBitButton.isSelected())
+    			applyBitmaskButton.setSelected(false);
+    	}
+    	else if (source instanceof JComboBox) {
+    		if (!performJComboBoxEvent) {
+    			return;
+    		}
 
-            // reset show char button
-            Datatype dtype = dataset.getDatatype();
-            int tclass = dtype.getDatatypeClass();
-            if (tclass == Datatype.CLASS_CHAR
-                    || tclass == Datatype.CLASS_INTEGER) {
-                int tsize = dtype.getDatatypeSize();
-                charCheckbox.setEnabled(spreadsheetButton.isSelected()
-                        && (tsize == 1));
-                bitmaskCheckbox.setEnabled((tsize <= 2));
-            }                
-            else {
-                charCheckbox.setEnabled(false);
-                charCheckbox.setSelected(false);
-                bitmaskCheckbox.setEnabled(false);
-                bitmaskCheckbox.setSelected(false);
-            }
-            if(bitmaskCheckbox.isEnabled())
-                setEnableBitmask(bitmaskCheckbox.isEnabled()
-                        && bitmaskCheckbox.isSelected());
+    		if (e.getStateChange() == ItemEvent.DESELECTED) {
+    			return; // don't care about the deselect
+    		}
 
-        }
-           if (source.equals(bitmaskCheckbox)) {
-                if (bitmaskCheckbox.isSelected())
-                    charCheckbox.setSelected(false);
+        	JComboBox theChoice = (JComboBox) source;
 
-                setEnableBitmask(bitmaskCheckbox.isSelected());
-            }
-           if (source.equals(charCheckbox)) {
-                if (charCheckbox.isSelected())
-                    bitmaskCheckbox.setSelected(false);
+        	int theSelectedChoice = -1;
 
-                setEnableBitmask(bitmaskCheckbox.isSelected());
-            }
-   //     }
-        
-        else if (source instanceof JComboBox) {
-            if (!performJComboBoxEvent) {
-                return;
-            }
+        	int n = Math.min(3, rank);
+        	for (int i = 0; i < n; i++) {
+        		if (theChoice.equals(choices[i])) {
+        			theSelectedChoice = i;
+        		}
+        	}
 
-            if (e.getStateChange() == ItemEvent.DESELECTED) {
-                return; // don't care about the deselect
-            }
+        	if (theSelectedChoice < 0) {
+        		return; // the selected JComboBox is not a dimension choice
+        	}
 
-            JComboBox theChoice = (JComboBox) source;
+        	int theIndex = theChoice.getSelectedIndex();
+        	if (theIndex == currentIndex[theSelectedChoice]) {
+        		return; // select the same item, no change
+        	}
 
-            int theSelectedChoice = -1;
+        	start[currentIndex[theSelectedChoice]] = 0;
 
-            int n = Math.min(3, rank);
-            for (int i = 0; i < n; i++) {
-                if (theChoice.equals(choices[i])) {
-                    theSelectedChoice = i;
-                }
-            }
+        	// reset the selected dimension choice
+        	startFields[theSelectedChoice].setText("0");
+        	endFields[theSelectedChoice].setText(String
+        			.valueOf(dims[theIndex] - 1));
+        	strideFields[theSelectedChoice].setText("1");
+        	maxLabels[theSelectedChoice]
+        	          .setText(String.valueOf(dims[theIndex]));
 
-            if (theSelectedChoice < 0) {
-                return; // the selected JComboBox is not a dimension choice
-            }
+        	// if the selected choice selects the dimension that is selected by
+        	// other dimension choice, exchange the dimensions
+        	for (int i = 0; i < n; i++) {
+        		if (i == theSelectedChoice) {
+        			continue; // don't exchange itself
+        		}
+        		else if (theIndex == choices[i].getSelectedIndex()) {
+        			setJComboBoxSelectedIndex(choices[i],
+        					currentIndex[theSelectedChoice]);
+        			startFields[i].setText("0");
+        			endFields[i]
+        			          .setText(String
+        			        		  .valueOf(dims[currentIndex[theSelectedChoice]] - 1));
+        			strideFields[i].setText("1");
+        			maxLabels[i].setText(String
+        					.valueOf(dims[currentIndex[theSelectedChoice]]));
+        		}
+        	}
 
-            int theIndex = theChoice.getSelectedIndex();
-            if (theIndex == currentIndex[theSelectedChoice]) {
-                return; // select the same item, no change
-            }
+        	for (int i = 0; i < n; i++) {
+        		currentIndex[i] = choices[i].getSelectedIndex();
+        	}
 
-            start[currentIndex[theSelectedChoice]] = 0;
+        	// update the navigator
+        	if (rank > 1) {
+        		if (isText) {
+        			endFields[1].setText(startFields[1].getText());
+        		}
+        		else {
+        			int hIdx = choices[0].getSelectedIndex();
+        			int wIdx = choices[1].getSelectedIndex();
+        			transposeChoice.setSelectedIndex(0);
 
-            // reset the selected dimension choice
-            startFields[theSelectedChoice].setText("0");
-            endFields[theSelectedChoice].setText(String
-                    .valueOf(dims[theIndex] - 1));
-            strideFields[theSelectedChoice].setText("1");
-            maxLabels[theSelectedChoice]
-                    .setText(String.valueOf(dims[theIndex]));
+        			// Use transpose option only if the dims are not in original
+        			// order
+        			if (hIdx < wIdx)
+        				transposeChoice.setEnabled(false);
+        			else
+        				transposeChoice.setEnabled(true);
 
-            // if the selected choice selects the dimension that is selected by
-            // other dimension choice, exchange the dimensions
-            for (int i = 0; i < n; i++) {
-                if (i == theSelectedChoice) {
-                    continue; // don't exchange itself
-                }
-                else if (theIndex == choices[i].getSelectedIndex()) {
-                    setJComboBoxSelectedIndex(choices[i],
-                            currentIndex[theSelectedChoice]);
-                    startFields[i].setText("0");
-                    endFields[i]
-                            .setText(String
-                                    .valueOf(dims[currentIndex[theSelectedChoice]] - 1));
-                    strideFields[i].setText("1");
-                    maxLabels[i].setText(String
-                            .valueOf(dims[currentIndex[theSelectedChoice]]));
-                }
-            }
+        			long dims[] = dataset.getDims();
+        			int w = (int) dims[wIdx];
+        			int h = (int) dims[hIdx];
+        			navigator.setDimensionSize(w, h);
+        			navigator.updateUI();
+        		}
+        	}
 
-            for (int i = 0; i < n; i++) {
-                currentIndex[i] = choices[i].getSelectedIndex();
-            }
-
-            // update the navigator
-            if (rank > 1) {
-                if (isText) {
-                    endFields[1].setText(startFields[1].getText());
-                }
-                else {
-                    int hIdx = choices[0].getSelectedIndex();
-                    int wIdx = choices[1].getSelectedIndex();
-                    transposeChoice.setSelectedIndex(0);
-
-                    // Use transpose option only if the dims are not in original
-                    // order
-                    if (hIdx < wIdx)
-                        transposeChoice.setEnabled(false);
-                    else
-                        transposeChoice.setEnabled(true);
-
-                    long dims[] = dataset.getDims();
-                    int w = (int) dims[wIdx];
-                    int h = (int) dims[hIdx];
-                    navigator.setDimensionSize(w, h);
-                    navigator.updateUI();
-                }
-            }
-
-            if (rank > 2) {
-                endFields[2].setText(startFields[2].getText());
-            }
+        	if (rank > 2) {
+        		endFields[2].setText(startFields[2].getText());
+        	}
         } // else if (source instanceof JComboBox)
     }
 
@@ -903,14 +891,16 @@ public class DataOptionDialog extends JDialog implements ActionListener,
         int tclass = dtype.getDatatypeClass();
         if (tclass == Datatype.CLASS_CHAR || tclass == Datatype.CLASS_INTEGER) {
             int tsize = dtype.getDatatypeSize();
-            charCheckbox.setEnabled((tsize == 1)
-                    && spreadsheetButton.isSelected());
-            bitmaskCheckbox.setEnabled((tsize <= 2));
+            charCheckbox.setEnabled((tsize == 1) && spreadsheetButton.isSelected());
+            extractBitButton.setEnabled(tsize <= 2);
+            applyBitmaskButton.setEnabled(tsize <= 2);
+            setEnableBitmask(tsize <= 2);
         }
         else {
             charCheckbox.setEnabled(false);
             charCheckbox.setSelected(false);
-            bitmaskCheckbox.setEnabled(false);
+            extractBitButton.setEnabled(false);
+            applyBitmaskButton.setEnabled(false);
         }
     }
 
@@ -1067,48 +1057,39 @@ public class DataOptionDialog extends JDialog implements ActionListener,
         return retVal;
     }
 
-    private boolean setBitmask() {
-        if (!bitmaskCheckbox.isVisible() || !bitmaskCheckbox.isSelected()
-                || bitmaskButtons == null) {
-            bitmask = null;
-            return true;
-        }
+    private boolean setBitmask() 
+    {
+    	boolean isAll=false, isNothing=false;
+    	
+    	if (bitmaskButtons == null) {
+    		bitmask = null;
+    		return true;
+    	}
+    	
+    	if (!applyBitmaskButton.isSelected() && !extractBitButton.isSelected()) {
+    		bitmask = null;
+    		return true;
+    	}
 
-        int len = bitmaskButtons.length;
-        if (bitmask == null)
-            bitmask = new BitSet(len);
+    	int len = bitmaskButtons.length;
+    	for (int i = 0; i < len; i++) {
+    		isAll = (isAll && bitmaskButtons[i].isSelected());
+    		isNothing = (isNothing && !bitmaskButtons[i].isSelected());
+    	}
+  
+    	if (isAll || isNothing) {
+    		bitmask = null;
+    		return true;
+    	}
+    	
+    	if (bitmask == null)
+    		bitmask = new BitSet(len);
 
-        for (int i = 0; i < len; i++) {
-            bitmask.set(i, bitmaskButtons[i].isSelected());
-        }
+    	for (int i = 0; i < len; i++) {
+    		bitmask.set(i, bitmaskButtons[i].isSelected());
+    	}
 
-        // do not use bitmask if it is empty (all bits are zero)
-        if (bitmask.isEmpty()) {
-            JOptionPane
-                    .showMessageDialog(
-                            (JFrame) viewer,
-                            "The bitmask is empty. It will not be applied to the data.",
-                            getTitle(), JOptionPane.WARNING_MESSAGE);
-            bitmask = null;
-        }
-        else {
-            boolean isFull = true;
-            int size = bitmask.size();
-            for (int i = 0; i < size; i++)
-                isFull = (bitmask.get(i) && isFull);
-
-            // do not use bitmask if it is full (all bits are one)
-            if (isFull) {
-                JOptionPane
-                        .showMessageDialog(
-                                (JFrame) viewer,
-                                "The bitmask is empty. It will not be applied to the data.",
-                                getTitle(), JOptionPane.WARNING_MESSAGE);
-                bitmask = null;
-            }
-        }
-
-        return true;
+    	return true;
     }
     
     /** SubsetNavigator draws selection rectangle of subset. */
@@ -1409,26 +1390,39 @@ public class DataOptionDialog extends JDialog implements ActionListener,
      * Return the bitmask.
      */
     public BitSet getBitmask() {
-        if (!bitmaskCheckbox.isEnabled() || !bitmaskCheckbox.isSelected())
+    	if (bitmask == null)
             return null;
-        else if (bitmask == null)
+    	
+        if (!extractBitButton.isEnabled())
             return null;
-
+        
         // do not use bitmask if it is empty (all bits are zero)
         if (bitmask.isEmpty())
             return null;
 
-        boolean isFull = true;
+        boolean isAllSelected = true;
         int size = bitmask.size();
         for (int i = 0; i < size; i++)
-            isFull = (bitmask.get(i) && isFull);
+        	isAllSelected = (bitmask.get(i) && isAllSelected);
 
         // do not use bitmask if it is full (all bits are one)
-        if (isFull)
+        if (isAllSelected)
             return null;
 
         return bitmask;
     }
+    
+    /**
+     * Check if it only apply bitmask.
+     */
+    public boolean isApplyBitmaskOnly() 
+    {
+    	if (getBitmask()==null)
+    		return false;
+    	
+    	return applyBitmaskButton.isSelected();
+    }
+    
     /**
      * 
      * @return true if transpose the data in 2D table; otherwise, do not
@@ -1454,5 +1448,4 @@ public class DataOptionDialog extends JDialog implements ActionListener,
 
         return viewName;
     }
-
 }

@@ -149,6 +149,8 @@ public class DefaultTreeView extends JPanel
     private boolean moveFlag;
     
     private TreePath[] currentSelectionsForMove ;
+    
+    private boolean isApplyBitmaskOnly = false;
 
     public DefaultTreeView(ViewManager theView) {
         viewer = theView;
@@ -1998,6 +2000,7 @@ public class DefaultTreeView extends JPanel
             dataViewName = dialog.getDataViewName();
             isTransposed = dialog.isTransposed();
             bitmask = dialog.getBitmask();
+            isApplyBitmaskOnly = dialog.isApplyBitmaskOnly();
         }
 
         // enables use of JHDF5 in JNLP (Web Start) applications, the system class loader with reflection first.
@@ -2025,6 +2028,8 @@ public class DefaultTreeView extends JPanel
         HashMap<DATA_VIEW_KEY, Serializable> map = new HashMap<DATA_VIEW_KEY, Serializable>(4);
         if (bitmask != null) {
             map.put(ViewProperties.DATA_VIEW_KEY.BITMASK, bitmask);
+            if (isApplyBitmaskOnly)
+            	map.put(ViewProperties.DATA_VIEW_KEY.BITMASKOP, ViewProperties.BITMASK_OP.AND);
 
             // create a copy of dataset
             ScalarDS d_copy = null;
