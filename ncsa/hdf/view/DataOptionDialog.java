@@ -1066,7 +1066,7 @@ public class DataOptionDialog extends JDialog implements ActionListener,
     		return true;
     	}
     	
-    	if (!applyBitmaskButton.isSelected() && !extractBitButton.isSelected()) {
+    	if (!(applyBitmaskButton.isSelected() || extractBitButton.isSelected())) {
     		bitmask = null;
     		return true;
     	}
