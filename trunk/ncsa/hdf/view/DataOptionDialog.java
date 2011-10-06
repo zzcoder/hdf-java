@@ -51,6 +51,7 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 import javax.swing.border.EtchedBorder;
@@ -109,7 +110,7 @@ public class DataOptionDialog extends JDialog implements ActionListener,
     private JRadioButton spreadsheetButton, imageButton;
 
     private JRadioButton[] bitmaskButtons;
-    private JRadioButton applyBitmaskButton, extractBitButton;
+    private JCheckBox applyBitmaskButton, extractBitButton;
    
     private JCheckBox charCheckbox;
     
@@ -246,12 +247,12 @@ public class DataOptionDialog extends JDialog implements ActionListener,
         charCheckbox.setEnabled(false);
         charCheckbox.addItemListener(this);
 
-        extractBitButton = new JRadioButton("Extract Value from Contiguous Bits", false);
+        extractBitButton = new JCheckBox("Extract Value from Contiguous Bits", false);
         extractBitButton.setMnemonic(KeyEvent.VK_E);
         extractBitButton.setEnabled(false);
         extractBitButton.addItemListener(this);
 
-        applyBitmaskButton = new JRadioButton("Apply Bitmask", false);
+        applyBitmaskButton = new JCheckBox("Apply Bitmask", false);
         applyBitmaskButton.setMnemonic(KeyEvent.VK_A);
         applyBitmaskButton.setEnabled(false);
         applyBitmaskButton.addItemListener(this);
@@ -415,11 +416,12 @@ public class DataOptionDialog extends JDialog implements ActionListener,
                     else{
                         tmpP.setLayout(new GridLayout(2, bitmaskButtons.length/2));
 
-                        for (int i = bitmaskButtons.length/2; i>0; i--)
-                            tmpP.add(bitmaskButtons[i-1]);
-
                         for (int i = bitmaskButtons.length; i>bitmaskButtons.length/2; i--)
                             tmpP.add(bitmaskButtons[i-1]);
+                        
+                        for (int i = bitmaskButtons.length/2; i>0; i--)
+                            tmpP.add(bitmaskButtons[i-1]);
+                        
                     }
                     sheetP2.setLayout(new BorderLayout(10, 10));
                     sheetP2.add(tmpP, BorderLayout.CENTER);
@@ -686,8 +688,8 @@ public class DataOptionDialog extends JDialog implements ActionListener,
     		charCheckbox.setEnabled((tclass == Datatype.CLASS_CHAR || 
     				tclass == Datatype.CLASS_INTEGER)&&
     				(dtype.getDatatypeSize() == 1));
-    	} else if (source instanceof JRadioButton) {
-    		checkBitmaskButtons((JRadioButton)source);
+    	} else if (source instanceof JToggleButton) {
+    		checkBitmaskButtons((JToggleButton)source);
     	}
     	else if (source instanceof JComboBox) {
     		if (!performJComboBoxEvent) {
@@ -793,7 +795,7 @@ public class DataOptionDialog extends JDialog implements ActionListener,
     }
 
     /** for deal with bit masks only */
-    private void checkBitmaskButtons(JRadioButton source) 
+    private void checkBitmaskButtons(JToggleButton source) 
     {
     	boolean b = false;
     	int n = 0;
@@ -826,7 +828,7 @@ public class DataOptionDialog extends JDialog implements ActionListener,
                         "Selecting non-adjacent bits is only allowed \nfor the \"Apply Bitmask\" option.",
                         "Select Bitmask",
                         JOptionPane.ERROR_MESSAGE);
-            } else if (!(source.equals(extractBitButton) || source.equals(applyBitmaskButton))){
+            } else if (source instanceof JRadioButton){
                 JOptionPane.showMessageDialog(this,
                         "Please select contiguous bits \nwhen the \"Extract Value from Contiguous Bits\" option is checked.",
                         "Select Bitmask",
