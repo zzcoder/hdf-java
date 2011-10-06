@@ -246,7 +246,7 @@ public class DataOptionDialog extends JDialog implements ActionListener,
         charCheckbox.setEnabled(false);
         charCheckbox.addItemListener(this);
 
-        extractBitButton = new JRadioButton("Extract Bit(s)", false);
+        extractBitButton = new JRadioButton("Extract Contiguous Bits", false);
         extractBitButton.setMnemonic(KeyEvent.VK_E);
         extractBitButton.setEnabled(false);
         extractBitButton.addItemListener(this);
@@ -399,6 +399,7 @@ public class DataOptionDialog extends JDialog implements ActionListener,
                     for (int i = 0; i < bitmaskButtons.length; i++) {
                         bitmaskButtons[i] = new JRadioButton(String.valueOf(i));
                         bitmaskButtons[i].setEnabled(false);
+                        bitmaskButtons[i].addItemListener(this);
                     }
 
                     JPanel sheetP2 = new JPanel();
@@ -425,11 +426,12 @@ public class DataOptionDialog extends JDialog implements ActionListener,
                     sheetP2.add(new JLabel(), BorderLayout.NORTH);
 
                     JPanel tmpP2 = new JPanel();
+                    tmpP2.setLayout(new GridLayout(2,1));
                     tmpP2.add(extractBitButton);
                     tmpP2.add(applyBitmaskButton);
                     tmpP = new JPanel();
                     tmpP.setLayout(new BorderLayout());
-                    tmpP.add(tmpP2, BorderLayout.CENTER);
+                    tmpP.add(tmpP2, BorderLayout.WEST);
                     tmpP2 = new JPanel();
                     tmpP2.add(bitmaskHelp);
                     tmpP.add(tmpP2, BorderLayout.EAST);
@@ -684,12 +686,8 @@ public class DataOptionDialog extends JDialog implements ActionListener,
     		charCheckbox.setEnabled((tclass == Datatype.CLASS_CHAR || 
     				tclass == Datatype.CLASS_INTEGER)&&
     				(dtype.getDatatypeSize() == 1));
-    	} else if (source.equals(applyBitmaskButton)) {
-    		if (applyBitmaskButton.isSelected())
-    			extractBitButton.setSelected(false);
-    	} else if (source.equals(extractBitButton)) {
-    		if (extractBitButton.isSelected())
-    			applyBitmaskButton.setSelected(false);
+    	} else if (source instanceof JRadioButton) {
+    		checkBitmaskButtons((JRadioButton)source);
     	}
     	else if (source instanceof JComboBox) {
     		if (!performJComboBoxEvent) {
@@ -795,9 +793,47 @@ public class DataOptionDialog extends JDialog implements ActionListener,
     }
 
     /** for deal with bit masks only */
-    private void setEnableBitmask(boolean b) {
-        for (int i = 0; i < bitmaskButtons.length; i++)
+    private void checkBitmaskButtons(JRadioButton source) 
+    {
+    	boolean b = false;
+    	int n = 0;
+    	
+    	if (source.equals(applyBitmaskButton)) {
+    		if (applyBitmaskButton.isSelected())
+    			extractBitButton.setSelected(false);
+    	} else if (source.equals(extractBitButton)) {
+    		if (extractBitButton.isSelected())
+    			applyBitmaskButton.setSelected(false);
+     	}
+    	
+    	b = (applyBitmaskButton.isSelected() || extractBitButton.isSelected());
+    	bitmaskButtons[0].setEnabled(b);
+    	if (bitmaskButtons[0].isSelected())
+    		n = 1;
+    	
+        for (int i = 1; i < bitmaskButtons.length; i++) {
             bitmaskButtons[i].setEnabled(b);
+            if (bitmaskButtons[i].isSelected() && !bitmaskButtons[i-1].isSelected())
+            	n++;
+        }
+
+        // do not allow discontinguous selection for extracting bits
+        if (extractBitButton.isSelected() && n>1) {
+            
+            if (source.equals(extractBitButton) && extractBitButton.isSelected()) {
+                applyBitmaskButton.setSelected(true);
+                JOptionPane.showMessageDialog(this,
+                        "Selecting discontinguous bits is only allowed \nfor the \"Apply Bitmask Only\" option.",
+                        "Select Bitmask",
+                        JOptionPane.ERROR_MESSAGE);
+            } else if (!(source.equals(extractBitButton) || source.equals(applyBitmaskButton))){
+                JOptionPane.showMessageDialog(this,
+                        "Please select continguous bits \nwhen the \"Extract Contiguous Bits\" option is checked.",
+                        "Select Bitmask",
+                        JOptionPane.ERROR_MESSAGE);
+                source.setSelected(false);         	
+            }
+        } // if (extractBitButton.isSelected() && n>1) {
     }
     
     /**
@@ -894,7 +930,6 @@ public class DataOptionDialog extends JDialog implements ActionListener,
             charCheckbox.setEnabled((tsize == 1) && spreadsheetButton.isSelected());
             extractBitButton.setEnabled(tsize <= 2);
             applyBitmaskButton.setEnabled(tsize <= 2);
-            setEnableBitmask(tsize <= 2);
         }
         else {
             charCheckbox.setEnabled(false);
