@@ -247,7 +247,7 @@ public class DataOptionDialog extends JDialog implements ActionListener,
         charCheckbox.setEnabled(false);
         charCheckbox.addItemListener(this);
 
-        extractBitButton = new JCheckBox("Extract Value from Contiguous Bits", false);
+        extractBitButton = new JCheckBox("Extract Value from Adjacent Bits", false);
         extractBitButton.setMnemonic(KeyEvent.VK_E);
         extractBitButton.setEnabled(false);
         extractBitButton.addItemListener(this);
@@ -830,7 +830,7 @@ public class DataOptionDialog extends JDialog implements ActionListener,
                         JOptionPane.ERROR_MESSAGE);
             } else if (source instanceof JRadioButton){
                 JOptionPane.showMessageDialog(this,
-                        "Please select contiguous bits \nwhen the \"Extract Value from Contiguous Bits\" option is checked.",
+                        "Please select adjacent bits \nwhen the \"Extract Value from Adjacent Bits\" option is checked.",
                         "Select Bitmask",
                         JOptionPane.ERROR_MESSAGE);
                 source.setSelected(false);         	
