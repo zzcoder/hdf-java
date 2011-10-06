@@ -246,12 +246,12 @@ public class DataOptionDialog extends JDialog implements ActionListener,
         charCheckbox.setEnabled(false);
         charCheckbox.addItemListener(this);
 
-        extractBitButton = new JRadioButton("Extract Contiguous Bits", false);
+        extractBitButton = new JRadioButton("Extract Value from Contiguous Bits", false);
         extractBitButton.setMnemonic(KeyEvent.VK_E);
         extractBitButton.setEnabled(false);
         extractBitButton.addItemListener(this);
 
-        applyBitmaskButton = new JRadioButton("Apply Bitmask Only", false);
+        applyBitmaskButton = new JRadioButton("Apply Bitmask", false);
         applyBitmaskButton.setMnemonic(KeyEvent.VK_A);
         applyBitmaskButton.setEnabled(false);
         applyBitmaskButton.addItemListener(this);
@@ -650,7 +650,7 @@ public class DataOptionDialog extends JDialog implements ActionListener,
         } // else if (cmd.equals("Select more dimensions"))
         else if (cmd.equals("Help on how to set bitmask")) {
             String msg ="" 
-            + "\"Apply Bitmask Only\" applies bitwise \"AND\" to the original data.\n"
+            + "\"Apply Bitmask\" applies bitwise \"AND\" to the original data.\n"
             + "For example, bits 2, 3, and 4 are selected for the bitmask\n"
             + "         10010101 (data)\n"
             + "AND 00011100 (mask)  \n"
@@ -817,18 +817,18 @@ public class DataOptionDialog extends JDialog implements ActionListener,
             	n++;
         }
 
-        // do not allow discontinguous selection for extracting bits
+        // do not allow non-adjacent selection for extracting bits
         if (extractBitButton.isSelected() && n>1) {
             
             if (source.equals(extractBitButton) && extractBitButton.isSelected()) {
                 applyBitmaskButton.setSelected(true);
                 JOptionPane.showMessageDialog(this,
-                        "Selecting discontinguous bits is only allowed \nfor the \"Apply Bitmask Only\" option.",
+                        "Selecting non-adjacent bits is only allowed \nfor the \"Apply Bitmask\" option.",
                         "Select Bitmask",
                         JOptionPane.ERROR_MESSAGE);
             } else if (!(source.equals(extractBitButton) || source.equals(applyBitmaskButton))){
                 JOptionPane.showMessageDialog(this,
-                        "Please select continguous bits \nwhen the \"Extract Contiguous Bits\" option is checked.",
+                        "Please select contiguous bits \nwhen the \"Extract Value from Contiguous Bits\" option is checked.",
                         "Select Bitmask",
                         JOptionPane.ERROR_MESSAGE);
                 source.setSelected(false);         	
