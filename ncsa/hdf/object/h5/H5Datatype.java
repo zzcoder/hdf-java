@@ -1227,4 +1227,9 @@ public class H5Datatype extends Datatype {
             close(tid);
         }
     }
+    
+    public void setName(String newName) throws Exception {
+    	H5File.renameObject(this, newName);
+        super.setName(newName);
+    }    
 }

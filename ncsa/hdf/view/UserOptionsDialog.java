@@ -803,6 +803,7 @@ public class UserOptionsDialog extends JDialog implements ActionListener {
         if (checkCurrentUserDir.isSelected()) {
             workPath = "user.dir";
         }
+        
         if ((workPath != null) && (workPath.length() > 0)) {
             workPath = workPath.trim();
             isWorkDirChanged = !workPath.equals(ViewProperties.getWorkDir());

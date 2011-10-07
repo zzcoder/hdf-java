@@ -409,24 +409,7 @@ public class H5Group extends Group {
      */
     @Override
     public void setName(String newName) throws Exception {
-        String currentFullPath = this.getPath() + this.getName();
-        String newFullPath = this.getPath() + newName;
-
-        currentFullPath = currentFullPath.replaceAll("//", "/");
-        newFullPath = newFullPath.replaceAll("//", "/");
-
-        if (currentFullPath.equals("/")) {
-            throw new HDF5Exception("Can't rename the root group.");
-        }
-
-        if (currentFullPath.equals(newFullPath)) {
-            throw new HDF5Exception(
-                    "The new name is the same as the current name.");
-        }
-
-        // Call the library to move things in the file
-        H5.H5Lmove(this.getFID(), currentFullPath, this.getFID(), newFullPath, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
-      
+    	H5File.renameObject(this, newName);
         super.setName(newName);
     }
 

@@ -130,7 +130,7 @@ public class DebugHDF {
 //        try {testH5Core("G:\\temp\\test.h5"); } catch (Exception ex) {ex.printStackTrace();} 
 //        try {test1Dstrings("G:\\temp\\test.h5"); } catch (Exception ex) {ex.printStackTrace();} 
 //        try {testUpdateAttr("G:\\temp\\test.h5"); } catch (Exception ex) {ex.printStackTrace();} 
-        try {testCreateVlenStr("G:\\temp\\test.h5"); } catch (Exception ex) {ex.printStackTrace();} 
+//        try {testCreateVlenStr("G:\\temp\\test.h5"); } catch (Exception ex) {ex.printStackTrace();} 
 //        try {testH5TconvertStr(); } catch (Exception ex) {ex.printStackTrace();} 
 //        try {testH5DeleteDS("g:\\temp\\strs.h5"); } catch (Exception ex) {ex.printStackTrace();} 
 //        try {testExtendData("g:\\temp\\extended.h5", "dset", 1000, 1500); } catch (Exception ex) {ex.printStackTrace();} 
@@ -140,6 +140,8 @@ public class DebugHDF {
 //        try {  testH5VlenAttr("G:\\temp\\vlen_str_attr.h5") ; } catch (Exception ex) {ex.printStackTrace();}
 //        try {testRefData("g:\\temp\\refs.h5", "refs"); } catch (Exception ex) {ex.printStackTrace();}
 //      try {testH5WriteDouble("g:\\temp\\double.h5"); } catch (Exception ex) {ex.printStackTrace();}
+        try {testHeapMemLeak("G:\\temp\\test"); } catch (Exception ex) {ex.printStackTrace();} 
+
     }
     
     public static void testRefData(String fname, String dname)throws Exception
@@ -3693,5 +3695,161 @@ public class DebugHDF {
         
         return true;
     }
+
+//=======================================================
     
+    static private void testHeapMemLeak(String fname) throws Exception {
+    	// create the file and add groups ans dataset into the file
+    	int repeats = 25;
+    	int datasets = 20;
+    	int datasetSize = 10000;
+
+    	long goodFileSize = runGoodDemo(fname, repeats, datasets, datasetSize);
+    	long leakFileSize = runMemoryLeakDemo(fname, repeats, datasets, datasetSize);
+
+    	System.out.println("good file size: " + goodFileSize);
+    	System.out.println("leak file size: " + leakFileSize);
+    }
+
+    static private long runMemoryLeakDemo(String fname,int repeats, int datasets, int datasetSize) throws Exception {
+    	String fileName = fname 
+    	+ "-LEAK" + "-" + System.currentTimeMillis() + "-repeats" + repeats 
+    	+ "-datasets" + datasets + "-datasetSize" + datasetSize + ".h5";
+    	createFile(fileName);
+    	long finalFileSize = 0;
+    	for (int i = 0; i < repeats; i++) {
+    		FileFormat testFile = getFile(fileName);
+    		testFile.open();
+
+    		Group datasetGroup = getGroupWithMemoryLeak(testFile, "group" + i);
+    		writeToDatasetGroup(testFile, datasetGroup, datasets, datasetSize);
+
+    		testFile.close();
+    		finalFileSize = testFile.length();
+    		//ystem.out.println("\tfile length " + i + ": " + finalFileSize);
+    	}
+    	return finalFileSize;
+    }
+
+    static private long runGoodDemo(String fname,int repeats, int datasets, int datasetSize) throws Exception {
+    	String fileName = fname 
+    	+ "-GOOD" + "-" + System.currentTimeMillis() + "-repeats" + repeats 
+    	+ "-datasets" + datasets + "-datasetSize" + datasetSize + ".h5";
+    	createFile(fileName);
+    	long finalFileSize = 0;
+    	for (int i = 0; i < repeats; i++) {
+    		FileFormat testFile = getFile(fileName);
+    		testFile.open();
+
+    		Group datasetGroup = getGoodGroup(testFile, "group" + i);
+    		writeToDatasetGroup(testFile, datasetGroup, datasets, datasetSize);
+
+    		testFile.close();
+    		finalFileSize = testFile.length();
+    		//System.out.println("\tfile length " + i + ": " + finalFileSize);
+    	}
+    	return finalFileSize;
+    }
+
+    static private FileFormat getFile(String fileName) throws Exception {
+    	// retrieve an instance of H5File
+    	FileFormat fileFormat = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
+    	if (fileFormat == null) {
+    		System.err.println("Cannot find HDF5 FileFormat.");
+    		return null;
+    	}
+    	// open the file with read and write access
+    	FileFormat testFile = (H5File) fileFormat.createFile(fileName, FileFormat.FILE_CREATE_OPEN);
+
+    	if (testFile == null) {
+    		System.err.println("Failed to open file: " + fileName);
+    		return null;
+    	}
+    	return testFile;
+    }
+
+    static private Group getGoodGroup(FileFormat testFile, String groupName) throws Exception {
+    	Group root = (Group) ((javax.swing.tree.DefaultMutableTreeNode) testFile.getRootNode()).getUserObject();
+    	Group datasetGroup = testFile.createGroup(groupName, root);
+    	return datasetGroup;
+    }
+
+    static private Group getGroupWithMemoryLeak(FileFormat testFile, String groupName) throws Exception {
+    	boolean USEGET_TO_FIND_GROUP = true;
+    	Group root = (Group) ((javax.swing.tree.DefaultMutableTreeNode) testFile.getRootNode()).getUserObject();
+    	Group levelOneGroup = null;
+    	if (USEGET_TO_FIND_GROUP) {
+    		levelOneGroup = (Group) testFile.get("levelOneGroup");
+    	}
+    	else {
+    		List<?> members = root.getMemberList();
+    		for (Object tryingToFindGroup : members) {
+    			if (tryingToFindGroup instanceof Group && "levelOneGroup".equals(((Group) tryingToFindGroup).getName())) {
+    				levelOneGroup = (Group) tryingToFindGroup;
+    				break;
+    			}
+    		}
+    	}
+    	if (levelOneGroup == null) {
+    		levelOneGroup = testFile.createGroup("levelOneGroup", root);
+    	}
+    	Group datasetGroup = testFile.createGroup(groupName, levelOneGroup);
+    	return datasetGroup;
+    }
+
+    static private void writeToDatasetGroup(FileFormat testFile, Group datasetGroup, int datasets, int datasetSize) throws Exception {
+    	for (int i = 0; i < datasets; i++) {
+    		int[] args = new int[] { Datatype.CLASS_INTEGER, 8, Datatype.NATIVE, Datatype.SIGN_NONE };
+    		Datatype datatype = testFile.createDatatype(args[0], args[1], args[2], args[3]);
+    		writeDataset("data" + i, datasetSize, testFile, datasetGroup, datatype);
+    	}
+    }
+
+    static private void writeDataset(String datasetName, int datasetSize, FileFormat testFile, Group group, Datatype datatype) throws Exception {
+    	int size = datasetSize;
+    	long[] initialSize = new long[] { size };
+    	long[] maxSize = new long[] { Long.MAX_VALUE };
+    	long[] chunkSize = new long[] { 60000 };
+    	int gzipCompressionLevel = 5;
+    	Dataset dataset = testFile.createScalarDS(datasetName, group, datatype, initialSize, maxSize, chunkSize, gzipCompressionLevel, null);
+    	dataset.init();
+    	long[] data = new long[size];
+    	for (int i = 0; i < size; i++) {
+    		data[i] = i;
+    	}
+    	//we don't have to write data to show the group memory leak
+    	//dataset.write(data);
+    	dataset.close(dataset.getFID());
+    }
+
+    /**
+     * create the file and add groups ans dataset into the file, which is the same
+     * as javaExample.H5DatasetCreate
+     * @see javaExample.H5DatasetCreate
+     * @throws Exception
+     */
+    static private void createFile(String fileName) throws Exception {
+    	// retrieve an instance of H5File
+    	FileFormat fileFormat = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
+
+    	if (fileFormat == null) {
+    		System.err.println("Cannot find HDF5 FileFormat.");
+    		return;
+    	}
+
+    	// create a new file with a given file name.
+    	H5File testFile = (H5File) fileFormat.createFile(fileName, FileFormat.FILE_CREATE_OPEN);
+
+    	if (testFile == null) {
+    		System.err.println("Failed to create file:" + fileName);
+    		return;
+    	}
+
+    	// open the file and retrieve the root group
+    	testFile.open();
+    	// close file resource
+    	testFile.close();
+    }
+
+//========================================    
 }
