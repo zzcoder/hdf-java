@@ -2645,6 +2645,32 @@ public class H5File extends FileFormat {
             attrFlag = true;
             H5.H5Arename_by_name(obj.getFID(), obj.getName(), oldAttrName, newAttrName, HDF5Constants.H5P_DEFAULT); 
         }
-        
     }
+    
+    /**
+     * Rename the given object
+     * @param obj the object to be renamed.
+     * @param newName the new name of the object.
+     * @throws Exception
+     */
+    public static void renameObject(HObject obj, String newName) throws Exception {
+        String currentFullPath = obj.getPath() + obj.getName();
+        String newFullPath = obj.getPath() + newName;
+
+        currentFullPath = currentFullPath.replaceAll("//", "/");
+        newFullPath = newFullPath.replaceAll("//", "/");
+
+        if (currentFullPath.equals("/")) {
+            throw new HDF5Exception("Can't rename the root group.");
+        }
+
+        if (currentFullPath.equals(newFullPath)) {
+            throw new HDF5Exception(
+                    "The new name is the same as the current name.");
+        }
+
+        // Call the library to move things in the file
+        H5.H5Lmove(obj.getFID(), currentFullPath, obj.getFID(), newFullPath, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+    }    
+    
 }
