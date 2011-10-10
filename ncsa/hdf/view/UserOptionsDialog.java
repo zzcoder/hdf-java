@@ -412,6 +412,11 @@ public class UserOptionsDialog extends JDialog implements ActionListener {
         //        p0.setBorder(tborder);
         //        centerP.add(p0);
 
+        if (workDir.equals(System.getProperty("user.dir"))) {
+        	checkCurrentUserDir.setSelected(true);
+        	workField.setEnabled(false);
+        }
+        
         return centerP;
     }
 
