@@ -10,8 +10,9 @@ Major changes include supporting HDF5 1.8 features in HDF-Java products, bug fix
 
 HDF libraries
 ==================================================================================================================
-This release was built and tested with HDF 4.2.5 and HDF5 1.8.6. $YOUR-HDF-JAVA-HOME/lib/<platform>/*.settings
-files include information on platform version and compiler are used to build hdf4 and hdf5.
+This release was built and tested with HDF 4.2.5 and HDF5 1.8.6. 
+$YOUR-HDF-JAVA-HOME/lib/<platform>/*.settings files include information on the platform 
+version and compiler used to build hdf4 and hdf5.
 
 
 Platforms
@@ -69,16 +70,16 @@ Other Major Improvements
 
 Major Bug Fixes
 ================================================================================================================== 
-    * HDFView: cannot copy+paste a 1024^3-64bit-float-dataset.
-    * HDFView: problem copying large datasets in HDFView
-    * HDFView: image for an unsigned short dataset with a fill value causes an exception
-    * HDFView: image displayed incorrectly if you swap dimensions
-    * HDFView: displays 3D data incorrectly when rotate dimensions
+    * HDFView: can now copy+paste a 1024^3-64bit-float-dataset.
+    * HDFView: can now copy large datasets in HDFView
+    * HDFView: image for an unsigned short dataset with a fill value no longer causes an exception
+    * HDFView: image is now displayed correctly if you swap dimensions
+    * HDFView: now displays 3D data correctly when dimensions are rotated
     * HDFView: export table includes extra TAB separator between values
-    * Missing unit tests for H5R package 
-    * HDFView: failed to copy large dataset
-    * Can't copy/paste large array from Table menu to Excel
-    * Make all Java classes portable for 32-bit and 64-bit
+    * Added missing unit tests for H5R package 
+    * HDFView: can now copy large datasets
+    * Can now copy and paste to Excel large arrays using the Table menu
+    * Made all Java classes portable for 32-bit and 64-bit environments
 
 
 Limitations / Known Problems
@@ -104,16 +105,17 @@ Limitations / Known Problems
           -- Writing compound data is limited to simple cases. For example, the base compound fields have primitive 
              types such as integers, floats, characters, etc. HDFView does not write complex compound data. For
              example, the type of a compound field is a dataset region reference.
-          -- Writing variable length data is not supported except for datasets where each data point is a single 
-             variable length string.
+          -- Writing variable-length data is not supported except for datasets where 
+             each data point is a single variable-length string.
           -- There is no single JNI function that can handle HDF5 library functions that have different return 
-             types for version1.6 and version 1.8. An additional function is added in the JNI. For example,
-             public synchronized static native int H5Tget_size(int type_id)
-             public synchronized static native long H5Tget_size_long(int type_id)
+             types for version 1.6 and version 1.8. An additional function is added in the JNI. For example,
+             * public synchronized static native int H5Tget_size(int type_id)
+             * public synchronized static native long H5Tget_size_long(int type_id)
 
-Other notes
+Other Notes
 ==================================================================================================================  
-Made the following changes to bin/hdfview.sh, to make it consistent with the Windows batch file, bin/hdfview.bat:
+Made the following changes to bin/hdfview.sh to make it consistent with the Windows batch 
+file, bin/hdfview.bat:
     * changed "HDFVIEW_HOME" to "HDFJAVA" and "JAVAPATH" to "JAVAHOME"
     * FAQs related to HDF-Java products: http://www.hdfgroup.org/hdf5-quest.html#JAVA
 
