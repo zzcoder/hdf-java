@@ -37,8 +37,21 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5_1ITER_1N(JNIEnv *e
 
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5AC_1CURR_1CACHE_1CONFIG_1VERSION(JNIEnv *env, jclass cls) { return H5AC__CURR_CACHE_CONFIG_VERSION; }
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5AC_1MAX_1TRACE_1FILE_1NAME_1LEN(JNIEnv *env, jclass cls) { return H5AC__MAX_TRACE_FILE_NAME_LEN; }
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5AC_1METADATA_1WRITE_1STRATEGY_1PROCESS_1ZERO_1ONLY(JNIEnv *env, jclass cls) { return H5AC_METADATA_WRITE_STRATEGY__PROCESS_0_ONLY; }
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5AC_1METADATA_1WRITE_1STRATEGY_1DISTRIBUTED(JNIEnv *env, jclass cls) { return H5AC_METADATA_WRITE_STRATEGY__DISTRIBUTED; }
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5AC_1METADATA_1WRITE_1STRATEGY_1PROCESS_1ZERO_1ONLY(JNIEnv *env, jclass cls) { 
+#if (H5_VERS_RELEASE >= 6) 
+    return H5AC_METADATA_WRITE_STRATEGY__PROCESS_0_ONLY; 
+#else
+    return 0;
+#endif
+}
+
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5AC_1METADATA_1WRITE_1STRATEGY_1DISTRIBUTED(JNIEnv *env, jclass cls) {
+#if (H5_VERS_RELEASE >= 6) 
+    return H5AC_METADATA_WRITE_STRATEGY__DISTRIBUTED;
+#else
+    return 0;
+#endif
+}
 
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5C_1incr_1off(JNIEnv *env, jclass cls) { return H5C_incr__off; }
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5C_1incr_1threshold(JNIEnv *env, jclass cls) { return H5C_incr__threshold; }
