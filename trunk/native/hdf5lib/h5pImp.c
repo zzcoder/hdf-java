@@ -4429,7 +4429,9 @@ JNIEXPORT jobject JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1mdc_1config
     args[26].z = cacheinfo.apply_empty_reserve;
     args[27].d = cacheinfo.empty_reserve;
     args[28].i = cacheinfo.dirty_bytes_threshold;
+#if (H5_VERS_RELEASE >= 6)
     args[29].i = cacheinfo.metadata_write_strategy;    
+#endif
     ret_info_t = ENVPTR->NewObjectA(ENVPAR cls, constructor, args);
     return ret_info_t;
 }
