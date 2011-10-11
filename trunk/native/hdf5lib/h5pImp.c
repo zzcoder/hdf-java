@@ -4783,7 +4783,9 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1mdc_1config
         h5badArgument(env, "H5Pset_mdc_config:  metadata_write_strategy");
         return;
     }
+#if (H5_VERS_RELEASE >= 6)
     cacheinfo.metadata_write_strategy = ENVPTR->GetIntField(ENVPAR cache_config, fid);    
+#endif
     if(ENVPTR->ExceptionOccurred(ENVONLY)) {
         h5JNIFatalError(env, "H5Pset_mdc_config: loading metadata_write_strategy failed");
         return;
