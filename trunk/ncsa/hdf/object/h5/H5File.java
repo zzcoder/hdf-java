@@ -1044,6 +1044,7 @@ public class H5File extends FileFormat {
             }
         }
 
+
         // Close all open objects associated with this file.
         try {
             int n = 0, type = -1, oids[];
@@ -1057,50 +1058,32 @@ public class H5File extends FileFormat {
                     type = H5.H5Iget_type(oids[i]);
 
                     if (HDF5Constants.H5I_DATASET == type) {
-                        try {
-                            H5.H5Dclose(oids[i]);
-                        }
-                        catch (Exception ex2) {
-                        }
+                        try { H5.H5Dclose(oids[i]); }
+                        catch (Exception ex2) {}
                     }
                     else if (HDF5Constants.H5I_GROUP == type) {
-                        try {
-                            H5.H5Gclose(oids[i]);
-                        }
-                        catch (Exception ex2) {
-                        }
+                        try { H5.H5Gclose(oids[i]); }
+                        catch (Exception ex2) { }
                     }
                     else if (HDF5Constants.H5I_DATATYPE == type) {
-                        try {
-                            H5.H5Tclose(oids[i]);
-                        }
-                        catch (Exception ex2) {
-                        }
+                        try { H5.H5Tclose(oids[i]); }
+                        catch (Exception ex2) { }
                     }
                     else if (HDF5Constants.H5I_ATTR == type) {
-                        try {
-                            H5.H5Aclose(oids[i]);
-                        }
-                        catch (Exception ex2) {
-                        }
+                        try { H5.H5Aclose(oids[i]); } 
+                        catch (Exception ex2) { }
                     }
                 } // for (int i=0; i<n; i++)
             } // if ( n>0)
-        }
-        catch (Exception ex) {
-        }
+        } catch (Exception ex) {}
 
         try {
             H5.H5Fflush(fid, HDF5Constants.H5F_SCOPE_GLOBAL);
-        }
-        catch (Exception ex) {
-        }
+        } catch (Exception ex) { }
 
         try {
             H5.H5Fclose(fid);
-        }
-        catch (Exception ex) {
-        }
+        } catch (Exception ex) { }
 
         // Set fid to -1 but don't reset rootNode
         fid = -1;
@@ -1976,8 +1959,8 @@ public class H5File extends FileFormat {
         DefaultMutableTreeNode root = null;
 
         long[] rootOID = { 0 };
-        H5Group rootGroup = new H5Group(this, getName(), // set the node name to
-                                                         // the file name
+        H5Group rootGroup = new H5Group(this, 
+        		getName(), // set the node name to the file name
                 null, // root node does not have a parent path
                 null, // root node does not have a parent node
                 rootOID);
@@ -2009,12 +1992,10 @@ public class H5File extends FileFormat {
      *            the parent node.
      */
     private void depth_first(MutableTreeNode parentNode) {
-        // System.out.println("H5File.depth_first() pnode = "+parentNode);
         int nelems;
         MutableTreeNode node = null;
         String fullPath = null;
         String ppath = null;
-//        String objName = null;
         DefaultMutableTreeNode pnode = (DefaultMutableTreeNode) parentNode;
         int gid = -1;
 
@@ -2023,10 +2004,8 @@ public class H5File extends FileFormat {
 
         if (ppath == null) {
             fullPath = HObject.separator;
-//            objName = "/";
         }
         else {
-//            objName = pgroup.getName();
             fullPath = ppath + pgroup.getName() + HObject.separator;
         }
 
@@ -2039,29 +2018,19 @@ public class H5File extends FileFormat {
         catch (HDF5Exception ex) {
             nelems = -1;
         }
+        pgroup.close(gid);
 
-        if (nelems <= 0) {
-            pgroup.close(gid);
+        if (nelems <= 0)
             return;
-        }
-
+        
         // since each call of H5.H5Gget_objname_by_idx() takes about one second.
         // 1,000,000 calls take 12 days. Instead of calling it in a loop,
         // we use only one call to get all the information, which takes about
         // two seconds
         int[] objTypes = new int[nelems];
-         long[] objRefs = new long[nelems];
+        long[] objRefs = new long[nelems];
         String[] objNames = new String[nelems];
   
-//        int indx_type = HDF5Constants.H5_INDEX_NAME;
-//
-//        if(indexType==0){
-//            indx_type = HDF5Constants.H5_INDEX_NAME;
-//        }
-//        else if(indexType==1){
-//            indx_type = HDF5Constants.H5_INDEX_CRT_ORDER;
-//        }
-//        
         try {
             H5.H5Gget_obj_info_all(fid, fullPath, objNames, objTypes, objRefs);
         }
@@ -2069,14 +2038,14 @@ public class H5File extends FileFormat {
             return;
         }
 
-        int i0 = Math.max(0, getStartMembers());
-        int i1 = getMaxMembers();
-        if (i1 >= nelems) {
-            i1 = nelems;
-            i0 = 0; // load all members
+        int startIndex = Math.max(0, getStartMembers());
+        int endIndex = getMaxMembers();
+        if (endIndex >= nelems) {
+        	endIndex = nelems;
+            startIndex = 0; // load all members
         }
-        i1 += i0;
-        i1 = Math.min(i1, nelems);
+        endIndex += startIndex;
+        endIndex = Math.min(endIndex, nelems);
 
         long[] oid = null;
         String obj_name;
@@ -2084,7 +2053,7 @@ public class H5File extends FileFormat {
         //int lnk_type;  
 
         // Iterate through the file to see members of the group
-        for (int i = i0; i < i1; i++) {
+        for (int i = startIndex; i <endIndex; i++) {
             oid = null;
             obj_name = objNames[i];
             obj_type = objTypes[i];
@@ -2230,9 +2199,6 @@ public class H5File extends FileFormat {
             }
 
         } // for ( i = 0; i < nelems; i++)
-
-        pgroup.close(gid);
-
     } // private depth_first()
 
     private TreeNode copyDataset(Dataset srcDataset, H5Group pgroup,
