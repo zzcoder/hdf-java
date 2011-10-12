@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
+import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.HashMap;
@@ -3698,28 +3699,36 @@ public class DebugHDF {
     
     static private void testGroupMemoryLeak(String fname) throws Exception 
     {
-    	int _pid = HDF5Constants.H5P_DEFAULT;
+       	final int NGROUPS = 12;
+     	int _pid_ = HDF5Constants.H5P_DEFAULT;
     	boolean USE_H5 = false;
-    	
-		int fid = H5.H5Fcreate(fname, HDF5Constants.H5F_ACC_TRUNC, _pid, _pid);
-    	int gid = H5.H5Gcreate(fid, "/levelOneGroup", _pid, _pid, _pid);
-		H5.H5Gclose(gid);
-		H5.H5Fclose(fid);
-		
-    	for (int i = 0; i<25; i++) {
-    		if (USE_H5)
-    			fid = H5.H5Fopen(fname, HDF5Constants.H5F_ACC_RDWR, _pid);
-    		else {
-        		FileFormat testFile = new H5File(fname, H5File.WRITE);
-       			fid = testFile.open();			
-    		}
- 
-    		gid = H5.H5Gcreate(fid, "/levelOneGroup/group" + i, _pid, _pid, _pid);
+
+    	for (int N=1; N<=NGROUPS; N++) {
+        	
+    		int fid = H5.H5Fcreate(fname, HDF5Constants.H5F_ACC_TRUNC, _pid_, _pid_);
+        	int gid = H5.H5Gcreate(fid, "/levelOneGroup", _pid_, _pid_, _pid_);
+
     		H5.H5Gclose(gid);
     		H5.H5Fclose(fid);
-    	}    
+    		
+        	for (int i = 0; i<N; i++) {
+        		if (USE_H5)
+        			fid = H5.H5Fopen(fname, HDF5Constants.H5F_ACC_RDWR, _pid_);
+        		else {
+            		FileFormat testFile = new H5File(fname, H5File.WRITE);
+           			fid = testFile.open();			
+        		}
+     
+        		gid = H5.H5Gcreate(fid, "/levelOneGroup/group" + i, _pid_, _pid_, _pid_);
+
+        		H5.H5Gclose(gid);
+        		H5.H5Fclose(fid);
+        	} /* for (int i = 0; i<N; i++) { */
+        	
+        	DecimalFormat fmt = new  DecimalFormat("###,###,###");
+        	System.out.println("no. of groups = " +N+"\tfile size = "+fmt.format((new File(fname)).length()));    		
+    	} /*for (int N=1; N<=NGROUPS; N++)  */
     	
-    	System.out.println((new File(fname)).length());
     }  
     
 
