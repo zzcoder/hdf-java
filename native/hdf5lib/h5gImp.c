@@ -760,7 +760,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gget_1obj_1info_1all
     unsigned long *refs=NULL;
     int i;
     int gid = loc_id;
-  int indexType = indx_type;
+    int indexType = indx_type;
 
     if (group_name != NULL) {
         gName = (char *)ENVPTR->GetStringUTFChars(ENVPAR group_name,&isCopy);
@@ -969,10 +969,12 @@ int H5Gget_obj_info_all( hid_t loc_id, char **objname, int *otype, int *ltype, u
     info.objno = objno;
     info.count = 0;
 
-  if(H5Literate(loc_id, (H5_index_t)indexType, H5_ITER_INC, NULL, obj_info_all, (void *)&info) < 0){
-    if(H5Literate(loc_id, H5_INDEX_NAME, H5_ITER_INC, NULL, obj_info_all, (void *)&info) < 0)
-        return -1;
-  }
+    if(H5Literate(loc_id, (H5_index_t)indexType, H5_ITER_INC, NULL, obj_info_all, (void *)&info) < 0){
+
+        /* iterate failed, try alphabetical order */
+        if(H5Literate(loc_id, H5_INDEX_NAME, H5_ITER_INC, NULL, obj_info_all, (void *)&info) < 0)
+            return -1;
+    }
 
     return info.count;
 }
@@ -996,11 +998,22 @@ int H5Gget_obj_info_max( hid_t loc_id, char **objname, int *otype, int *ltype, u
 herr_t obj_info_all(hid_t loc_id, const char *name, const H5L_info_t *info, void *op_data)
 {
     int type = -1;
+    hid_t oid=-1;
     herr_t retVal = 0;
     info_all_t* datainfo = (info_all_t*)op_data;
     H5O_info_t object_info;
 
+#ifdef USE_GROUP_HEAP_LEAK
+    /* this function causes group heap problem. See test case
+     * DebugHDF.testGroupMemoryLeak(), JIRA JAVA-1644*/
     retVal = H5Oget_info_by_name(loc_id, name, &object_info, H5P_DEFAULT);
+#else
+	oid = H5Oopen( loc_id, name, H5P_DEFAULT) ;
+	if (oid>=0) {
+		retVal = H5Oget_info( loc_id, &object_info );
+		H5Oclose(oid);
+	}
+#endif
 
     if ( retVal < 0) {
         *(datainfo->otype+datainfo->count) = -1;
@@ -1008,15 +1021,14 @@ herr_t obj_info_all(hid_t loc_id, const char *name, const H5L_info_t *info, void
         *(datainfo->objname+datainfo->count) = (char *) malloc(strlen(name)+1);
         strcpy(*(datainfo->objname+datainfo->count), name);
         *(datainfo->objno+datainfo->count) = -1;
-        //return 1;
     }
     else {
         *(datainfo->otype+datainfo->count) = object_info.type;
         *(datainfo->ltype+datainfo->count) = info->type;
-        /* this will be freed by h5str_array_free(oName, n)*/
         *(datainfo->objname+datainfo->count) = (char *) malloc(strlen(name)+1);
         strcpy(*(datainfo->objname+datainfo->count), name);
-    if(info->type==H5L_TYPE_HARD)
+
+        if(info->type==H5L_TYPE_HARD)
             *(datainfo->objno+datainfo->count) = (unsigned long)info->u.address;
         else
             *(datainfo->objno+datainfo->count) = info->u.val_size;

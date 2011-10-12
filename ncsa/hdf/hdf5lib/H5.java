@@ -3379,6 +3379,7 @@ public synchronized static native int H5Gget_create_plist(int group_id)
 public synchronized static native H5G_info_t H5Gget_info(int group_id)
         throws HDF5LibraryException;
 
+
 // int H5Gget_info(int loc_id, H5G_info_t ginfo);
 
 /**
@@ -3520,23 +3521,8 @@ public synchronized static int H5Gget_obj_info_all(int loc_id, String name,
         throw new NullPointerException(
                 "H5Gget_obj_info_all(): name array is null");
     }
-
-    if (otype == null) {
-        throw new NullPointerException(
-                "H5Gget_obj_info_all(): object type array is null");
-    }
-
-    if (oname.length == 0) {
-        throw new HDF5LibraryException(
-                "H5Gget_obj_info_all(): array size is zero");
-    }
-
-    if (oname.length != otype.length) {
-        throw new HDF5LibraryException(
-                "H5Gget_obj_info_all(): name and type array sizes are different");
-    }
-
-    return H5Gget_obj_info_all(loc_id, name, oname, otype, new int[oname.length], ref, oname.length, HDF5Constants.H5_INDEX_NAME);
+    
+   return H5Gget_obj_info_all(loc_id, name, oname, otype, new int[oname.length], ref, HDF5Constants.H5_INDEX_NAME);
 }
 
 public synchronized static int H5Gget_obj_info_all(int loc_id, String name,
