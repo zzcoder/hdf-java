@@ -3256,7 +3256,7 @@ public static int H5Gcreate(int loc_id, String name,
         OPEN_IDS.addElement(id);
     return id;
 }
-public synchronized static native int _H5Gcreate2(int loc_id, String name,
+private synchronized static native int _H5Gcreate2(int loc_id, String name,
         int lcpl_id, int gcpl_id, int gapl_id)
         throws HDF5LibraryException, NullPointerException;
 
@@ -3286,7 +3286,7 @@ public static int H5Gcreate_anon(int loc_id,
         OPEN_IDS.addElement(id);
     return id;
 }
-public synchronized static native int _H5Gcreate_anon(int loc_id,
+private synchronized static native int _H5Gcreate_anon(int loc_id,
         int gcpl_id, int gapl_id) throws HDF5LibraryException;
 
 /**
@@ -4019,7 +4019,7 @@ public static int H5Gopen(int loc_id, String name,
         OPEN_IDS.addElement(id);
     return id;
 }
-public synchronized static native int _H5Gopen2(int loc_id, String name,
+private synchronized static native int _H5Gopen2(int loc_id, String name,
         int gapl_id) throws HDF5LibraryException, NullPointerException;
 
 //////////////////////////////////////////////////////////////
@@ -4639,7 +4639,7 @@ public static int H5Oopen(int loc_id, String name, int lapl_id)
         OPEN_IDS.addElement(id);
     return id;
 }
-public synchronized static native int _H5Oopen(int loc_id, String name,
+private synchronized static native int _H5Oopen(int loc_id, String name,
         int lapl_id) throws HDF5LibraryException, NullPointerException;
 
 //
@@ -7304,7 +7304,7 @@ throws HDF5Exception, NullPointerException
     return id;
 }
 
-public synchronized static native int _H5Screate_simple(int rank, long[] dims,
+private synchronized static native int _H5Screate_simple(int rank, long[] dims,
         long[] maxdims) throws HDF5Exception, NullPointerException;
 
 /**
