@@ -1,28 +1,24 @@
 #!/bin/sh
 
-#****************************************************************************
-#* NCSA HDF                                                                 *
-#* National Comptational Science Alliance                                   *
-#* University of Illinois at Urbana-Champaign                               *
-#* 605 E. Springfield, Champaign IL 61820                                   *
-#*                                                                          *
-#* For conditions of distribution and use, see the accompanying             *
-#* COPYING file.                                                            *
-#*                                                                          *
-#****************************************************************************/
-JH45INSTALLDIR=@JH45INST@
+# Set up default variable values if not supplied by the user.
 
-LIBDIR=$JH45INSTALLDIR"/lib"
+# where the new builds exist
+HDFBLD_HOME=@abs_top_builddir@
+export HDFBLD_HOME
 
-CLASSPATH=$LIBDIR"/jh4toh5.jar:"$LIBDIR"/jhdf.jar:"$LIBDIR"/jhdf5.jar:"$LIBDIR"/jhdf5obj.jar:"$LIBDIR/"jhdfobj.jar:../../.."
+# where Java is installed (requires jdk1.4.x)
+JAVAPATH=@JAVABIN@
+export JAVAPATH
 
-LD_LIBRARY_PATH=$LIBDIR"/@JAVATARG@"
+CLASSPATH=$HDFBLD_HOME"/lib/jh4toh5.jar:"$HDFBLD_HOME"/lib/jhdf.jar:"$HDFBLD_HOME"/lib/jhdf5.jar:"$HDFBLD_HOME"/lib/jhdf5obj.jar:"$HDFBLD_HOME"/lib/jhdfobj.jar:../../.."
+
+LD_LIBRARY_PATH=$HDFBLD_HOME"/lib/@JAVATARG@"
 
 export CLASSPATH
 export LD_LIBRARY_PATH
 
 #modify to try different files
-@JAVA@ -Djava.library.path=$LD_LIBRARY_PATH -Dncsa.hdf.hdflib.HDFLibrary.hdflib=$LIBDIR"/@JAVATARG@/libjhdf.so" test.object.misc.TestH4File vg_all_test.hdf
+@JAVA@ -Djava.library.path=$LD_LIBRARY_PATH -Dncsa.hdf.hdflib.HDFLibrary.hdflib=$HDFBLD_HOME"/lib/@JAVATARG@/libjhdf.so" test.object.misc.TestH4File vg_all_test.hdf
 
 #check output?
 

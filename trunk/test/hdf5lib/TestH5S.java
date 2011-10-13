@@ -44,7 +44,7 @@ public class TestH5S {
         int read_rank = -1;
         try {
             read_rank = H5.H5Sget_simple_extent_ndims(H5sid);
-            assertTrue("H5.H5Screate_simple_extent_ndims",H5rank == read_rank);
+            assertTrue("H5.H5Sget_simple_extent_ndims",H5rank == read_rank);
         }
         catch (Throwable err) {
             err.printStackTrace();
@@ -59,7 +59,7 @@ public class TestH5S {
         
         try {
             read_rank = H5.H5Sget_simple_extent_dims(H5sid, null, null);
-            assertTrue("H5.H5Screate_simple_extent_dims",H5rank == read_rank);
+            assertTrue("H5.H5Sget_simple_extent_dims",H5rank == read_rank);
         }
         catch (Throwable err) {
             err.printStackTrace();
@@ -76,13 +76,41 @@ public class TestH5S {
         
         try {
             read_rank = H5.H5Sget_simple_extent_dims(H5sid, dims, maxdims);
-            assertTrue("H5.H5Screate_simple_extent_dims",H5rank == read_rank);
-            assertTrue("H5.H5Screate_simple_extent_dims:dims",H5dims[0] == dims[0]);
-            assertTrue("H5.H5Screate_simple_extent_dims:maxdims",H5maxdims[0] == maxdims[0]);
+            assertTrue("H5.H5Sget_simple_extent_dims",H5rank == read_rank);
+            assertTrue("H5.H5Sget_simple_extent_dims:dims",H5dims[0] == dims[0]);
+            assertTrue("H5.H5Sget_simple_extent_dims:maxdims",H5maxdims[0] == maxdims[0]);
         }
         catch (Throwable err) {
             err.printStackTrace();
             fail("H5.H5Sget_simple_extent_dims: " + err);
+        }
+    }
+
+    @Test
+    public void testH5Sget_simple_extent_npoints()
+            throws Throwable, HDF5LibraryException, NullPointerException {
+        long num_elements = -1;
+        try {
+            num_elements = H5.H5Sget_simple_extent_npoints(H5sid);
+            assertTrue("H5.H5Sget_simple_extent_npoints",(H5dims[0]*H5dims[1]) == num_elements);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Sget_simple_extent_npoints: " + err);
+        }
+    }
+
+    @Test
+    public void testH5Sget_simple_extent_type()
+            throws Throwable, HDF5LibraryException, NullPointerException {
+        int read_type = -1;
+        try {
+            read_type = H5.H5Sget_simple_extent_type(H5sid);
+            assertTrue("H5.H5Sget_simple_extent_type", HDF5Constants.H5S_SIMPLE == read_type);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Sget_simple_extent_type: " + err);
         }
     }
 
@@ -100,6 +128,36 @@ public class TestH5S {
             fail("H5.H5Sis_simple: " + err);
         }
     }
+
+    @Test
+    public void testH5Sset_extent_simple()
+            throws Throwable, HDF5LibraryException, NullPointerException {
+        long num_elements = -1;
+        try {
+            H5.H5Sset_extent_simple(H5sid, H5rank, H5maxdims, H5maxdims);
+            num_elements = H5.H5Sget_simple_extent_npoints(H5sid);
+            assertTrue("H5.H5Sget_simple_extent_npoints",(H5maxdims[0]*H5maxdims[1]) == num_elements);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Sset_extent_simple: " + err);
+        }
+    }
+
+//    @Test
+//    public void testH5Sset_extent_none()
+//            throws Throwable, HDF5LibraryException, NullPointerException {
+//        int read_type = -1;
+//        try {
+//            H5.H5Sset_extent_none(H5sid);
+//            read_type = H5.H5Sget_select_type(H5sid);
+//            assertTrue("H5.H5Sget_select_type", HDF5Constants.H5S_NO_CLASS == read_type);
+//        }
+//        catch (Throwable err) {
+//            err.printStackTrace();
+//            fail("H5.H5Sset_extent_none: " + err);
+//        }
+//    }
 
     @Test
     public void testH5Scopy()
@@ -146,7 +204,6 @@ public class TestH5S {
     public void testH5Sextent_equal()
             throws Throwable, HDF5LibraryException, NullPointerException {
         int sid = -1;
-        int class_type = -1;
         boolean result = false;
         
         try {

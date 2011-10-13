@@ -1044,7 +1044,6 @@ public class H5File extends FileFormat {
             }
         }
 
-
         // Close all open objects associated with this file.
         try {
             int n = 0, type = -1, oids[];

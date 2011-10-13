@@ -11,7 +11,7 @@
  
 TOP = ../..
 DIR	= test/object
-SUBDIRS = NULL
+SUBDIRS = misc
 
 JAVAC           = @JAVAC@
 JAVADOC         = @JAVADOC@

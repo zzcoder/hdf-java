@@ -3379,7 +3379,6 @@ public synchronized static native int H5Gget_create_plist(int group_id)
 public synchronized static native H5G_info_t H5Gget_info(int group_id)
         throws HDF5LibraryException;
 
-
 // int H5Gget_info(int loc_id, H5G_info_t ginfo);
 
 /**
@@ -7517,6 +7516,8 @@ public synchronized static native long H5Sget_select_hyper_nblocks(
  **/
 public synchronized static native long H5Sget_select_npoints(int space_id)
         throws HDF5LibraryException;
+
+//H5S_sel_type H5Sget_select_type(hid_t space_id) 
 
 /**
  * H5Sget_simple_extent_dims returns the size and maximum sizes of each
