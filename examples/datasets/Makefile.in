@@ -1,68 +1,52 @@
-# Generated automatically from Makefile.in by configure.
 #/****************************************************************************
-# * NCSA HDF                                                                 *
-# * National Comptational Science Alliance                                   *
-# * University of Illinois at Urbana-Champaign                               *
-# * 605 E. Springfield, Champaign IL 61820                                   *
-# *                                                                          *
-# * For conditions of distribution and use, see the accompanying             *
-# * hdf-java/COPYING file.                                                   *
-# *                                                                          *
+# * Copyright by The HDF Group.                                               *
+# * Copyright by the Board of Trustees of the University of Illinois.         *
+# * All rights reserved.                                                      *
+# *                                                                           *
+# * This file is part of HDF Java Products. The full HDF Java copyright       *
+# * notice, including terms governing use, modification, and redistribution,  *
+# * is contained in the file, COPYING.  COPYING can be found at the root of   *
+# * the source code distribution tree. You can also access it online  at      *
+# * http://www.hdfgroup.org/products/licenses.html.  If you do not have       *
+# * access to the file, you may request a copy from help@hdfgroup.org.        *
 # ****************************************************************************/
 
+TOP = ../..
+DIR	= examples/datasets
+SUBDIRS = NULL
 
-JAVAC=@JAVAC@
-RM=@RM@
+JAVAC           = @JAVAC@
+JAVADOC         = @JAVADOC@
+JAR         	= @JAR@
+FIND            = @FIND@
+RM              = @RM@
+SLEXT=@SLEXT@
+JSLEXT=@JSLEXT@
 
-CLASSPATH=@CLASSPATH@   
+CLASSPATH=@CLASSPATH@
+JH45INSTALLDIR=@JH45INST@
+H45INC=@H45INC@
+H4INC=@HDF4INC@
+H5INC=@HDF5INC@
 
-.SUFFIXES: .java .class
+JAVA_SRCS = \
+H5Ex_D_Alloc.java \
+H5Ex_D_Checksum.java \
+H5Ex_D_Chunk.java \
+H5Ex_D_Compact.java \
+H5Ex_D_External.java \
+H5Ex_D_FillValue.java \
+H5Ex_D_Gzip.java \
+H5Ex_D_Hyperslab.java \
+H5Ex_D_ReadWrite.java \
+H5Ex_D_Shuffle.java \
+H5Ex_D_Szip.java \
+H5Ex_D_UnlimitedAdd.java \
+H5Ex_D_UnlimitedGzip.java \
+H5Ex_D_UnlimitedMod.java \
+H5Ex_D_Nbit.java \
+H5Ex_D_Transform.java \
+H5Ex_D_Sofloat.java \
+H5Ex_D_Soint.java
 
-.java.class:
-	$(JAVAC) -classpath $(CLASSPATH) $<
-
-all: H5Ex_D_Alloc H5Ex_D_Checksum H5Ex_D_Chunk H5Ex_D_Compact H5Ex_D_External H5Ex_D_FillValue H5Ex_D_Gzip \
-  H5Ex_D_Hyperslab H5Ex_D_ReadWrite H5Ex_D_Shuffle H5Ex_D_Szip H5Ex_D_UnlimitedAdd H5Ex_D_UnlimitedGzip H5Ex_D_UnlimitedMod H5Ex_D_Nbit H5Ex_D_Transform H5Ex_D_Sofloat \
-  H5Ex_D_Soint
-
-H5Ex_D_Alloc: H5Ex_D_Alloc.class
-
-H5Ex_D_Checksum: H5Ex_D_Checksum.class
-
-H5Ex_D_Chunk: H5Ex_D_Chunk.class
-
-H5Ex_D_Compact: H5Ex_D_Compact.class
-
-H5Ex_D_External: H5Ex_D_External.class
-
-H5Ex_D_FillValue: H5Ex_D_FillValue.class
-
-H5Ex_D_Gzip: H5Ex_D_Gzip.class
-
-H5Ex_D_Hyperslab: H5Ex_D_Hyperslab.class
-
-H5Ex_D_ReadWrite: H5Ex_D_ReadWrite.class
-
-H5Ex_D_Shuffle: H5Ex_D_Shuffle.class
-
-H5Ex_D_Szip: H5Ex_D_Szip.class
-
-H5Ex_D_UnlimitedAdd: H5Ex_D_UnlimitedAdd.class
-
-H5Ex_D_UnlimitedGzip: H5Ex_D_UnlimitedGzip.class
-
-H5Ex_D_UnlimitedMod: H5Ex_D_UnlimitedMod.class
-
-H5Ex_D_Nbit : H5Ex_D_Nbit.class
-
-H5Ex_D_Transform : H5Ex_D_Transform.class
-
-H5Ex_D_Sofloat : H5Ex_D_Sofloat.class
-
-H5Ex_D_Soint : H5Ex_D_Soint.class
-
-check: all
-
-clean:
-	$(RM) -f *.class
-	$(RM) -f *.hdf
+include $(TOP)/Config/Rules.mk

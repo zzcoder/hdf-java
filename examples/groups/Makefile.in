@@ -1,44 +1,45 @@
-# Generated automatically from Makefile.in by configure.
 #/****************************************************************************
-# * NCSA HDF                                                                 *
-# * National Comptational Science Alliance                                   *
-# * University of Illinois at Urbana-Champaign                               *
-# * 605 E. Springfield, Champaign IL 61820                                   *
-# *                                                                          *
-# * For conditions of distribution and use, see the accompanying             *
-# * hdf-java/COPYING file.                                                   *
-# *                                                                          *
+# * Copyright by The HDF Group.                                               *
+# * Copyright by the Board of Trustees of the University of Illinois.         *
+# * All rights reserved.                                                      *
+# *                                                                           *
+# * This file is part of HDF Java Products. The full HDF Java copyright       *
+# * notice, including terms governing use, modification, and redistribution,  *
+# * is contained in the file, COPYING.  COPYING can be found at the root of   *
+# * the source code distribution tree. You can also access it online  at      *
+# * http://www.hdfgroup.org/products/licenses.html.  If you do not have       *
+# * access to the file, you may request a copy from help@hdfgroup.org.        *
 # ****************************************************************************/
 
+TOP = ../..
+DIR	= examples/groups
+SUBDIRS = NULL
 
-JAVAC=@JAVAC@
-RM=@RM@
+JAVAC           = @JAVAC@
+JAVADOC         = @JAVADOC@
+JAR         	= @JAR@
+FIND            = @FIND@
+RM              = @RM@
+SLEXT=@SLEXT@
+JSLEXT=@JSLEXT@
 
-CLASSPATH=@CLASSPATH@   
+CLASSPATH=@CLASSPATH@
+JH45INSTALLDIR=@JH45INST@
+H45INC=@H45INC@
+H4INC=@HDF4INC@
+H5INC=@HDF5INC@
 
-.SUFFIXES: .java .class
-
-.java.class:
-	$(JAVAC) -classpath $(CLASSPATH) $<
-
-all: H5Ex_G_Create H5Ex_G_Iterate H5Ex_G_Compact H5Ex_G_Corder H5Ex_G_Intermediate H5Ex_G_Phase H5Ex_G_Visit
-
-H5Ex_G_Create: H5Ex_G_Create.class
-
-H5Ex_G_Iterate: H5Ex_G_Iterate.class
-
-H5Ex_G_Compact: H5Ex_G_Compact.class
-
-H5Ex_G_Corder : H5Ex_G_Corder.class
-
-H5Ex_G_Intermediate : H5Ex_G_Intermediate.class
-
-H5Ex_G_Phase : H5Ex_G_Phase.class
-
-H5Ex_G_Visit : H5Ex_G_Visit.class
+JAVA_SRCS = \
+H5Ex_G_Create.java  \
+H5Ex_G_Iterate.java  \
+H5Ex_G_Compact.java  \
+H5Ex_G_Corder.java  \
+H5Ex_G_Intermediate.java  \
+H5Ex_G_Phase.java  \
+H5Ex_G_Visit.java
 
 check: all
+	cp h5ex_g_iterate.h5 $(TOP)/lib/$(DIR)
+	cp h5ex_g_visit.h5 $(TOP)/lib/$(DIR)
 
-clean:
-	$(RM) -f *.class
-	$(RM) -f *.hdf
+include $(TOP)/Config/Rules.mk
