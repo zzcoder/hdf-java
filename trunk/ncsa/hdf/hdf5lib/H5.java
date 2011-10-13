@@ -7517,7 +7517,17 @@ public synchronized static native long H5Sget_select_hyper_nblocks(
 public synchronized static native long H5Sget_select_npoints(int space_id)
         throws HDF5LibraryException;
 
-//H5S_sel_type H5Sget_select_type(hid_t space_id) 
+/**
+ * H5Sget_select_type retrieves the type of selection currently defined for the dataspace space_id.
+ * 
+ * @param space_id IN: Identifier of the dataspace object to query
+ * 
+ * @return the dataspace selection type if successful
+ * 
+ * @exception HDF5LibraryException - Error from the HDF-5 Library.
+ **/
+public synchronized static native int H5Sget_select_type(int space_id) 
+        throws HDF5LibraryException;
 
 /**
  * H5Sget_simple_extent_dims returns the size and maximum sizes of each

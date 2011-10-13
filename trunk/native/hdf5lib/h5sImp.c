@@ -365,8 +365,24 @@ extern "C" {
         if (retVal < 0) 
             h5libraryError(env);
 
-
         return (jlong) retVal;
+    }
+
+    /*
+     * Class:     ncsa_hdf_hdf5lib_H5
+     * Method:    H5Sget_select_type
+     * Signature: (I)I
+     */
+    JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Sget_1select_1type(
+            JNIEnv *env, jclass clss, jint space_id) {
+        int retVal = -1;
+        
+        retVal = H5Sget_select_type(space_id);
+        
+        if (retVal < 0)
+            h5libraryError(env);
+
+        return (jint) retVal;
     }
 
     /*
@@ -382,7 +398,6 @@ extern "C" {
         
         if (retVal < 0)
             h5libraryError(env);
-
 
         return (jint) retVal;
     }
@@ -501,10 +516,10 @@ extern "C" {
     JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Sget_1simple_1extent_1type(
             JNIEnv *env, jclass clss, jint space_id) {
         H5S_class_t retVal = H5S_NO_CLASS;
-        retVal = H5Sget_simple_extent_type(space_id);
         
-        if (retVal == H5S_NO_CLASS) 
+        if (space_id < 0)
             h5libraryError(env);
+        retVal = H5Sget_simple_extent_type(space_id);
 
         return (jint) retVal;
     }
