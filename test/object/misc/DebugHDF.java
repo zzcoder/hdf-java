@@ -21,6 +21,7 @@ import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 import ncsa.hdf.hdf5lib.HDFNativeData;
 import ncsa.hdf.hdf5lib.exceptions.HDF5Exception;
+import ncsa.hdf.hdf5lib.structs.H5O_info_t;
 import ncsa.hdf.object.Attribute;
 import ncsa.hdf.object.CompoundDS;
 import ncsa.hdf.object.Dataset;
@@ -3699,9 +3700,9 @@ public class DebugHDF {
     
     static private void testGroupMemoryLeak(String fname) throws Exception 
     {
-       	final int NGROUPS = 12;
+       	final int NGROUPS = 20;
      	int _pid_ = HDF5Constants.H5P_DEFAULT;
-    	boolean USE_H5 = false;
+    	boolean TEST_MEM_LEAK = true;
 
     	for (int N=1; N<=NGROUPS; N++) {
         	
@@ -3712,11 +3713,14 @@ public class DebugHDF {
     		H5.H5Fclose(fid);
     		
         	for (int i = 0; i<N; i++) {
-        		if (USE_H5)
-        			fid = H5.H5Fopen(fname, HDF5Constants.H5F_ACC_RDWR, _pid_);
-        		else {
-            		FileFormat testFile = new H5File(fname, H5File.WRITE);
-           			fid = testFile.open();			
+        		fid = H5.H5Fopen(fname, HDF5Constants.H5F_ACC_RDWR, _pid_);
+        	
+        		if (TEST_MEM_LEAK) {
+        			// we have only one object, /levelOneGroup, at the root
+                    int[] objTypes = new int[1];
+                    long[] objRefs = new long[1];
+                    String[] objNames = new String[1];
+            		H5.H5Gget_obj_info_all(fid, "/", objNames, objTypes, objRefs);			
         		}
      
         		gid = H5.H5Gcreate(fid, "/levelOneGroup/group" + i, _pid_, _pid_, _pid_);
@@ -3728,8 +3732,5 @@ public class DebugHDF {
         	DecimalFormat fmt = new  DecimalFormat("###,###,###");
         	System.out.println("no. of groups = " +N+"\tfile size = "+fmt.format((new File(fname)).length()));    		
     	} /*for (int N=1; N<=NGROUPS; N++)  */
-    	
-    }  
-    
-
+     }  
 }
