@@ -1003,17 +1003,7 @@ herr_t obj_info_all(hid_t loc_id, const char *name, const H5L_info_t *info, void
     info_all_t* datainfo = (info_all_t*)op_data;
     H5O_info_t object_info;
 
-#ifdef USE_GROUP_HEAP_LEAK
-    /* this function causes group heap problem. See test case
-     * DebugHDF.testGroupMemoryLeak(), JIRA JAVA-1644*/
     retVal = H5Oget_info_by_name(loc_id, name, &object_info, H5P_DEFAULT);
-#else
-	oid = H5Oopen( loc_id, name, H5P_DEFAULT) ;
-	if (oid>=0) {
-		retVal = H5Oget_info( oid, &object_info );
-		H5Oclose(oid);
-	}
-#endif
 
     if ( retVal < 0) {
         *(datainfo->otype+datainfo->count) = -1;
