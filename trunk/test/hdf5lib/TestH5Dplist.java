@@ -48,7 +48,6 @@ public class TestH5Dplist {
     }
 
     private final void _createPDataset(int fid, int dsid, String name, int dcpl_val) {
-        
         try {
             H5dcpl_id = H5.H5Pcreate(dcpl_val);
         }
@@ -101,21 +100,8 @@ public class TestH5Dplist {
         assertTrue("TestH5Dplist._createDataset: ",H5did > 0);
     }
 
-//    private final void _openDataset(int fid, String name) {
-//        try {
-//            H5did = H5.H5Dopen(fid, name, HDF5Constants.H5P_DEFAULT);
-//        }
-//        catch (Throwable err) {
-//            H5did = -1;
-//            err.printStackTrace();
-//            fail("H5.H5Dopen: " + err);
-//        }
-//        assertTrue("TestH5D._openDataset: ",H5did > 0);
-//    }
-
     @Before
-    public void createH5file()
-            throws NullPointerException, HDF5Exception {
+    public void createH5file() throws NullPointerException, HDF5Exception {
         assertTrue("H5 open ids is 0",H5.getOpenIDCount()==0);
         try {
             H5fid = H5.H5Fcreate(H5_FILE, HDF5Constants.H5F_ACC_TRUNC,
@@ -147,7 +133,7 @@ public class TestH5Dplist {
     }
     
   @Test
-  public void testH5Dset_extent() throws Throwable, HDF5LibraryException {
+  public void testH5Dset_extent() {
       int[][] write_dset_data = new int[DIM_X][DIM_Y];
       int[][] read_dset_data = new int[DIM_X][DIM_Y];
       int[][] extend_dset_data = new int[EDIM_X][EDIM_Y];

@@ -166,29 +166,41 @@ public class TestH5Ocreate {
     }
 
     @Test(expected = HDF5LibraryException.class)
-    public void testH5Ocopy_cur_not_exists() throws Throwable, HDF5LibraryException, NullPointerException {
+    public void testH5Ocopy_cur_not_exists() throws Throwable {
         H5.H5Ocopy(H5fid, "None", H5fid, "DS1", HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
     }
 
     @Test
-    public void testH5Ocopy() throws Throwable, HDF5LibraryException, NullPointerException {
-        H5.H5Ocopy(H5fid, "DS1", H5fid, "CPY1", HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
-        H5.H5Fflush(H5fid, HDF5Constants.H5F_SCOPE_LOCAL);
-        boolean link_exists = H5.H5Lexists(H5fid, "CPY1", HDF5Constants.H5P_DEFAULT);
-        assertTrue("testH5Ocopy:H5Lexists ",link_exists);
+    public void testH5Ocopy() {
+        try {
+            H5.H5Ocopy(H5fid, "DS1", H5fid, "CPY1", HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+            H5.H5Fflush(H5fid, HDF5Constants.H5F_SCOPE_LOCAL);
+            boolean link_exists = H5.H5Lexists(H5fid, "CPY1", HDF5Constants.H5P_DEFAULT);
+            assertTrue("testH5Ocopy:H5Lexists ",link_exists);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Ocopy: " + err);
+        }
     }
 
     @Test(expected = HDF5LibraryException.class)
-    public void testH5Ocopy_dst_link_exists() throws Throwable, HDF5LibraryException, NullPointerException {
+    public void testH5Ocopy_dst_link_exists() throws Throwable {
         _createHardLink(H5fid, H5fid, "/G1/DS2", H5fid, "CPY1", HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
         H5.H5Ocopy(H5fid, "CPY1", H5fid, "/G1/DS2", HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
     }
 
     @Test
-    public void testH5Oget_info_by_idx_n0_create() throws Throwable, HDF5LibraryException, NullPointerException {
+    public void testH5Oget_info_by_idx_n0_create() {
         H5O_info_t obj_info = null;
-        int order = H5.H5Pget_link_creation_order(H5fcpl);
-        assertTrue("creation order :"+order, order == HDF5Constants.H5P_CRT_ORDER_TRACKED+HDF5Constants.H5P_CRT_ORDER_INDEXED);
+        try {
+            int order = H5.H5Pget_link_creation_order(H5fcpl);
+            assertTrue("creation order :"+order, order == HDF5Constants.H5P_CRT_ORDER_TRACKED+HDF5Constants.H5P_CRT_ORDER_INDEXED);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Oget_info_by_idx_n0:H5Pget_link_creation_order " + err);
+        }
         try {
             obj_info = H5.H5Oget_info_by_idx(H5fid, "/", HDF5Constants.H5_INDEX_CRT_ORDER, HDF5Constants.H5_ITER_INC, 0, HDF5Constants.H5P_DEFAULT);
         }
@@ -196,15 +208,21 @@ public class TestH5Ocreate {
             err.printStackTrace();
             fail("H5.H5Oget_info_by_idx: " + err);
         }
-        assertFalse("H5Oget_info_by_idx ",obj_info==null);
-        assertTrue("H5Oget_info_by_idx link type",obj_info.type==HDF5Constants.H5O_TYPE_DATASET);
+        assertFalse("H5Oget_info_by_idx ", obj_info==null);
+        assertTrue("H5Oget_info_by_idx link type", obj_info.type==HDF5Constants.H5O_TYPE_DATASET);
     }
 
     @Test
-    public void testH5Oget_info_by_idx_n1_create() throws Throwable, HDF5LibraryException, NullPointerException {
+    public void testH5Oget_info_by_idx_n1_create() {
         H5O_info_t obj_info = null;
-        int order = H5.H5Pget_link_creation_order(H5fcpl);
-        assertTrue("creation order :"+order, order == HDF5Constants.H5P_CRT_ORDER_TRACKED+HDF5Constants.H5P_CRT_ORDER_INDEXED);
+        try {
+            int order = H5.H5Pget_link_creation_order(H5fcpl);
+            assertTrue("creation order :"+order, order == HDF5Constants.H5P_CRT_ORDER_TRACKED+HDF5Constants.H5P_CRT_ORDER_INDEXED);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Oget_info_by_idx_n1:H5Pget_link_creation_order " + err);
+        }
         try {
             obj_info = H5.H5Oget_info_by_idx(H5fid, "/", HDF5Constants.H5_INDEX_CRT_ORDER, HDF5Constants.H5_ITER_INC, 1, HDF5Constants.H5P_DEFAULT);
         }
@@ -212,12 +230,12 @@ public class TestH5Ocreate {
             err.printStackTrace();
             fail("H5.H5Oget_info_by_idx: " + err);
         }
-        assertFalse("H5Oget_info_by_idx ",obj_info==null);
-        assertTrue("H5Oget_info_by_idx link type",obj_info.type==HDF5Constants.H5O_TYPE_GROUP);
+        assertFalse("H5Oget_info_by_idx ", obj_info==null);
+        assertTrue("H5Oget_info_by_idx link type", obj_info.type==HDF5Constants.H5O_TYPE_GROUP);
     }
 
     @Test
-    public void testH5Oget_info_softlink() throws Throwable, HDF5LibraryException, NullPointerException {
+    public void testH5Oget_info_softlink() {
         H5O_info_t obj_info = null;
         _createSoftLink(H5fid, "/G1/DS2", H5fid, "L1", HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
         try {
@@ -227,19 +245,19 @@ public class TestH5Ocreate {
             err.printStackTrace();
             fail("H5.H5Oget_info: " + err);
         }
-        assertFalse("H5Oget_info ",obj_info==null);
-        assertTrue("H5Oget_info link type",obj_info.type==HDF5Constants.H5O_TYPE_DATASET);
-        assertTrue("Link Address ",obj_info.addr>0);
+        assertFalse("H5Oget_info ", obj_info==null);
+        assertTrue("H5Oget_info link type", obj_info.type==HDF5Constants.H5O_TYPE_DATASET);
+        assertTrue("Link Address ", obj_info.addr>0);
     }
 
     @Test(expected = HDF5LibraryException.class)
-    public void testH5Oget_info_softlink_dangle() throws Throwable, HDF5LibraryException, NullPointerException {
+    public void testH5Oget_info_softlink_dangle() throws Throwable {
         _createSoftLink(H5fid, "DS3", H5fid, "L2", HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
         H5.H5Oget_info_by_name(H5fid, "L2", HDF5Constants.H5P_DEFAULT);
     }
 
     @Test
-    public void testH5Oget_info_externallink() throws Throwable, HDF5LibraryException, NullPointerException {
+    public void testH5Oget_info_externallink() {
         H5O_info_t obj_info = null;
         _createExternalLink(H5fid, H5_EXTFILE, "DT1", H5fid, "L1", HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
         try {
@@ -249,13 +267,13 @@ public class TestH5Ocreate {
             err.printStackTrace();
             fail("H5.H5Oget_info: " + err);
         }
-        assertFalse("H5Oget_info ",obj_info==null);
-        assertTrue("H5Oget_info link type",obj_info.type==HDF5Constants.H5O_TYPE_NAMED_DATATYPE);
-        assertTrue("Link Address ",obj_info.addr>0);
+        assertFalse("H5Oget_info ", obj_info==null);
+        assertTrue("H5Oget_info link type", obj_info.type==HDF5Constants.H5O_TYPE_NAMED_DATATYPE);
+        assertTrue("Link Address ", obj_info.addr>0);
     }
 
     @Test
-    public void testH5Olink() throws Throwable, HDF5LibraryException, NullPointerException {
+    public void testH5Olink() {
         int oid = -1;
         H5O_info_t obj_info = null;
         H5O_info_t dst_obj_info = null;
@@ -267,11 +285,18 @@ public class TestH5Ocreate {
             err.printStackTrace();
             fail("H5.H5Oget_info: " + err);
         }
-        H5.H5Olink(oid, H5fid, "CPY1", HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
-        H5.H5Fflush(H5fid, HDF5Constants.H5F_SCOPE_LOCAL);
+        try {
+            H5.H5Olink(oid, H5fid, "CPY1", HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+            H5.H5Fflush(H5fid, HDF5Constants.H5F_SCOPE_LOCAL);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Olink: " + err);
+        }
         try {H5.H5Oclose(oid);} catch (Exception ex) {}
-        assertFalse("H5Oget_info ",obj_info==null);
-        assertTrue("H5Oget_info object type",obj_info.type==HDF5Constants.H5O_TYPE_DATASET);
+
+        assertFalse("H5Oget_info ", obj_info==null);
+        assertTrue("H5Oget_info object type", obj_info.type==HDF5Constants.H5O_TYPE_DATASET);
         
         try {
             dst_obj_info = H5.H5Oget_info_by_name(H5fid, "CPY1", HDF5Constants.H5P_DEFAULT);
@@ -280,14 +305,20 @@ public class TestH5Ocreate {
             err.printStackTrace();
             fail("H5.H5Oget_info_by_name: " + err);
         }
-        assertFalse("H5Oget_info ",dst_obj_info==null);
-        assertTrue("H5Oget_info object type",dst_obj_info.type==HDF5Constants.H5O_TYPE_DATASET);
+        assertFalse("H5Oget_info ", dst_obj_info==null);
+        assertTrue("H5Oget_info object type", dst_obj_info.type==HDF5Constants.H5O_TYPE_DATASET);
     }
 
     @Test
-    public void testH5Ovisit_create() throws Throwable, HDF5LibraryException, NullPointerException {
-        int order = H5.H5Pget_link_creation_order(H5fcpl);
-        assertTrue("creation order :"+order, order == HDF5Constants.H5P_CRT_ORDER_TRACKED+HDF5Constants.H5P_CRT_ORDER_INDEXED);
+    public void testH5Ovisit_create() {
+        try {
+            int order = H5.H5Pget_link_creation_order(H5fcpl);
+            assertTrue("creation order :"+order, order == HDF5Constants.H5P_CRT_ORDER_TRACKED+HDF5Constants.H5P_CRT_ORDER_INDEXED);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Ovisit_create:H5Pget_link_creation_order " + err);
+        }
         
         _createHardLink(H5fid, H5fid, "/G1/DS2", H5fid, "CPY1", HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
         _createExternalLink(H5fid, H5_EXTFILE, "DT1", H5fid, "LE", HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
@@ -320,16 +351,16 @@ public class TestH5Ocreate {
             err.printStackTrace();
             fail("H5.H5Ovisit: " + err);
         }
-        assertFalse("H5Ovisit ",((H5O_iter_data)iter_data).iterdata.isEmpty());
-        assertTrue("H5Ovisit "+((H5O_iter_data)iter_data).iterdata.size(),((H5O_iter_data)iter_data).iterdata.size()==4);
-        assertTrue("H5Ovisit "+((idata)((H5O_iter_data)iter_data).iterdata.get(0)).link_name,((idata)((H5O_iter_data)iter_data).iterdata.get(0)).link_name.compareToIgnoreCase(".")==0);
-        assertTrue("H5Ovisit "+((idata)((H5O_iter_data)iter_data).iterdata.get(1)).link_name,((idata)((H5O_iter_data)iter_data).iterdata.get(1)).link_name.compareToIgnoreCase("DS1")==0);
-        assertTrue("H5Ovisit "+((idata)((H5O_iter_data)iter_data).iterdata.get(2)).link_name,((idata)((H5O_iter_data)iter_data).iterdata.get(2)).link_name.compareToIgnoreCase("G1")==0);
-        assertTrue("H5Ovisit "+((idata)((H5O_iter_data)iter_data).iterdata.get(3)).link_name,((idata)((H5O_iter_data)iter_data).iterdata.get(3)).link_name.compareToIgnoreCase("G1/DS2")==0);
+        assertFalse("H5Ovisit ", ((H5O_iter_data)iter_data).iterdata.isEmpty());
+        assertTrue("H5Ovisit "+((H5O_iter_data)iter_data).iterdata.size(), ((H5O_iter_data)iter_data).iterdata.size()==4);
+        assertTrue("H5Ovisit "+((idata)((H5O_iter_data)iter_data).iterdata.get(0)).link_name, ((idata)((H5O_iter_data)iter_data).iterdata.get(0)).link_name.compareToIgnoreCase(".")==0);
+        assertTrue("H5Ovisit "+((idata)((H5O_iter_data)iter_data).iterdata.get(1)).link_name, ((idata)((H5O_iter_data)iter_data).iterdata.get(1)).link_name.compareToIgnoreCase("DS1")==0);
+        assertTrue("H5Ovisit "+((idata)((H5O_iter_data)iter_data).iterdata.get(2)).link_name, ((idata)((H5O_iter_data)iter_data).iterdata.get(2)).link_name.compareToIgnoreCase("G1")==0);
+        assertTrue("H5Ovisit "+((idata)((H5O_iter_data)iter_data).iterdata.get(3)).link_name, ((idata)((H5O_iter_data)iter_data).iterdata.get(3)).link_name.compareToIgnoreCase("G1/DS2")==0);
     }
 
     @Test
-    public void testH5Ocomment() throws Throwable, HDF5LibraryException, NullPointerException {
+    public void testH5Ocomment() {
         int oid = -1;
         String obj_comment = null;
         try {
@@ -349,12 +380,12 @@ public class TestH5Ocreate {
             fail("H5.H5Oget_comment: " + err);
         }
         try {H5.H5Oclose(oid);} catch (Exception ex) {}
-        assertFalse("H5Oget_comment: ",obj_comment==null);
-        assertTrue("H5Oget_comment: ",obj_comment.compareTo("Test Comment")==0);
+        assertFalse("H5Oget_comment: ", obj_comment==null);
+        assertTrue("H5Oget_comment: ", obj_comment.compareTo("Test Comment")==0);
     }
 
     @Test
-    public void testH5Ocomment_clear() throws Throwable, HDF5LibraryException, NullPointerException {
+    public void testH5Ocomment_clear() {
         int oid = -1;
         String obj_comment = null;
         try {
@@ -373,8 +404,8 @@ public class TestH5Ocreate {
             err.printStackTrace();
             fail("H5.H5Oget_comment: " + err);
         }
-        assertFalse("H5Oget_comment: ",obj_comment==null);
-        assertTrue("H5Oget_comment: ",obj_comment.compareTo("Test Comment")==0);
+        assertFalse("H5Oget_comment: ", obj_comment==null);
+        assertTrue("H5Oget_comment: ", obj_comment.compareTo("Test Comment")==0);
         try {
             H5.H5Oset_comment(oid, null);
             H5.H5Fflush(H5fid, HDF5Constants.H5F_SCOPE_LOCAL);
@@ -391,11 +422,11 @@ public class TestH5Ocreate {
             fail("H5.H5Oget_comment: " + err);
         }
         try {H5.H5Oclose(oid);} catch (Exception ex) {}
-        assertTrue("H5Oget_comment: ",obj_comment==null);
+        assertTrue("H5Oget_comment: ", obj_comment==null);
     }
 
     @Test
-    public void testH5Ocomment_by_name() throws Throwable, HDF5LibraryException, NullPointerException {
+    public void testH5Ocomment_by_name() {
         String obj_comment = null;
         try {
             H5.H5Oset_comment_by_name(H5fid, "DS1", "Test Comment", HDF5Constants.H5P_DEFAULT);
@@ -412,12 +443,12 @@ public class TestH5Ocreate {
             err.printStackTrace();
             fail("H5.H5Oget_comment_by_name: " + err);
         }
-        assertFalse("H5Oget_comment_by_name: ",obj_comment==null);
-        assertTrue("H5Oget_comment_by_name: ",obj_comment.compareTo("Test Comment")==0);
+        assertFalse("H5Oget_comment_by_name: ", obj_comment==null);
+        assertTrue("H5Oget_comment_by_name: ", obj_comment.compareTo("Test Comment")==0);
     }
 
     @Test
-    public void testH5Ocomment_by_name_clear() throws Throwable, HDF5LibraryException, NullPointerException {
+    public void testH5Ocomment_by_name_clear() {
         String obj_comment = null;
         try {
             H5.H5Oset_comment_by_name(H5fid, "DS1", "Test Comment", HDF5Constants.H5P_DEFAULT);
@@ -434,8 +465,8 @@ public class TestH5Ocreate {
             err.printStackTrace();
             fail("H5.H5Oget_comment_by_name: " + err);
         }
-        assertFalse("H5Oget_comment_by_name: ",obj_comment==null);
-        assertTrue("H5Oget_comment_by_name: ",obj_comment.compareTo("Test Comment")==0);
+        assertFalse("H5Oget_comment_by_name: ", obj_comment==null);
+        assertTrue("H5Oget_comment_by_name: ", obj_comment.compareTo("Test Comment")==0);
         try {
             H5.H5Oset_comment_by_name(H5fid, "DS1", null, HDF5Constants.H5P_DEFAULT);
             H5.H5Fflush(H5fid, HDF5Constants.H5F_SCOPE_LOCAL);
@@ -451,7 +482,7 @@ public class TestH5Ocreate {
             err.printStackTrace();
             fail("H5.H5Oget_comment_by_name: " + err);
         }
-        assertTrue("H5Oget_comment_by_name: ",obj_comment==null);
+        assertTrue("H5Oget_comment_by_name: ", obj_comment==null);
     }
 
 }

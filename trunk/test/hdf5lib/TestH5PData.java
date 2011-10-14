@@ -108,7 +108,7 @@ public class TestH5PData {
     }
     
     @Test
-    public void testH5Pdata_transform() throws Throwable, HDF5LibraryException, IllegalArgumentException {
+    public void testH5Pdata_transform() {
         String f_to_c = "(5/9.0)*(x-32)";
         double windchillFread[][] = new double[DIM_X][DIM_Y];
         double windchillC;
@@ -135,7 +135,7 @@ public class TestH5PData {
     }
     
     @Test
-    public void testH5P_buffer() throws Throwable, HDF5LibraryException, IllegalArgumentException {
+    public void testH5P_buffer() {
         long default_size = 0;
         long size = 0;
 

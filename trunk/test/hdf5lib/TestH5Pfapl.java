@@ -58,7 +58,11 @@ public class TestH5Pfapl {
     };
 
     private final void _deleteFile(String filename) {
-        File file = new File(filename);
+        File file = null;
+        try {
+            file = new File(filename);
+        } 
+        catch (Throwable err) {}
 
         if (file.exists()) {
             try {
@@ -71,7 +75,11 @@ public class TestH5Pfapl {
     }
     
     private final void _deleteLogFile() {
-        File file = new File(H5_LOG_FILE);
+        File file = null;
+        try {
+            file = new File(H5_LOG_FILE);
+        } 
+        catch (Throwable err) {}
 
         if (file.exists()) {
             try {
@@ -84,9 +92,13 @@ public class TestH5Pfapl {
     }
 
     private final void _deleteFamilyFile() {
+        File file = null;
         for(int indx = 0; ;indx++) {
             java.text.DecimalFormat myFormat = new java.text.DecimalFormat("00000");
-            File file = new File("test"+myFormat.format(new Integer(indx))+".h5");
+            try {
+                file = new File("test"+myFormat.format(new Integer(indx))+".h5");
+            } 
+            catch (Throwable err) {}
 
             if (file.exists()) {
                 try {
@@ -102,8 +114,12 @@ public class TestH5Pfapl {
     }
 
     private final void _deleteMultiFile() {
+        File file = null;
         for(int indx = 1;indx<7;indx++) {
-            File file = new File(H5_MULTI_FILE+"-"+MULTI_LETTERS[indx]+".h5");
+            try {
+                file = new File(H5_MULTI_FILE+"-"+MULTI_LETTERS[indx]+".h5");
+            } 
+            catch (Throwable err) {}
 
             if (file.exists()) {
                 try {
@@ -234,15 +250,15 @@ public class TestH5Pfapl {
         }
     }
 
-    public void deleteH5file() throws HDF5LibraryException {
+    public void deleteH5file() {
         _deleteFile(H5_FILE);
     }
 
-    public void deleteH5familyfile() throws HDF5LibraryException {
+    public void deleteH5familyfile() {
         _deleteFamilyFile();
     }
 
-    public void deleteH5multifile() throws HDF5LibraryException {
+    public void deleteH5multifile() {
         _deleteMultiFile();
     }
 
@@ -310,7 +326,7 @@ public class TestH5Pfapl {
     }
     
     @Test
-    public void testH5Pget_libver_bounds() throws Throwable, HDF5LibraryException {
+    public void testH5Pget_libver_bounds() {
         int ret_val = -1;
         int[] libver = new int[2];
         
@@ -329,7 +345,7 @@ public class TestH5Pfapl {
     }
        
     @Test
-    public void testH5Pset_libver_bounds() throws Throwable, HDF5LibraryException {
+    public void testH5Pset_libver_bounds() {
         
         int ret_val = -1;
         int low = HDF5Constants.H5F_LIBVER_EARLIEST;
@@ -352,12 +368,12 @@ public class TestH5Pfapl {
     }
 
     @Test(expected = HDF5LibraryException.class)
-    public void testH5Pset_elink_fapl_NegativeID() throws Throwable, HDF5LibraryException {
+    public void testH5Pset_elink_fapl_NegativeID() throws Throwable {
         H5.H5Pset_elink_fapl(-1, fapl_id );
     }
 
     @Test
-    public void testH5Pset_elink_fapl() throws Throwable, HDF5LibraryException {
+    public void testH5Pset_elink_fapl() {
         int ret_val = -1;
         try {
             ret_val = H5.H5Pset_elink_fapl(plapl_id, fapl_id );
@@ -370,7 +386,7 @@ public class TestH5Pfapl {
     }
     
     @Test
-    public void testH5Pget_elink_fapl() throws Throwable, HDF5LibraryException {
+    public void testH5Pget_elink_fapl() {
         int ret_val_id = -1;
         try {
             ret_val_id = H5.H5Pget_elink_fapl(plapl_id);
@@ -383,12 +399,12 @@ public class TestH5Pfapl {
         }
         finally {
             if (ret_val_id > 0)
-                H5.H5Pclose(ret_val_id);    
+                try {H5.H5Pclose(ret_val_id);} catch (Exception ex) {}
         }
     }
     
     @Test
-    public void testH5P_elink_fapl() throws Throwable, HDF5LibraryException {
+    public void testH5P_elink_fapl() {
         int ret_val_id = -1;
         try {
             H5.H5Pset_elink_fapl(plapl_id, fapl_id );
@@ -401,12 +417,12 @@ public class TestH5Pfapl {
         }
         finally {
             if (ret_val_id > 0)
-                H5.H5Pclose(ret_val_id);    
+                try {H5.H5Pclose(ret_val_id);} catch (Exception ex) {}
         }
     }
     
     @Test
-    public void testH5P_elink_file_cache_size() throws Throwable, HDF5LibraryException {
+    public void testH5P_elink_file_cache_size() {
         int elink_fapl_id = -1;
         int efc_size = 0;
         try {
@@ -436,12 +452,12 @@ public class TestH5Pfapl {
         }
         finally {
             if (elink_fapl_id > 0)
-                H5.H5Pclose(elink_fapl_id);    
+                try {H5.H5Pclose(elink_fapl_id);} catch (Exception ex) {}
         }
     }
     
     @Test
-    public void testH5P_btree_ratios() throws Throwable, HDF5LibraryException {
+    public void testH5P_btree_ratios() {
         double[] left = {0.1};
         double[] middle = {0.5};
         double[] right = {0.7};
@@ -457,7 +473,7 @@ public class TestH5Pfapl {
     }
     
     @Test
-    public void testH5P_edc_check() throws Throwable, HDF5LibraryException {
+    public void testH5P_edc_check() {
         int ret_val_id = -1;
         try {
             ret_val_id = H5.H5Pget_edc_check(plist_id);
@@ -473,7 +489,7 @@ public class TestH5Pfapl {
     }
     
     @Test
-    public void testH5P_fclose_degree() throws Throwable, HDF5LibraryException {
+    public void testH5P_fclose_degree() {
         int ret_val_id = -1;
         try {
             ret_val_id = H5.H5Pget_fclose_degree(fapl_id);
@@ -504,7 +520,7 @@ public class TestH5Pfapl {
     }
     
     @Test
-    public void testH5P_alignment() throws Throwable, HDF5LibraryException {
+    public void testH5P_alignment() {
         long[] align = {0,0};
         try {
             H5.H5Pget_alignment(fapl_id, align);
@@ -530,7 +546,7 @@ public class TestH5Pfapl {
     }
     
     @Test
-    public void testH5P_meta_block_size() throws Throwable, HDF5LibraryException {
+    public void testH5P_meta_block_size() {
         long meta_size = 0;
         try {
             meta_size = H5.H5Pget_meta_block_size(fapl_id);
@@ -553,7 +569,7 @@ public class TestH5Pfapl {
     }
     
     @Test
-    public void testH5P_small_data_block_size() throws Throwable, HDF5LibraryException {
+    public void testH5P_small_data_block_size() {
         long[] align = {0};
         try {
             H5.H5Pget_small_data_block_size(fapl_id, align);
@@ -576,7 +592,7 @@ public class TestH5Pfapl {
     }
     
     @Test
-    public void testH5P_hyper_vector_size() throws Throwable, HDF5LibraryException {
+    public void testH5P_hyper_vector_size() {
         long[] align = {0};
         try {
             H5.H5Pget_hyper_vector_size(plist_id, align);
@@ -599,7 +615,7 @@ public class TestH5Pfapl {
     }
     
     @Test
-    public void testH5P_cache() throws Throwable, HDF5LibraryException {
+    public void testH5P_cache() {
         long[] rdcc_nelmts = {0};
         long[] rdcc_nbytes = {0};
         double[] rdcc_w0 = {0};
@@ -626,7 +642,7 @@ public class TestH5Pfapl {
     }
     
     @Test
-    public void testH5P_chunk_cache() throws Throwable, HDF5LibraryException {
+    public void testH5P_chunk_cache() {
         long[] rdcc_nslots = {0};
         long[] rdcc_nbytes = {0};
         double[] rdcc_w0 = {0};
@@ -653,7 +669,7 @@ public class TestH5Pfapl {
     }
     
     @Test
-    public void testH5P_sieve_buf_size() throws Throwable, HDF5LibraryException {
+    public void testH5P_sieve_buf_size() {
         long buf_size = 0;
         try {
             buf_size = H5.H5Pget_sieve_buf_size(fapl_id);
@@ -676,7 +692,7 @@ public class TestH5Pfapl {
     }
     
     @Test
-    public void testH5P_gc_references() throws Throwable, HDF5LibraryException {
+    public void testH5P_gc_references() {
         boolean ret_val_id = false;
         try {
             H5.H5Pset_gc_references(fapl_id, true);
@@ -690,7 +706,7 @@ public class TestH5Pfapl {
     }
     
     @Test
-    public void testH5Pget_mdc_config() throws Throwable, HDF5LibraryException {
+    public void testH5Pget_mdc_config() {
         H5AC_cache_config_t cache_config = null;
         try {
             cache_config = H5.H5Pget_mdc_config(fapl_id);
@@ -703,7 +719,7 @@ public class TestH5Pfapl {
     }
     
     @Test
-    public void testH5Pset_mdc_config() throws Throwable, HDF5LibraryException {
+    public void testH5Pset_mdc_config() {
         H5AC_cache_config_t cache_config = null;
         try {
             cache_config = H5.H5Pget_mdc_config(fapl_id);
@@ -727,7 +743,7 @@ public class TestH5Pfapl {
     }
     
     @Test
-    public void testH5P_fapl_core() throws Throwable, HDF5LibraryException {
+    public void testH5P_fapl_core() {
         if (HDF5Constants.H5FD_CORE < 0)
             return;
         try {
@@ -753,7 +769,7 @@ public class TestH5Pfapl {
     }
     
     @Test
-    public void testH5P_fapl_family() throws Throwable, HDF5LibraryException {
+    public void testH5P_fapl_family() {
         if (HDF5Constants.H5FD_FAMILY < 0)
             return;
         try {
@@ -781,7 +797,7 @@ public class TestH5Pfapl {
     }
     
     @Test
-    public void testH5P_family_offset() throws Throwable, HDF5LibraryException {
+    public void testH5P_family_offset() {
         if (HDF5Constants.H5FD_FAMILY < 0)
             return;
         try {
@@ -814,7 +830,7 @@ public class TestH5Pfapl {
     }
     
     @Test
-    public void testH5Pset_fapl_sec2() throws Throwable, HDF5LibraryException {
+    public void testH5Pset_fapl_sec2() {
         if (HDF5Constants.H5FD_SEC2 < 0)
             return;
         try {
@@ -831,7 +847,7 @@ public class TestH5Pfapl {
     }
     
     @Test
-    public void testH5Pset_fapl_stdio() throws Throwable, HDF5LibraryException {
+    public void testH5Pset_fapl_stdio() {
         if (HDF5Constants.H5FD_STDIO < 0)
             return;
         try {
@@ -848,7 +864,7 @@ public class TestH5Pfapl {
     }
     
     @Test
-    public void testH5Pset_fapl_log() throws Throwable, HDF5LibraryException {
+    public void testH5Pset_fapl_log() {
         if (HDF5Constants.H5FD_LOG < 0)
             return;
         try {
@@ -867,7 +883,7 @@ public class TestH5Pfapl {
     }
     
     @Test
-    public void testH5P_fapl_muti_nulls() throws Throwable, HDF5LibraryException {
+    public void testH5P_fapl_muti_nulls() {
         if (HDF5Constants.H5FD_MULTI < 0)
             return;
         
@@ -898,7 +914,7 @@ public class TestH5Pfapl {
     }
     
     @Test
-    public void testH5P_fapl_muti_defaults() throws Throwable, HDF5LibraryException {
+    public void testH5P_fapl_muti_defaults() {
         if (HDF5Constants.H5FD_MULTI < 0)
             return;
         long HADDRMAX = HDF5Constants.H5FD_DEFAULT_HADDR_SIZE;
@@ -947,7 +963,7 @@ public class TestH5Pfapl {
     }
     
     @Test
-    public void testH5P_fapl_muti() throws Throwable, HDF5LibraryException {
+    public void testH5P_fapl_muti() {
         if (HDF5Constants.H5FD_MULTI < 0)
             return;
         long HADDRMAX = HDF5Constants.H5FD_DEFAULT_HADDR_SIZE;
@@ -1012,8 +1028,14 @@ public class TestH5Pfapl {
             fail("H5Pget_fapl_muti: " + err);
         }
         _createH5multiFile(fapl_id);
-        long file_size = H5.H5Fget_filesize(H5fid);
-        assertTrue("H5Pget_fapl_muti: file_size ", file_size >= HADDRMAX/4 || file_size <= HADDRMAX/2);
+        try {
+            long file_size = H5.H5Fget_filesize(H5fid);
+            assertTrue("H5Pget_fapl_muti: file_size ", file_size >= HADDRMAX/4 || file_size <= HADDRMAX/2);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5Pset_fapl_muti:H5Fget_filesize " + err);
+        }
         _createH5multiFileDS();
         deleteH5multifile();
         File file = new File(H5_MULTI_FILE+"-super.h5");
@@ -1055,7 +1077,7 @@ public class TestH5Pfapl {
     }
     
     @Test
-    public void testH5P_fapl_split() throws Throwable, HDF5LibraryException {
+    public void testH5P_fapl_split() {
         if (HDF5Constants.H5FD_MULTI < 0)
             return;
         
@@ -1105,7 +1127,7 @@ public class TestH5Pfapl {
     }
     
     @Test
-    public void testH5P_fapl_direct() throws Throwable, HDF5LibraryException {
+    public void testH5P_fapl_direct() {
         if (HDF5Constants.H5FD_DIRECT < 0)
             return;
         try {
@@ -1133,7 +1155,7 @@ public class TestH5Pfapl {
     }
     
     @Test
-    public void testH5Pset_fapl_windows() throws Throwable, HDF5LibraryException {
+    public void testH5Pset_fapl_windows() {
         if (HDF5Constants.H5FD_WINDOWS < 0)
             return;
         try {
@@ -1150,7 +1172,7 @@ public class TestH5Pfapl {
     }
     
     @Test
-    public void testH5Pmulti_transform() throws Throwable, HDF5LibraryException, IllegalArgumentException {
+    public void testH5Pmulti_transform() {
         if (HDF5Constants.H5FD_MULTI < 0)
             return;
         String f_to_c = "(5/9.0)*(x-32)";

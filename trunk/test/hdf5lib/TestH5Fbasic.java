@@ -34,8 +34,7 @@ public class TestH5Fbasic {
     }
 
     @Before
-    public void createH5file()
-            throws HDF5LibraryException, NullPointerException {
+    public void createH5file() throws HDF5LibraryException, NullPointerException {
         assertTrue("H5 open ids is 0",H5.getOpenIDCount()==0);
 
         H5fid = H5.H5Fcreate(H5_FILE, HDF5Constants.H5F_ACC_TRUNC,
@@ -70,13 +69,13 @@ public class TestH5Fbasic {
     }
 
     @Test(expected = HDF5LibraryException.class)
-    public void testH5Fcreate_EXCL() throws HDF5LibraryException, Throwable {
+    public void testH5Fcreate_EXCL() throws Throwable {
         H5.H5Fcreate(H5_FILE, HDF5Constants.H5F_ACC_EXCL,
                 HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
     }
 
     @Test(expected = HDF5LibraryException.class)
-    public void testH5Fopen_read_only() throws HDF5LibraryException, Throwable {
+    public void testH5Fopen_read_only() throws Throwable {
         int fid = -1;
 
         try {
@@ -111,7 +110,7 @@ public class TestH5Fbasic {
     }
 
     @Test(expected = HDF5LibraryException.class)
-    public void testH5Freopen_closed() throws HDF5LibraryException, Throwable {
+    public void testH5Freopen_closed() throws Throwable {
         int fid = -1;
         int fid2 = -1;
 
@@ -134,7 +133,7 @@ public class TestH5Fbasic {
     }
 
     @Test
-    public void testH5Freopen() throws HDF5LibraryException, Throwable {
+    public void testH5Freopen() {
         int fid = -1;
         int fid2 = -1;
 
@@ -188,7 +187,7 @@ public class TestH5Fbasic {
     }
 
     @Test(expected = HDF5LibraryException.class)
-    public void testH5Fclose_twice() throws HDF5LibraryException, Throwable {
+    public void testH5Fclose_twice() throws Throwable {
         int fid = -1;
 
         try {

@@ -65,13 +65,12 @@ public class TestH5Gbasic {
     }
 
     @Test(expected = HDF5LibraryException.class)
-    public void testH5Gclose_invalid() throws Throwable, HDF5LibraryException {
+    public void testH5Gclose_invalid() throws Throwable {
         H5.H5Gclose(-1);
     }
 
     @Test(expected = NullPointerException.class)
-    public void testH5Gcreate_null()
-            throws Throwable, HDF5LibraryException, NullPointerException {
+    public void testH5Gcreate_null() throws Throwable {
         int gid = -1;
 
         // it should fail because the group name is null
@@ -82,8 +81,7 @@ public class TestH5Gbasic {
     }
 
     @Test(expected = HDF5LibraryException.class)
-    public void testH5Gcreate_invalid()
-            throws Throwable, HDF5LibraryException, NullPointerException {
+    public void testH5Gcreate_invalid() throws Throwable {
         H5.H5Gcreate(-1, "Invalid ID", HDF5Constants.H5P_DEFAULT,
                     HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
     }
@@ -119,8 +117,7 @@ public class TestH5Gbasic {
     }
 
     @Test(expected = HDF5LibraryException.class)
-    public void testH5Gcreate_exists()
-            throws Throwable, HDF5LibraryException, NullPointerException {
+    public void testH5Gcreate_exists() throws Throwable {
         int gid = _createGroup(H5fid, "/testH5Gcreate");
         assertTrue(gid > 0);
 
@@ -149,8 +146,7 @@ public class TestH5Gbasic {
     }
 
     @Test(expected = NullPointerException.class)
-    public void testH5Gopen_null()
-            throws Throwable, HDF5LibraryException, NullPointerException {
+    public void testH5Gopen_null() throws Throwable {
         int gid = -1;
 
         gid = H5.H5Gopen(H5fid, null, HDF5Constants.H5P_DEFAULT);
@@ -159,14 +155,12 @@ public class TestH5Gbasic {
     }
 
     @Test(expected = HDF5LibraryException.class)
-    public void testH5Gopen_invalid()
-            throws Throwable, HDF5LibraryException, NullPointerException {
+    public void testH5Gopen_invalid() throws Throwable {
         H5.H5Gopen(-1, "Invalid ID", HDF5Constants.H5P_DEFAULT);
     }
 
     @Test(expected = HDF5LibraryException.class)
-    public void testH5Gopen_not_exists()
-            throws Throwable, HDF5LibraryException, NullPointerException {
+    public void testH5Gopen_not_exists() throws Throwable {
         int gid = -1;
 
          gid = H5.H5Gopen(H5fid, "Never_created", HDF5Constants.H5P_DEFAULT);
@@ -195,8 +189,7 @@ public class TestH5Gbasic {
     }
 
     @Test(expected = HDF5LibraryException.class)
-    public void testH5Gget_create_plist_invalid()
-            throws Throwable, HDF5LibraryException {
+    public void testH5Gget_create_plist_invalid() throws Throwable {
         H5.H5Gget_create_plist(-1);
     }
 
@@ -222,8 +215,7 @@ public class TestH5Gbasic {
     }
 
     @Test(expected = HDF5LibraryException.class)
-    public void testH5Gget_info_invalid()
-            throws Throwable, HDF5LibraryException {
+    public void testH5Gget_info_invalid() throws Throwable {
         H5.H5Gget_info(-1);
     }
 
@@ -247,20 +239,17 @@ public class TestH5Gbasic {
     }
 
     @Test(expected = NullPointerException.class)
-    public void testH5Gget_info_by_name_null()
-            throws Throwable, HDF5LibraryException, NullPointerException {
+    public void testH5Gget_info_by_name_null() throws Throwable {
         H5.H5Gget_info_by_name(-1, null, HDF5Constants.H5P_DEFAULT);
     }
 
     @Test(expected = HDF5LibraryException.class)
-    public void testH5Gget_info_by_name_invalid()
-            throws Throwable, HDF5LibraryException, NullPointerException {
+    public void testH5Gget_info_by_name_invalid() throws Throwable {
         H5.H5Gget_info_by_name(-1, "/testH5Gcreate", HDF5Constants.H5P_DEFAULT);
     }
 
     @Test(expected = HDF5LibraryException.class)
-    public void testH5Gget_info_by_name_not_exists()
-            throws Throwable, HDF5LibraryException, NullPointerException {
+    public void testH5Gget_info_by_name_not_exists() throws Throwable {
         H5.H5Gget_info_by_name(H5fid, "/testH5Gcreate",
                 HDF5Constants.H5P_DEFAULT);
     }
@@ -307,22 +296,19 @@ public class TestH5Gbasic {
     }
 
     @Test(expected = NullPointerException.class)
-    public void testH5Gget_info_by_idx_null()
-            throws Throwable, HDF5LibraryException, NullPointerException {
+    public void testH5Gget_info_by_idx_null() throws Throwable {
         H5.H5Gget_info_by_idx(-1, null, HDF5Constants.H5P_DEFAULT,
                 HDF5Constants.H5_ITER_INC, 1, HDF5Constants.H5P_DEFAULT);
     }
 
     @Test(expected = HDF5LibraryException.class)
-    public void testH5Gget_info_by_idx_invalid()
-            throws Throwable, HDF5LibraryException, NullPointerException {
+    public void testH5Gget_info_by_idx_invalid() throws Throwable {
         H5.H5Gget_info_by_idx(-1, "/testH5Gcreate", HDF5Constants.H5P_DEFAULT,
                 HDF5Constants.H5_ITER_INC, 1, HDF5Constants.H5P_DEFAULT);
     }
 
     @Test(expected = HDF5LibraryException.class)
-    public void testH5Gget_info_by_idx_not_exists()
-            throws Throwable, HDF5LibraryException, NullPointerException {
+    public void testH5Gget_info_by_idx_not_exists() throws Throwable {
         H5.H5Gget_info_by_idx(H5fid, "/testH5Gcreate",
                 HDF5Constants.H5_INDEX_NAME, HDF5Constants.H5_ITER_INC, 1,
                 HDF5Constants.H5P_DEFAULT);

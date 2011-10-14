@@ -15,20 +15,17 @@ public class TestH5Eregister {
     }
 
     @Test(expected = NullPointerException.class)
-    public void testH5Eregister_class_cls_name_null()
-            throws Throwable, NullPointerException {
+    public void testH5Eregister_class_cls_name_null() throws Throwable {
         H5.H5Eregister_class(null, "libname", "version");
     }
 
     @Test(expected = NullPointerException.class)
-    public void testH5Eregister_class_lib_name_null()
-            throws Throwable, NullPointerException {
+    public void testH5Eregister_class_lib_name_null() throws Throwable {
         H5.H5Eregister_class("clsname", null, "version");
     }
 
     @Test(expected = NullPointerException.class)
-    public void testH5Eregister_class_version_null()
-            throws Throwable, NullPointerException {
+    public void testH5Eregister_class_version_null() throws Throwable {
         H5.H5Eregister_class("clsname", "libname", null);
     }
 
