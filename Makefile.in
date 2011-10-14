@@ -144,32 +144,32 @@ jhdf-packages:
 	@if test -n "$(H4INC)" ; then $(MAKE) do-jhdf-packages; fi
 
 do-jhdf-packages: $(JHIPACKAGES)  
-	$(JAR) cf $(CLASS_DIR)/jhdf.jar $(JHICLASSES)
+	$(JAR) cf $(CLASS_DIR)/jhdf.jar -C $(CLASS_DIR) $(JHICLASSES)
 
 jhdf5-packages: $(JHI5PACKAGES)  
-	$(JAR) cf $(CLASS_DIR)/jhdf5.jar $(JHI5CLASSES)
+	$(JAR) cf $(CLASS_DIR)/jhdf5.jar -C $(CLASS_DIR) $(JHI5CLASSES)
 
 nc2-packages: $(NC2OBJPACKAGES)
 	-mkdir -p $(CLASS_DIR)/ext 
-	$(JAR) cf $(CLASS_DIR)/ext/nc2obj.jar $(NC2OBJCLASSES)
+	$(JAR) cf $(CLASS_DIR)/ext/nc2obj.jar -C $(CLASS_DIR) $(NC2OBJCLASSES)
 
 fits-packages: $(FITSOBJPACKAGES)
 	-mkdir -p $(CLASS_DIR)/ext 
-	$(JAR) cf $(CLASS_DIR)/ext/fitsobj.jar $(FITSOBJCLASSES)
+	$(JAR) cf $(CLASS_DIR)/ext/fitsobj.jar -C $(CLASS_DIR) $(FITSOBJCLASSES)
 
 jhdfobj-packages: $(HDFOBJPACKAGES)  
-	$(JAR) cf $(CLASS_DIR)/jhdfobj.jar $(HDFOBJCLASSES)
+	$(JAR) cf $(CLASS_DIR)/jhdfobj.jar -C $(CLASS_DIR) $(HDFOBJCLASSES)
 	@if test -n "$(H4INC)" ; then $(MAKE) do-jh4obj-packages ; fi
 	@if test -n "$(H5INC)" ; then $(MAKE) do-jh5obj-packages ; fi
 
 do-jh4obj-packages: $(H4OBJPACKAGES)  
-	$(JAR) cf $(CLASS_DIR)/jhdf4obj.jar $(H4OBJCLASSES)
+	$(JAR) cf $(CLASS_DIR)/jhdf4obj.jar -C $(CLASS_DIR) $(H4OBJCLASSES)
 
 do-jh5obj-packages: $(H5OBJPACKAGES)  
-	$(JAR) cf $(CLASS_DIR)/jhdf5obj.jar $(H5OBJCLASSES)
+	$(JAR) cf $(CLASS_DIR)/jhdf5obj.jar -C $(CLASS_DIR) $(H5OBJCLASSES)
 
 jhdfview-packages: $(HDFVIEWPACKAGES)  
-	$(JAR) cf $(CLASS_DIR)/jhdfview.jar $(HDFVIEWCLASSES) $(HDFVIEWICONS)
+	$(JAR) cf $(CLASS_DIR)/jhdfview.jar -C $(CLASS_DIR) $(HDFVIEWCLASSES) $(HDFVIEWICONS)
 
 classes: packages
 
@@ -273,12 +273,12 @@ install-lib: natives
 	-mkdir -p $(LIBDIR)/@JAVATARG@
 	@if test -n "$(H5INC)" ; then \
 	cp $(CLASS_DIR)/@JAVATARG@/libjhdf5.$(JSLEXT) $(LIBDIR)/@JAVATARG@ ; fi
-	@if test -n "$(H5INC)/../lib" ; then \
-	cp $(H5INC)/../lib/*.settings $(LIBDIR)/@JAVATARG@ ; fi
+#	@if test -n "$(H5INC)/../lib" ; then \
+#	cp $(H5INC)/../lib/*.settings $(LIBDIR)/@JAVATARG@ ; fi
 	@if test -n "$(H4INC)" ; then \
 	cp $(CLASS_DIR)/@JAVATARG@/libjhdf.$(JSLEXT) $(LIBDIR)/@JAVATARG@ ; fi
-	@if test -n "$(H4INC)/../lib" ; then \
-	cp $(H4INC)/../lib/*.settings $(LIBDIR)/@JAVATARG@ ; fi
+#	@if test -n "$(H4INC)/../lib" ; then \
+#	cp $(H4INC)/../lib/*.settings $(LIBDIR)/@JAVATARG@ ; fi
 	@if test -n "$(H45INC)" ; then \
 	cp $(CLASS_DIR)/@JAVATARG@/libjh4toh5.$(JSLEXT) $(LIBDIR)/@JAVATARG@ ; fi
 	@echo "Install Natives complete"
@@ -312,7 +312,7 @@ install-jhdf:
 
 do-install-jhdf: jhdf-packages
 	-mkdir -p $(LIBDIR);
-	$(JAR) cf $(JH45INSTALLDIR)/lib/jhdf.jar $(JHICLASSES)
+	$(JAR) cf $(JH45INSTALLDIR)/lib/jhdf.jar -C $(CLASS_DIR) $(JHICLASSES)
 	@echo "Install JHI complete"
 
 install-jhdf5: 
@@ -320,32 +320,32 @@ install-jhdf5:
 
 do-install-jhdf5: jhdf5-packages
 	-mkdir -p $(LIBDIR);
-	$(JAR) cf $(JH45INSTALLDIR)/lib/jhdf5.jar $(JHI5CLASSES)
+	$(JAR) cf $(JH45INSTALLDIR)/lib/jhdf5.jar -C $(CLASS_DIR) $(JHI5CLASSES)
 	@echo "Install JHI5 complete"
 
 install-jhdfobj: ncsa.hdf.object
 	-mkdir -p $(LIBDIR);
-	$(JAR) cf $(JH45INSTALLDIR)/lib/jhdfobj.jar $(HDFOBJCLASSES)
+	$(JAR) cf $(JH45INSTALLDIR)/lib/jhdfobj.jar -C $(CLASS_DIR) $(HDFOBJCLASSES)
 	@if test -n "$(H4INC)" ; then $(MAKE) do-install-jhdf4obj ; fi
 	@if test -n "$(H5INC)" ; then $(MAKE) do-install-jhdf5obj ; fi
 	@echo "Install HDFOBJ complete"
 
 do-install-jhdf4obj: ncsa.hdf.object.h4
 	-mkdir -p $(LIBDIR);
-	$(JAR) cf $(JH45INSTALLDIR)/lib/jhdf4obj.jar $(H4OBJCLASSES)
+	$(JAR) cf $(JH45INSTALLDIR)/lib/jhdf4obj.jar -C $(CLASS_DIR) $(H4OBJCLASSES)
 	@echo "Install JHDF4 complete"
 
 do-install-jhdf5obj: ncsa.hdf.object.h5
 	-mkdir -p $(LIBDIR);
-	$(JAR) cf $(JH45INSTALLDIR)/lib/jhdf5obj.jar $(H5OBJCLASSES)
+	$(JAR) cf $(JH45INSTALLDIR)/lib/jhdf5obj.jar -C $(CLASS_DIR) $(H5OBJCLASSES)
 	@echo "Install JHDF4 complete"
 
 install-jhdfview: ncsa.hdf.view
 	-mkdir -p $(LIBDIR);
-	$(JAR) cf $(JH45INSTALLDIR)/lib/jhdfview.jar $(HDFVIEWCLASSES) $(HDFVIEWICONS)
+	$(JAR) cf $(JH45INSTALLDIR)/lib/jhdfview.jar -C $(CLASS_DIR) $(HDFVIEWCLASSES) $(HDFVIEWICONS)
 	-mkdir -p $(LIBDIR)/ext
-	$(JAR) cf $(JH45INSTALLDIR)/lib/ext/nc2obj.jar $(NC2OBJCLASSES)
-	$(JAR) cf $(JH45INSTALLDIR)/lib/ext/fitsobj.jar $(FITSOBJCLASSES)
+	$(JAR) cf $(JH45INSTALLDIR)/lib/ext/nc2obj.jar -C $(CLASS_DIR) $(NC2OBJCLASSES)
+	$(JAR) cf $(JH45INSTALLDIR)/lib/ext/fitsobj.jar -C $(CLASS_DIR) $(FITSOBJCLASSES)
 	$(RM) -rf $(UGDIR);
 	-mkdir -p $(UGDIR);
 	cp -R docs/hdfview/UsersGuide/* $(UGDIR);	
@@ -611,25 +611,21 @@ ncsa.hdf.view: \
 #
 
 
-JHI5CLASSES= $(CLASS_DIR)/ncsa/hdf/hdf5lib/*.class \
-        $(CLASS_DIR)/ncsa/hdf/hdf5lib/callbacks/*.class \
-        $(CLASS_DIR)/ncsa/hdf/hdf5lib/structs/*.class \
-        $(CLASS_DIR)/ncsa/hdf/hdf5lib/exceptions/*.class
+JHI5CLASSES= ncsa/hdf/hdf5lib
 
+JHICLASSES= ncsa/hdf/hdflib
 
-JHICLASSES= $(CLASS_DIR)/ncsa/hdf/hdflib/*.class
+HDFOBJCLASSES= ncsa/hdf/object
 
-HDFOBJCLASSES= $(CLASS_DIR)/ncsa/hdf/object/*.class
+H4OBJCLASSES= ncsa/hdf/object/h4
 
-H4OBJCLASSES= $(CLASS_DIR)/ncsa/hdf/object/h4/*.class
+H5OBJCLASSES= ncsa/hdf/object/h5
 
-H5OBJCLASSES= $(CLASS_DIR)/ncsa/hdf/object/h5/*.class
+NC2OBJCLASSES= ncsa/hdf/object/nc2
 
-NC2OBJCLASSES= $(CLASS_DIR)/ncsa/hdf/object/nc2/*.class
+FITSOBJCLASSES= ./ncsa/hdf/object/fits
 
-FITSOBJCLASSES= $(CLASS_DIR)/ncsa/hdf/object/fits/*.class
-
-HDFVIEWCLASSES=$(CLASS_DIR)/ncsa/hdf/view/*.class
+HDFVIEWCLASSES=./ncsa/hdf/view
 
 HDFVIEWICONS= ./ncsa/hdf/view/icons/*.gif \
         ./ncsa/hdf/view/*.html
