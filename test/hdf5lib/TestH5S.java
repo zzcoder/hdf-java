@@ -352,4 +352,70 @@ public class TestH5S {
         }
     }
 
+    @Test
+    public void testH5Sget_select_npoints() {
+        long coord[][] = {{0,1},{2,4},{5,6}}; /* Coordinates for point selection */
+        long num_elements = -1;
+        try {
+            H5.H5Sselect_elements(H5sid, HDF5Constants.H5S_SELECT_SET, 3, coord);
+            num_elements = H5.H5Sget_select_npoints(H5sid);
+            assertTrue("H5.H5Sget_select_npoints: "+num_elements, 3 == num_elements);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Sget_select_npoints: " + err);
+        }
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testH5Sget_select_elem_pointlist_invalid() throws Throwable {
+        long coord[][] = {{0,1},{2,4},{5,6}}; /* Coordinates for point selection */
+        long getcoord[] = {-1,-1}; /* Coordinates for get point selection */
+        try {
+            H5.H5Sselect_elements(H5sid, HDF5Constants.H5S_SELECT_SET, 3, coord);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Sget_select_elem_pointlist: " + err);
+        }
+        H5.H5Sget_select_elem_pointlist(H5sid, 0, 3, getcoord);
+    }
+
+    @Test
+    public void testH5Sget_select_elem_pointlist() {
+        long coord[][] = {{0,1},{2,4},{5,6}}; /* Coordinates for point selection */
+        long getcoord[] = {-1,-1,-1,-1,-1,-1}; /* Coordinates for get point selection */
+        try {
+            H5.H5Sselect_elements(H5sid, HDF5Constants.H5S_SELECT_SET, 3, coord);
+            H5.H5Sget_select_elem_pointlist(H5sid, 0, 3, getcoord);
+            assertTrue("H5.H5Sget_select_elem_pointlist", coord[0][0] == getcoord[0]);
+            assertTrue("H5.H5Sget_select_elem_pointlist", coord[0][1] == getcoord[1]);
+            assertTrue("H5.H5Sget_select_elem_pointlist", coord[1][0] == getcoord[2]);
+            assertTrue("H5.H5Sget_select_elem_pointlist", coord[1][1] == getcoord[3]);
+            assertTrue("H5.H5Sget_select_elem_pointlist", coord[2][0] == getcoord[4]);
+            assertTrue("H5.H5Sget_select_elem_pointlist", coord[2][1] == getcoord[5]);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Sget_select_elem_pointlist: " + err);
+        }
+    }
+
+    @Test
+    public void testH5Sget_select_bounds() {
+        long lowbounds[] = {-1,-1}; 
+        long hibounds[] = {-1,-1}; 
+        try {
+            H5.H5Sget_select_bounds(H5sid, lowbounds, hibounds);
+            assertTrue("H5.H5Sget_select_bounds", 0 == lowbounds[0]);
+            assertTrue("H5.H5Sget_select_bounds", 0 == lowbounds[1]);
+            assertTrue("H5.H5Sget_select_bounds", (H5dims[0]-1) == hibounds[0]);
+            assertTrue("H5.H5Sget_select_bounds", (H5dims[1]-1) == hibounds[1]);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Sget_select_bounds: " + err);
+        }
+    }
+
 }

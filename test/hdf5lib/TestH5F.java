@@ -64,33 +64,6 @@ public class TestH5F {
         _deleteFile(H5_FILE);
     }
 
-    // private final int _createGroup(int fid, String name) {
-    // int gid = -1;
-    // try {
-    // gid = H5.H5Gcreate2(fid, name, HDF5Constants.H5P_DEFAULT,
-    // HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
-    // }
-    // catch (Throwable err) {
-    // fail("H5.H5Gcreate: "+err);
-    // }
-    // assertTrue(gid > 0);
-    //
-    // return gid;
-    // }
-    //
-    // private final int _openGroup(int fid, String name) {
-    // int gid = -1;
-    // try {
-    // gid = H5.H5Gopen2(fid, name, HDF5Constants.H5P_DEFAULT);
-    // }
-    // catch (Throwable err) {
-    // gid = -1;
-    // }
-    //
-    // return gid;
-    //
-    // }
-
     @Test
     public void testH5Fget_create_plist() {
         int plist = -1;
@@ -106,8 +79,7 @@ public class TestH5F {
     }
 
     @Test(expected = HDF5LibraryException.class)
-    public void testH5Fget_create_plist_closed()
-            throws HDF5LibraryException, Throwable {
+    public void testH5Fget_create_plist_closed() throws Throwable {
         int fid = -1;
 
         try {
@@ -142,8 +114,7 @@ public class TestH5F {
     }
 
     @Test(expected = HDF5LibraryException.class)
-    public void testH5Fget_access_plist_closed()
-            throws HDF5LibraryException, Throwable {
+    public void testH5Fget_access_plist_closed() throws Throwable {
         int fid = -1;
 
         try {

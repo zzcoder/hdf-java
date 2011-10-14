@@ -48,8 +48,7 @@ public class TestH5Obasic {
     }
 
     @Test(expected = HDF5LibraryException.class)
-    public void testH5Oopen_not_exists()
-            throws Throwable, HDF5LibraryException, NullPointerException {
+    public void testH5Oopen_not_exists() throws Throwable {
         int oid = -1;
 
         oid = H5.H5Oopen(H5fid, "Never_created", HDF5Constants.H5P_DEFAULT);
@@ -58,7 +57,7 @@ public class TestH5Obasic {
     }
 
     @Test
-    public void testH5Oget_info_dataset() throws Throwable, HDF5LibraryException, NullPointerException {
+    public void testH5Oget_info_dataset() {
         int oid = -1;
         H5O_info_t obj_info = null;
         
@@ -77,7 +76,7 @@ public class TestH5Obasic {
     }
 
     @Test
-    public void testH5Oget_info_hardlink() throws Throwable, HDF5LibraryException, NullPointerException {
+    public void testH5Oget_info_hardlink() {
         int oid = -1;
         H5O_info_t obj_info = null;
         try {
@@ -95,7 +94,7 @@ public class TestH5Obasic {
     }
 
     @Test
-    public void testH5Oget_info_group() throws Throwable, HDF5LibraryException, NullPointerException {
+    public void testH5Oget_info_group() {
         int oid = -1;
         H5O_info_t obj_info = null;
         try {
@@ -113,7 +112,7 @@ public class TestH5Obasic {
     }
 
     @Test
-    public void testH5Oget_info_datatype() throws Throwable, HDF5LibraryException, NullPointerException {
+    public void testH5Oget_info_datatype() {
         int oid = -1;
         H5O_info_t obj_info = null;
         try {
@@ -131,18 +130,17 @@ public class TestH5Obasic {
     }
 
     @Test(expected = HDF5LibraryException.class)
-    public void testH5Oget_info_by_name_not_exist_name() throws Throwable, HDF5LibraryException, NullPointerException {
+    public void testH5Oget_info_by_name_not_exist_name() throws Throwable {
         H5.H5Oget_info_by_name(H5fid, "None", HDF5Constants.H5P_DEFAULT);
     }
 
     @Test(expected = HDF5LibraryException.class)
-    public void testH5Oget_info_by_name_not_exists()
-            throws Throwable, HDF5LibraryException, NullPointerException {
+    public void testH5Oget_info_by_name_not_exists() throws Throwable {
         H5.H5Oget_info_by_name(H5fid, "Bogus", HDF5Constants.H5P_DEFAULT);
     }
 
     @Test
-    public void testH5Oget_info_by_name_dataset() throws Throwable, HDF5LibraryException, NullPointerException {
+    public void testH5Oget_info_by_name_dataset() {
         H5O_info_t obj_info = null;
         
         try {
@@ -158,7 +156,7 @@ public class TestH5Obasic {
     }
 
     @Test
-    public void testH5Oget_info_by_name_hardlink() throws Throwable, HDF5LibraryException, NullPointerException {
+    public void testH5Oget_info_by_name_hardlink() {
         H5O_info_t obj_info = null;
         try {
             obj_info = H5.H5Oget_info_by_name(H5fid, "L1", HDF5Constants.H5P_DEFAULT);
@@ -173,7 +171,7 @@ public class TestH5Obasic {
     }
 
     @Test
-    public void testH5Oget_info_by_name_group() throws Throwable, HDF5LibraryException, NullPointerException {
+    public void testH5Oget_info_by_name_group() {
         H5O_info_t obj_info = null;
         try {
             obj_info = H5.H5Oget_info_by_name(H5fid, "G1", HDF5Constants.H5P_DEFAULT);
@@ -188,7 +186,7 @@ public class TestH5Obasic {
     }
 
     @Test
-    public void testH5Oget_info_by_name_datatype() throws Throwable, HDF5LibraryException, NullPointerException {
+    public void testH5Oget_info_by_name_datatype() {
         H5O_info_t obj_info = null;
         try {
             obj_info = H5.H5Oget_info_by_name(H5fid, "DT1", HDF5Constants.H5P_DEFAULT);
@@ -203,27 +201,27 @@ public class TestH5Obasic {
     }
 
     @Test(expected = HDF5LibraryException.class)
-    public void testH5Oget_info_by_idx_name_not_exist_name() throws Throwable, HDF5LibraryException, NullPointerException {
+    public void testH5Oget_info_by_idx_name_not_exist_name() throws Throwable {
         H5.H5Oget_info_by_idx(H5fid, "None", HDF5Constants.H5_INDEX_NAME, HDF5Constants.H5_ITER_INC, 0, HDF5Constants.H5P_DEFAULT);
     }
 
     @Test(expected = HDF5LibraryException.class)
-    public void testH5Oget_info_by_idx_name_not_exist_create() throws Throwable, HDF5LibraryException, NullPointerException {
+    public void testH5Oget_info_by_idx_name_not_exist_create() throws Throwable {
         H5.H5Oget_info_by_idx(H5fid, "None", HDF5Constants.H5_INDEX_CRT_ORDER, HDF5Constants.H5_ITER_INC, 0, HDF5Constants.H5P_DEFAULT);
     }
 
     @Test(expected = HDF5LibraryException.class)
-    public void testH5Oget_info_by_idx_not_exist_name() throws Throwable, HDF5LibraryException, NullPointerException {
+    public void testH5Oget_info_by_idx_not_exist_name() throws Throwable {
         H5.H5Oget_info_by_idx(H5fid, "/", HDF5Constants.H5_INDEX_NAME, HDF5Constants.H5_ITER_INC, 5, HDF5Constants.H5P_DEFAULT);
     }
 
     @Test(expected = HDF5LibraryException.class)
-    public void testH5Oget_info_by_idx_not_exist_create() throws Throwable, HDF5LibraryException, NullPointerException {
+    public void testH5Oget_info_by_idx_not_exist_create() throws Throwable {
         H5.H5Oget_info_by_idx(H5fid, "/", HDF5Constants.H5_INDEX_CRT_ORDER, HDF5Constants.H5_ITER_INC, 5, HDF5Constants.H5P_DEFAULT);
     }
 
     @Test
-    public void testH5Oget_info_by_idx_n0() throws Throwable, HDF5LibraryException, NullPointerException {
+    public void testH5Oget_info_by_idx_n0() {
         H5O_info_t obj_info = null;
         try {
             obj_info = H5.H5Oget_info_by_idx(H5fid, "/", HDF5Constants.H5_INDEX_NAME, HDF5Constants.H5_ITER_INC, 0, HDF5Constants.H5P_DEFAULT);
@@ -238,7 +236,7 @@ public class TestH5Obasic {
     }
 
     @Test
-    public void testH5Oget_info_by_idx_n3() throws Throwable, HDF5LibraryException, NullPointerException {
+    public void testH5Oget_info_by_idx_n3() {
         H5O_info_t obj_info = null;
         try {
             obj_info = H5.H5Oget_info_by_idx(H5fid, "/", HDF5Constants.H5_INDEX_NAME, HDF5Constants.H5_ITER_INC, 3, HDF5Constants.H5P_DEFAULT);
@@ -253,7 +251,7 @@ public class TestH5Obasic {
     }
 
     @Test
-    public void testH5Ovisit() throws Throwable, HDF5LibraryException, NullPointerException {
+    public void testH5Ovisit() {
         class idata {
             public String link_name = null;
             public int link_type = -1;
@@ -292,7 +290,7 @@ public class TestH5Obasic {
     }
 
     @Test
-    public void testH5Ovisit_by_name() throws Throwable, HDF5LibraryException, NullPointerException {
+    public void testH5Ovisit_by_name() {
         class idata {
             public String link_name = null;
             public int link_type = -1;

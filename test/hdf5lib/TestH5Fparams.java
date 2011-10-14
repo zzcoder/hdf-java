@@ -5,7 +5,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
-import java.io.IOException;
 
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
@@ -22,45 +21,40 @@ public class TestH5Fparams {
     }
 
     @Test(expected = NullPointerException.class)
-    public void testH5Fcreate_null() throws Throwable, NullPointerException {
+    public void testH5Fcreate_null() throws Throwable {
         H5.H5Fcreate(null, HDF5Constants.H5F_ACC_TRUNC,
                 HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
     }
 
     @Test(expected = NullPointerException.class)
-    public void testH5Fopen_null() throws Throwable, NullPointerException {
+    public void testH5Fopen_null() throws Throwable {
         H5.H5Fopen(null, HDF5Constants.H5F_ACC_RDWR, HDF5Constants.H5P_DEFAULT);
     }
 
     @Test(expected = NullPointerException.class)
-    public void testH5Fis_hdf5_null()
-            throws HDF5LibraryException, Throwable, NullPointerException {
+    public void testH5Fis_hdf5_null() throws Throwable {
         H5.H5Fis_hdf5(null);
     }
 
     @Test(expected = NullPointerException.class)
-    public void testH5Fmount_null()
-            throws HDF5LibraryException, Throwable, NullPointerException {
+    public void testH5Fmount_null() throws Throwable {
         H5.H5Fmount(-1, null, -1, HDF5Constants.H5P_DEFAULT);
     }
 
     @Test(expected = NullPointerException.class)
-    public void testH5Funmount_null()
-            throws HDF5LibraryException, Throwable, NullPointerException {
+    public void testH5Funmount_null() throws Throwable {
         H5.H5Funmount(-1, null);
     }
 
     @Test
-    public void testH5Fis_hdf5_text() throws IOException, SecurityException {
-
-        File txtFile = new File("test.txt");
-
-        if (!txtFile.exists())
-            txtFile.createNewFile();
-
+    public void testH5Fis_hdf5_text() {
+        File txtFile = null;
         boolean isH5 = false;
 
         try {
+            txtFile = new File("test.txt");
+            if (!txtFile.exists())
+                txtFile.createNewFile();
             isH5 = H5.H5Fis_hdf5("test.txt");
         }
         catch (Throwable err) {
@@ -78,20 +72,27 @@ public class TestH5Fparams {
     }
 
     @Test(expected = HDF5LibraryException.class)
-    public void testH5Fclose_negative() throws HDF5LibraryException, Throwable {
+    public void testH5Fclose_negative() throws Throwable {
         // cannot close a file with negative id.
         H5.H5Fclose(-1);
     }
 
     @Test
-    public void testH5Fcreate()
-            throws HDF5LibraryException, NullPointerException {
-        int fid = H5.H5Fcreate("test.h5", HDF5Constants.H5F_ACC_TRUNC,
+    public void testH5Fcreate() {
+        int fid = -1;
+        File file = null;
+
+        try {
+            fid = H5.H5Fcreate("test.h5", HDF5Constants.H5F_ACC_TRUNC,
                 HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
-        if (fid > 0) {
-            H5.H5Fclose(fid);
+            if (fid > 0) {
+                H5.H5Fclose(fid);
+            }
+            file = new File("test.h5");
         }
-        File file = new File("test.h5");
+        catch (Throwable err) {
+            fail("H5.H5Fopen: " + err);
+        }
 
         if (file.exists()) {
             try {

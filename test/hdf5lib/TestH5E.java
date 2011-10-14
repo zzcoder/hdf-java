@@ -79,8 +79,7 @@ public class TestH5E {
     }
 
     @Test(expected = NullPointerException.class)
-    public void testH5Ecreate_msg_name_null()
-            throws Throwable, NullPointerException {
+    public void testH5Ecreate_msg_name_null() throws Throwable {
         H5.H5Ecreate_msg(hdf_java_classid, HDF5Constants.H5E_MAJOR, null);
     }
 

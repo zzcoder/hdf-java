@@ -46,7 +46,7 @@ public class TestH5Lbasic {
     }
 
     @Test
-    public void testH5Lexists() throws Throwable, HDF5LibraryException, NullPointerException {
+    public void testH5Lexists() {
         boolean link_exists = false;
         try {
             link_exists = H5.H5Lexists(H5fid, "None", HDF5Constants.H5P_DEFAULT);
@@ -75,12 +75,12 @@ public class TestH5Lbasic {
     }
 
     @Test(expected = HDF5LibraryException.class)
-    public void testH5Lget_info_not_exist() throws Throwable, HDF5LibraryException, NullPointerException {
+    public void testH5Lget_info_not_exist() throws Throwable {
         H5.H5Lget_info(H5fid, "None", HDF5Constants.H5P_DEFAULT);
     }
 
     @Test
-    public void testH5Lget_info_dataset() throws Throwable, HDF5LibraryException, NullPointerException {
+    public void testH5Lget_info_dataset() {
         H5L_info_t link_info = null;
         try {
             link_info = H5.H5Lget_info(H5fid, "DS1", HDF5Constants.H5P_DEFAULT);
@@ -95,7 +95,7 @@ public class TestH5Lbasic {
     }
 
     @Test
-    public void testH5Lget_info_hardlink() throws Throwable, HDF5LibraryException, NullPointerException {
+    public void testH5Lget_info_hardlink() {
         H5L_info_t link_info = null;
         try {
             link_info = H5.H5Lget_info(H5fid, "L1", HDF5Constants.H5P_DEFAULT);
@@ -111,27 +111,27 @@ public class TestH5Lbasic {
     }
 
     @Test(expected = HDF5LibraryException.class)
-    public void testH5Lget_info_by_idx_name_not_exist_name() throws Throwable, HDF5LibraryException, NullPointerException {
+    public void testH5Lget_info_by_idx_name_not_exist_name() throws Throwable {
         H5.H5Lget_info_by_idx(H5fid, "None", HDF5Constants.H5_INDEX_NAME, HDF5Constants.H5_ITER_INC, 0, HDF5Constants.H5P_DEFAULT);
     }
 
     @Test(expected = HDF5LibraryException.class)
-    public void testH5Lget_info_by_idx_name_not_exist_create() throws Throwable, HDF5LibraryException, NullPointerException {
+    public void testH5Lget_info_by_idx_name_not_exist_create() throws Throwable {
         H5.H5Lget_info_by_idx(H5fid, "None", HDF5Constants.H5_INDEX_CRT_ORDER, HDF5Constants.H5_ITER_INC, 0, HDF5Constants.H5P_DEFAULT);
     }
 
     @Test(expected = HDF5LibraryException.class)
-    public void testH5Lget_info_by_idx_not_exist_name() throws Throwable, HDF5LibraryException, NullPointerException {
+    public void testH5Lget_info_by_idx_not_exist_name() throws Throwable {
         H5.H5Lget_info_by_idx(H5fid, "/", HDF5Constants.H5_INDEX_NAME, HDF5Constants.H5_ITER_INC, 5, HDF5Constants.H5P_DEFAULT);
     }
 
     @Test(expected = HDF5LibraryException.class)
-    public void testH5Lget_info_by_idx_not_exist_create() throws Throwable, HDF5LibraryException, NullPointerException {
+    public void testH5Lget_info_by_idx_not_exist_create() throws Throwable {
         H5.H5Lget_info_by_idx(H5fid, "/", HDF5Constants.H5_INDEX_CRT_ORDER, HDF5Constants.H5_ITER_INC, 5, HDF5Constants.H5P_DEFAULT);
     }
 
     @Test
-    public void testH5Lget_info_by_idx_n0() throws Throwable, HDF5LibraryException, NullPointerException {
+    public void testH5Lget_info_by_idx_n0() {
         H5L_info_t link_info = null;
         try {
             link_info = H5.H5Lget_info_by_idx(H5fid, "/", HDF5Constants.H5_INDEX_NAME, HDF5Constants.H5_ITER_INC, 0, HDF5Constants.H5P_DEFAULT);
@@ -146,7 +146,7 @@ public class TestH5Lbasic {
     }
 
     @Test
-    public void testH5Lget_info_by_idx_n3() throws Throwable, HDF5LibraryException, NullPointerException {
+    public void testH5Lget_info_by_idx_n3() {
         H5L_info_t link_info = null;
         try {
             link_info = H5.H5Lget_info_by_idx(H5fid, "/", HDF5Constants.H5_INDEX_NAME, HDF5Constants.H5_ITER_INC, 3, HDF5Constants.H5P_DEFAULT);
@@ -161,12 +161,12 @@ public class TestH5Lbasic {
     }
 
     @Test(expected = HDF5LibraryException.class)
-    public void testH5Lget_name_by_idx_not_exist() throws Throwable, HDF5LibraryException, NullPointerException {
+    public void testH5Lget_name_by_idx_not_exist() throws Throwable {
         H5.H5Lget_name_by_idx(H5fid, "None", HDF5Constants.H5_INDEX_CRT_ORDER, HDF5Constants.H5_ITER_INC, 0, HDF5Constants.H5P_DEFAULT);
     }
 
     @Test
-    public void testH5Lget_name_by_idx_n0() throws Throwable, HDF5LibraryException, NullPointerException {
+    public void testH5Lget_name_by_idx_n0() {
         String link_name = null;
         try {
             link_name = H5.H5Lget_name_by_idx(H5fid, "/", HDF5Constants.H5_INDEX_NAME, HDF5Constants.H5_ITER_INC, 0, HDF5Constants.H5P_DEFAULT);
@@ -180,7 +180,7 @@ public class TestH5Lbasic {
     }
 
     @Test
-    public void testH5Lget_name_by_idx_n3() throws Throwable, HDF5LibraryException, NullPointerException {
+    public void testH5Lget_name_by_idx_n3() {
         String link_name = null;
         try {
             link_name = H5.H5Lget_name_by_idx(H5fid, "/", HDF5Constants.H5_INDEX_NAME, HDF5Constants.H5_ITER_INC, 3, HDF5Constants.H5P_DEFAULT);
@@ -194,7 +194,7 @@ public class TestH5Lbasic {
     }
 
     @Test
-    public void testH5Lvisit() throws Throwable, HDF5LibraryException, NullPointerException {
+    public void testH5Lvisit() {
         class idata {
             public String link_name = null;
             public int link_type = -1;
@@ -232,7 +232,7 @@ public class TestH5Lbasic {
     }
 
     @Test
-    public void testH5Lvisit_by_name() throws Throwable, HDF5LibraryException, NullPointerException {
+    public void testH5Lvisit_by_name() {
         class idata {
             public String link_name = null;
             public int link_type = -1;
@@ -266,7 +266,7 @@ public class TestH5Lbasic {
     }
 
     @Test
-    public void testH5Literate() throws Throwable, HDF5LibraryException, NullPointerException {
+    public void testH5Literate() {
         class idata {
             public String link_name = null;
             public int link_type = -1;
@@ -303,7 +303,7 @@ public class TestH5Lbasic {
     }
 
     @Test
-    public void testH5Literate_by_name() throws Throwable, HDF5LibraryException, NullPointerException {
+    public void testH5Literate_by_name() {
         class idata {
             public String link_name = null;
             public int link_type = -1;
