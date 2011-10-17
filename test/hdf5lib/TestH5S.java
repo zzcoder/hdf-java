@@ -383,7 +383,7 @@ public class TestH5S {
 
     @Test
     public void testH5Sget_select_elem_pointlist() {
-        long coord[][] = {{0,1},{2,4},{5,6}}; /* Coordinates for point selection */
+        long coord[][] = {{0,1},{2,3},{4,5}}; /* Coordinates for point selection */
         long getcoord[] = {-1,-1,-1,-1,-1,-1}; /* Coordinates for get point selection */
         try {
             H5.H5Sselect_elements(H5sid, HDF5Constants.H5S_SELECT_SET, 3, coord);
@@ -415,6 +415,76 @@ public class TestH5S {
         catch (Throwable err) {
             err.printStackTrace();
             fail("H5.H5Sget_select_bounds: " + err);
+        }
+    }
+
+    @Test
+    public void testH5Soffset_simple() {
+        long coord[][] = {{2,2},{2,4},{4,2},{4,4}}; /* Coordinates for point selection */
+        long lowbounds[] = {-1,-1}; 
+        long hibounds[] = {-1,-1}; 
+        try {
+            H5.H5Sselect_elements(H5sid, HDF5Constants.H5S_SELECT_SET, 4, coord);
+            H5.H5Sget_select_bounds(H5sid, lowbounds, hibounds);
+            assertTrue("H5.H5Sget_select_bounds", 2 == lowbounds[0]);
+            assertTrue("H5.H5Sget_select_bounds", 2 == lowbounds[1]);
+            assertTrue("H5.H5Sget_select_bounds", (H5dims[0]-1) == hibounds[0]);
+            assertTrue("H5.H5Sget_select_bounds", (H5dims[1]-1) == hibounds[1]);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Sget_select_bounds: " + err);
+        }
+        try {
+            long offset[] = {-1,-1};
+            H5.H5Soffset_simple(H5sid, offset);
+            H5.H5Sget_select_bounds(H5sid, lowbounds, hibounds);
+            assertTrue("H5.H5Sget_select_bounds", 1 == lowbounds[0]);
+            assertTrue("H5.H5Sget_select_bounds", 1 == lowbounds[1]);
+            assertTrue("H5.H5Sget_select_bounds", (H5dims[0]-2) == hibounds[0]);
+            assertTrue("H5.H5Sget_select_bounds", (H5dims[1]-2) == hibounds[1]);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Soffset_simple: " + err);
+        }
+    }
+
+    @Test
+    public void testH5Sget_select_hyper() {
+        int space1 = -1;
+        long start[] = {0,0}; 
+        long stride[] = {1,1}; 
+        long count[] = {1,1}; 
+        long block[] = {4,4}; 
+        long nblocks;   // Number of hyperslab blocks 
+        long blocks[] = {-1, -1, -1, -1, -1, -1, -1, -1};    // List of blocks
+        try {
+            // Copy "all" selection & space
+            space1 = H5.H5Scopy(H5sid);
+            assertTrue("H5.H5Scopy", H5sid > 0);
+            // 'AND' "all" selection with another hyperslab
+            H5.H5Sselect_hyperslab(space1, HDF5Constants.H5S_SELECT_AND, start, stride, count, block);
+    
+            // Verify that there is only one block
+            nblocks = H5.H5Sget_select_hyper_nblocks(space1);
+            assertTrue("H5Sget_select_hyper_nblocks", nblocks == 1);
+    
+            // Retrieve the block defined
+            H5.H5Sget_select_hyper_blocklist(space1, 0, nblocks, blocks);
+    
+            // Verify that the correct block is defined 
+            assertTrue("H5.H5Sget_select_hyper_blocklist", start[0] == blocks[0]);
+            assertTrue("H5.H5Sget_select_hyper_blocklist", start[1] == blocks[1]);
+            assertTrue("H5.H5Sget_select_hyper_blocklist", (block[0]-1) == blocks[2]);
+            assertTrue("H5.H5Sget_select_hyper_blocklist", (block[1]-1) == blocks[3]);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Sget_select_bounds: " + err);
+        }
+        finally {
+            try {H5.H5Sclose(space1);} catch (Exception ex) {}
         }
     }
 
