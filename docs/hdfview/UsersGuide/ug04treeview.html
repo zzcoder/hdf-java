@@ -150,20 +150,39 @@ number of elements to move from the start location in each dimension.
 Stride values of 0 are not allowed. If the stride parameter is NULL, a contiguous
 hyperslab is selected (as if each value in the stride array was set to 
 all 1's).</p>
-<center>
-<p><img src="images/set_bitmask.png" />
-<br /><b>The display option</b></p></center>
-
-<p>
-The &ldquo;Set Bitmask&rdquo; option allows to set bitmask at a particular 
-bit value. For example, if you apply bitmask at 0 bit, the the image 
-displayed is shown below</p>
-<center>
-<p><img src="images/bitmask_image.png" />
-<br /><b>The image after applying bitmask</b></p></center>
 
 <h2>
-<a name="ug04metadata"></a>4.4 Display Metadata and Attributes</h2>
+<a name="ug04bitmask"></a>4.4 Show Bit Values</h2>
+
+<p />
+HDFVIew allows users to view bit values of 8-bit/16-bit integers in two ways: 
+<ul>
+	<li> applying a bitmask to data values </li>
+	<li> showing values of selected bits</li>
+</ul>
+
+<p />
+The figure below shows tha GUI layout of the two options:
+<center>
+</p><img src="images/bitmask_options.png" />
+<br /><b>The bitmask options</b></p></center>
+<p />
+Applying a bitmask means to use the bitwise operation “AND” to the original data. For example,
+<br /><img src="images/bitmask_and.png" />
+
+<P />
+Showing values of selected bits means to apply the bitmask to the data and throw 
+away any unnecessary bits that are not selected by the bitmask, i.e. the “0” bits 
+in the bitmask. In most of the cases, this will be the beginning and ending “0” bits 
+in the bitmask. For example,  
+<br /><img src="images/bitmask_extract.png" />
+<p />
+For the current implementation, only contiguous bits are allowed when the option of 
+"Show Value of Selected Bits" is selected.
+<p />
+
+<h2>
+<a name="ug04metadata"></a>4.5 Display Metadata and Attributes</h2>
 <p>
 The metadata dialog box appears by right-clicking the object (icon) in the tree 
 or by selecting the &ldquo;Properties&rdquo; command from the 
@@ -206,7 +225,7 @@ of the attribute display.</p>
 <br /><b>The Attributes tab</b></p></center>
 
 <h2>
-<a name="ug04edit"></a>4.5 Edit File and File Structure</h2>
+<a name="ug04edit"></a>4.6 Edit File and File Structure</h2>
 <p>
 The HDFView allows you to create and save a file and to add and delete objects in the
 file. <b>Users should be aware that all the changes are made to the actual stored
@@ -214,7 +233,7 @@ file. This version does not support the undo operation; editing results cannot
 be automatically recovered</b>.</p>
 
 <h3>
-<a name="ug04file"></a>4.5.1 Create and Save File</h3>
+<a name="ug04file"></a>4.6.1 Create and Save File</h3>
 <p>
 The file creation dialog box appears when you choose the 
 &ldquo;New HDF4/5&rdquo; command from the File menu. Choose the path and the 
@@ -237,7 +256,7 @@ can not be updated.</b> For HDF4, a new file is the exact copy, same file
 content and file size.</p>
 
 <h3>
-<a name="ug04libversion"></a>4.5.2 Setting the Library Version Bounds</h3>
+<a name="ug04libversion"></a>4.6.2 Setting the Library Version Bounds</h3>
 <p>The library version bounds of an HDF5 file can be set by right click 
 the file from treeview, and select &ldquo;Set Lib version bounds&rdquo; 
 from the Object menu and set the earliest version and latest version. 
@@ -249,7 +268,7 @@ the library versions that had been set earlier.</p>
 <br /><b>Setting the library version bounds of an HDF5 file</b></p></center>
 
 <h3>
-<a name="ug04add"></a>4.5.3 Add and Delete Object</h3>
+<a name="ug04add"></a>4.6.3 Add and Delete Object</h3>
 <p>
 To create a new group, select the &ldquo;New Group&rdquo; command from the 
 Object menu. Then, give the name of the new group and the parent group to 
@@ -333,7 +352,7 @@ file into a new file and rename the new file to the current file.</p>
 
 
 <h3>
-<a name="ug04copy"></a>4.5.4 Copy and Paste Object</h3>
+<a name="ug04copy"></a>4.6.4 Copy and Paste Object</h3>
 <p>
 HDFView allows you to copy an object and paste it in the same file or a different file
 of the same type. To copy and paste an HDF5 object from the tree, select
@@ -360,7 +379,7 @@ Copying a group will also copy all the descendents of the group. Copying a root
 group is not allowed.</p>
 
 <h3>
-<a name="ug04move"></a>4.5.5 Move Object</h3>
+<a name="ug04move"></a>4.6.5 Move Object</h3>
 <p>HDFView allows you to move an object within the same HDF5 file from 
 one location to another. Moving objects from one file to another file is 
 not supported by HDFView. To move an HDF5 object from the tree, select 
@@ -377,7 +396,7 @@ group is not allowed. Moving objects is not supported by HDF4 Files.</p>
 
 
 <h3>
-<a name="ug04attribute"></a>4.5.6 Add, Delete and Modify Attribute</h3>
+<a name="ug04attribute"></a>4.6.6 Add, Delete and Modify Attribute</h3>
 <p>
 To add an attribute, click the &ldquo;Add&rdquo; button on the Attribute panel.
 You can create an attribute of a string, scalar, and 1D array of simple datatypes.
