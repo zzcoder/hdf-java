@@ -345,6 +345,9 @@ public class TestH5S {
             H5.H5Sselect_none(H5sid);
             read_type = H5.H5Sget_select_type(H5sid);
             assertTrue("H5.H5Sget_select_type: "+read_type, HDF5Constants.H5S_SEL_NONE == read_type);
+            H5.H5Sselect_all(H5sid);
+            read_type = H5.H5Sget_select_type(H5sid);
+            assertTrue("H5.H5Sget_select_type: "+read_type, HDF5Constants.H5S_SEL_ALL == read_type);
         }
         catch (Throwable err) {
             err.printStackTrace();
