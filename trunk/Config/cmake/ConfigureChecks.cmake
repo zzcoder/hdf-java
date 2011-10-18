@@ -8,9 +8,6 @@ INCLUDE (${CMAKE_ROOT}/Modules/CheckLibraryExists.cmake)
 INCLUDE (${CMAKE_ROOT}/Modules/CheckSymbolExists.cmake)
 INCLUDE (${CMAKE_ROOT}/Modules/CheckTypeSize.cmake)
 
-MESSAGE (STATUS "Configure Checks that still need to be implemented")
-MESSAGE (STATUS "  GetConsoleScreenBufferInfo function for Windows")
-
 #-----------------------------------------------------------------------------
 # Always SET this for now IF we are on an OS X box
 #-----------------------------------------------------------------------------
@@ -23,26 +20,8 @@ IF (APPLE)
     "and use the 'lipo' tool to combine them into a single executable or library. The 'CMAKE_OSX_ARCHITECTURES'"
     "variable has been set to a blank value which will build the default architecture for this system.")
   ENDIF()
-  SET (H5_AC_APPLE_UNIVERSAL_BUILD 0)
+  SET (HJAVA_AC_APPLE_UNIVERSAL_BUILD 0)
 ENDIF (APPLE)
-
-SET (LINUX_LFS 0)
-SET (HDF_EXTRA_FLAGS)
-IF (CMAKE_SYSTEM MATCHES "Linux-([3-9]\\.[0-9]|2\\.[4-9])\\.")
-  # Linux Specific flags
-  ADD_DEFINITIONS (-D_POSIX_SOURCE -D_BSD_SOURCE)
-  OPTION (HDF_ENABLE_LARGE_FILE "Enable support for large (64-bit) files on Linux." ON)
-  IF (HDF_ENABLE_LARGE_FILE)
-    SET (LARGEFILE 1)
-    SET (HDF_EXTRA_FLAGS -D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE -D_LARGEFILE_SOURCE)
-    SET (CMAKE_REQUIRED_DEFINITIONS ${HDF_EXTRA_FLAGS})
-  ENDIF (HDF_ENABLE_LARGE_FILE)
-ENDIF (CMAKE_SYSTEM MATCHES "Linux-([3-9]\\.[0-9]|2\\.[4-9])\\.")
-IF (LINUX_LFS)
-  SET (HDF_EXTRA_FLAGS -D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE -D_LARGEFILE_SOURCE)
-  SET (CMAKE_REQUIRED_DEFINITIONS ${HDF_EXTRA_FLAGS})
-ENDIF (LINUX_LFS)
-ADD_DEFINITIONS (${HDF_EXTRA_FLAGS})
 
 #-----------------------------------------------------------------------------
 # This MACRO checks IF the symbol exists in the library and IF it
@@ -62,7 +41,7 @@ ENDMACRO (CHECK_LIBRARY_EXISTS_CONCAT)
 
 SET (WINDOWS)
 IF (WIN32)
-  IF (NOT UNIX AND NOT CYGWIN)
+  IF (NOT UNIX AND NOT CYGWIN AND NOT MINGW)
     SET (WINDOWS 1)
   ENDIF (NOT UNIX AND NOT CYGWIN)
 ENDIF (WIN32)
@@ -127,6 +106,9 @@ ENDIF (NOT NOT_NEED_LIBNSL)
 
 
 SET (USE_INCLUDES "")
+IF (WINDOWS)
+  SET (USE_INCLUDES ${USE_INCLUDES} "windows.h")
+ENDIF (WINDOWS)
 #-----------------------------------------------------------------------------
 # Check IF header file exists and add it to the list.
 #-----------------------------------------------------------------------------
@@ -184,8 +166,56 @@ IF (HJAVA_HAVE_STDINT_H AND CMAKE_CXX_COMPILER_LOADED)
   CHECK_INCLUDE_FILE_CXX ("stdint.h" HJAVA_HAVE_STDINT_H_CXX)
   IF (NOT HJAVA_HAVE_STDINT_H_CXX)
     SET (HJAVA_HAVE_STDINT_H "" CACHE INTERNAL "Have includes HAVE_STDINT_H")
+    SET (USE_INCLUDES ${USE_INCLUDES} "stdint.h")
   ENDIF (NOT HJAVA_HAVE_STDINT_H_CXX)
 ENDIF (HJAVA_HAVE_STDINT_H AND CMAKE_CXX_COMPILER_LOADED)
+
+#-----------------------------------------------------------------------------
+#  Check for large file support
+#-----------------------------------------------------------------------------
+
+# The linux-lfs option is deprecated.
+SET (LINUX_LFS 0)
+
+SET (HDF_EXTRA_FLAGS)
+IF (NOT WINDOWS)
+  # Linux Specific flags
+  SET (HDF_EXTRA_FLAGS -D_POSIX_SOURCE -D_BSD_SOURCE)
+  OPTION (HDF_ENABLE_LARGE_FILE "Enable support for large (64-bit) files on Linux." ON)
+  IF (HDF_ENABLE_LARGE_FILE)
+    SET (msg "Performing TEST_LFS_WORKS")
+    TRY_RUN (TEST_LFS_WORKS_RUN   TEST_LFS_WORKS_COMPILE
+        ${CMAKE_BINARY_DIR}
+        ${HDFJAVA_RESOURCES_DIR}/HDFTests.c
+        CMAKE_FLAGS -DCOMPILE_DEFINITIONS:STRING=-DTEST_LFS_WORKS
+        OUTPUT_VARIABLE OUTPUT
+    )
+    IF (TEST_LFS_WORKS_COMPILE)
+      IF (TEST_LFS_WORKS_RUN  MATCHES 0)
+        SET (TEST_LFS_WORKS 1 CACHE INTERNAL ${msg})
+    SET (LARGEFILE 1)
+        SET (HDF_EXTRA_FLAGS ${HDF_EXTRA_FLAGS} -D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE -D_LARGEFILE_SOURCE)
+        MESSAGE (STATUS "${msg}... yes")
+      ELSE (TEST_LFS_WORKS_RUN  MATCHES 0)
+        SET (TEST_LFS_WORKS "" CACHE INTERNAL ${msg})
+        MESSAGE (STATUS "${msg}... no")
+        FILE (APPEND ${CMAKE_BINARY_DIR}/CMakeFiles/CMakeError.log
+              "Test TEST_LFS_WORKS Run failed with the following output and exit code:\n ${OUTPUT}\n"
+        )
+      ENDIF (TEST_LFS_WORKS_RUN  MATCHES 0)
+    ELSE (TEST_LFS_WORKS_COMPILE )
+      SET (TEST_LFS_WORKS "" CACHE INTERNAL ${msg})
+      MESSAGE (STATUS "${msg}... no")
+      FILE (APPEND ${CMAKE_BINARY_DIR}/CMakeFiles/CMakeError.log
+          "Test TEST_LFS_WORKS Compile failed with the following output:\n ${OUTPUT}\n"
+      )
+    ENDIF (TEST_LFS_WORKS_COMPILE)
+  ENDIF (HDF_ENABLE_LARGE_FILE)
+  SET (CMAKE_REQUIRED_DEFINITIONS ${CMAKE_REQUIRED_DEFINITIONS} ${HDF_EXTRA_FLAGS})
+ENDIF (NOT WINDOWS)
+
+ADD_DEFINITIONS (${HDF_EXTRA_FLAGS})
+
 
 #-----------------------------------------------------------------------------
 #  Check the size in bytes of all the int and float types
@@ -327,6 +357,7 @@ IF (NOT MSVC)
     )
     IF (HAVE_TIME_GETTIMEOFDAY STREQUAL "TRUE")
       SET (HJAVA_HAVE_TIME_GETTIMEOFDAY "1" CACHE INTERNAL "HJAVA_HAVE_TIME_GETTIMEOFDAY")
+      SET (HJAVA_HAVE_GETTIMEOFDAY "1" CACHE INTERNAL "HJAVA_HAVE_GETTIMEOFDAY")
     ENDIF (HAVE_TIME_GETTIMEOFDAY STREQUAL "TRUE")
   ENDIF ("HJAVA_HAVE_TIME_GETTIMEOFDAY" MATCHES "^HJAVA_HAVE_TIME_GETTIMEOFDAY$")
 
@@ -339,6 +370,7 @@ IF (NOT MSVC)
     )
     IF (HAVE_SYS_TIME_GETTIMEOFDAY STREQUAL "TRUE")
       SET (HJAVA_HAVE_SYS_TIME_GETTIMEOFDAY "1" CACHE INTERNAL "HJAVA_HAVE_SYS_TIME_GETTIMEOFDAY")
+      SET (HJAVA_HAVE_GETTIMEOFDAY "1" CACHE INTERNAL "HJAVA_HAVE_GETTIMEOFDAY")
     ENDIF (HAVE_SYS_TIME_GETTIMEOFDAY STREQUAL "TRUE")
   ENDIF ("HJAVA_HAVE_SYS_TIME_GETTIMEOFDAY" MATCHES "^HJAVA_HAVE_SYS_TIME_GETTIMEOFDAY$")
 ENDIF (NOT MSVC)
@@ -389,13 +421,13 @@ MACRO (HJAVA_FUNCTION_TEST OTHER_TEST)
       ENDIF ("${HJAVA_${def}}")
     ENDFOREACH (def)
     
-    IF (LINUX_LFS)
+    IF (LARGEFILE)
       SET (MACRO_CHECK_FUNCTION_DEFINITIONS
           "${MACRO_CHECK_FUNCTION_DEFINITIONS} -D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE -D_LARGEFILE_SOURCE"
       )
-    ENDIF (LINUX_LFS)
+    ENDIF (LARGEFILE)
 
-    # (STATUS "Performing ${OTHER_TEST}")
+    #MESSAGE (STATUS "Performing ${OTHER_TEST}")
     TRY_COMPILE (${OTHER_TEST}
         ${CMAKE_BINARY_DIR}
         ${HDFJAVA_RESOURCES_DIR}/HDFTests.c
@@ -445,11 +477,11 @@ IF (NOT WINDOWS)
       CXX_HAVE_OFFSETOF
   )
     HJAVA_FUNCTION_TEST (${test})
-    IF (NOT CYGWIN)
-      HJAVA_FUNCTION_TEST (HAVE_TIMEZONE)
-#      HJAVA_FUNCTION_TEST (HAVE_STAT_ST_BLOCKS)
-    ENDIF (NOT CYGWIN)
   ENDFOREACH (test)
+  IF (NOT CYGWIN AND NOT MINGW)
+    HJAVA_FUNCTION_TEST (HAVE_TIMEZONE)
+#      HJAVA_FUNCTION_TEST (HAVE_STAT_ST_BLOCKS)
+  ENDIF (NOT CYGWIN AND NOT MINGW)
 ENDIF (NOT WINDOWS)
 
 #-----------------------------------------------------------------------------
@@ -494,7 +526,7 @@ IF (NOT HJAVA_PRINTF_LL_WIDTH OR HJAVA_PRINTF_LL_WIDTH MATCHES "unknown")
       SET (CURRENT_TEST_DEFINITIONS "${CURRENT_TEST_DEFINITIONS} -DHAVE_LONG_LONG")
     ENDIF (HJAVA_SIZEOF_LONG_LONG)
     TRY_RUN (HJAVA_PRINTF_LL_TEST_RUN   HJAVA_PRINTF_LL_TEST_COMPILE
-        ${HDFJAVA_BINARY_DIR}/CMake
+        ${CMAKE_BINARY_DIR}
         ${HDFJAVA_RESOURCES_DIR}/HDFTests.c
         CMAKE_FLAGS -DCOMPILE_DEFINITIONS:STRING=${CURRENT_TEST_DEFINITIONS}
         OUTPUT_VARIABLE OUTPUT
@@ -545,7 +577,7 @@ MACRO (HDFConversionTests TEST msg)
   IF ("${TEST}" MATCHES "^${TEST}$")
     #MESSAGE (STATUS "===> ${TEST}")
     TRY_RUN (${TEST}_RUN   ${TEST}_COMPILE
-        ${HDFJAVA_BINARY_DIR}/CMake
+        ${CMAKE_BINARY_DIR}
         ${HDFJAVA_RESOURCES_DIR}/ConversionTests.c
         CMAKE_FLAGS -DCOMPILE_DEFINITIONS:STRING=-D${TEST}_TEST
         OUTPUT_VARIABLE OUTPUT
