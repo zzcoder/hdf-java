@@ -142,8 +142,8 @@ public class DebugHDF {
 //        try {  testH5VlenAttr("G:\\temp\\vlen_str_attr.h5") ; } catch (Exception ex) {ex.printStackTrace();}
 //        try {testRefData("g:\\temp\\refs.h5", "refs"); } catch (Exception ex) {ex.printStackTrace();}
 //      try {testH5WriteDouble("g:\\temp\\double.h5"); } catch (Exception ex) {ex.printStackTrace();}
-        try {testGroupMemoryLeak("G:\\temp\\mem_leak.h5"); } catch (Exception ex) {ex.printStackTrace();} 
-
+//        try {testGroupMemoryLeak("G:\\temp\\mem_leak.h5"); } catch (Exception ex) {ex.printStackTrace();} 
+        try { testH5OflushCrash("G:\\temp\\H5Oflush_crash.h5"); } catch (Exception ex) {ex.printStackTrace();} 
     }
     
     public static void testRefData(String fname, String dname)throws Exception
@@ -3733,4 +3733,34 @@ public class DebugHDF {
         	System.out.println("no. of groups = " +N+"\tfile size = "+fmt.format((new File(fname)).length()));    		
     	} /*for (int N=1; N<=NGROUPS; N++)  */
      }  
+    
+    static private int testH5OflushCrash(String fname) throws Exception 
+    {
+    	final int _pid_ = HDF5Constants.H5P_DEFAULT;
+    	int fid = H5.H5Fcreate(fname, HDF5Constants.H5F_ACC_TRUNC, _pid_, _pid_);
+
+    	try {
+    		int sid = H5.H5Screate_simple(1, new long[] {1}, null);
+    		int did = H5.H5Dcreate(fid, "dset", HDF5Constants.H5T_NATIVE_INT, sid, _pid_, _pid_, _pid_);
+    		int aid = H5.H5Acreate(did, "ref", HDF5Constants.H5T_STD_REF_OBJ, sid, _pid_, _pid_);
+    		H5.H5Awrite(aid, HDF5Constants.H5T_STD_REF_OBJ, new long[]{-1});
+    		H5.H5Dclose(did);
+    		H5.H5Aclose(aid);
+    		H5.H5Sclose(sid);
+    	} catch (Exception ex) {}			
+
+    	try {
+    		int ocp_plist_id = H5.H5Pcreate(HDF5Constants.H5P_OBJECT_COPY);
+    		H5.H5Pset_copy_object(ocp_plist_id, HDF5Constants.H5O_COPY_EXPAND_REFERENCE_FLAG);
+    		try {
+    			H5.H5Ocopy(fid, "/dset", fid, "dset2", ocp_plist_id, _pid_);
+    		} finally { H5.H5Pclose(ocp_plist_id);}
+
+    	} catch (Exception ex) {}
+
+    	H5.H5Fclose(fid); 
+
+
+    	return 0;
+    }    
 }
