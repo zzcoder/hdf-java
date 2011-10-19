@@ -263,6 +263,30 @@ public class TestH5Ocopy {
         catch (Exception ex){
         }
     }
+    
+    @Test
+    public void testH5OcopyInvalidRef() { 
+    	final int _pid_ = HDF5Constants.H5P_DEFAULT;
+
+    	try {
+    		int sid = H5.H5Screate_simple(1, new long[] {1}, null);
+    		int did = H5.H5Dcreate(H5fid, "Dataset_with_invalid_Ref", HDF5Constants.H5T_NATIVE_INT, sid, _pid_, _pid_, _pid_);
+    		int aid = H5.H5Acreate(did, "Invalid_Ref", HDF5Constants.H5T_STD_REF_OBJ, sid, _pid_, _pid_);
+    		H5.H5Awrite(aid, HDF5Constants.H5T_STD_REF_OBJ, new long[]{-1});
+    		H5.H5Dclose(did);
+    		H5.H5Aclose(aid);
+    		H5.H5Sclose(sid);
+    	} catch (Exception ex) {}			
+
+    	try {
+    		int ocp_plist_id = H5.H5Pcreate(HDF5Constants.H5P_OBJECT_COPY);
+    		H5.H5Pset_copy_object(ocp_plist_id, HDF5Constants.H5O_COPY_EXPAND_REFERENCE_FLAG);
+    		try {
+    			H5.H5Ocopy(H5fid, "/Dataset_with_invalid_Ref", H5fid, "/Dataset_with_invalid_Ref_cp", ocp_plist_id, _pid_);
+    		} finally { H5.H5Pclose(ocp_plist_id);}
+
+    	} catch (Exception ex) {}
+    }        
  
 
 }
