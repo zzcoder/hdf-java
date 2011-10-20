@@ -36,7 +36,7 @@ import ncsa.hdf.object.h5.H5ScalarDS;
 public class TestH5Object
 {
     private final static String FILE_NAME = "TestH5Object.h5";
-    private final static String FILE_NAME2 = "./samples/TestH5Obejct2.h5";
+    private final static String FILE_NAME2 = "../../TestH5Obejct2.h5";
     
     private final static String NAME_GROUP = "/g0";
     private final static String NAME_GROUP_ATTR = "/g0_attr";
