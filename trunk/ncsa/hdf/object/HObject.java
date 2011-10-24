@@ -495,10 +495,15 @@ public abstract class HObject implements Serializable, DataFormat {
      */
     @Override
     public String toString() {
+    	if (this instanceof Group) {
+    		if (((Group)this).isRoot() && this.getFileFormat()!= null)
+    			return this.getFileFormat().getName();
+    	}
+    	
         if (name != null)
             return name;
-        else
-            return super.toString();
+
+        return super.toString();
     }
 
 }

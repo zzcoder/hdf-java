@@ -168,7 +168,7 @@ public class FitsFile extends FileFormat
         long[] oid = {0};
         FitsGroup rootGroup = new FitsGroup(
             this,
-            getName(), // set the node name to the file name
+            "/",
             null, // root node does not have a parent path
             null, // root node does not have a parent node
             oid);

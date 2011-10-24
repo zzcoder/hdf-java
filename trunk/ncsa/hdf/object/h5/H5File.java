@@ -1443,11 +1443,14 @@ public class H5File extends FileFormat {
      */
     @Override
     public HObject createLink(Group parentGroup, String name, Object currentObj)
-            throws Exception {
+            throws Exception 
+    {
         if(currentObj instanceof HObject)
             return this.createLink(parentGroup, name, (HObject)currentObj, Group.LINK_TYPE_HARD);
-        else 
+        else if (currentObj instanceof String) 
             return this.createLink(parentGroup, name, (String)currentObj, Group.LINK_TYPE_HARD);
+        
+        return null;
     }
     
     /**
@@ -1958,11 +1961,11 @@ public class H5File extends FileFormat {
         DefaultMutableTreeNode root = null;
 
         long[] rootOID = { 0 };
-        H5Group rootGroup = new H5Group(this, 
-                getName(), // set the node name to the file name
+        H5Group rootGroup = new H5Group(
+        		this, 
+               "/",
                 null, // root node does not have a parent path
-                null, // root node does not have a parent node
-                rootOID);
+                null); // root node does not have a parent node
 
         root = new DefaultMutableTreeNode(rootGroup) {
             private static final long serialVersionUID = 991382067363411723L;

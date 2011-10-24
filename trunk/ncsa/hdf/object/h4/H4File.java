@@ -628,7 +628,7 @@ public class H4File extends FileFormat
 
         H4Group rootGroup = new H4Group(
             this,
-            getName(), // set the node name to the file name
+            "/", 
             null, // root node does not have a parent path
             null, // root node does not have a parent node
             oid);

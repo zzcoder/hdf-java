@@ -84,12 +84,12 @@ public class ViewProperties extends Properties {
     public static enum DATA_VIEW_KEY 
     {
         CHAR, CONVERTBYTE, TRANSPOSED, READONLY, OBJECT, BITMASK, BITMASKOP,BORDER, INFO
-    };
+    }
 
     /**
      * Property keys how how the data is displayed.
      */
-    public static enum BITMASK_OP {AND, EXTRACT};
+    public static enum BITMASK_OP {AND, EXTRACT}
 
     /** user's guide */
     private static String usersGuide = System.getProperty("user.dir")

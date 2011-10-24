@@ -381,7 +381,7 @@ public class NewLinkDialog extends JDialog implements ActionListener,DocumentLis
             return null;
         }    
 
-        if (hardLink.isSelected()){
+        if (hardLink.isSelected()) {
             HObject targetObj = (HObject) objList.get(targetObject
                     .getSelectedIndex());
 
@@ -410,7 +410,6 @@ public class NewLinkDialog extends JDialog implements ActionListener,DocumentLis
                 return null;
             }          
         }
-        
         else if (softLink.isSelected()){            
             String target_name = targetObject.getEditor().getItem().toString();
             if (target_name.length() < 1)  {
@@ -504,18 +503,18 @@ public class NewLinkDialog extends JDialog implements ActionListener,DocumentLis
                 }
                 tFileObj = TargetFileName + FileFormat.FILE_OBJ_SEP + tObj;
             }
-            
-            if ((targetObj instanceof Group) && ((Group) targetObj).isRoot()) {
-                toolkit.beep();
-                JOptionPane.showMessageDialog(this,
-                        "Cannot make a link to the root group.", getTitle(),
-                        JOptionPane.ERROR_MESSAGE);
-                return null;
-            }
+// should allow to link to the root of an external file            
+//            if ((targetObj instanceof Group) && ((Group) targetObj).isRoot()) {
+//                toolkit.beep();
+//                JOptionPane.showMessageDialog(this,
+//                        "Cannot make a link to the root group.", getTitle(),
+//                        JOptionPane.ERROR_MESSAGE);
+//                return null;
+//            }
 
             try {
                 if(targetObj !=null)
-                obj = fileFormat.createLink(pgroup, name, targetObj, Group.LINK_TYPE_EXTERNAL);
+                	obj = fileFormat.createLink(pgroup, name, targetObj, Group.LINK_TYPE_EXTERNAL);
                 else if(tFileObj!=null)
                     obj = fileFormat.createLink(pgroup, name, tFileObj, Group.LINK_TYPE_EXTERNAL);
             }
