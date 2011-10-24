@@ -187,8 +187,9 @@ public class NC2File extends FileFormat {
     private MutableTreeNode loadTree() {
 
         long[] oid = { 0 };
-        NC2Group rootGroup = new NC2Group(this, getName(), // set the node name
-                                                           // to the file name
+        NC2Group rootGroup = new NC2Group(
+        		this, 
+        		"/",
                 null, // root node does not have a parent path
                 null, // root node does not have a parent node
                 oid);

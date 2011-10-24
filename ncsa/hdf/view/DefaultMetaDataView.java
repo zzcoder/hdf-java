@@ -237,18 +237,22 @@ implements ActionListener, MetaDataView
         String target_name = linkField.getText();
         if (target_name != null)
             target_name = target_name.trim();
-            
-        if (target_name == null ||
-                target_name.length() < 1 || 
-                target_name.equals("/") ||
-                target_name.endsWith(FileFormat.FILE_OBJ_SEP+"/")||
-                target_name.equals(hObject.getLinkTargetObjName()))
-            return;
         
         int linkType = Group.LINK_TYPE_SOFT;
         if (LinkTObjName.contains(FileFormat.FILE_OBJ_SEP))
-            linkType = Group.LINK_TYPE_EXTERNAL;
+            linkType = Group.LINK_TYPE_EXTERNAL; 
+        else if (target_name.equals("/")) // do not allow to link to the root 
+        	return;
+            
+        // no change
+        if (target_name.equals(hObject.getLinkTargetObjName()))
+        	return;
         
+        // invalid name
+        if (target_name == null || target_name.length() < 1 )
+        	return;
+        
+       
         try {
             fileFormat.createLink(pgroup,  hObject.getName(), target_name, linkType);
             hObject.setLinkTargetObjName(target_name);
@@ -258,23 +262,6 @@ implements ActionListener, MetaDataView
         }
     }
    
-//    private final List<Object> breadthFirstUserObjects(TreeNode node)
-//    {
-//        if (node == null) {
-//            return null;
-//        }
-//        Vector<Object> list = new Vector<Object>();
-//        DefaultMutableTreeNode theNode = null;
-//        Enumeration<?> local_enum = ((DefaultMutableTreeNode)node).breadthFirstEnumeration();
-//        while(local_enum.hasMoreElements())
-//        {
-//            theNode = (DefaultMutableTreeNode)local_enum.nextElement();
-//            list.add(theNode.getUserObject());
-//        }
-//
-//        return list;
-//    }  
-    
     /** returns the data object displayed in this data viewer */
     public HObject getDataObject() {
         return hObject;
