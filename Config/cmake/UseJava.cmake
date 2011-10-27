@@ -1,106 +1,175 @@
+# - Use Module for Java
+# This file provides functions for Java. It is assumed that FindJava.cmake
+# has already been loaded.  See FindJava.cmake for information on how to
+# load Java into your CMake project.
 #
-# This file provides functions for Java support.
+# add_jar(TARGET_NAME SRC1 SRC2 .. SRCN RCS1 RCS2 .. RCSN)
 #
-# Available Functions:
+# This command creates a <TARGET_NAME>.jar. It compiles the given source
+# files (SRC) and adds the given resource files (RCS) to the jar file.
+# If only resource files are given then just a jar file is created.
 #
-#   add_jar(TARGET_NAME SRC1 SRC2 .. SRCN RCS1 RCS2 .. RCSN)
+# Additional instructions:
+#   To add compile flags to the target you can set these flags with
+#   the following variable:
 #
-#   This command creates a &lt;TARGET_NAME&gt;.jar. It compiles the given source
-#   files (SRC) and adds the given resource files (RCS) to the jar file.
-#   If only resource files are given then just a jar file is created.
+#       set(CMAKE_JAVA_COMPILE_FLAGS -nowarn)
 #
-#   Additional instructions:
-#       To add compile flags to the target you can set these flags with
-#       the following variable:
+#   To add a path or a jar file to the class path you can do this
+#   with the CMAKE_JAVA_INCLUDE_PATH variable.
 #
-#           set(CMAKE_JAVA_COMPILE_FLAGS -nowarn)
+#       set(CMAKE_JAVA_INCLUDE_PATH /usr/share/java/shibboleet.jar)
 #
-#       To add a path or a jar file to the class path you can do this
-#       with the CMAKE_JAVA_INCLUDE_PATH variable.
+#   To use a different output name for the target you can set it with:
 #
-#           set(CMAKE_JAVA_INCLUDE_PATH /usr/share/java/shibboleet.jar)
+#       set(CMAKE_JAVA_TARGET_OUTPUT_NAME shibboleet.jar)
+#       add_jar(foobar foobar.java)
 #
-#       To use a different output name for the target you can set it with:
+#   To add a VERSION to the target output name you can set it using
+#   CMAKE_JAVA_TARGET_VERSION. This will create a jar file with the name
+#   shibboleet-1.0.0.jar and will create a symlink shibboleet.jar
+#   pointing to the jar with the version information.
 #
-#           set(CMAKE_JAVA_TARGET_OUTPUT_NAME shibboleet.jar)
-#           add_jar(foobar foobar.java)
+#       set(CMAKE_JAVA_TARGET_VERSION 1.2.0)
+#       add_jar(shibboleet shibbotleet.java)
 #
-#       To add a VERSION to the target output name you can set it using
-#       CMAKE_JAVA_TARGET_VERSION. This will create a jar file with the name
-#       shibboleet-1.0.0.jar and will create a symlink shibboleet.jar pointing
-#       to the jar with the version information.
+#    If the target is a JNI library, utilize the following commands to
+#    create a JNI symbolic link:
 #
-#           set(CMAKE_JAVA_TARGET_VERSION 1.2.0)
-#           add_jar(shibboleet shibbotleet.java)
+#       set(CMAKE_JNI_TARGET TRUE)
+#       set(CMAKE_JAVA_TARGET_VERSION 1.2.0)
+#       add_jar(shibboleet shibbotleet.java)
+#       install_jar(shibboleet ${LIB_INSTALL_DIR}/shibboleet)
+#       install_jni_symlink(shibboleet ${JAVA_LIB_INSTALL_DIR})
 #
-#        If the target is a JNI library, utilize the following commands to
-#        create a JNI symbolic link:
+#    If a single target needs to produce more than one jar from its
+#    java source code, to prevent the accumulation of duplicate class
+#    files in subsequent jars, set/reset CMAKE_JAR_CLASSES_PREFIX prior
+#    to calling the add_jar() function:
 #
-#           set(CMAKE_JNI_TARGET TRUE)
-#           set(CMAKE_JAVA_TARGET_VERSION 1.2.0)
-#           add_jar(shibboleet shibbotleet.java)
-#           install_jar(shibboleet ${LIB_INSTALL_DIR}/shibboleet)
-#           install_jni_symlink(shibboleet ${JAVA_LIB_INSTALL_DIR})
+#       set(CMAKE_JAR_CLASSES_PREFIX com/redhat/foo)
+#       add_jar(foo foo.java)
 #
-#        If a single target needs to produce more than one jar from its
-#        java source code, to prevent the accumulation of duplicate class
-#        files in subsequent jars, set/reset CMAKE_JAR_CLASSES_PREFIX prior
-#        to calling the add_jar() function:
+#       set(CMAKE_JAR_CLASSES_PREFIX com/redhat/bar)
+#       add_jar(bar bar.java)
 #
-#           set(CMAKE_JAR_CLASSES_PREFIX com/redhat/foo)
-#           add_jar(foo foo.java)
+# Target Properties:
+#   The add_jar() functions sets some target properties. You can get these
+#   properties with the
+#      get_property(TARGET <target_name> PROPERTY <propery_name>)
+#   command.
 #
-#           set(CMAKE_JAR_CLASSES_PREFIX com/redhat/bar)
-#           add_jar(bar bar.java)
+#   INSTALL_FILES      The files which should be installed. This is used by
+#                      install_jar().
+#   JNI_SYMLINK        The JNI symlink which should be installed.
+#                      This is used by install_jni_symlink().
+#   JAR_FILE           The location of the jar file so that you can include
+#                      it.
+#   CLASS_DIR          The directory where the class files can be found. For
+#                      example to use them with javah.
 #
+# find_jar(<VAR>
+#          name | NAMES name1 [name2 ...]
+#          [PATHS path1 [path2 ... ENV var]]
+#          [VERSIONS version1 [version2]]
+#          [DOC "cache documentation string"]
+#         )
 #
-#   Variables set:
-#       The add_jar() functions sets some variables which can be used in the
-#       same scope where add_jar() is called.
+# This command is used to find a full path to the named jar. A cache
+# entry named by <VAR> is created to stor the result of this command. If
+# the full path to a jar is found the result is stored in the variable
+# and the search will not repeated unless the variable is cleared. If
+# nothing is found, the result will be <VAR>-NOTFOUND, and the search
+# will be attempted again next time find_jar is invoked with the same
+# variable.
+# The name of the full path to a file that is searched for is specified
+# by the names listed after NAMES argument. Additional search locations
+# can be specified after the PATHS argument. If you require special a
+# version of a jar file you can specify it with the VERSIONS argument.
+# The argument after DOC will be used for the documentation string in
+# the cache.
 #
-#       &lt;target&gt;_INSTALL_FILES      The files which should be installed. This
-#                                   is used by install_jar().
-#       &lt;target&gt;_JNI_SYMLINK        The JNI symlink which should be installed.
-#                                   This is used by install_jni_symlink().
-#       &lt;target&gt;_JAR_FILE           The location of the jar file so that you
-#                                   can include it.
-#       &lt;target&gt;_CLASS_DIR          The directory where the class files can be
-#                                   found. For example to use them with javah.
+# install_jar(TARGET_NAME DESTINATION)
 #
-#    find_jar(
-#             &lt;VAR&gt;
-#             name | NAMES name1 [name2 ...]
-#             [PATHS path1 [path2 ... ENV var]]
-#             [VERSIONS version1 [version2]]
-#             [DOC "cache documentation string"]
-#            )
+# This command installs the TARGET_NAME files to the given DESTINATION.
+# It should be called in the same scope as add_jar() or it will fail.
 #
-#    This command is used to find a full path to the named jar. A cache entry
-#    named by &lt;VAR&gt; is created to stor the result of this command. If the full
-#    path to a jar is found the result is stored in the variable and the search
-#    will not repeated unless the variable is cleared. If nothing is found, the
-#    result will be &lt;VAR&gt;-NOTFOUND, and the search will be attempted again next
-#    time find_jar is invoked with the same variable.
-#    The name of the full path to a file that is searched for is specified by
-#    the names listed after NAMES argument. Additional search locations can be
-#    specified after the PATHS argument. If you require special a version of a
-#    jar file you can specify it with the VERSIONS argument. The argument after
-#    DOC will be used for the documentation string in the cache.
+# install_jni_symlink(TARGET_NAME DESTINATION)
 #
-#    install_jar(TARGET_NAME DESTINATION)
+# This command installs the TARGET_NAME JNI symlinks to the given
+# DESTINATION. It should be called in the same scope as add_jar()
+# or it will fail.
 #
-#    This command installs the TARGET_NAME files to the given DESTINATION. It
-#    should be called in the same scope as add_jar() or it will fail.
+# create_javadoc(<VAR>
+#                PACKAGES pkg1 [pkg2 ...]
+#                [SOURCEPATH <sourcepath>]
+#                [CLASSPATH <classpath>]
+#                [INSTALLPATH <install path>]
+#                [DOCTITLE "the documentation title"]
+#                [WINDOWTITLE "the title of the document"]
+#                [AUTHOR TRUE|FALSE]
+#                [USE TRUE|FALSE]
+#                [VERSION TRUE|FALSE]
+#               )
 #
-#    install_jni_symlink(TARGET_NAME DESTINATION)
+# Create jave documentation based on files or packages. For more
+# details please read the javadoc manpage.
 #
-#    This command installs the TARGET_NAME JNI symlinks to the given
-#    DESTINATION. It should be called in the same scope as add_jar()
-#    or it will fail.
+# There are two main signatures for create_javadoc. The first
+# signature works with package names on a path with source files:
 #
+#   Example:
+#   create_javadoc(my_example_doc
+#     PACKAGES com.exmaple.foo com.example.bar
+#     SOURCEPATH ${CMAKE_CURRENT_SOURCE_PATH}
+#     CLASSPATH ${CMAKE_JAVA_INCLUDE_PATH}
+#     WINDOWTITLE "My example"
+#     DOCTITLE "<h1>My example</h1>"
+#     AUTHOR TRUE
+#     USE TRUE
+#     VERSION TRUE
+#   )
+#
+# The second signature for create_javadoc works on a given list of
+# files.
+#
+#   create_javadoc(<VAR>
+#                  FILES file1 [file2 ...]
+#                  [CLASSPATH <classpath>]
+#                  [INSTALLPATH <install path>]
+#                  [DOCTITLE "the documentation title"]
+#                  [WINDOWTITLE "the title of the document"]
+#                  [AUTHOR TRUE|FALSE]
+#                  [USE TRUE|FALSE]
+#                  [VERSION TRUE|FALSE]
+#                 )
+#
+# Example:
+#   create_javadoc(my_example_doc
+#     FILES ${example_SRCS}
+#     CLASSPATH ${CMAKE_JAVA_INCLUDE_PATH}
+#     WINDOWTITLE "My example"
+#     DOCTITLE "<h1>My example</h1>"
+#     AUTHOR TRUE
+#     USE TRUE
+#     VERSION TRUE
+#   )
+#
+# Both signatures share most of the options. These options are the
+# same as what you can find in the javadoc manpage. Please look at
+# the manpage for CLASSPATH, DOCTITLE, WINDOWTITLE, AUTHOR, USE and
+# VERSION.
+#
+# The documentation will be by default installed to
+#
+#   ${CMAKE_INSTALL_PREFIX}/share/javadoc/<VAR>
+#
+# if you don't set the INSTALLPATH.
+#
+
 #=============================================================================
-# Copyright 2010      Andreas schneider &lt;asn@redhat.com&gt;
-# Copyright 2010      Ben Boeckel &lt;ben.boeckel@kitware.com&gt;
+# Copyright 2010-2011 Andreas schneider <asn@redhat.com>
+# Copyright 2010 Ben Boeckel <ben.boeckel@kitware.com>
 #
 # Distributed under the OSI-approved BSD License (the "License");
 # see accompanying file Copyright.txt for details.
@@ -109,31 +178,31 @@
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 # See the License for more information.
 #=============================================================================
-# (To distributed this file outside of CMake, substitute the full
+# (To distribute this file outside of CMake, substitute the full
 #  License text for the above reference.)
 
 function (__java_copy_file src dest comment)
-#message(STATUS "copyfile from ${src} to ${dest}")
-#file(WRITE ${dest} "")
-#    add_custom_command(
-#        OUTPUT  ${dest}
-#        COMMAND ${CMAKE_COMMAND}
-#        ARGS    -E copy_if_different ${src} ${dest}
-#        DEPENDS ${src}
-#        COMMENT ${comment})
-    execute_process(
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${src} ${dest}
-    )
+    add_custom_command(
+        OUTPUT  ${dest}
+        COMMAND cmake -E copy_if_different
+        ARGS    ${src}
+                ${dest}
+        DEPENDS ${src}
+        COMMENT ${comment})
 endfunction (__java_copy_file src dest comment)
 
-function(add_jar _TARGET_NAME _RESOURCE_BASE)
+# define helper scripts
+set(_JAVA_CLASS_FILELIST_SCRIPT ${CMAKE_CURRENT_LIST_DIR}/UseJavaClassFilelist.cmake)
+set(_JAVA_SYMLINK_SCRIPT ${CMAKE_CURRENT_LIST_DIR}/UseJavaSymlinks.cmake)
+
+function(add_jar _TARGET_NAME)
     set(_JAVA_SOURCE_FILES ${ARGN})
 
-    if (CMAKE_LIBRARY_OUTPUT_PATH)
-        set(CMAKE_JAVA_LIBRARY_OUTPUT_PATH ${CMAKE_LIBRARY_OUTPUT_PATH})
-    else (CMAKE_LIBRARY_OUTPUT_PATH)
+    if (LIBRARY_OUTPUT_PATH)
+        set(CMAKE_JAVA_LIBRARY_OUTPUT_PATH ${LIBRARY_OUTPUT_PATH})
+    else (LIBRARY_OUTPUT_PATH)
         set(CMAKE_JAVA_LIBRARY_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR})
-    endif (CMAKE_LIBRARY_OUTPUT_PATH)
+    endif (LIBRARY_OUTPUT_PATH)
 
     set(CMAKE_JAVA_INCLUDE_PATH
         ${CMAKE_JAVA_INCLUDE_PATH}
@@ -153,6 +222,7 @@ function(add_jar _TARGET_NAME _RESOURCE_BASE)
     endforeach(JAVA_INCLUDE_DIR)
 
     set(CMAKE_JAVA_CLASS_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${_TARGET_NAME}.dir")
+
     set(_JAVA_TARGET_OUTPUT_NAME "${_TARGET_NAME}.jar")
     if (CMAKE_JAVA_TARGET_OUTPUT_NAME AND CMAKE_JAVA_TARGET_VERSION)
         set(_JAVA_TARGET_OUTPUT_NAME "${CMAKE_JAVA_TARGET_OUTPUT_NAME}-${CMAKE_JAVA_TARGET_VERSION}.jar")
@@ -192,7 +262,10 @@ function(add_jar _TARGET_NAME _RESOURCE_BASE)
             set(_JAVA_CLASS_FILE "${CMAKE_JAVA_CLASS_OUTPUT_PATH}/${_JAVA_REL_PATH}/${_JAVA_FILE}.class")
             set(_JAVA_CLASS_FILES ${_JAVA_CLASS_FILES} ${_JAVA_CLASS_FILE})
 
-        elseif (_JAVA_EXT MATCHES ".jar")
+        elseif (_JAVA_EXT MATCHES ".jar"
+                OR _JAVA_EXT MATCHES ".war"
+                OR _JAVA_EXT MATCHES ".ear"
+                OR _JAVA_EXT MATCHES ".sar")
             list(APPEND CMAKE_JAVA_INCLUDE_PATH ${_JAVA_SOURCE_FILE})
 
         elseif (_JAVA_EXT STREQUAL "")
@@ -200,57 +273,49 @@ function(add_jar _TARGET_NAME _RESOURCE_BASE)
             list(APPEND _JAVA_DEPENDS ${JAVA_JAR_TARGET_${_JAVA_SOURCE_FILE}})
 
         else (_JAVA_EXT MATCHES ".java")
-            __java_copy_file(${_RESOURCE_BASE}/${_JAVA_SOURCE_FILE}
+            __java_copy_file(${CMAKE_CURRENT_SOURCE_DIR}/${_JAVA_SOURCE_FILE}
                              ${CMAKE_JAVA_CLASS_OUTPUT_PATH}/${_JAVA_SOURCE_FILE}
                              "Copying ${_JAVA_SOURCE_FILE} to the build directory")
-            list(APPEND _DEPENDS_RESOURCE_FILES "${_RESOURCE_BASE}/${_JAVA_SOURCE_FILE}")
             list(APPEND _JAVA_RESOURCE_FILES ${_JAVA_SOURCE_FILE})
         endif (_JAVA_EXT MATCHES ".java")
     endforeach(_JAVA_SOURCE_FILE)
 
-    # Check if we have a local UseJavaClassFilelist.cmake
-    if (EXISTS ${CMAKE_MODULE_PATH}/UseJavaClassFilelist.cmake)
-        set(_JAVA_CLASS_FILELIST_SCRIPT ${CMAKE_MODULE_PATH}/UseJavaClassFilelist.cmake)
-    elseif (EXISTS ${CMAKE_ROOT}/Modules/UseJavaClassFilelist.cmake)
-        set(_JAVA_CLASS_FILELIST_SCRIPT ${CMAKE_ROOT}/Modules/UseJavaClassFilelist.cmake)
-    endif (EXISTS ${CMAKE_MODULE_PATH}/UseJavaClassFilelist.cmake)
-
     # create an empty java_class_filelist
-    file(WRITE ${CMAKE_JAVA_CLASS_OUTPUT_PATH}/java_class_filelist "")
-
-    # Check if we have a local UseJavaSymlinks.cmake
-    if (EXISTS ${CMAKE_MODULE_PATH}/UseJavaSymlinks.cmake)
-        set(_JAVA_SYMLINK_SCRIPT ${CMAKE_MODULE_PATH}/UseJavaSymlinks.cmake)
-    elseif (EXISTS ${CMAKE_ROOT}/Modules/UseJavaSymlinks.cmake)
-        set(_JAVA_SYMLINK_SCRIPT ${CMAKE_ROOT}/Modules/UseJavaSymlinks.cmake)
-    endif (EXISTS ${CMAKE_MODULE_PATH}/UseJavaSymlinks.cmake)
-
-    # Add the target and make sure we have the latest resource files.
-    add_custom_target(${_TARGET_NAME} ALL DEPENDS ${_DEPENDS_RESOURCE_FILES} ${_JAVA_DEPENDS})
+    if (NOT EXISTS ${CMAKE_JAVA_CLASS_OUTPUT_PATH}/java_class_filelist)
+        file(WRITE ${CMAKE_JAVA_CLASS_OUTPUT_PATH}/java_class_filelist "")
+    endif()
 
     if (_JAVA_COMPILE_FILES)
         # Compile the java files and create a list of class files
         add_custom_command(
-            TARGET ${_TARGET_NAME}
-            COMMAND ${CMAKE_Java_COMPILER}
+            # NOTE: this command generates an artificial dependency file
+            OUTPUT ${CMAKE_JAVA_CLASS_OUTPUT_PATH}/java_compiled_${_TARGET_NAME}
+            COMMAND ${Java_JAVAC_EXECUTABLE}
                 ${CMAKE_JAVA_COMPILE_FLAGS}
                 -classpath "${CMAKE_JAVA_INCLUDE_PATH_FINAL}"
                 -d ${CMAKE_JAVA_CLASS_OUTPUT_PATH}
                 ${_JAVA_COMPILE_FILES}
+            COMMAND ${CMAKE_COMMAND} -E touch ${CMAKE_JAVA_CLASS_OUTPUT_PATH}/java_compiled_${_TARGET_NAME}
+            DEPENDS ${_JAVA_COMPILE_FILES}
+            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+            COMMENT "Building Java objects for ${_TARGET_NAME}.jar"
+        )
+        add_custom_command(
+            OUTPUT ${CMAKE_JAVA_CLASS_OUTPUT_PATH}/java_class_filelist
             COMMAND ${CMAKE_COMMAND}
                 -DCMAKE_JAVA_CLASS_OUTPUT_PATH=${CMAKE_JAVA_CLASS_OUTPUT_PATH}
                 -DCMAKE_JAR_CLASSES_PREFIX="${CMAKE_JAR_CLASSES_PREFIX}"
                 -P ${_JAVA_CLASS_FILELIST_SCRIPT}
+            DEPENDS ${CMAKE_JAVA_CLASS_OUTPUT_PATH}/java_compiled_${_TARGET_NAME}
             WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-            COMMENT "Building Java objects for ${_TARGET_NAME}.jar"
         )
     endif (_JAVA_COMPILE_FILES)
 
     # create the jar file
     if (CMAKE_JNI_TARGET)
         add_custom_command(
-            TARGET ${_TARGET_NAME}
-            COMMAND ${CMAKE_Java_ARCHIVE}
+            OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${_JAVA_TARGET_OUTPUT_NAME}
+            COMMAND ${Java_JAR_EXECUTABLE}
                 -cf ${CMAKE_CURRENT_BINARY_DIR}/${_JAVA_TARGET_OUTPUT_NAME}
                 ${_JAVA_RESOURCE_FILES} @java_class_filelist
             COMMAND ${CMAKE_COMMAND}
@@ -263,13 +328,14 @@ function(add_jar _TARGET_NAME _RESOURCE_BASE)
                 -D_JAVA_TARGET_OUTPUT_NAME=${CMAKE_CURRENT_BINARY_DIR}/${_JAVA_TARGET_OUTPUT_NAME}
                 -D_JAVA_TARGET_OUTPUT_LINK=${_JAVA_TARGET_OUTPUT_LINK}
                 -P ${_JAVA_SYMLINK_SCRIPT}
+            DEPENDS ${_JAVA_RESOURCE_FILES} ${_JAVA_DEPENDS} ${CMAKE_JAVA_CLASS_OUTPUT_PATH}/java_class_filelist
             WORKING_DIRECTORY ${CMAKE_JAVA_CLASS_OUTPUT_PATH}
             COMMENT "Creating Java archive ${_JAVA_TARGET_OUTPUT_NAME}"
         )
     else ()
         add_custom_command(
-            TARGET ${_TARGET_NAME}
-            COMMAND ${CMAKE_Java_ARCHIVE}
+            OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${_JAVA_TARGET_OUTPUT_NAME}
+            COMMAND ${Java_JAR_EXECUTABLE}
                 -cf ${CMAKE_CURRENT_BINARY_DIR}/${_JAVA_TARGET_OUTPUT_NAME}
                 ${_JAVA_RESOURCE_FILES} @java_class_filelist
             COMMAND ${CMAKE_COMMAND}
@@ -278,64 +344,103 @@ function(add_jar _TARGET_NAME _RESOURCE_BASE)
                 -D_JAVA_TARGET_OUTPUT_LINK=${_JAVA_TARGET_OUTPUT_LINK}
                 -P ${_JAVA_SYMLINK_SCRIPT}
             WORKING_DIRECTORY ${CMAKE_JAVA_CLASS_OUTPUT_PATH}
+            DEPENDS ${_JAVA_RESOURCE_FILES} ${_JAVA_DEPENDS} ${CMAKE_JAVA_CLASS_OUTPUT_PATH}/java_class_filelist
             COMMENT "Creating Java archive ${_JAVA_TARGET_OUTPUT_NAME}"
         )
     endif (CMAKE_JNI_TARGET)
 
-    set(${_TARGET_NAME}_INSTALL_FILES
-        ${CMAKE_CURRENT_BINARY_DIR}/${_JAVA_TARGET_OUTPUT_NAME}
-        PARENT_SCOPE)
-    if (_JAVA_TARGET_OUTPUT_LINK AND UNIX)
-        set(${_TARGET_NAME}_INSTALL_FILES
-            ${CMAKE_CURRENT_BINARY_DIR}/${_JAVA_TARGET_OUTPUT_NAME}
-            ${CMAKE_CURRENT_BINARY_DIR}/${_JAVA_TARGET_OUTPUT_LINK}
-            PARENT_SCOPE)
-        if (CMAKE_JNI_TARGET)
-            set(${_TARGET_NAME}_JNI_SYMLINK
-                ${CMAKE_CURRENT_BINARY_DIR}/${_JAVA_TARGET_OUTPUT_LINK}
-                PARENT_SCOPE)
-        endif (CMAKE_JNI_TARGET)
-    endif (_JAVA_TARGET_OUTPUT_LINK AND UNIX)
-    set(${_TARGET_NAME}_JAR_FILE
-        ${CMAKE_CURRENT_BINARY_DIR}/${_JAVA_TARGET_OUTPUT_NAME} PARENT_SCOPE)
-    set(${_TARGET_NAME}_CLASS_DIR
-        ${CMAKE_JAVA_CLASS_OUTPUT_PATH}
-         PARENT_SCOPE)
+    # Add the target and make sure we have the latest resource files.
+    add_custom_target(${_TARGET_NAME} ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${_JAVA_TARGET_OUTPUT_NAME})
 
-    set(${_TARGET_NAME}_CLASSPATH ".${CMAKE_JAVA_INCLUDE_PATH_FINAL}/${_TARGET_NAME}.jar" PARENT_SCOPE)
+    set_property(
+        TARGET
+            ${_TARGET_NAME}
+        PROPERTY
+            INSTALL_FILES
+                ${CMAKE_CURRENT_BINARY_DIR}/${_JAVA_TARGET_OUTPUT_NAME}
+    )
+
+    if (_JAVA_TARGET_OUTPUT_LINK)
+        set_property(
+            TARGET
+                ${_TARGET_NAME}
+            PROPERTY
+                INSTALL_FILES
+                    ${CMAKE_CURRENT_BINARY_DIR}/${_JAVA_TARGET_OUTPUT_NAME}
+                    ${CMAKE_CURRENT_BINARY_DIR}/${_JAVA_TARGET_OUTPUT_LINK}
+        )
+
+        if (CMAKE_JNI_TARGET)
+            set_property(
+                TARGET
+                    ${_TARGET_NAME}
+                PROPERTY
+                    JNI_SYMLINK
+                        ${CMAKE_CURRENT_BINARY_DIR}/${_JAVA_TARGET_OUTPUT_LINK}
+            )
+        endif (CMAKE_JNI_TARGET)
+    endif (_JAVA_TARGET_OUTPUT_LINK)
+
+    set_property(
+        TARGET
+            ${_TARGET_NAME}
+        PROPERTY
+            JAR_FILE
+                ${CMAKE_CURRENT_BINARY_DIR}/${_JAVA_TARGET_OUTPUT_NAME}
+    )
+
+    set_property(
+        TARGET
+            ${_TARGET_NAME}
+        PROPERTY
+            CLASSDIR
+                ${CMAKE_JAVA_CLASS_OUTPUT_PATH}
+    )
 
 endfunction(add_jar)
 
 function(INSTALL_JAR _TARGET_NAME _DESTINATION _COMPONENT)
-    if (${_TARGET_NAME}_INSTALL_FILES)
+    get_property(__FILES
+        TARGET
+            ${_TARGET_NAME}
+        PROPERTY
+            INSTALL_FILES
+    )
+
+    if (__FILES)
         install(
             FILES
-                ${${_TARGET_NAME}_INSTALL_FILES}
+                ${__FILES}
             DESTINATION
                 ${_DESTINATION}
             COMPONENT
                 ${_COMPONENT}
         )
-    else (${_TARGET_NAME}_INSTALL_FILES)
+    else (__FILES)
         message(SEND_ERROR "The target ${_TARGET_NAME} is not known in this scope.")
-    endif (${_TARGET_NAME}_INSTALL_FILES)
+    endif (__FILES)
 endfunction(INSTALL_JAR _TARGET_NAME _DESTINATION _COMPONENT)
 
 function(INSTALL_JNI_SYMLINK _TARGET_NAME _DESTINATION _COMPONENT)
-  if (UNIX)
-    if (${_TARGET_NAME}_JNI_SYMLINK)
+    get_property(__SYMLINK
+        TARGET
+            ${_TARGET_NAME}
+        PROPERTY
+            JNI_SYMLINK
+    )
+
+    if (__SYMLINK)
         install(
             FILES
-                ${${_TARGET_NAME}_JNI_SYMLINK}
+                ${__SYMLINK}
             DESTINATION
                 ${_DESTINATION}
             COMPONENT
                 ${_COMPONENT}
         )
-    else (${_TARGET_NAME}_JNI_SYMLINK)
+    else (__SYMLINK)
         message(SEND_ERROR "The target ${_TARGET_NAME} is not known in this scope.")
-    endif (${_TARGET_NAME}_JNI_SYMLINK)
-  endif (UNIX)
+    endif (__SYMLINK)
 endfunction(INSTALL_JNI_SYMLINK _TARGET_NAME _DESTINATION _COMPONENT)
 
 function (find_jar VARIABLE)
@@ -723,7 +828,7 @@ function(create_javadoc _target)
                 set(_classpath ${_classpath}:${_path})
             endif (_start)
         endforeach(_path ${_javadoc_classpath})
-        set(_javadoc_options ${_javadoc_options} -classpath ${_classpath})
+        set(_javadoc_options ${_javadoc_options} -classpath "${_classpath}")
     endif (_javadoc_classpath)
 
     if (_javadoc_doctitle)
@@ -747,7 +852,7 @@ function(create_javadoc _target)
     endif (_javadoc_version)
 
     add_custom_target(${_target}_javadoc ALL
-        COMMAND ${JAVA_DOC} ${_javadoc_options}
+        COMMAND ${Java_JAVADOC_EXECUTABLE} ${_javadoc_options}
                             ${_javadoc_files}
                             ${_javadoc_packages}
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
