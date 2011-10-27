@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.4)
+cmake_minimum_required(VERSION 2.8.6)
 PROJECT ( HDFJAVA C Java )
 
 #-----------------------------------------------------------------------------
@@ -147,6 +147,7 @@ SET (HDFJAVA_PACKAGE_TARNAME "hdf-java")
 SET (HDFJAVA_PACKAGE_URL "http://www.hdfgroup.org/hdfjava")
 SET (HDFJAVA_PACKAGE_BUGREPORT "help@hdfgroup.org")
 
+ FIND_PACKAGE(Java)
 #-----------------------------------------------------------------------------
 # Include some macros for reusable code
 #-----------------------------------------------------------------------------

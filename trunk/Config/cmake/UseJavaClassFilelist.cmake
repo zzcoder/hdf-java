@@ -3,8 +3,9 @@
 # jar file. This avoids including cmake files which get created in the
 # binary directory.
 #
+
 #=============================================================================
-# Copyright 2010      Andreas schneider &lt;asn@redhat.com&gt;
+# Copyright 2010-2011 Andreas schneider <asn@redhat.com>
 #
 # Distributed under the OSI-approved BSD License (the "License");
 # see accompanying file Copyright.txt for details.
@@ -13,7 +14,7 @@
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 # See the License for more information.
 #=============================================================================
-# (To distributed this file outside of CMake, substitute the full
+# (To distribute this file outside of CMake, substitute the full
 #  License text for the above reference.)
 
 if (CMAKE_JAVA_CLASS_OUTPUT_PATH)
