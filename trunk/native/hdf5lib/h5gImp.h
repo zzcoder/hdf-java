@@ -173,7 +173,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Glink
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gget_1obj_1info_1all
   (JNIEnv *env, jclass clss, jint loc_id, jstring group_name, 
-  jobjectArray objName, jintArray oType, jintArray lType, 
+  jobjectArray objName, jintArray oType, jintArray lType, jlongArray fNo, 
   jlongArray oRef, jint n, jint indx_type);
 
 /*
