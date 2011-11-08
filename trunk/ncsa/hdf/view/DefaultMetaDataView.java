@@ -1010,11 +1010,16 @@ implements ActionListener, MetaDataView
             type = attr.getType().getDatatypeDescription();
 //            isUnsigned = attr.getType().isUnsigned();
 
-            long dims[] = attr.getDataDims();
-            size = String.valueOf(dims[0]);
-            for (int j=1; j<dims.length; j++) {
-                size += " x " + dims[j];
+            if (attr.isScalar()) {
+            	size="Scalar";
+            } else {
+                long dims[] = attr.getDataDims();
+                size = String.valueOf(dims[0]);
+                for (int j=1; j<dims.length; j++) {
+                    size += " x " + dims[j];
+                }            	
             }
+
             attrTable.setValueAt(name, i, 0);
             attrTable.setValueAt(attr.toString(", "), i, 1);
             attrTable.setValueAt(type, i, 2);

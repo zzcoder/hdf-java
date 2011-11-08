@@ -397,7 +397,9 @@ public class H5File extends FileFormat {
         attributeList = new Vector<Attribute>(n);
         
         for (int i = 0; i < n; i++) {
-            try {      
+           long lsize = 1;
+           
+           try {      
                 aid = H5.H5Aopen_by_idx(objID,".", idx_type, 
                         order, i, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
                 sid = H5.H5Aget_space(aid);
@@ -405,15 +407,12 @@ public class H5File extends FileFormat {
                 long dims[] = null;
                 int rank = H5.H5Sget_simple_extent_ndims(sid);
 
-                if (rank == 0) {
-                    // for scalar data, rank=0
-                    rank = 1;
-                    dims = new long[1];
-                    dims[0] = 1;
-                }
-                else {
+                if (rank > 0) {
                     dims = new long[rank];
                     H5.H5Sget_simple_extent_dims(sid, dims, null);
+                    for (int j = 0; j < dims.length; j++) {
+                        lsize *= dims[j];
+                    }
                 }
 
                 String[] nameA = { "" };
@@ -456,11 +455,6 @@ public class H5File extends FileFormat {
                 }
 
                 // retrieve the attribute value
-                long lsize = 1;
-                for (int j = 0; j < dims.length; j++) {
-                    lsize *= dims[j];
-                }
-
                 if (lsize <= 0) {
                     continue;
                 }
