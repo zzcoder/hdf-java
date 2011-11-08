@@ -889,7 +889,6 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
                 getTrueColorImage();
             }
             else {
-
                 getIndexedImage();
             }
         }
@@ -923,8 +922,7 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
         if (imagePalette == null) {
             noPalette = true;
             imagePalette = Tools.createGrayPalette();
-            viewer
-                    .showStatus("\nNo attached palette found, default grey palette is used to display image");
+            viewer.showStatus("\nNo attached palette found, default grey palette is used to display image");
         }
 
         data = dataset.getData();
@@ -965,8 +963,11 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
             imageByteData = Tools.getBytes(data, dataRange, w, h, !dataset
                     .isDefaultImageOrder(), dataset.getFillValue(),
                     convertByteData, imageByteData);
+        } else if (dataRange!= null && dataRange[0]==dataRange[1]) {
+        	Tools.findMinMax(data, dataRange, null);
+        	
         }
-
+        
         image = createIndexedImage(imageByteData, imagePalette, w, h);
     }
 
@@ -3427,8 +3428,7 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
         JSlider minSlider, maxSlider;
         JFormattedTextField minField, maxField;
 
-        public DataRangeDialog(JFrame theOwner, double[] dataRange, int iMin,
-                int iMax) {
+        public DataRangeDialog(JFrame theOwner, double[] dataRange, int iMin, int iMax) {
             super(theOwner, "Image Vaule Range", true);
 
             minmax = new double[2];
@@ -3459,16 +3459,14 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
             maxField.addPropertyChangeListener(this);
             maxField.setValue(new Double(minmax[1]));
 
-            minSlider = new JSlider(JSlider.HORIZONTAL, iMin, iMax,
-                    (int) minmax[0]);
+            minSlider = new JSlider(JSlider.HORIZONTAL, iMin, iMax, (int) minmax[0]);
             minSlider.setMajorTickSpacing(tickSpace);
             minSlider.setPaintTicks(true);
             minSlider.setPaintLabels(true);
             minSlider.addChangeListener(this);
             minSlider.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
 
-            maxSlider = new JSlider(JSlider.HORIZONTAL, iMin, iMax,
-                    (int) minmax[1]);
+            maxSlider = new JSlider(JSlider.HORIZONTAL, iMin, iMax, (int) minmax[1]);
             maxSlider.setMajorTickSpacing(tickSpace);
             maxSlider.setPaintTicks(true);
             maxSlider.setPaintLabels(true);
