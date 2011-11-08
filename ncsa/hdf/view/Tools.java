@@ -1493,7 +1493,7 @@ public final class Tools {
      *            the min and max values.
      * @return non-negative if successful; otherwise, returns negative
      */
-    public static int autoContrastComputeMinMax(Object data, Object minmax) {
+    public static int autoContrastComputeMinMax(Object data, double[] minmax) {
         int retval = 1;
         double[] avgstd = new double[2];
 
@@ -1507,46 +1507,8 @@ public final class Tools {
             return retval;
         }
 
-        double min = avgstd[0] - 3.0 * avgstd[1];
-        double max = avgstd[0] + 3.0 * avgstd[1];
-
-        String cname = minmax.getClass().getName();
-        char dname = cname.charAt(cname.lastIndexOf("[") + 1);
-        switch (dname) {
-        case 'B':
-            byte[] b = (byte[]) minmax;
-            b[0] = (byte) min;
-            b[1] = (byte) max;
-            break;
-        case 'S':
-            short[] s = (short[]) minmax;
-            s[0] = (short) min;
-            s[1] = (short) max;
-            break;
-        case 'I':
-            int[] ia = (int[]) minmax;
-            ia[0] = (int) min;
-            ia[1] = (int) max;
-            break;
-        case 'J':
-            long[] l = (long[]) minmax;
-            l[0] = (long) min;
-            l[1] = (long) max;
-            break;
-        case 'F':
-            float[] f = (float[]) minmax;
-            f[0] = (float) min;
-            f[1] = (float) max;
-            break;
-        case 'D':
-            double[] d = (double[]) minmax;
-            d[0] = min;
-            d[1] = max;
-            break;
-        default:
-            retval = -1;
-            break;
-        } // switch (dname)
+        minmax[0] = avgstd[0] - 3.0 * avgstd[1];
+        minmax[1] = avgstd[0] + 3.0 * avgstd[1];
 
         return retval;
     }
