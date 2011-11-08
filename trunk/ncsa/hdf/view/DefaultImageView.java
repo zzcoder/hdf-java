@@ -965,7 +965,6 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
                     convertByteData, imageByteData);
         } else if (dataRange!= null && dataRange[0]==dataRange[1]) {
         	Tools.findMinMax(data, dataRange, null);
-        	
         }
         
         image = createIndexedImage(imageByteData, imagePalette, w, h);
