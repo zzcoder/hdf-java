@@ -740,7 +740,8 @@ public final class Tools {
      */
     public static byte[] getBytes(Object rawData, double[] minmax, int w,
             int h, boolean isTransposed, Object fillValue,
-            boolean convertByteData, byte[] byteData) {
+            boolean convertByteData, byte[] byteData) 
+    {
         // no input data
         if (rawData == null) {
             return null;
@@ -778,37 +779,34 @@ public final class Tools {
         max = minmax[1];
         ratio = (min == max) ? 1.00d : (double) (255.00 / (max - min));
 
+        int idxSrc=0, idxDst=0;
         switch (dname) {
         case 'S':
             short[] s = (short[]) rawData;
+            short fvs = 0;
 
             // set fill value to zero
             if (fillValue != null) {
-                short fvalue = ((short[]) fillValue)[0];
-                if (fvalue != 0) {
-                    for (int i = 0; i < size; i++) {
-                        if (fvalue == s[i]) {
-                            s[i] = 0;
-                        }
-                    }
-                }
+                fvs = ((short[]) fillValue)[0];
             }
 
             if (isTransposed) {
                 for (int i = 0; i < h; i++) {
                     for (int j = 0; j < w; j++) {
-                        if (s[j * h + i] <= min)
-                            byteData[i * w + j] = 0;
-                        else if (s[j * h + i] >= max)
-                            byteData[i * w + j] = (byte) 255;
+                    	idxSrc = j * h + i;
+                    	idxDst = i * w + j;
+                        if (s[idxSrc] <= min || s[idxSrc]==fvs)
+                            byteData[idxDst] = 0;
+                        else if (s[idxSrc] >= max)
+                            byteData[idxDst] = (byte) 255;
                         else
-                            byteData[i * w + j] = (byte) ((s[j * h + i] - min) * ratio);
+                            byteData[idxDst] = (byte) ((s[idxSrc] - min) * ratio);
                     }
                 }
             }
             else {
                 for (int i = 0; i < size; i++) {
-                    if (s[i] <= min)
+                    if (s[i] <= min || s[i] == fvs)
                         byteData[i] = 0;
                     else if (s[i] >= max)
                         byteData[i] = (byte) 255;
@@ -821,34 +819,31 @@ public final class Tools {
 
         case 'I':
             int[] ia = (int[]) rawData;
+            int fvi = 0;
 
             // set fill value to zero
             if (fillValue != null) {
-                int fvalue = ((int[]) fillValue)[0];
-                if (fvalue != 0) {
-                    for (int i = 0; i < size; i++) {
-                        if (fvalue == ia[i]) {
-                            ia[i] = 0;
-                        }
-                    }
-                }
+                fvi = ((int[]) fillValue)[0];
             }
 
             if (isTransposed) {
                 for (int i = 0; i < h; i++) {
                     for (int j = 0; j < w; j++) {
-                        if (ia[j * h + i] <= min)
-                            byteData[i * w + j] = 0;
-                        else if (ia[j * h + i] >= max)
-                            byteData[i * w + j] = (byte) 255;
+                    	idxSrc = j * h + i;
+                    	idxDst = i * w + j;
+                    	
+                        if (ia[idxSrc] <= min || ia[idxSrc]==fvi)
+                            byteData[idxDst] = 0;
+                        else if (ia[idxSrc] >= max)
+                            byteData[idxDst] = (byte) 255;
                         else
-                            byteData[i * w + j] = (byte) ((ia[j * h + i] - min) * ratio);
+                            byteData[idxDst] = (byte) ((ia[idxSrc] - min) * ratio);
                     }
                 }
             }
             else {
                 for (int i = 0; i < size; i++) {
-                    if (ia[i] <= min)
+                    if (ia[i] <= min || ia[i] ==fvi)
                         byteData[i] = 0;
                     else if (ia[i] >= max)
                         byteData[i] = (byte) 255;
@@ -861,34 +856,31 @@ public final class Tools {
 
         case 'J':
             long[] l = (long[]) rawData;
+            long fvl = 0;
 
             // set fill value to zero
             if (fillValue != null) {
-                long fvalue = ((long[]) fillValue)[0];
-                if (fvalue != 0) {
-                    for (int i = 0; i < size; i++) {
-                        if (fvalue == l[i]) {
-                            l[i] = 0;
-                        }
-                    }
-                }
+                fvl = ((long[]) fillValue)[0];
             }
 
             if (isTransposed) {
                 for (int i = 0; i < h; i++) {
                     for (int j = 0; j < w; j++) {
-                        if (l[j * h + i] <= min)
-                            byteData[i * w + j] = 0;
-                        else if (l[j * h + i] >= max)
-                            byteData[i * w + j] = (byte) 255;
+                    	idxSrc = j * h + i;
+                    	idxDst = i * w + j;
+                    	
+                        if (l[idxSrc] <= min || l[idxSrc]==fvl)
+                            byteData[idxDst] = 0;
+                        else if (l[idxSrc] >= max)
+                            byteData[idxDst] = (byte) 255;
                         else
-                            byteData[i * w + j] = (byte) ((l[j * h + i] - min) * ratio);
+                            byteData[idxDst] = (byte) ((l[idxSrc] - min) * ratio);
                     }
                 }
             }
             else {
                 for (int i = 0; i < size; i++) {
-                    if (l[i] <= min)
+                    if (l[i] <= min || l[i] == fvl)
                         byteData[i] = 0;
                     else if (l[i] >= max)
                         byteData[i] = (byte) 255;
@@ -901,34 +893,31 @@ public final class Tools {
 
         case 'F':
             float[] f = (float[]) rawData;
+            float fvf = 0;
 
             // set fill value to zero
             if (fillValue != null) {
-                float fvalue = ((float[]) fillValue)[0];
-
-                if (fvalue != 0) {
-                    for (int i = 0; i < size; i++) {
-                        if (fvalue == f[i]) {
-                            f[i] = 0;
-                        }
-                    }
-                }
+                fvf = ((float[]) fillValue)[0];
             }
+            
             if (isTransposed) {
                 for (int i = 0; i < h; i++) {
                     for (int j = 0; j < w; j++) {
-                        if (f[j * h + i] <= min)
-                            byteData[i * w + j] = 0;
-                        else if (f[j * h + i] >= max)
-                            byteData[i * w + j] = (byte) 255;
+                    	idxSrc = j * h + i;
+                    	idxDst = i * w + j;
+                    	
+                        if (f[idxSrc] <= min || f[idxSrc]==fvf)
+                            byteData[idxDst] = 0;
+                        else if (f[idxSrc] >= max)
+                            byteData[idxDst] = (byte) 255;
                         else
-                            byteData[i * w + j] = (byte) ((f[j * h + i] - min) * ratio);
+                            byteData[idxDst] = (byte) ((f[idxSrc] - min) * ratio);
                     }
                 }
             }
             else {
                 for (int i = 0; i < size; i++) {
-                    if (f[i] <= min)
+                    if (f[i] <= min || f[i] == fvf)
                         byteData[i] = 0;
                     else if (f[i] >= max)
                         byteData[i] = (byte) 255;
@@ -941,34 +930,31 @@ public final class Tools {
 
         case 'D':
             double[] d = (double[]) rawData;
+            double fvd = 0;
 
             // set fill value to zero
             if (fillValue != null) {
-                double fvalue = ((double[]) fillValue)[0];
-                if (fvalue != 0) {
-                    for (int i = 0; i < size; i++) {
-                        if (fvalue == d[i]) {
-                            d[i] = 0;
-                        }
-                    }
-                }
+                fvd = ((double[]) fillValue)[0];
             }
 
             if (isTransposed) {
                 for (int i = 0; i < h; i++) {
                     for (int j = 0; j < w; j++) {
-                        if (d[j * h + i] <= min)
-                            byteData[i * w + j] = 0;
-                        else if (d[j * h + i] >= max)
-                            byteData[i * w + j] = (byte) 255;
+                    	idxSrc = j * h + i;
+                    	idxDst = i * w + j;
+                    	
+                        if (d[idxSrc] <= min || d[idxSrc]==fvd)
+                            byteData[idxDst] = 0;
+                        else if (d[idxSrc] >= max)
+                            byteData[idxDst] = (byte) 255;
                         else
-                            byteData[i * w + j] = (byte) ((d[j * h + i] - min) * ratio);
+                            byteData[idxDst] = (byte) ((d[idxSrc] - min) * ratio);
                     }
                 }
             }
             else {
                 for (int i = 0; i < size; i++) {
-                    if (d[i] <= min)
+                    if (d[i] <= min || d[i] == fvd)
                         byteData[i] = 0;
                     else if (d[i] >= max)
                         byteData[i] = (byte) 255;
@@ -1033,12 +1019,15 @@ public final class Tools {
         if (isTransposed) {
         	for (int i = 0; i < h; i++) {
         		for (int j = 0; j < w; j++) {
-        			if (rawData[j * h + i] >= max)
-        				byteData[i * w + j] = (byte) 255;
-        			else if (rawData[j * h + i] <= min)
-        				byteData[i * w + j] = (byte) 0;
+                	int idxSrc = j * h + i;
+                	int idxDst = i * w + j;
+        			
+        			if (rawData[idxSrc] >= max)
+        				byteData[idxDst] = (byte) 255;
+        			else if (rawData[idxSrc] <= min)
+        				byteData[idxDst] = (byte) 0;
         			else
-        				byteData[i * w + j] = (byte) ((rawData[j * h + i] - min) * ratio);
+        				byteData[idxDst] = (byte) ((rawData[idxSrc] - min) * ratio);
         		}
         	}
         }
