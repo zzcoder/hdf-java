@@ -914,7 +914,9 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
      * @throws OutOfMemoryError
      */
     private void getIndexedImage() throws Exception, OutOfMemoryError {
-        imagePalette = dataset.getPalette();
+    	if (imagePalette==null)
+    		imagePalette = dataset.getPalette();
+    	
         boolean noPalette = false;
         boolean doAutoContrast = false;
         boolean isLocalFile = dataset.getFileFormat().exists();
