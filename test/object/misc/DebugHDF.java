@@ -117,7 +117,7 @@ public class DebugHDF {
 //        try { TestBug1523("G:\\Projects\\HUGS\\data\\testfile02.h5.corrupt"); } catch(Exception ex) {ex.printStackTrace();}
 //       try { TestBug1523("G:\\Projects\\HUGS\\data\\testfile02.h5"); } catch(Exception ex) {ex.printStackTrace();}
 //        try { createINF("G:\\temp\\inf.h5"); } catch(Exception ex) {ex.printStackTrace();}
-//        try { createNaN("G:\\temp\\nan_all.h5"); } catch(Exception ex) {ex.printStackTrace();}
+        try { createNaN_INF("G:\\temp\\nan_inf.h5"); } catch(Exception ex) {ex.printStackTrace();}
 //        try { testStrings("G:\\temp\\strs.h5"); } catch(Exception ex) {ex.printStackTrace();}
 //        testVariableArity("null argument", null);
 //        testVariableArity("no argument");
@@ -142,7 +142,7 @@ public class DebugHDF {
 //        try {  testH5VlenAttr("G:\\temp\\vlen_str_attr.h5") ; } catch (Exception ex) {ex.printStackTrace();}
 //        try {testRefData("g:\\temp\\refs.h5", "refs"); } catch (Exception ex) {ex.printStackTrace();}
 //      try {testH5WriteDouble("g:\\temp\\double.h5"); } catch (Exception ex) {ex.printStackTrace();}
-        try {testGroupMemoryLeak("G:\\temp\\mem_leak.h5"); } catch (Exception ex) {ex.printStackTrace();} 
+//        try {testGroupMemoryLeak("G:\\temp\\mem_leak.h5"); } catch (Exception ex) {ex.printStackTrace();} 
 //        try { testH5OflushCrash("G:\\temp\\H5Oflush_crash.h5"); } catch (Exception ex) {ex.printStackTrace();} 
     }
     
@@ -1166,61 +1166,33 @@ public class DebugHDF {
 
     }
     
-    private static final void createNaN(String fname)  throws Exception {
-        final long[] dims2D = {5000, 3000};
-        final float[] data = new float[(int)dims2D[0]*(int)dims2D[1]];
-
-        final long[] dims2D_small = {500, 300};
-        final float[] data_small = new float[(int)dims2D_small[0]*(int)dims2D_small[1]];
-
-        // retrieve an instance of H5File
-        final FileFormat fileFormat = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
-
-        if (fileFormat == null)
-        {
-            System.err.println("Cannot find HDF5 FileFormat.");
-            return;
-        }
+    private static final void createNaN_INF(String fname)  throws Exception {
+        final long[] dims = {400, 200};
+        final float[] dataINF = new float[(int)dims[0]*(int)dims[1]];
+        final float[] dataNaN = new float[(int)dims[0]*(int)dims[1]];
 
         // create a new file with a given file name.
-        final H5File testFile = (H5File)fileFormat.create(fname);
+        H5File testFile = new H5File(fname, H5File.CREATE);
 
-        if (testFile == null)
-        {
-            System.err.println("Failed to create file:"+fname);
-            return;
-        }
-   
-        for (int i=0; i<data.length; i+=2) {
-            data[i] = Float.NaN;
-            data[i+1] = Float.NaN;
+        for (int i=0; i<dataNaN.length; i++) {
+            dataINF[i] = (float)(Math.random()*1000.0);
+            dataNaN[i] = (float)(Math.random()*1000.0);
         }
         
-        for (int i=0; i<data_small.length; i+=2) {
-            data_small[i] = Float.NaN;
-            data_small[i+1] = Float.NaN;
+        for (int i=0; i<dims[0]; i+=2) {
+            dataINF[i] = Float.POSITIVE_INFINITY;
+            dataINF[i+1] = Float.NEGATIVE_INFINITY;
+            dataNaN[i] = Float.NaN;
+            dataNaN[i+1] = Float.NaN;            
         }
         
-//        for (int i=0; i<data.length; i+=2) {
-//            data[i] = (float)(Math.random()*1000.0);
-//            data[i+1] = (float)(Math.random()*1000.0);
-//        }
-//        
-//        for (int i=0; i<data_small.length; i+=2) {
-//            data_small[i] = (float)(Math.random()*1000.0);
-//            data_small[i+1] = (float)(Math.random()*1000.0);
-//        }
-
         // open the file and retrieve the root group
         testFile.open();
         final Group root = (Group)((javax.swing.tree.DefaultMutableTreeNode)testFile.getRootNode()).getUserObject();
 
-        Datatype dtype = testFile.createDatatype(
-            Datatype.CLASS_FLOAT, 4, Datatype.NATIVE, Datatype.NATIVE);
-        Dataset dataset = testFile.createScalarDS
-            ("large", root, dtype, dims2D, null, null, 0, data);
-        Dataset dataset_small = testFile.createScalarDS
-        ("small", root, dtype, dims2D_small, null, null, 0, data_small);
+        Datatype dtype = testFile.createDatatype( Datatype.CLASS_FLOAT, 4, Datatype.NATIVE, Datatype.NATIVE);
+        testFile.createScalarDS ("INF", root, dtype, dims, null, null, 0, dataINF);
+        testFile.createScalarDS ("NaN", root, dtype, dims, null, null, 0, dataNaN);
 
 
         testFile.close();
