@@ -1149,21 +1149,6 @@ implements TableView, ActionListener, MouseListener
             return;
         }
 
-/*
-        Object[] options = { "Column", "Row", "X-axis", "Cancel"};
-        int option = JOptionPane.showOptionDialog(
-                this,
-                "Do you want to draw line plot by column or row?",
-                getTitle(),
-                JOptionPane.YES_NO_CANCEL_OPTION,
-                JOptionPane.QUESTION_MESSAGE,
-                null,
-                options,
-                options[0]);
-        if (option == 3)
-            return; // cancel the line plot action
-        boolean isRowPlot = (option == 1);
-*/
         int nrow = table.getRowCount();
         int ncol = table.getColumnCount();
 
@@ -1205,21 +1190,19 @@ implements TableView, ActionListener, MouseListener
             lineLabels = new String[nLines];
             data = new double[nLines][cols.length];
 
+            double value = 0.0;
             for (int i=0; i<nLines; i++)
             {
                 lineLabels[i] = String.valueOf(rows[i]);
                 for (int j=0; j<cols.length; j++)
                 {
+                	data[i][j] = 0;
                     try {
-                        data[i][j] = Double.parseDouble(
-                        table.getValueAt(rows[i], cols[j]).toString());
-                        yRange[0] = Math.min(yRange[0], data[i][j]);
-
-                        yRange[1] = Math.max(yRange[1], data[i][j]);
-                    } catch (NumberFormatException ex)
-                    {
-                        data[i][j] = 0;
-                    }
+                    	value = Double.parseDouble(table.getValueAt(rows[i], cols[j]).toString());
+                    	data[i][j] = value;
+                    	yRange[0] = Math.min(yRange[0], value);
+                    	yRange[1] = Math.max(yRange[1], value);                        	
+                    } catch (NumberFormatException ex) {}
                 } // for (int j=0; j<ncols; j++)
             } // for (int i=0; i<rows.length; i++)
 
@@ -1228,8 +1211,11 @@ implements TableView, ActionListener, MouseListener
                 xData = new double[cols.length];
                 for (int j=0; j<cols.length; j++)
                 {
-                    try { xData[j] = Double.parseDouble( table.getValueAt(xIndex, j).toString()); }
-                    catch (NumberFormatException ex) { xData[j] = 0; }
+                	xData[j] = 0;
+                    try { 
+                    	value = Double.parseDouble( table.getValueAt(xIndex, cols[j]).toString());
+                   		xData[j] = value;
+                    } catch (NumberFormatException ex) {}
                 }
             }
         } // if (isRowPlot)
@@ -1249,43 +1235,58 @@ implements TableView, ActionListener, MouseListener
             }
             lineLabels = new String[nLines];
             data = new double[nLines][rows.length];
+            double value = 0.0;
             for (int j=0; j<nLines; j++)
             {
                 lineLabels[j] = table.getColumnName(cols[j]);
                 for (int i=0; i<rows.length; i++)
                 {
+                	data[j][i] = 0;
                     try {
-                        data[j][i] = Double.parseDouble(
-                        table.getValueAt(rows[i], cols[j]).toString());
-                        yRange[0] = Math.min(yRange[0], data[j][i]);
-                        yRange[1] = Math.max(yRange[1], data[j][i]);
-                    } catch (NumberFormatException ex)
-                    {
-                        data[j][i] = 0;
-                    }
+                    	value = Double.parseDouble(table.getValueAt(rows[i], cols[j]).toString());
+                    	data[j][i] = value;
+                    	yRange[0] = Math.min(yRange[0], value);
+                    	yRange[1] = Math.max(yRange[1], value);                        	
+                    } catch (NumberFormatException ex) {}
                 } // for (int j=0; j<ncols; j++)
             } // for (int i=0; i<rows.length; i++)
 
             if (xIndex >= 0)
             {
-                xData = new double[rows.length];
+                 xData = new double[rows.length];
                 for (int j=0; j<rows.length; j++)
                 {
-                    try { xData[j] = Double.parseDouble( table.getValueAt(j, xIndex).toString()); }
-                    catch (NumberFormatException ex) { xData[j] = 0; }
+                	xData[j] = 0;
+                    try { 
+                    	value = Double.parseDouble( table.getValueAt(rows[j], xIndex).toString());
+                   		xData[j] = value;
+                    } catch (NumberFormatException ex) {}
                 }
             }
         } // else
 
-        if ((yRange[0] == Double.POSITIVE_INFINITY) ||
-            (yRange[1] == Double.NEGATIVE_INFINITY) ||
-            (yRange[0] == yRange[1]))
+        int n = removeInvalidPlotData(data, xData, yRange);
+        if (n<data[0].length) {
+        	double[][] dataNew = new double[data.length][n];
+        	for (int i=0; i<data.length; i++)
+        		System.arraycopy(data[i], 0, dataNew[i], 0, n);
+        	
+        	data = dataNew;
+        	
+        	if (xData!=null) {
+        		double[] xDataNew = new double[n];
+        		System.arraycopy(xData,  0, xDataNew, 0, n);
+        		xData = xDataNew;
+        	}
+        }
+        
+        if (yRange[0] == yRange[1])
         {
             toolkit.beep();
             JOptionPane.showMessageDialog(
                 this,
                 "Cannot show line plot for the selected data. \n"+
-                "Please check the data range.",
+                "Please check the data range: ("+yRange[0]+", "+yRange[1]+").",
                 getTitle(),
                 JOptionPane.ERROR_MESSAGE);
             data = null;
@@ -1303,6 +1304,52 @@ implements TableView, ActionListener, MouseListener
 
         cv.setVisible(true);
     }
+    
+    
+    /**
+     * Remove values of NaN, INF from the array.
+     * @param data the data array
+     * @param xData the x-axis data points
+     * @param yRange the range of data values
+     * @return number of data points in the plot data if successeful; otherwise, returns false.
+     */
+    private int removeInvalidPlotData(double[][] data,  double[] xData, double[] yRange) 
+    {
+    	int idx = 0;
+    	boolean hasInvalid = false;
+    	
+    	if (data==null || yRange==null)
+    		return -1;
+    	
+    	yRange[0] = Double.POSITIVE_INFINITY;
+    	yRange[1] = Double.NEGATIVE_INFINITY;
+    	
+    	for (int i=0; i<data[0].length; i++) {
+    		hasInvalid = false;
+    		
+    		for (int j=0; j<data.length; j++) {
+    			hasInvalid = Tools.isNaNINF(data[j][i]);
+    			if (xData != null)
+    				hasInvalid = hasInvalid || Tools.isNaNINF(xData[i]);
+    			
+    			if (hasInvalid)
+    				break;
+    			else {
+    				data[j][idx] = data[j][i];
+    				if (xData!=null)
+    					xData[idx] = xData[i];
+                    yRange[0] = Math.min(yRange[0], data[j][idx]);
+                    yRange[1] = Math.max(yRange[1], data[j][idx]);   
+    			}
+     		}
+    		
+    		if (!hasInvalid)
+				idx++;
+
+    	}
+    	
+    	return idx;
+    }    
 
     /**
      * Returns the selected data values.

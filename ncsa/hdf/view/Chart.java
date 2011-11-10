@@ -72,13 +72,13 @@ public class Chart extends JDialog implements ActionListener {
     /** the maximum value of the Y axis */
     private double ymax;
 
-    /** the minumum value of the Y axis */
+    /** the minimum value of the Y axis */
     private double ymin;
 
     /** the maximum value of the X axis */
     private double xmax;
 
-    /** the minumum value of the X axis */
+    /** the minimum value of the X axis */
     private double xmin;
 
     /** line labels */

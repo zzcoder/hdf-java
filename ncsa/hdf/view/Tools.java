@@ -14,6 +14,7 @@
 
 package ncsa.hdf.view;
 
+import java.awt.Frame;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
@@ -906,7 +907,7 @@ public final class Tools {
                     	idxSrc = j * h + i;
                     	idxDst = i * w + j;
                     	
-                        if (f[idxSrc] <= min || f[idxSrc]==fvf)
+                        if (f[idxSrc] <= min || f[idxSrc]==fvf || isNaNINF((double)f[idxSrc]))
                             byteData[idxDst] = 0;
                         else if (f[idxSrc] >= max)
                             byteData[idxDst] = (byte) 255;
@@ -917,7 +918,7 @@ public final class Tools {
             }
             else {
                 for (int i = 0; i < size; i++) {
-                    if (f[i] <= min || f[i] == fvf)
+                    if (f[i] <= min | f[i]==fvf || isNaNINF((double)f[i]))
                         byteData[i] = 0;
                     else if (f[i] >= max)
                         byteData[i] = (byte) 255;
@@ -943,7 +944,7 @@ public final class Tools {
                     	idxSrc = j * h + i;
                     	idxDst = i * w + j;
                     	
-                        if (d[idxSrc] <= min || d[idxSrc]==fvd)
+                        if (d[idxSrc] <= min || d[idxSrc]==fvd || isNaNINF(d[idxSrc]))
                             byteData[idxDst] = 0;
                         else if (d[idxSrc] >= max)
                             byteData[idxDst] = (byte) 255;
@@ -954,7 +955,7 @@ public final class Tools {
             }
             else {
                 for (int i = 0; i < size; i++) {
-                    if (d[i] <= min || d[i] == fvd)
+                    if (d[i] <= min || d[i]==fvd ||isNaNINF(d[i]))
                         byteData[i] = 0;
                     else if (d[i] >= max)
                         byteData[i] = (byte) 255;
@@ -1600,7 +1601,7 @@ public final class Tools {
             if (hasFillValue)
                 fill = ((float[]) fillValue)[0];
             for (int i = 0; i < n; i++) {
-                if (hasFillValue && f[i] == fill)
+                if ( (hasFillValue && f[i] == fill) || isNaNINF((double)f[i]))
                     continue;
                 if (minmax[0] > f[i]) {
                     minmax[0] = f[i];
@@ -1616,8 +1617,9 @@ public final class Tools {
             if (hasFillValue)
                 fill = ((double[]) fillValue)[0];
             for (int i = 0; i < n; i++) {
-                if (hasFillValue && d[i] == fill)
+                if ( (hasFillValue && d[i] == fill) || isNaNINF(d[i]))
                     continue;
+                
                 if (minmax[0] > d[i]) {
                     minmax[0] = d[i];
                 }
@@ -2005,4 +2007,20 @@ public final class Tools {
         return file;
     }
 	
+    /**
+     * Check if a given number if NaN or INF.
+     * @param val the nubmer to be checked
+     * @return true if the number is Nan or INF; otherwise, false.
+     */
+    public static final boolean isNaNINF(double val) 
+    {
+		if (Double.isNaN(val) ||
+			val == Float.NEGATIVE_INFINITY ||
+		    val == Float.POSITIVE_INFINITY ||
+			val == Double.NEGATIVE_INFINITY ||
+		    val == Double.POSITIVE_INFINITY)
+			return true;
+    	
+    	return false;
+    }
 }
