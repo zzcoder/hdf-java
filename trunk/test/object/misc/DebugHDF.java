@@ -1179,11 +1179,13 @@ public class DebugHDF {
             dataNaN[i] = (float)(Math.random()*1000.0);
         }
         
-        for (int i=0; i<dims[0]; i+=2) {
-            dataINF[i] = Float.POSITIVE_INFINITY;
-            dataINF[i+1] = Float.NEGATIVE_INFINITY;
-            dataNaN[i] = Float.NaN;
-            dataNaN[i+1] = Float.NaN;            
+        int nNaN = dataNaN.length/5;
+        for (int i=0; i<nNaN; i+=2) {
+        	int idx = (int) (Math.random()*dataNaN.length);
+            dataINF[idx] = Float.POSITIVE_INFINITY;
+            dataINF[idx+1] = Float.NEGATIVE_INFINITY;
+            dataNaN[idx] = Float.NaN;
+            dataNaN[idx+1] = Float.NaN;            
         }
         
         // open the file and retrieve the root group
