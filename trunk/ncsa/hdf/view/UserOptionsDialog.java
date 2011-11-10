@@ -67,7 +67,7 @@ public class UserOptionsDialog extends JDialog implements ActionListener {
             choiceTableView, choiceImageView, choicePaletteView;
     private String rootDir, workDir;
     private JCheckBox checkCurrentUserDir, checkAutoContrast, 
-            checkConvertEnum, check1BasedIndex;
+            checkConvertEnum, check1BasedIndex, checkShowValues;
     private JButton currentDirButton;
     private JRadioButton checkReadOnly;
 
@@ -319,11 +319,11 @@ public class UserOptionsDialog extends JDialog implements ActionListener {
         centerP.add(p0);
 
         p0 = new JPanel();
-        p0.setLayout(new GridLayout(1, 3, 8, 8));
+        p0.setLayout(new GridLayout(1, 4, 8, 8));
 
         p00 = new JPanel();
         p00.setLayout(new BorderLayout());
-        checkAutoContrast = new JCheckBox("Auto Image Contrast");
+        checkAutoContrast = new JCheckBox("Autogain Image Contrast");
         checkAutoContrast.setSelected(ViewProperties.isAutoContrast());
         p00.add(checkAutoContrast, BorderLayout.CENTER);
         JButton button = new JButton(ViewProperties.getHelpIcon());
@@ -334,13 +334,14 @@ public class UserOptionsDialog extends JDialog implements ActionListener {
         p00.add(button, BorderLayout.WEST);
         p0.add(p00);
 
+        p0.add(checkShowValues = new JCheckBox("Show Values"));
+        checkShowValues.setSelected(ViewProperties.showImageValues());
+
         p00 = new JPanel();
         p00.setLayout(new BorderLayout());
         p00.add(new JLabel("Image Origin:"), BorderLayout.WEST);
         p00.add(imageOriginChoice, BorderLayout.CENTER);
         p0.add(p00);
-        
-        p0.add(new JLabel());
         
         tborder = new TitledBorder("Image");
         tborder.setTitleColor(Color.darkGray);
@@ -880,6 +881,7 @@ public class UserOptionsDialog extends JDialog implements ActionListener {
         }
 
         ViewProperties.setAutoContrast(checkAutoContrast.isSelected());
+        ViewProperties.setShowImageValue(checkShowValues.isSelected());
         ViewProperties.setConvertEnum(checkConvertEnum.isSelected());
         ViewProperties.setIndexBase1(check1BasedIndex.isSelected());
     }
