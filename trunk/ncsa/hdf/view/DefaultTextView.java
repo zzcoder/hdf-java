@@ -62,12 +62,15 @@ import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ListSelectionEvent;
+import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
 import ncsa.hdf.object.Dataset;
+import ncsa.hdf.object.Datatype;
 import ncsa.hdf.object.FileFormat;
 import ncsa.hdf.object.HObject;
 import ncsa.hdf.object.ScalarDS;
@@ -177,16 +180,33 @@ public class DefaultTextView extends JInternalFrame implements TextView,
             dataset = null;
             return;
         }
-
+        
         String fname = new java.io.File(dataset.getFile()).getName();
         this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         this.setTitle("TextView  -  " + dataset.getName() + "  -  "
                 + dataset.getPath() + "  -  " + fname);
         this.setFrameIcon(ViewProperties.getTextIcon());
+        
+        int rank = dataset.getRank();
+        long start[] = dataset.getStartDims();
+        long count[] = dataset.getSelectedDims();
+        
+        String colName = "Data selection:   ["+start[0];
+        for (int i=1; i<rank; i++) {
+        	colName += ", "+start[i];
+        }
+        colName += "] ~ ["+(start[0]+count[0]-1);
+        for (int i=1; i<rank; i++) {
+        	colName += ", "+(start[i]+count[i]-1);
+        }  
+        colName += "]";
 
-        table = createTable();
-        table.getTableHeader().setReorderingAllowed(false);
-        table.getTableHeader().setBackground(Color.black);
+        table = createTable(colName);
+        
+        JTableHeader colHeader = table.getTableHeader();
+        colHeader.setReorderingAllowed(false);
+        //colHeader.setBackground(Color.black);
+        
         rowHeaders = new RowHeader(table, dataset);
 
         // add the table to a scroller
@@ -237,17 +257,31 @@ public class DefaultTextView extends JInternalFrame implements TextView,
     /**
      * Creates a JTable to hold a compound dataset.
      */
-    private JTable createTable() {
+    private JTable createTable(final String colName) {
         JTable theTable = null;
-
-        int rows = text.length;
-        theTable = new JTable(rows, 1) {
-            private static final long serialVersionUID = -6571266777012522255L;
-
-            @Override
-            public Object getValueAt(int row, int col) {
-                return text[row];
+        
+        AbstractTableModel tm =  new AbstractTableModel()
+        {
+            public int getColumnCount() {
+                return 1;
             }
+
+            public int getRowCount() {
+                return text.length;
+            }
+
+            public String getColumnName(int col) {
+                return colName;
+            }
+
+            public Object getValueAt(int row, int column)
+            {
+            	return text[row];
+            }
+        };
+        
+        theTable = new JTable(tm) {
+            private static final long serialVersionUID = -6571266777012522255L;
 
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -268,7 +302,6 @@ public class DefaultTextView extends JInternalFrame implements TextView,
                     text[row] = cellValue;
                 } // if (source instanceof CellEditor)
             }
-
         };
 
         return theTable;
