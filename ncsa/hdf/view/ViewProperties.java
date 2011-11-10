@@ -137,6 +137,8 @@ public class ViewProperties extends Properties {
      * autocontrast by default (2.6 change).
      */
     private static boolean isAutoContrast = false;
+    
+    private static boolean showImageValues = false;
 
     /**
      * flag to indicate if default open file is read only. By default, use
@@ -1017,6 +1019,11 @@ public class ViewProperties extends Properties {
         if (propVal != null) {
             isAutoContrast = ("auto".equalsIgnoreCase(propVal));
         }
+        
+        propVal = (String) get("image.showvalues");
+        if (propVal != null) {
+            showImageValues = ("true".equalsIgnoreCase(propVal));
+        }
 
         propVal = (String) get("file.mode");
         if (propVal != null) {
@@ -1223,6 +1230,12 @@ public class ViewProperties extends Properties {
         else {
             put("image.contrast", "general");
         }
+        
+        if (showImageValues)
+        	put("image.showvalues", "true");
+        else
+        	put("image.showvalues", "false");
+       	
 
         if (isReadOnly) {
             put("file.mode", "r");
@@ -1544,6 +1557,17 @@ public class ViewProperties extends Properties {
     public static boolean isAutoContrast() {
         return isAutoContrast;
     }
+    
+    /**
+     * Returns true if "show image values" is set.
+     * 
+     * @return true if "show image values" is set; otherwise,
+     *         returns false.
+     */
+    public static boolean showImageValues() {
+        return showImageValues;
+    }
+    
 
     /**
      * Set the flag to indicate if auto contrast is used in image process.
@@ -1555,6 +1579,16 @@ public class ViewProperties extends Properties {
     public static void setAutoContrast(boolean b) {
         isAutoContrast = b;
     }
+    
+    /**
+     * Set the flag to indicate if "show image values" is set.
+     * 
+     * @param b
+     *            the flag to indicate if if "show image values" is set.
+     */
+    public static void setShowImageValue(boolean b) {
+        showImageValues = b;
+    }    
 
     /**
      * Returns true if default file access is read only.

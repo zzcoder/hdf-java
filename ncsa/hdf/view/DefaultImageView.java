@@ -364,7 +364,7 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
         // add the text field to display pixel data
         contentPane.add(valueField = new JTextField(), BorderLayout.SOUTH);
         valueField.setEditable(false);
-        valueField.setVisible(false);
+        valueField.setVisible(ViewProperties.showImageValues());
 
         if (image == null) {
             getImage();
@@ -634,6 +634,7 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
                 "Show Value", false);
         imageValueCheckBox.addActionListener(this);
         imageValueCheckBox.setActionCommand("Show image value");
+        imageValueCheckBox.setSelected(ViewProperties.showImageValues());
         rotateRelatedItems.add(imageValueCheckBox);
         menu.add(imageValueCheckBox);
 
