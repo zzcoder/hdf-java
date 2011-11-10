@@ -117,8 +117,8 @@ public class DebugHDF {
 //        try { TestBug1523("G:\\Projects\\HUGS\\data\\testfile02.h5.corrupt"); } catch(Exception ex) {ex.printStackTrace();}
 //       try { TestBug1523("G:\\Projects\\HUGS\\data\\testfile02.h5"); } catch(Exception ex) {ex.printStackTrace();}
 //        try { createINF("G:\\temp\\inf.h5"); } catch(Exception ex) {ex.printStackTrace();}
-        try { createNaN_INF("G:\\temp\\nan_inf.h5"); } catch(Exception ex) {ex.printStackTrace();}
-//        try { testStrings("G:\\temp\\strs.h5"); } catch(Exception ex) {ex.printStackTrace();}
+//        try { createNaN_INF("G:\\temp\\nan_inf.h5"); } catch(Exception ex) {ex.printStackTrace();}
+        try { testStrings("G:\\temp\\strs.h5"); } catch(Exception ex) {ex.printStackTrace();}
 //        testVariableArity("null argument", null);
 //        testVariableArity("no argument");
 //        testVariableArity("1 argument", 1);
@@ -587,7 +587,8 @@ public class DebugHDF {
         file.close();
     }
     
-	public static void test1Dstrings(String fname) throws Exception {
+    
+	public static void test1DExtendStrings(String fname) throws Exception {
 		//row count of my dataset
 		int rowCount = 5;
 		
@@ -1067,41 +1068,21 @@ public class DebugHDF {
     
     private static final void testStrings(String fname)  throws Exception 
     {
-        final int strLen = 128;
-        final long[] dims = {1000};
-        final long[] chunks = {100};
-        final String[] data = new String[(int)dims[0]];
+        final long[] dims = {10,5};
+        final String[] data = new String[(int)dims[0]*(int)dims[1]];
         
-        // retrieve an instance of H5File
-        final FileFormat fileFormat = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
-
-        if (fileFormat == null)
-        {
-            System.err.println("Cannot find HDF5 FileFormat.");
-            return;
-        }
-
-        // create a new file with a given file name.
-        final H5File testFile = (H5File)fileFormat.create(fname);
-
-        if (testFile == null)
-        {
-            System.err.println("Failed to create file:"+fname);
-            return;
-        }
+        H5File testFile = new H5File(fname, H5File.CREATE);
         
         for (int i=0; i<data.length; i++) {
-            data[i] = "test string "+i;;
+            data[i] = "test string ";
         }
 
         // open the file and retrieve the root group
         testFile.open();
         final Group root = (Group)((javax.swing.tree.DefaultMutableTreeNode)testFile.getRootNode()).getUserObject();
 
-        Datatype dtype = testFile.createDatatype(
-            Datatype.CLASS_STRING, strLen, Datatype.NATIVE, Datatype.NATIVE);
-        Dataset dataset = testFile.createScalarDS
-            ("dset", root, dtype, dims, null, chunks, 6, data);
+        Datatype dtype = testFile.createDatatype( Datatype.CLASS_STRING, 64, Datatype.NATIVE, Datatype.NATIVE);
+        Dataset dataset = testFile.createScalarDS ("dset", root, dtype, dims, null, null, 0, data);
 
         testFile.close();
     }
