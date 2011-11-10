@@ -399,7 +399,7 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
             flip(FLIP_HORIZONTAL);
         if (origin == 3) {
             rotate(ROTATE_CW_90);
-               rotate(ROTATE_CW_90);
+            rotate(ROTATE_CW_90);
         }
 
         // set title
@@ -1887,6 +1887,15 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
     public void setImage(Image img) {
         image = img;
         imageComponent.setImage(img);
+        
+        if (origin == 1)
+            flip(FLIP_VERTICAL);
+        else if (origin == 2)
+            flip(FLIP_HORIZONTAL);
+        if (origin == 3) {
+            rotate(ROTATE_CW_90);
+            rotate(ROTATE_CW_90);
+        }        
     }
 
     public byte[][] getPalette() {
@@ -1936,7 +1945,7 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
             flip(FLIP_HORIZONTAL);
         if (origin == 3) {
             rotate(ROTATE_CW_90);
-               rotate(ROTATE_CW_90);
+            rotate(ROTATE_CW_90);
         }
 
         setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
