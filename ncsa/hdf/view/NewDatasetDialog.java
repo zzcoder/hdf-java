@@ -72,12 +72,12 @@ public class NewDatasetDialog extends JDialog implements ActionListener,
     private static final long serialVersionUID = 5381164938654184532L;
 
     private JTextField nameField, currentSizeField, maxSizeField,
-            chunkSizeField, stringLengthField;
+            chunkSizeField, stringLengthField, fillValueField;
 
     private JComboBox parentChoice, classChoice, sizeChoice, endianChoice,
             rankChoice, compressionLevel;
 
-    private JCheckBox checkUnsigned, checkCompression;
+    private JCheckBox checkUnsigned, checkCompression, checkFillValue;
 
     private JRadioButton checkContinguous, checkChunked;
 
@@ -198,7 +198,7 @@ public class NewDatasetDialog extends JDialog implements ActionListener,
         JPanel typePanel = new JPanel();
         typePanel.setLayout(new GridLayout(2, 4, 15, 3));
         TitledBorder border = new TitledBorder("Datatype");
-        border.setTitleColor(Color.blue);
+        border.setTitleColor(Color.gray);
         typePanel.setBorder(border);
 
         stringLengthField = new JTextField("String length");
@@ -245,7 +245,7 @@ public class NewDatasetDialog extends JDialog implements ActionListener,
         JPanel spacePanel = new JPanel();
         spacePanel.setLayout(new GridLayout(2, 3, 15, 3));
         border = new TitledBorder("Dataspace");
-        border.setTitleColor(Color.blue);
+        border.setTitleColor(Color.gray);
         spacePanel.setBorder(border);
 
         rankChoice = new JComboBox();
@@ -271,19 +271,19 @@ public class NewDatasetDialog extends JDialog implements ActionListener,
         // set storage layout and data compression
         JPanel layoutPanel = new JPanel();
         layoutPanel.setLayout(new BorderLayout());
-        border = new TitledBorder("Data Layout and Compression");
-        border.setTitleColor(Color.blue);
+        border = new TitledBorder("Storage Properties");
+        border.setTitleColor(Color.gray);
         layoutPanel.setBorder(border);
 
         checkContinguous = new JRadioButton("Contiguous");
         checkContinguous.setSelected(true);
-        checkChunked = new JRadioButton("Chunked");
+        checkChunked = new JRadioButton("Chunked (size) ");
         ButtonGroup bgroup = new ButtonGroup();
         bgroup.add(checkChunked);
         bgroup.add(checkContinguous);
         chunkSizeField = new JTextField("1 x 1");
         chunkSizeField.setEnabled(false);
-        checkCompression = new JCheckBox("gzip");
+        checkCompression = new JCheckBox("gzip (level) ");
 
         compressionLevel = new JComboBox();
         for (int i = 0; i < 10; i++) {
@@ -301,28 +301,44 @@ public class NewDatasetDialog extends JDialog implements ActionListener,
         tmpP = new JPanel();
         tmpP.setLayout(new GridLayout(2, 1));
 
+        // storage layout
         JPanel tmpP0 = new JPanel();
-        tmpP0.setLayout(new GridLayout(1, 2));
+        tmpP0.setLayout(new GridLayout(1,3, 0, 5));
         tmpP0.add(checkContinguous);
-
         JPanel tmpP00 = new JPanel();
-        tmpP00.setLayout(new GridLayout(1, 3));
-        tmpP00.add(checkChunked);
-        tmpP00.add(new JLabel("          Size: "));
-        tmpP00.add(chunkSizeField);
+        tmpP00.setLayout(new BorderLayout());
+        tmpP00.add(checkChunked, BorderLayout.WEST);
+        tmpP00.add(chunkSizeField, BorderLayout.CENTER);
         tmpP0.add(tmpP00);
-
+        tmpP0.add(new JLabel(""));
         tmpP.add(tmpP0);
 
         tmpP0 = new JPanel();
-        tmpP0.setLayout(new GridLayout(1, 7));
-        tmpP0.add(checkCompression);
-        tmpP0.add(new JLabel("      Level: "));
-        tmpP0.add(compressionLevel);
-        tmpP0.add(new JLabel(""));
-        tmpP0.add(new JLabel(""));
-        tmpP0.add(new JLabel(""));
-        tmpP0.add(new JLabel(""));
+        tmpP0.setLayout(new GridLayout(1,2, 30, 5));
+        
+        // compression
+        tmpP00 = new JPanel();
+        tmpP00.setLayout(new BorderLayout());
+        tmpP00.add(checkCompression, BorderLayout.WEST);
+        tmpP00.add(compressionLevel, BorderLayout.CENTER);
+        tmpP0.add(tmpP00);
+
+        
+        // fill values
+        checkFillValue = new JCheckBox("Fill Value ");
+        fillValueField = new JTextField("0");
+        fillValueField.setEnabled(false);
+        checkFillValue.setSelected(false);
+        tmpP00 = new JPanel();
+        tmpP00.setLayout(new BorderLayout());
+        tmpP00.add(checkFillValue, BorderLayout.WEST);
+        tmpP00.add(fillValueField, BorderLayout.CENTER);
+        
+        if (isH5)
+        	tmpP0.add(tmpP00);
+        else
+        	tmpP0.add(new JLabel(""));
+         
         tmpP.add(tmpP0);
 
         layoutPanel.add(tmpP, BorderLayout.CENTER);
@@ -338,6 +354,7 @@ public class NewDatasetDialog extends JDialog implements ActionListener,
         sizeChoice.addItemListener(this);
         rankChoice.addItemListener(this);
         checkCompression.addItemListener(this);
+        checkFillValue.addItemListener(this);
         checkContinguous.addItemListener(this);
         checkChunked.addItemListener(this);
 
@@ -670,6 +687,9 @@ public class NewDatasetDialog extends JDialog implements ActionListener,
                 checkContinguous.setEnabled(true);
             }
         }
+        else if (source.equals(checkFillValue)) {
+        	fillValueField.setEnabled(checkFillValue.isSelected());
+        }        
     }
     
     /** check is the max size is valid */
@@ -1157,8 +1177,12 @@ public class NewDatasetDialog extends JDialog implements ActionListener,
             if (tclass == Datatype.CLASS_ENUM) {
                 datatype.setEnumMembers(stringLengthField.getText());
             }
+            String fillValue = null;
+            if (fillValueField.isEnabled())
+            	fillValue = fillValueField.getText();
+            
             obj = fileFormat.createScalarDS(name, pgroup, datatype, dims,
-                    maxdims, chunks, gzip, null);
+                    maxdims, chunks, gzip, fillValue, null);
         }
         catch (Exception ex) {
             toolkit.beep();

@@ -1149,7 +1149,14 @@ public abstract class FileFormat extends File {
      */
     public abstract Dataset createScalarDS(String name, Group pgroup,
             Datatype type, long[] dims, long[] maxdims, long[] chunks,
-            int gzip, Object data) throws Exception;
+            int gzip, Object fillValue, Object data) throws Exception;
+    public Dataset createScalarDS(String name, Group pgroup,
+            Datatype type, long[] dims, long[] maxdims, long[] chunks,
+            int gzip, Object data) throws Exception 
+    {
+    	return createScalarDS(name, pgroup,type, dims,maxdims, chunks,
+                gzip,null, data);
+    }
 
     // REVIEW DOCS for createScalarDS(). Check and document exceptions.
 

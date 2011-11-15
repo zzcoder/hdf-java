@@ -761,6 +761,7 @@ public class H4SDS extends ScalarDS
         long[] maxdims,
         long[] chunks,
         int gzip,
+        Object fillValue,
         Object data) throws Exception
     {
         H4SDS dataset = null;
@@ -921,6 +922,19 @@ public class H4SDS extends ScalarDS
 
         return dataset;
     }
+    
+    public static H4SDS create(
+            String name,
+            Group pgroup,
+            Datatype type,
+            long[] dims,
+            long[] maxdims,
+            long[] chunks,
+            int gzip,
+            Object data) throws Exception
+   {
+        return create(name, pgroup, type, dims, maxdims, chunks, gzip, null, data);
+   }
 
     /**
      * copy attributes from one SDS to another SDS

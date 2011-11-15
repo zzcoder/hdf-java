@@ -269,8 +269,8 @@ public class NC2File extends FileFormat {
     // implementing FileFormat
     @Override
     public Dataset createScalarDS(String name, Group pgroup, Datatype type,
-            long[] dims, long[] maxdims, long[] chunks, int gzip, Object data)
-            throws Exception {
+            long[] dims, long[] maxdims, long[] chunks, int gzip, Object fillValue,
+            Object data) throws Exception {
         // not supported
         throw new UnsupportedOperationException("Unsupported operation.");
     }
