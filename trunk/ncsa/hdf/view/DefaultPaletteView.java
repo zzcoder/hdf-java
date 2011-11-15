@@ -92,6 +92,7 @@ public class DefaultPaletteView extends JDialog implements PaletteView,
     private JComboBox choicePalette;
     private PaletteValueTable paletteValueTable;
     private int  numberOfPalettes;
+    private boolean startEditing = false;
 
     public DefaultPaletteView(ImageView theImageView) {
         this(null, theImageView);
@@ -465,7 +466,7 @@ public class DefaultPaletteView extends JDialog implements PaletteView,
         private DefaultTableModel valueTableModel;
         String rgbName = "Color";
         String idxName = "Index";
-        private final boolean startEditing[] = { false };
+        int editingRow =-1, editingCol=-1;
 
         public PaletteValueTable(DefaultPaletteView owner) {
             super(owner);
@@ -482,7 +483,7 @@ public class DefaultPaletteView extends JDialog implements PaletteView,
 
                 @Override
                 public Object getValueAt(int row, int col) {
-                    if (startEditing[0])
+                    if (startEditing && row==editingRow && col==editingCol)
                         return "";
 
                     if (col == 0)
@@ -496,17 +497,19 @@ public class DefaultPaletteView extends JDialog implements PaletteView,
                 }
 
                 @Override
-                public boolean editCellAt(int row, int column,
-                        java.util.EventObject e) {
-
+                public boolean editCellAt(int row, int column, java.util.EventObject e) 
+                {
                     if (!isCellEditable(row, column)) {
                         return super.editCellAt(row, column, e);
                     }
 
                     if (e instanceof KeyEvent) {
                         KeyEvent ke = (KeyEvent) e;
-                        if (ke.getID() == KeyEvent.KEY_PRESSED)
-                            startEditing[0] = true;
+                        if (ke.getID() == KeyEvent.KEY_PRESSED) {
+                            startEditing = true;
+                            editingRow = row;
+                            editingCol = column;
+                        }
                     }
 
                     return super.editCellAt(row, column, e);
@@ -523,7 +526,9 @@ public class DefaultPaletteView extends JDialog implements PaletteView,
 
                     String oldValue = (String) getValueAt(row, col);
                     super.editingStopped(e);
-                    startEditing[0] = false;
+                    startEditing = false;
+                    editingRow = -1;
+                    editingCol = -1;
 
                     Object source = e.getSource();
 
