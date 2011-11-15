@@ -1292,15 +1292,15 @@ public class H5File extends FileFormat {
      */
     @Override
     public Dataset createScalarDS(String name, Group pgroup, Datatype type,
-            long[] dims, long[] maxdims, long[] chunks, int gzip, Object data)
-            throws Exception {
+            long[] dims, long[] maxdims, long[] chunks, int gzip, Object fillValue,
+            Object data) throws Exception {
         if (pgroup == null) {
             // create new dataset at the root group by default
             pgroup = (Group) get("/");
         }
 
         return H5ScalarDS.create(name, pgroup, type, dims, maxdims, chunks,
-                gzip, data);
+                gzip, fillValue, data);
     }
 
     /*

@@ -1833,7 +1833,7 @@ implements TableView, ActionListener, MouseListener
                         catch (Exception ex) { strVal = null; }
                     }
                     
-                    if (strVal == null)
+                    if (strVal == null && val!= null)
                         strVal = val.toString();
                     
                     cellValueField.setText(strVal);

@@ -374,9 +374,10 @@ public class H4File extends FileFormat
         long[] maxdims,
         long[] chunks,
         int gzip,
+        Object fillValue,
         Object data) throws Exception
     {
-        return H4SDS.create(name, pgroup, type, dims, maxdims, chunks, gzip, data);
+        return H4SDS.create(name, pgroup, type, dims, maxdims, chunks, gzip, fillValue, data);
     }
 
 

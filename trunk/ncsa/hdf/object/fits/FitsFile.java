@@ -291,6 +291,7 @@ public class FitsFile extends FileFormat
         long[] maxdims,
         long[] chunks,
         int gzip,
+        Object fillValue,
         Object data) throws Exception {
         // not supported
         throw new UnsupportedOperationException("Unsupported operation.");

@@ -1331,6 +1331,74 @@ public class H5ScalarDS extends ScalarDS {
 
         return thePalette;
     }
+    
+    private static byte[] parseFillValue(Datatype type, Object fillValue) throws Exception
+    {
+         byte[] data = null;
+         
+         if (type == null || fillValue == null)
+        	 return null;
+ 		
+ 		int datatypeClass = type.getDatatypeClass();
+ 		int datatypeSize = type.getDatatypeSize();
+ 		
+ 		double val_dbl = 0;
+ 		String val_str = null;
+ 		
+ 		if (fillValue instanceof String)
+ 		{
+ 			val_str = (String) fillValue;
+ 		} else if (fillValue.getClass().isArray()) {
+ 			val_str = Array.get(fillValue, 0).toString();
+ 		}
+ 		
+ 		if (datatypeClass != Datatype.CLASS_STRING) {
+ 			try { val_dbl = Double.parseDouble(val_str);}
+ 			catch (NumberFormatException ex) {
+ 				return null;
+ 			}
+ 		}
+ 		
+         try {
+             switch (datatypeClass) {
+             case Datatype.CLASS_INTEGER:
+             case Datatype.CLASS_ENUM:
+             case Datatype.CLASS_CHAR:
+                 if (datatypeSize == 1) {
+                     data = new byte[] {(byte)val_dbl};
+                 }
+                 else if (datatypeSize == 2) {
+                     data = HDFNativeData.shortToByte((short)val_dbl);
+                 }
+                 else if (datatypeSize == 8) {
+                	 data = HDFNativeData.longToByte((long)val_dbl);
+                 }
+                 else {
+                	 data = HDFNativeData.intToByte((int)val_dbl);
+                 }
+                 break;
+             case Datatype.CLASS_FLOAT:
+                 if (datatypeSize == 8) {
+                	 data = HDFNativeData.doubleToByte(val_dbl);
+                 }
+                 else {
+                	 data = HDFNativeData.floatToByte((float)val_dbl);;
+                 }
+                 break;
+             case Datatype.CLASS_STRING:
+                 data = val_str.getBytes();
+                 break;
+             case Datatype.CLASS_REFERENCE:
+                 data = HDFNativeData.longToByte((long)val_dbl);
+                 break;
+             } // switch (tclass)
+         }
+         catch (Exception ex) {
+             data = null;
+         }
+
+         return data;
+     }
 
     /**
      * Creates a new dataset in a file.
@@ -1383,8 +1451,8 @@ public class H5ScalarDS extends ScalarDS {
      * @return the new dataset if successful. Otherwise returns null.
      */
     public static H5ScalarDS create(String name, Group pgroup, Datatype type,
-            long[] dims, long[] maxdims, long[] chunks, int gzip, Object data)
-            throws Exception {
+            long[] dims, long[] maxdims, long[] chunks, int gzip, Object fillValue,
+            Object data) throws Exception {
         H5ScalarDS dataset = null;
         String fullPath = null;
         int did = -1, tid = -1, sid = -1, plist = -1;
@@ -1449,26 +1517,34 @@ public class H5ScalarDS extends ScalarDS {
             // figure out creation properties
             plist = HDF5Constants.H5P_DEFAULT;
 
-            if (chunks != null) {
+            byte[] val_fill = null;
+            try { 
+            	val_fill = parseFillValue(type, fillValue);
+            } catch (Exception ex) {}
+
+            
+            if (chunks != null || val_fill !=null) {
                 plist = H5.H5Pcreate(HDF5Constants.H5P_DATASET_CREATE);
-                H5.H5Pset_layout(plist, HDF5Constants.H5D_CHUNKED);
-                H5.H5Pset_chunk(plist, rank, chunks);
+                
+                if (chunks != null) {
+                	H5.H5Pset_layout(plist, HDF5Constants.H5D_CHUNKED);
+                	H5.H5Pset_chunk(plist, rank, chunks);
+                }
+                
+                if (val_fill != null) {
+                	H5.H5Pset_fill_value( plist, tid, val_fill);
+                }
             }
 
             if (gzip > 0) {
                 H5.H5Pset_deflate(plist, gzip);
             }
             int fid = file.getFID();
-            did = H5
-                    .H5Dcreate(fid, fullPath, tid, sid,
+            
+            did = H5.H5Dcreate(fid, fullPath, tid, sid,
                             HDF5Constants.H5P_DEFAULT, plist,
                             HDF5Constants.H5P_DEFAULT);
-
-            byte[] ref_buf = H5.H5Rcreate(fid, fullPath,
-                    HDF5Constants.H5R_OBJECT, -1);
-            long l = HDFNativeData.byteToLong(ref_buf, 0);
-            long[] oid = { l };
-            dataset = new H5ScalarDS(file, name, path, oid);
+            dataset = new H5ScalarDS(file, name, path);
         }
         finally {
             try {
@@ -1507,6 +1583,19 @@ public class H5ScalarDS extends ScalarDS {
         return dataset;
     }
 
+    public static H5ScalarDS create(
+            String name,
+            Group pgroup,
+            Datatype type,
+            long[] dims,
+            long[] maxdims,
+            long[] chunks,
+            int gzip,
+            Object data) throws Exception
+   {
+        return create(name, pgroup, type, dims, maxdims, chunks, gzip, null, data);
+   }
+    
     /*
      * (non-Javadoc)
      * 
