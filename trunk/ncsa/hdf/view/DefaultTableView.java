@@ -279,7 +279,16 @@ implements TableView, ActionListener, MouseListener
             b = (Boolean) map.get(ViewProperties.DATA_VIEW_KEY.TRANSPOSED);
             if (b != null)
                 isDataTransposed = b.booleanValue();
+            
+            b = (Boolean) map.get(ViewProperties.DATA_VIEW_KEY.INDEXBASE1);
+            if (b != null) {
+            	if (b.booleanValue())
+            		indexBase = 1;
+            	else
+            		indexBase = 0;
+            }
         }
+
 
         if (hobject == null)
             hobject = (HObject)viewer.getTreeView().getCurrentObject();

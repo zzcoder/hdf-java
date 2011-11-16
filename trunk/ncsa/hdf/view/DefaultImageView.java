@@ -324,6 +324,7 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
             indexBase = 1;
 
         HObject hobject = null;
+        
         if (map != null) {
             hobject = (HObject) map.get(ViewProperties.DATA_VIEW_KEY.OBJECT);
             bitmask = (BitSet) map.get(ViewProperties.DATA_VIEW_KEY.BITMASK);
@@ -333,6 +334,14 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
                     .get(ViewProperties.DATA_VIEW_KEY.CONVERTBYTE);
             if (b != null)
                 convertByteData = b.booleanValue();
+            
+            b = (Boolean) map.get(ViewProperties.DATA_VIEW_KEY.INDEXBASE1);
+            if (b != null) {
+            	if (b.booleanValue())
+            		indexBase = 1;
+            	else
+            		indexBase = 0;
+            }            
         }
 
         if (hobject == null)
