@@ -62,12 +62,12 @@ public class UserOptionsDialog extends JDialog implements ActionListener {
     private JTextField H4toH5Field, UGField, workField, fileExtField,
             maxMemberField, startMemberField;
     private JComboBox fontSizeChoice, fontTypeChoice, delimiterChoice,
-             imageOriginChoice;
+             imageOriginChoice, indexBaseChoice;
     private JComboBox choiceTreeView, choiceMetaDataView, choiceTextView,
             choiceTableView, choiceImageView, choicePaletteView;
     private String rootDir, workDir;
     private JCheckBox checkCurrentUserDir, checkAutoContrast, 
-            checkConvertEnum, check1BasedIndex, checkShowValues;
+            checkConvertEnum, checkShowValues;
     private JButton currentDirButton;
     private JRadioButton checkReadOnly;
 
@@ -193,8 +193,7 @@ public class UserOptionsDialog extends JDialog implements ActionListener {
         String[] fontSizeChoices = { "12", "14", "16", "18", "20", "22", "24",
                 "26", "28", "30", "32", "34", "36", "48" };
         fontSizeChoice = new JComboBox(fontSizeChoices);
-        fontSizeChoice.setSelectedItem(String.valueOf(ViewProperties
-                .getFontSize()));
+        fontSizeChoice.setSelectedItem(String.valueOf(ViewProperties.getFontSize()));
 
         String[] fontNames = GraphicsEnvironment.getLocalGraphicsEnvironment()
         .getAvailableFontFamilyNames();
@@ -349,7 +348,7 @@ public class UserOptionsDialog extends JDialog implements ActionListener {
         centerP.add(p0);
 
         p0 = new JPanel();
-        p0.setLayout(new GridLayout(1, 3, 8, 8));
+        p0.setLayout(new GridLayout(1, 3, 20, 8));
 
         p00 = new JPanel();
         p00.setLayout(new BorderLayout());
@@ -366,9 +365,16 @@ public class UserOptionsDialog extends JDialog implements ActionListener {
 
         p00 = new JPanel();
         p00.setLayout(new BorderLayout());
-        check1BasedIndex = new JCheckBox("Use 1-based Index");
-        check1BasedIndex.setSelected(ViewProperties.isIndexBase1());
-        p00.add(check1BasedIndex, BorderLayout.CENTER);
+        
+        String[] indexBaseChoices = { "0-based", "1-based" };
+        indexBaseChoice = new JComboBox(indexBaseChoices);
+        if (ViewProperties.isIndexBase1())
+        	indexBaseChoice.setSelectedIndex(1);
+        else
+        	indexBaseChoice.setSelectedIndex(0);
+        
+        p00.add(new JLabel("Index Base: "), BorderLayout.WEST);
+        p00.add(indexBaseChoice, BorderLayout.CENTER);
         p0.add(p00);
 
         p00 = new JPanel();
@@ -883,7 +889,11 @@ public class UserOptionsDialog extends JDialog implements ActionListener {
         ViewProperties.setAutoContrast(checkAutoContrast.isSelected());
         ViewProperties.setShowImageValue(checkShowValues.isSelected());
         ViewProperties.setConvertEnum(checkConvertEnum.isSelected());
-        ViewProperties.setIndexBase1(check1BasedIndex.isSelected());
+        
+        if (indexBaseChoice.getSelectedIndex() == 0)
+        	ViewProperties.setIndexBase1(false);
+        else
+        	ViewProperties.setIndexBase1(true);
     }
 
     public boolean isFontChanged() {

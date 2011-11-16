@@ -1960,6 +1960,7 @@ public class DefaultTreeView extends JPanel
         boolean isImage = ((d instanceof ScalarDS) && ((ScalarDS)d).isImage());
         boolean isDisplayTypeChar = false;
         boolean isTransposed = false;
+        boolean isIndexBase1 = ViewProperties.isIndexBase1();
         BitSet bitmask = null;
         String dataViewName = null;
 
@@ -2000,6 +2001,7 @@ public class DefaultTreeView extends JPanel
             dataViewName = dialog.getDataViewName();
             isTransposed = dialog.isTransposed();
             bitmask = dialog.getBitmask();
+            isIndexBase1 = dialog.isIndexBase1();
             isApplyBitmaskOnly = dialog.isApplyBitmaskOnly();
         }
 
@@ -2025,7 +2027,8 @@ public class DefaultTreeView extends JPanel
 
         Object theView = null;
         Object[] initargs = {viewer};
-        HashMap<DATA_VIEW_KEY, Serializable> map = new HashMap<DATA_VIEW_KEY, Serializable>(4);
+        HashMap<DATA_VIEW_KEY, Serializable> map = new HashMap<DATA_VIEW_KEY, Serializable>(8);
+        map.put(ViewProperties.DATA_VIEW_KEY.INDEXBASE1, new Boolean(isIndexBase1));
         if (bitmask != null) {
             map.put(ViewProperties.DATA_VIEW_KEY.BITMASK, bitmask);
             if (isApplyBitmaskOnly)

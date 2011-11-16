@@ -107,7 +107,7 @@ public class DataOptionDialog extends JDialog implements ActionListener,
 
     private int currentIndex[];
 
-    private JRadioButton spreadsheetButton, imageButton;
+    private JRadioButton spreadsheetButton, imageButton, base1Button, base0Button;
 
     private JRadioButton[] bitmaskButtons;
     private JCheckBox applyBitmaskButton, extractBitButton;
@@ -391,6 +391,25 @@ public class DataOptionDialog extends JDialog implements ActionListener,
                 northP.setLayout(new GridLayout(1, 2, 5, 5));
                 northP.add(viewP);
                
+                viewP = new JPanel();
+                viewP.setLayout(new BorderLayout());
+                northP.add(viewP);
+                
+                JPanel baseIndexP = new JPanel();
+                viewP.add(baseIndexP, BorderLayout.NORTH);
+                baseIndexP.setBorder(new TitledBorder("Index Base"));
+                baseIndexP.setLayout(new GridLayout(1, 2, 5, 5));
+                base0Button = new JRadioButton("0-based ");
+                base1Button = new JRadioButton("1-based ");
+                ButtonGroup bgrp = new ButtonGroup();
+                bgrp.add(base0Button);
+                bgrp.add(base1Button);
+                if (ViewProperties.isIndexBase1())
+                	base1Button.setSelected(true);
+                else
+                	base0Button.setSelected(true);
+                baseIndexP.add(base0Button);
+                baseIndexP.add(base1Button);
                 
                 if (tclass == Datatype.CLASS_CHAR
                         || (tclass == Datatype.CLASS_INTEGER && sd
@@ -404,7 +423,7 @@ public class DataOptionDialog extends JDialog implements ActionListener,
                     }
 
                     JPanel sheetP2 = new JPanel();
-                    northP.add(sheetP2);
+                    viewP.add(sheetP2, BorderLayout.CENTER);
                     sheetP2.setBorder(new TitledBorder("Bitmask"));
 
                     JPanel tmpP = new JPanel();
@@ -564,8 +583,7 @@ public class DataOptionDialog extends JDialog implements ActionListener,
             }
 
             if (dataset instanceof ScalarDS) {
-                ((ScalarDS) dataset)
-                        .setIsImageDisplay(imageButton.isSelected());
+                ((ScalarDS) dataset).setIsImageDisplay(imageButton.isSelected());
             }
 
             dispose();
@@ -792,6 +810,10 @@ public class DataOptionDialog extends JDialog implements ActionListener,
     /** Returns true if the display option is image. */
     public boolean isImageDisplay() {
         return imageButton.isSelected();
+    }
+    
+    public boolean isIndexBase1() {
+    	return base1Button.isSelected();
     }
 
     /** for deal with bit masks only */
