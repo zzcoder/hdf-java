@@ -1117,13 +1117,14 @@ public final class Tools {
      * @param data
      *            the raw data array of signed/unsigned integers
      * @param params
-     *            the auto gain parameter. params[0]=gain, params[1]=bias
+     *            the auto gain parameter. params[0]=gain, params[1]=bias,
      * @param isUnsigned
-     *            the flag to indicate if the data array is unsiged integer
+     *            the flag to indicate if the data array is unsigned integer
      * @return non-negative if successful; otherwise, returns negative
      */
-    public static int autoContrastCompute(Object data, double[] params,
-            boolean isUnsigned) {
+    public static int autoContrastCompute(Object data, double[] params, 
+    		boolean isUnsigned) 
+    {
         int retval = 1;
         long maxDataValue = 255;
         double[] minmax = new double[2];
@@ -1154,19 +1155,19 @@ public final class Tools {
         case 'S':
             maxDataValue = MAX_INT16;
             if (isUnsigned) {
-                maxDataValue = MAX_UINT8; // upgaded from unsigned byte
+                maxDataValue = MAX_UINT8; // data was upgraded from unsigned byte
             }
             break;
         case 'I':
             maxDataValue = MAX_INT32;
             if (isUnsigned) {
-                maxDataValue = MAX_UINT16; // upgaded from unsigned short
+                maxDataValue = MAX_UINT16; // data was upgraded from unsigned short
             }
             break;
         case 'J':
             maxDataValue = MAX_INT64;
             if (isUnsigned) {
-                maxDataValue = MAX_UINT32; // upgaded from unsigned int
+                maxDataValue = MAX_UINT32; // data was upgraded from unsigned int
             }
             break;
         default:
@@ -1213,18 +1214,24 @@ public final class Tools {
      * @param params
      *            the auto gain parameter. params[0]=gain, params[1]=bias
      * @param isUnsigned
-     *            the flag to indicate if the data array is unsiged integer
+     *            the flag to indicate if the data array is unsigned integer
      * @return the data array with the auto contrast conversion; otherwise,
      *         returns null
      */
     public static Object autoContrastApply(Object data_in, Object data_out,
-            double[] params, boolean isUnsigned) {
+            double[] params, double[] minmax, boolean isUnsigned) 
+    {
         int size = 0;
+        double min=-MAX_INT64, max=MAX_INT64;
 
         if ((data_in == null) || (params == null) || (params.length < 2)) {
             return null;
         }
 
+        if (minmax!=null) {
+        	min = minmax[0];
+        	max = minmax[1];
+        }
         // input and output array must be the same size
         size = Array.getLength(data_in);
         if ((data_out != null) && (size != Array.getLength(data_out))) {
@@ -1247,16 +1254,22 @@ public final class Tools {
             byte b_max = (byte) MAX_INT8;
 
             for (int i = 0; i < size; i++) {
-                value = (b_in[i] + bias) * gain;
-                if (value < 0.0) {
-                    b_out[i] = 0;
-                }
-                else if (value > b_max) {
-                    b_out[i] = b_max;
-                }
-                else {
-                    b_out[i] = (byte) value;
-                }
+            	if (b_in[i]<min)
+            		b_out[i] = 0;
+            	else if (b_in[i]>max)
+            		b_out[i] = b_max;
+            	else {
+                    value = (b_in[i] + bias) * gain;
+                    if (value < 0.0) {
+                        b_out[i] = 0;
+                    }
+                    else if (value > b_max) {
+                        b_out[i] = b_max;
+                    }
+                    else {
+                        b_out[i] = (byte) value;
+                    }            		
+            	}
             }
             break;
         case 'S':
@@ -1267,20 +1280,26 @@ public final class Tools {
             short[] s_out = (short[]) data_out;
             short s_max = (short) MAX_INT16;
             if (isUnsigned) {
-                s_max = (short) MAX_UINT8; // upgaded from unsigned byte
+                s_max = (short) MAX_UINT8; // data was upgraded from unsigned byte
             }
 
             for (int i = 0; i < size; i++) {
-                value = (s_in[i] + bias) * gain;
-                if (value < 0.0) {
-                    s_out[i] = 0;
-                }
-                else if (value > s_max) {
-                    s_out[i] = s_max;
-                }
-                else {
-                    s_out[i] = (short) value;
-                }
+            	if (s_in[i]<min)
+            		s_out[i] = 0;
+            	else if (s_in[i]>max)
+            		s_out[i] = 255;
+            	else {
+            		value = (s_in[i] + bias) * gain;
+            		if (value < 0.0) {
+            			s_out[i] = 0;
+            		}
+            		else if (value > s_max) {
+            			s_out[i] = s_max;
+            		}
+            		else {
+            			s_out[i] = (short) value;
+            		}
+            	}
             }
             break;
         case 'I':
@@ -1291,20 +1310,27 @@ public final class Tools {
             int[] i_out = (int[]) data_out;
             int i_max = (int) MAX_INT32;
             if (isUnsigned) {
-                i_max = (int) MAX_UINT16; // upgaded from unsigned short
+                i_max = (int) MAX_UINT16; // data was upgraded from unsigned short
             }
 
             for (int i = 0; i < size; i++) {
-                value = (i_in[i] + bias) * gain;
-                if (value < 0.0) {
-                    i_out[i] = 0;
-                }
-                else if (value > i_max) {
-                    i_out[i] = i_max;
-                }
-                else {
-                    i_out[i] = (int) value;
-                }
+            	if (i_in[i]<min)
+            		i_out[i] = 0;
+            	else if (i_in[i]>max)
+            		i_out[i] = 255;
+            	else {
+            		value = (i_in[i] + bias) * gain;
+
+            		if (value < 0.0) {
+            			i_out[i] = 0;
+            		}
+            		else if (value > i_max) {
+            			i_out[i] = i_max;
+            		}
+            		else {
+            			i_out[i] = (int) value;
+            		}
+            	}
             }
             break;
         case 'J':
@@ -1315,20 +1341,26 @@ public final class Tools {
             long[] l_out = (long[]) data_out;
             long l_max = MAX_INT64;
             if (isUnsigned) {
-                l_max = MAX_UINT32; // upgaded from unsigned int
+                l_max = MAX_UINT32; // data was upgraded from unsigned int
             }
 
             for (int i = 0; i < size; i++) {
-                value = (l_in[i] + bias) * gain;
-                if (value < 0.0) {
-                    l_out[i] = 0;
-                }
-                else if (value > l_max) {
-                    l_out[i] = l_max;
-                }
-                else {
-                    l_out[i] = (long) value;
-                }
+            	if (l_in[i]<min)
+            		l_out[i] = 0;
+            	else if (l_in[i]>max)
+            		l_out[i] = 255;
+            	else {
+            		value = (l_in[i] + bias) * gain;
+            		if (value < 0.0) {
+            			l_out[i] = 0;
+            		}
+            		else if (value > l_max) {
+            			l_out[i] = l_max;
+            		}
+            		else {
+            			l_out[i] = (long) value;
+            		}
+            	}
             }
             break;
         default:
@@ -1336,40 +1368,6 @@ public final class Tools {
         } // switch (dname)
 
         return data_out;
-    }
-
-    /**
-     * Auto-ranging of gain/bias sliders
-     * 
-     * Given the results of autogaining an image, compute reasonable min and max
-     * values for gain/bias sliders.
-     * 
-     * @param params
-     *            the auto gain parameter: params[0]=gain, params[1]=bias
-     * @param gain
-     *            the range of the gain: gain[0]=min, gain[1]=mas
-     * @param bias
-     *            the range of the bias: bias[0]=min, bias[1]=max
-     * @return non-negative if successful; otherwise, returns negative
-     */
-    public static int autoContrastComputeSliderRange(double[] params,
-            double[] gain, double[] bias) {
-        if ((params == null) || (gain == null) || (bias == null)
-                || (params.length < 2) || (gain.length < 2)
-                || (bias.length < 2)) {
-            return -1;
-        }
-
-        gain[0] = 0;
-        gain[1] = params[0] * 3.0;
-
-        bias[1] = 256.0;
-        if ((params[1] >= 0.001) || (params[1] <= -0.001)) {
-            bias[1] = Math.abs(params[1]) * 3.0;
-        }
-        bias[0] = -bias[1];
-
-        return 1;
     }
 
     /**
@@ -1424,7 +1422,7 @@ public final class Tools {
             break;
         case 'S':
             short[] s_src = (short[]) src;
-            if (isUnsigned) { // upgaded from unsigned byte
+            if (isUnsigned) { // data was upgraded from unsigned byte
                 for (int i = 0; i < size; i++) {
                     dst[i] = (byte) s_src[i];
                 }
@@ -1437,7 +1435,7 @@ public final class Tools {
             break;
         case 'I':
             int[] i_src = (int[]) src;
-            if (isUnsigned) { // upgaded from unsigned short
+            if (isUnsigned) { // data was upgraded from unsigned short
                 for (int i = 0; i < size; i++) {
                     dst[i] = (byte) ((i_src[i] >> 8) & 0xFF);
                 }
@@ -1450,7 +1448,7 @@ public final class Tools {
             break;
         case 'J':
             long[] l_src = (long[]) src;
-            if (isUnsigned) { // upgaded from unsigned int
+            if (isUnsigned) { // data was upgraded from unsigned int
                 for (int i = 0; i < size; i++) {
                     dst[i] = (byte) ((l_src[i] >> 24) & 0xFF);
                 }
@@ -1485,13 +1483,13 @@ public final class Tools {
      */
     public static int autoContrastComputeMinMax(Object data, double[] minmax) {
         int retval = 1;
-        double[] avgstd = new double[2];
 
         if ((data == null) || (minmax == null) || (Array.getLength(data) <= 0)
                 || (Array.getLength(minmax) < 2)) {
             return -1;
         }
 
+        double[] avgstd = {0, 0};
         retval = computeStatistics(data, avgstd, null);
         if (retval < 0) {
             return retval;
@@ -1632,6 +1630,43 @@ public final class Tools {
             retval = -1;
             break;
         } // switch (dname)
+
+        return retval;
+    }
+    
+    /**
+     * Finds the distribution of data values
+     * 
+     * @param data
+     *            the raw data array
+     * @param dataDist
+     *            the data distirbution.
+     * @param minmax
+     *            the data range
+     * @return non-negative if successful; otherwise, returns negative
+     */
+    public static int findDataDist(Object data, int[] dataDist, double[] minmax) {
+        int retval = 0;
+        double delt = 1;
+
+        if ((data == null) || (minmax == null) || dataDist==null)
+            return -1;
+
+        int n = Array.getLength(data);
+        
+        if (minmax[1]!=minmax[0])
+        	delt = (dataDist.length-1)/(minmax[1]-minmax[0]);
+
+        for (int i=0; i<dataDist.length; i++)
+        	dataDist[i] = 0;
+        
+        int idx;
+        double val;
+        for (int i=0; i<n; i++) {
+        	val =((Number) Array.get(data, i)).doubleValue();
+        	idx = (int) ((val-minmax[0])*delt);
+        	dataDist[idx]++;
+        }
 
         return retval;
     }

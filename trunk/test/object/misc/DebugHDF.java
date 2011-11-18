@@ -118,7 +118,7 @@ public class DebugHDF {
 //       try { TestBug1523("G:\\Projects\\HUGS\\data\\testfile02.h5"); } catch(Exception ex) {ex.printStackTrace();}
 //        try { createINF("G:\\temp\\inf.h5"); } catch(Exception ex) {ex.printStackTrace();}
 //        try { createNaN_INF("G:\\temp\\nan_inf.h5"); } catch(Exception ex) {ex.printStackTrace();}
-        try { testStrings("G:\\temp\\strs.h5"); } catch(Exception ex) {ex.printStackTrace();}
+//        try { testStrings("G:\\temp\\strs.h5"); } catch(Exception ex) {ex.printStackTrace();}
 //        testVariableArity("null argument", null);
 //        testVariableArity("no argument");
 //        testVariableArity("1 argument", 1);
@@ -143,7 +143,9 @@ public class DebugHDF {
 //        try {testRefData("g:\\temp\\refs.h5", "refs"); } catch (Exception ex) {ex.printStackTrace();}
 //      try {testH5WriteDouble("g:\\temp\\double.h5"); } catch (Exception ex) {ex.printStackTrace();}
 //        try {testGroupMemoryLeak("G:\\temp\\mem_leak.h5"); } catch (Exception ex) {ex.printStackTrace();} 
-//        try { testH5OflushCrash("G:\\temp\\H5Oflush_crash.h5"); } catch (Exception ex) {ex.printStackTrace();} 
+//        try { testH5OflushCrash("G:\\temp\\H5Oflush_crash.h5"); } catch (Exception ex) {ex.printStackTrace();}
+        
+        testPrintData();
     }
     
     public static void testRefData(String fname, String dname)throws Exception
@@ -3715,6 +3717,24 @@ public class DebugHDF {
 
     	H5.H5Fclose(fid); 
 
+
+    	return 0;
+    }    
+    
+    static private int testPrintData()
+    {
+    	int[] idata = {1,2,3,4,5,6,7,8,9,10};
+    	float[] fdata = {1.001f,2.001f,3.001f,4.001f,5.001f,6.001f,7.001f,8.001f,9.001f,10.001f};
+    	double[] ddata = new double[idata.length];
+    	
+    	for (int i=0; i<idata.length; i++) {
+    		ddata[i] = ((Number) Array.get(fdata, i)).doubleValue();
+    	}
+    		
+    	for (int i=0; i<idata.length; i++) {
+    		System.out.println(ddata[i]+"\t");
+    	}
+    		
 
     	return 0;
     }    
