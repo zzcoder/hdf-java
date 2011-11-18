@@ -772,11 +772,12 @@ public class UserOptionsDialog extends JDialog implements ActionListener {
                     + "To apply the gain/bias to a pixel, use the formula \n"
                     + "data[i] = (data[i] + bias) * gain \n"
                     + "\n"
-                    + "Finally, for auto-ranging the sliders for gain/bias, we do the following \n"
-                    + "gain_min = 0 \n"
-                    + "gain_max = gain * 3.0 \n"
-                    + "bias_min = -fabs(bias) * 3.0 \n"
-                    + "bias_max = fabs(bias) * 3.0 \n\n\n";
+//                    + "Finally, for auto-ranging the sliders for gain/bias, we do the following \n"
+//                    + "gain_min = 0 \n"
+//                    + "gain_max = gain * 3.0 \n"
+//                    + "bias_min = -fabs(bias) * 3.0 \n"
+//                    + "bias_max = fabs(bias) * 3.0 \n" 
+                    + "\n\n";
             JOptionPane.showMessageDialog(this, msg);
         }
         else if (cmd.equals("Help on Convert Enum")) {
