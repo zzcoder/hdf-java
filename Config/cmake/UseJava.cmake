@@ -182,13 +182,16 @@
 #  License text for the above reference.)
 
 function (__java_copy_file src dest comment)
-    add_custom_command(
-        OUTPUT  ${dest}
-        COMMAND cmake -E copy_if_different
-        ARGS    ${src}
-                ${dest}
-        DEPENDS ${src}
-        COMMENT ${comment})
+#    add_custom_command(
+#        OUTPUT  ${dest}
+#        COMMAND cmake -E copy_if_different
+#        ARGS    ${src}
+#                ${dest}
+#        DEPENDS ${src}
+#        COMMENT ${comment})
+    execute_process(
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${src} ${dest}
+    )
 endfunction (__java_copy_file src dest comment)
 
 # define helper scripts
@@ -222,6 +225,12 @@ function(add_jar _TARGET_NAME)
     endforeach(JAVA_INCLUDE_DIR)
 
     set(CMAKE_JAVA_CLASS_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${_TARGET_NAME}.dir")
+    if (CMAKE_JAVA_RESOURCE_PATH)
+        set (_CMAKE_JAVA_RESOURCE_PATH "${CMAKE_JAVA_CLASS_OUTPUT_PATH}/${CMAKE_JAVA_RESOURCE_PATH}")
+    else (CMAKE_JAVA_RESOURCE_PATH)
+        set (CMAKE_JAVA_RESOURCE_PATH ".")
+        set (_CMAKE_JAVA_RESOURCE_PATH "${CMAKE_JAVA_CLASS_OUTPUT_PATH}")
+    endif (CMAKE_JAVA_RESOURCE_PATH)
 
     set(_JAVA_TARGET_OUTPUT_NAME "${_TARGET_NAME}.jar")
     if (CMAKE_JAVA_TARGET_OUTPUT_NAME AND CMAKE_JAVA_TARGET_VERSION)
@@ -229,7 +238,9 @@ function(add_jar _TARGET_NAME)
         set(_JAVA_TARGET_OUTPUT_LINK "${CMAKE_JAVA_TARGET_OUTPUT_NAME}.jar")
     elseif (CMAKE_JAVA_TARGET_VERSION)
         set(_JAVA_TARGET_OUTPUT_NAME "${_TARGET_NAME}-${CMAKE_JAVA_TARGET_VERSION}.jar")
-        set(_JAVA_TARGET_OUTPUT_LINK "${_TARGET_NAME}.jar")
+        if (NOT WIN32)
+            set(_JAVA_TARGET_OUTPUT_LINK "${_TARGET_NAME}.jar")
+        endif (NOT WIN32)
     elseif (CMAKE_JAVA_TARGET_OUTPUT_NAME)
         set(_JAVA_TARGET_OUTPUT_NAME "${CMAKE_JAVA_TARGET_OUTPUT_NAME}.jar")
     endif (CMAKE_JAVA_TARGET_OUTPUT_NAME AND CMAKE_JAVA_TARGET_VERSION)
@@ -274,9 +285,10 @@ function(add_jar _TARGET_NAME)
 
         else (_JAVA_EXT MATCHES ".java")
             __java_copy_file(${CMAKE_CURRENT_SOURCE_DIR}/${_JAVA_SOURCE_FILE}
-                             ${CMAKE_JAVA_CLASS_OUTPUT_PATH}/${_JAVA_SOURCE_FILE}
+                             ${_CMAKE_JAVA_RESOURCE_PATH}/${_JAVA_SOURCE_FILE}
                              "Copying ${_JAVA_SOURCE_FILE} to the build directory")
-            list(APPEND _JAVA_RESOURCE_FILES ${_JAVA_SOURCE_FILE})
+            list(APPEND _JAVA_RESOURCE_LIST ${_CMAKE_JAVA_RESOURCE_PATH}/${_JAVA_SOURCE_FILE})
+            list(APPEND _JAVA_RESOURCE_FILES ${CMAKE_JAVA_RESOURCE_PATH}/${_JAVA_SOURCE_FILE})
         endif (_JAVA_EXT MATCHES ".java")
     endforeach(_JAVA_SOURCE_FILE)
 
@@ -328,7 +340,7 @@ function(add_jar _TARGET_NAME)
                 -D_JAVA_TARGET_OUTPUT_NAME=${CMAKE_CURRENT_BINARY_DIR}/${_JAVA_TARGET_OUTPUT_NAME}
                 -D_JAVA_TARGET_OUTPUT_LINK=${_JAVA_TARGET_OUTPUT_LINK}
                 -P ${_JAVA_SYMLINK_SCRIPT}
-            DEPENDS ${_JAVA_RESOURCE_FILES} ${_JAVA_DEPENDS} ${CMAKE_JAVA_CLASS_OUTPUT_PATH}/java_class_filelist
+            DEPENDS ${_JAVA_RESOURCE_LIST} ${_JAVA_DEPENDS} ${CMAKE_JAVA_CLASS_OUTPUT_PATH}/java_class_filelist
             WORKING_DIRECTORY ${CMAKE_JAVA_CLASS_OUTPUT_PATH}
             COMMENT "Creating Java archive ${_JAVA_TARGET_OUTPUT_NAME}"
         )
@@ -344,7 +356,7 @@ function(add_jar _TARGET_NAME)
                 -D_JAVA_TARGET_OUTPUT_LINK=${_JAVA_TARGET_OUTPUT_LINK}
                 -P ${_JAVA_SYMLINK_SCRIPT}
             WORKING_DIRECTORY ${CMAKE_JAVA_CLASS_OUTPUT_PATH}
-            DEPENDS ${_JAVA_RESOURCE_FILES} ${_JAVA_DEPENDS} ${CMAKE_JAVA_CLASS_OUTPUT_PATH}/java_class_filelist
+            DEPENDS ${_JAVA_RESOURCE_LIST} ${_JAVA_DEPENDS} ${CMAKE_JAVA_CLASS_OUTPUT_PATH}/java_class_filelist
             COMMENT "Creating Java archive ${_JAVA_TARGET_OUTPUT_NAME}"
         )
     endif (CMAKE_JNI_TARGET)
