@@ -5,25 +5,22 @@ Files included in the release:
 /bin/$platform  -- prebuilt binaries for specific platform (limited platforms)
 /hdfview        -- HDFView installation program (limited platforms)
 
-Major changes include supporting HDF5 1.8 features in HDF-Java products, bug fixes, and other enhancements.
-
 
 HDF libraries
 ==================================================================================================================
-This release was built and tested with HDF 4.2.5 and HDF5 1.8.6. 
+This release was built and tested with HDF 4.2.6 and HDF5 1.8.8. 
 $YOUR-HDF-JAVA-HOME/lib/<platform>/*.settings files include information on the platform 
 version and compiler used to build hdf4 and hdf5.
+
+JDK
+==================================================================================================================
+This release was built and tested with JDK 1.6. 
 
 
 Platforms
 ==================================================================================================================
 This release was built and tested for the following platforms:
 
-32-bit distribution -- runs on 32-bit systems or 64-bit systems with 32-bit JRE
-    * Linux
-    * Mac Intel
-    * Solaris
-    * Windows
 
 64-bit distribution -- runs on 64-bit systems with 64-bit JRE only
     * Linux
@@ -31,64 +28,57 @@ This release was built and tested for the following platforms:
     * Solaris
     * Windows
 
+32-bit distribution -- runs on 32-bit systems or 64-bit systems with 32-bit JRE
+    * Linux
+    * Mac Intel
+    * Solaris
+    * Windows
 
-Supporting for HDF5 1.8
+
+Changes to Java HDF5 Interface(JHI5)
 ==================================================================================================================
-    * HDF5 JNI:- Changes to Java HDF5 Interface(JHI5) include:
-          -- 101 methods were added to JHI5 to support HDF5 1.8.
-          -- Changes were made to 17 methods in JHI5 for supporting the compatibility between HDF5 1.6 and 1.8.
-          -- Unit tests were added for all the new methods added to JHI5. 
+	-- 29 methods were added to JHI5: 
+		H5Diterate, 			H5Pget_buffer_size, 	H5Pget_char_encoding,			H5Pget_chunk_cache, 
+		H5Pget_driver, 			H5Pget_dxpl_multi, 		H5Pget_elink_file_cache_size,	H5Pget_fapl_multi, 
+		H5Pget_filter, 			H5Pget_filter2, 		H5Pget_gcreferences, 			H5Pget_mdc_config, 
+        H5Pget_meta_block_size,	H5Pget_obj_track_times, H5Pget_sieve_buf_size, 			H5Pset_char_encoding, 
+		H5Pset_chunk_cache, 	H5Pset_dxpl_multi, 		H5Pset_elink_file_cache_size, 	H5Pset_fapl_multi, 
+		H5Pset_fapl_sec2, 		H5Pset_fapl_split, 		H5Pset_fapl_stdio, 				H5Pset_fapl_windows, 
+		H5Pset_mdc_config, 		H5Pset_meta_block_size,	H5Pset_obj_track_times, 		H5Pset_sieve_buf_size, 
+		H5Sget_select_type.
+	-- 80 new unit tests were added to JHI5. 
 
-    * HDF-Java Object Layer:- Changes in the Java HDF Object package include:
-          -- Set the bounds of library versions
-          -- Set link creation order
-          -- Set link storage type
-          -- Show groups in creation order
-          -- Create soft and external links
-          -- Retrieve link information
-          -- Show attributes in creation order
-
-    * HDFView:- Changes for supporting HDF5 1.8 in HDFView include:
-          -- Set the bounds of library versions of an open file
-          -- Show the bounds of library versions of an open file
-          -- Set link creation order in groups
-          -- Set link storage type when creating a group
-          -- Create soft and external links
-          -- Show link information
-
-
-Other Major Improvements
+Major enhancements
 ==================================================================================================================  
-    * Use H5Ocopy() for copying datasets or groups (important for large datasets)
-    * Show the values of specific bit(s) packed in a byte or two-byte integer
-    * Show and modify dangling links
-    * Rename attributes
-    * Show the names of the palettes in HDFView
-    * Move objects within the same HDF5 file
-    * Export and import data to/from a binary file
+    * Select the firt file to open family files from HDFView
+	* Ignore NaN and INF values for better line plots from TableView
+	* Allow to set fill value when creating a new dataset
+	* Copy object to a group where the name already exist and resolve name conflict
+	* Import/export image palette from/to a text file
+	* Provide an option to show data values in 0-based or 1-based index
+	* Choose image origin of UpperLeft, LowerLeft, UpperRight, and LowerRight
+	* Add options to show values of selected bits or apply a bitmask for 1-byte or 2-byte integers
+	* Add data distribution histogram for changing data range in ImageView
 
 
-Major Bug Fixes
+Major bug Fixes
 ================================================================================================================== 
-    * HDFView: can now copy+paste a 1024^3-64bit-float-dataset.
-    * HDFView: can now copy large datasets in HDFView
-    * HDFView: image for an unsigned short dataset with a fill value no longer causes an exception
-    * HDFView: image is now displayed correctly if you swap dimensions
-    * HDFView: now displays 3D data correctly when dimensions are rotated
-    * HDFView: export table includes extra TAB separator between values
-    * Added missing unit tests for H5R package 
-    * HDFView: can now copy large datasets
-    * Can now copy and paste to Excel large arrays using the Table menu
-    * Made all Java classes portable for 32-bit and 64-bit environments
+    * Fixed a HDFView crash on region references on nested compound fileds
+	* Added serializable interferce and tests to all hdf-java objects
+	* Added information of coordinates of selected data to the column header for 2D+ string daasets
+	* Fixed a failure on refresh image palette table when palette values were changed
+ 	* Fixed TableView to allow flip through data of 3D compound dataset
+	* Fixed HDF4 SDS creation so that unlimited dims is not allowed to be used with compression or chunk
+	* Fixed HDF-Java objects to use "/" for the root group instead of the file name
+	* Fixed HDFView to allow rename named datatypes
+	* Fixed HDFView to allow view content of nested external links pointing to objects in different files
 
 
 Limitations / Known Problems
 ==================================================================================================================  
-    * HDFView does not support undo operations; all changes will go to the physical file, and the editing results 
-      cannot be recovered.
+    * HDFView does not support undo operations; the editing results go to files and cannot be recovered.
     * HDFView does not support conversion between HDF4 and HDF5.
-    * HDFView supports only indexed images with RGB color model or 24-bit true color image. It does not support 
-      other color models such as CMYK and HSV.
+    * HDFView supports only indexed images with RGB color model or 24-bit true color image. 
     * Directly using multiple dimensional arrays causes a performance problem because there is no direct mapping 
       for multiple dimensional arrays between Java and C.
     * HDF (4&5) APIs with function pointers are not supported in HDF-Java. 
