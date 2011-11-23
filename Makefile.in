@@ -273,12 +273,12 @@ install-lib: natives
 	-mkdir -p $(LIBDIR)/@JAVATARG@
 	@if test -n "$(H5INC)" ; then \
 	cp $(CLASS_DIR)/@JAVATARG@/libjhdf5.$(JSLEXT) $(LIBDIR)/@JAVATARG@ ; fi
-#	@if test -n "$(H5INC)/../lib" ; then \
-#	cp $(H5INC)/../lib/*.settings $(LIBDIR)/@JAVATARG@ ; fi
+	@if test -n "$(H5INC)/../lib" ; then \
+	cp $(H5INC)/../lib/*.settings $(LIBDIR)/@JAVATARG@ ; fi
 	@if test -n "$(H4INC)" ; then \
 	cp $(CLASS_DIR)/@JAVATARG@/libjhdf.$(JSLEXT) $(LIBDIR)/@JAVATARG@ ; fi
-#	@if test -n "$(H4INC)/../lib" ; then \
-#	cp $(H4INC)/../lib/*.settings $(LIBDIR)/@JAVATARG@ ; fi
+	@if test -n "$(H4INC)/../lib" ; then \
+	cp $(H4INC)/../lib/*.settings $(LIBDIR)/@JAVATARG@ ; fi
 	@if test -n "$(H45INC)" ; then \
 	cp $(CLASS_DIR)/@JAVATARG@/libjh4toh5.$(JSLEXT) $(LIBDIR)/@JAVATARG@ ; fi
 	@echo "Install Natives complete"
