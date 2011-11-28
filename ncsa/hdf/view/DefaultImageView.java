@@ -1208,7 +1208,7 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
             return;
         }
 
-        if (changeImageFilter(filter)) {
+        if (applyImageFilter(filter)) {
             // taggle flip flag
             if (direction == FLIP_HORIZONTAL) {
                 isHorizontalFlipped = !isHorizontalFlipped;
@@ -1225,7 +1225,7 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
             return;
             
         Rotate90Filter filter = new Rotate90Filter(direction);
-        changeImageFilter(filter);
+        applyImageFilter(filter);
         
         if (direction == ROTATE_CW_90) {
             rotateCount++;
@@ -1249,7 +1249,7 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
             return;
         }
 
-        changeImageFilter(filter);
+        applyImageFilter(filter);
     }
 
     // implementing ImageObserver
@@ -1260,7 +1260,7 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
             return;
         }
 
-        changeImageFilter(filter);
+        applyImageFilter(filter);
     }
 
     /** Apply contrast/brightness to unsigned short integer */
@@ -1627,7 +1627,7 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
                     return;
                 }
 
-                changeDataRange(drange);
+                applyDataRange(drange);
             }
             else if (cmd.equals("Flip horizontal")) {
                 flip(FLIP_HORIZONTAL);
@@ -1882,14 +1882,47 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
         image = img;
         imageComponent.setImage(img);
         
-        if (origin == 1)
-            flip(FLIP_VERTICAL);
-        else if (origin == 2)
-            flip(FLIP_HORIZONTAL);
-        if (origin == 3) {
-            rotate(ROTATE_CW_90);
-            rotate(ROTATE_CW_90);
-        }        
+        setImageDirection();
+    }
+    
+    private void setImageDirection() {
+        boolean isHF = isHorizontalFlipped;
+        boolean isVF = isVerticalFlipped;
+        int rc = rotateCount;
+        
+        if (isHF || isVF || rc!=0) {
+            isHorizontalFlipped = false;
+            isVerticalFlipped = false;
+            rotateCount = 0;        
+
+            if (isHF)
+            	flip(FLIP_HORIZONTAL);
+            
+            if (isVF)
+            	flip(FLIP_VERTICAL);
+            
+            while (rc > 0)  {
+            	rotate(ROTATE_CW_90);
+            	rc--;
+            }
+       	
+            while (rc < 0)  {
+            	rotate(ROTATE_CCW_90);
+            	rc++;
+            }
+        	
+        } else {
+            if (origin == 1)
+                flip(FLIP_VERTICAL);
+            else if (origin == 2)
+                flip(FLIP_HORIZONTAL);
+            if (origin == 3) {
+                rotate(ROTATE_CW_90);
+                rotate(ROTATE_CW_90);
+            }
+        }
+        
+        zoomTo(zoomFactor);        
     }
 
     public byte[][] getPalette() {
@@ -2082,7 +2115,7 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
         return theImage;
     }
 
-    private boolean changeImageFilter(ImageFilter filter) {
+    private boolean applyImageFilter(ImageFilter filter) {
         boolean status = true;
         ImageProducer imageProducer = image.getSource();
 
@@ -2101,7 +2134,7 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
         return status;
     }
 
-    private void changeDataRange(double[] newRange) {
+    private void applyDataRange(double[] newRange) {
     	if (doAutoGainContrast && gainBias!= null) {
     		applyAutoGain(gainBias_current, newRange);
     	} else {
@@ -2116,7 +2149,7 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
                     imageByteData);
 
             image = createIndexedImage(imageByteData, imagePalette, w, h);
-            imageComponent.setImage(image);
+            setImage(image);
             zoomTo(zoomFactor);
             paletteComponent.updateRange(newRange);
     	}
@@ -3608,7 +3641,7 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
                 minmax_current[0] = ((Number) minField.getValue()).doubleValue();
                 minmax_current[1] = ((Number) maxField.getValue()).doubleValue();
 
-                changeDataRange(minmax_current);
+                applyDataRange(minmax_current);
                 minmax_current[0] = minmax_current[1] = 0;
             }
             else if (cmd.equals("Cancel")) {
@@ -3616,7 +3649,7 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
             	minmax_current[0] = minmax_previous[0];
             	minmax_current[1] = minmax_previous[1];
             	
-            	changeDataRange(minmax_previous);
+            	applyDataRange(minmax_previous);
             	
                 this.dispose();
             }
