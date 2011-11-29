@@ -1665,7 +1665,7 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
             }
             else if (cmd.startsWith("Show animation")) {
                 setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-                Animation animation = new Animation((JFrame) viewer, dataset);
+                new Animation((JFrame) viewer, dataset);
                 setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
             }
             else if (cmd.startsWith("Animation speed")) {
@@ -3288,7 +3288,7 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
                 sleepTime = 1000 / animationSpeed;
             }
 
-            // back up the sart and selected size
+            // back up the start and selected size
             long[] tstart = new long[rank];
             long[] tselected = new long[rank];
             long[] tstride = new long[rank];
@@ -3300,9 +3300,9 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
             int max_size = (int) Math.max(selected[selectedIndex[0]],
                     selected[selectedIndex[1]]);
             if (max_size > MAX_ANIMATION_IMAGE_SIZE) {
-                stride_n = max_size / MAX_ANIMATION_IMAGE_SIZE;
+                stride_n = (int)( (double)max_size / (double)MAX_ANIMATION_IMAGE_SIZE +0.5);
             }
-
+            
             start[selectedIndex[0]] = 0;
             start[selectedIndex[1]] = 0;
             start[selectedIndex[2]] = 0;
@@ -3322,10 +3322,9 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
             numberOfImages = (int) dims[selectedIndex[2]];
             frames = new Image[numberOfImages];
             MemoryImageSource mir = memoryImageSource;
-
             try {
                 for (int i = 0; i < numberOfImages; i++) {
-                    memoryImageSource = null; // each amimation image has its
+                    memoryImageSource = null; // each animation image has its
                                               // own image resource
                     start[selectedIndex[2]] = i;
 
@@ -3338,7 +3337,10 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
                     }
 
                     byteData = new byte[size];
-                    Tools.getBytes(data3d, dataRange, byteData);
+                    
+                    byteData=Tools.getBytes(data3d, dataRange, w, h, false, dataset.getFillValue(),
+                            true, byteData);
+                    
                     frames[i] = createIndexedImage(byteData, imagePalette, w, h);
                 }
             }

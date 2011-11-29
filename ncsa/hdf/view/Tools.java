@@ -992,8 +992,14 @@ public final class Tools {
             convertByteData = false; // no need to convert data
         
         // no conversion and no transpose
-        if (!convertByteData && !isTransposed)
+        if (!convertByteData && !isTransposed) {
+        	if (byteData!=null && byteData.length == rawData.length) {
+        		System.arraycopy(rawData, 0, byteData, 0, rawData.length);
+        		return byteData;
+        	}
+        	
         	return rawData;
+        }
         
         // don't want to change the original raw data
         if (byteData == null || rawData==byteData) 
