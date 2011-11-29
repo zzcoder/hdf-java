@@ -42,54 +42,68 @@ CURRENTDIR = .
 JAR_DIR=$(CLASS_DIR)
 OUT_DIR=$(CLASS_DIR)/$(DIR)
 
-HDFVIEWDISTFILES= ./ncsa/hdf/view/*.java $(HDFVIEWICONS)
+HDFVIEWDISTFILES= ./ncsa/hdf/view/*.java ./ncsa/hdf/view/Makefile.in ./ncsa/hdf/view/CMakeLists.txt $(HDFVIEWICONS)
 
-HDFOBJDISTFILES= ./ncsa/hdf/object/*.java 
+HDFOBJDISTFILES= ./ncsa/hdf/object/*.java ./ncsa/hdf/object/Makefile.in ./ncsa/hdf/object/CMakeLists.txt
 
-H4OBJDISTFILES= ./ncsa/hdf/object/h4/*.java 
+H4OBJDISTFILES= ./ncsa/hdf/object/h4/*.java ./ncsa/hdf/object/h4/Makefile.in ./ncsa/hdf/object/h4/CMakeLists.txt
 
-H5OBJDISTFILES= ./ncsa/hdf/object/h5/*.java 
+H5OBJDISTFILES= ./ncsa/hdf/object/h5/*.java ./ncsa/hdf/object/h5/Makefile.in ./ncsa/hdf/object/h5/CMakeLists.txt
 
 FITSDISTJARFILE = $(CLASS_DIR)/fits.jar
 NC2SDISTJARFILE = $(CLASS_DIR)/netcdf.jar
 JUNITSDISTJARFILE = $(CLASS_DIR)/junit.jar
 
-NC2OBJDISTFILES= ./ncsa/hdf/object/nc2/*.java $(CLASS_DIR)/netcdf.jar 
+NC2OBJDISTFILES= ./ncsa/hdf/object/nc2/*.java ./ncsa/hdf/object/nc2/Makefile.in ./ncsa/hdf/object/nc2/CMakeLists.txt $(CLASS_DIR)/netcdf.jar 
 
-FITSOBJDISTFILES= ./ncsa/hdf/object/fits/*.java $(CLASS_DIR)/fits.jar 
+FITSOBJDISTFILES= ./ncsa/hdf/object/fits/*.java ./ncsa/hdf/object/fits/Makefile.in ./ncsa/hdf/object/fits/CMakeLists.txt $(CLASS_DIR)/fits.jar 
 
-TOPDIST=./VERSION ./COPYING ./Makefile.in \
+TOPDIST=./VERSION ./COPYING ./Makefile.in ./CMakeLists.txt ./CTestConfig.cmake \
 	./Readme.txt \
 	./bin/hdfview.sh.in ./bin/hdfview.bat  \
 	./runconfig-example.sh \
-	./configure.in ./Config/config* ./Config/install-sh \
+	./configure.in ./Config/config* ./Config/install-sh ./Config/Rules.mk \
+	./Config/config/CMake/* \
 	./samples/* \
-	./configure ./native/Makefile.in 
+	./configure ./native/Makefile.in ./native/CMakeLists.txt \
+	./ncsa/Makefile.in ./ncsa/CMakeLists.txt ./ncsa/hdf/Makefile.in ./ncsa/hdf/CMakeLists.txt
 
 JHIDISTFILES=./native/hdflib/Makefile.in \
 	./native/hdflib/nt_makefile \
 	./native/hdflib/*.c \
+	./native/hdflib/Makefile.in ./native/hdflib/CMakeLists.txt \
 	./ncsa/hdf/hdflib/*.java \
-	./ncsa/hdf/hdflib/Makefile.in
+	./ncsa/hdf/hdflib/Makefile.in ./ncsa/hdf/hdflib/CMakeLists.txt
 
 JHI5DISTFILES= ./native/hdf5lib/Makefile.in \
 	./native/hdf5lib/nt_makefile \
 	./native/hdf5lib/*.c ./native/hdf5lib/*.h \
+	./native/hdf5lib/Makefile.in ./native/hdf5lib/CMakeLists.txt \
 	./ncsa/hdf/hdf5lib/*.java  \
 	./ncsa/hdf/hdf5lib/callbacks/*.java \
 	./ncsa/hdf/hdf5lib/exceptions/*.java \
 	./ncsa/hdf/hdf5lib/structs/*.java \
-	./ncsa/hdf/hdf5lib/Makefile.in  \
+	./ncsa/hdf/hdf5lib/Makefile.in ./ncsa/hdf/hdf5lib/CMakeLists.txt \
 	./ncsa/hdf/hdf5lib/callbacks/Makefile.in \
 	./ncsa/hdf/hdf5lib/exceptions/Makefile.in \
 	./ncsa/hdf/hdf5lib/structs/Makefile.in 
 
-EXAMPLESFILES=./examples/*.in ./examples/intro/*.java ./examples/intro/*.in ./examples/groups/*.java ./examples/groups/*.in ./examples/groups/*.h5 ./examples/datasets/*.java ./examples/datasets/*.in ./examples/datatypes/*.java ./examples/datatypes/*.in ./examples/testfiles/*.txt
+EXAMPLESFILES=./examples/*.in ./examples/CMakeLists.txt \
+	./examples/intro/*.java ./examples/intro/*.in ./examples/intro/CMakeLists.txt \
+	./examples/groups/*.java ./examples/groups/*.in ./examples/groups/CMakeLists.txt ./examples/groups/*.h5 \
+	./examples/datasets/*.java ./examples/datasets/*.in ./examples/datsets/CMakeLists.txt \
+	./examples/datatypes/*.java ./examples/datatypes/*.in ./examples/datatypes/CMakeLists.txt \
+	./examples/testfiles/*.txt
 
-TESTFILES=./test/Makefile.in ./test/object/misc/*.java ./test/object/misc/*.in \
-	./test/object/*.in ./test/object/*.java ./test/hdf5lib/*.in ./test/hdf5lib/*.java \
+TESTFILES=./test/Makefile.in ./test/Makefile.in ./test/CMakeLists.txt \
+	./test/object/misc/*.java ./test/object/misc/*.in ./test/object/misc/CMakeLists.txt \
+	./test/object/*.in ./test/object/CMakeLists.txt ./test/object/*.java \
+	./test/hdf5lib/*.in ./test/hdf5lib/CMakeLists.txt ./test/hdf5lib/*.java \
 	./test/hdf5lib/h5ex_g_iterate.hdf ./test/object/h5ex_d_extern.data ./test/object/h5ex_d_extern.hdf5
 
+GUITESTFILES=./test/uitest/*.in ./test/uitest/CMakeLists.txt ./test/uitest/*.java \
+	$(CLASS_DIR)/fest-assert-1.2.jar $(CLASS_DIR)/fest-reflect-1.2.jar $(CLASS_DIR)/fest-swing-1.2.jar \
+	$(CLASS_DIR)/fest-util-1.1.2.jar $(CLASS_DIR)/fest-annotations-1.0.jar
 
 DOCFILES=./docs/*.html ./docs/*.gif ./docs/*.js ./docs/hdfview/*.html \
          ./docs/hdfview/*.gif ./docs/hdfview/ModularGuide/*.html \
@@ -406,7 +420,7 @@ uninstall-ug:
 	$(RM) -rf $(DOCDIR)/hdfview/UsersGuide/*
 	$(RM) -rf $(DOCDIR)/hdf-object/*
 
-distclean: clean-natives clean-classes clean-test clean-examples
+distclean: clean-natives clean-ncsa clean-classes clean-test clean-examples
 	$(RM) -f config.cache config.status config.log 
 	$(RM) -rf $(CLASS_DIR)/@JAVATARG@
 	$(RM) -rf $(CLASS_DIR)/jhdf.jar
@@ -418,17 +432,34 @@ distclean: clean-natives clean-classes clean-test clean-examples
 	$(RM) -f ./native/Makefile
 	$(RM) -rf ./native/hdflib/Makefile
 	$(RM) -rf ./native/hdf5lib/Makefile
+	$(RM) -f ./ncsa/Makefile
+	$(RM) -rf ./ncsa/hdf/Makefile
+	$(RM) -rf ./ncsa/hdf/hdflib/Makefile
+	$(RM) -rf ./ncsa/hdf/hdf5lib/Makefile
+	$(RM) -rf ./ncsa/hdf/hdf5lib/callbacks/Makefile
+	$(RM) -rf ./ncsa/hdf/hdf5lib/exceptions/Makefile
+	$(RM) -rf ./ncsa/hdf/hdf5lib/structs/Makefile
+	$(RM) -rf ./ncsa/hdf/object/Makefile
+	$(RM) -rf ./ncsa/hdf/object/h4/Makefile
+	$(RM) -rf ./ncsa/hdf/object/h5/Makefile
+	$(RM) -rf ./ncsa/hdf/object/fits/Makefile
+	$(RM) -rf ./ncsa/hdf/object/nc2/Makefile
+	$(RM) -rf ./ncsa/hdf/view/Makefile
 	$(RM) -rf ./test/Makefile
 	$(RM) -rf ./test/hdf5lib/Makefile
 	$(RM) -rf ./test/hdf5lib/*.sh
+	$(RM) -rf ./test/object/Makefile
+	$(RM) -rf ./test/object/*.sh
 	$(RM) -rf ./test/object/misc/Makefile
 	$(RM) -rf ./test/object/misc/*.sh
+#	$(RM) -rf ./test/object/uitest/Makefile
+#	$(RM) -rf ./test/object/uitest/*.sh
 	$(RM) -rf ./examples/Makefile
+	$(RM) -rf ./examples/runExample.sh
 	$(RM) -rf ./examples/intro/Makefile
 	$(RM) -rf ./examples/groups/Makefile
 	$(RM) -rf ./examples/datasets/Makefile
 	$(RM) -rf ./examples/datatypes/Makefile
-	$(RM) -rf ./examples/datatypes/runExample.sh
 	$(RM) -rf ./Makefile
 
 #build_package:

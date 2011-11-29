@@ -13,7 +13,8 @@
  
 TOP = ..
 DIR	= test
-SUBDIRS = hdf5lib object uitest
+#SUBDIRS = hdf5lib object uitest
+SUBDIRS = hdf5lib object
 
 JAVAC           = @JAVAC@
 JAVADOC         = @JAVADOC@
