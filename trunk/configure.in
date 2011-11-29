@@ -42,17 +42,17 @@ for yyy_option
 do
   yyy_opt=`expr "x$yyy_option" : 'x.*=.*'`
   if test "$yyy_opt" != "0"; then
-	  zzz_opt=`echo x$yyy_option | awk '{print [index($0,"=")]}'`
-	  if test "$yyy_opt" != "$zzz_opt"; then
-	dnl	AC_MSG_WARN([$yyy_option: option is empty?])
-	dnl	yyy_ok="maybe"
-	dnl  else
-		  yyy_optarg=`expr "x$yyy_option" : 'x[[^=]]*=\(.*\)'`
-		  if test -z "$yyy_optarg"; then
-			AC_MSG_RESULT([option $yyy_option too long, configure will fail])
-			yyy_ok="no"
-		  fi
-	  fi
+    zzz_opt=`echo x$yyy_option | awk '{print [index($0,"=")]}'`
+    if test "$yyy_opt" != "$zzz_opt"; then
+  dnl  AC_MSG_WARN([$yyy_option: option is empty?])
+  dnl  yyy_ok="maybe"
+  dnl  else
+      yyy_optarg=`expr "x$yyy_option" : 'x[[^=]]*=\(.*\)'`
+      if test -z "$yyy_optarg"; then
+      AC_MSG_RESULT([option $yyy_option too long, configure will fail])
+      yyy_ok="no"
+      fi
+    fi
   fi
 done
 if test "$yyy_ok" != "yes"; then
@@ -168,30 +168,30 @@ AC_ARG_WITH(libz,[  --with-libz=LIB     Path to the gzip library (required if no
 case "$withval" in
   yes)
       ZLIB=""
-	HAVE_ZLIB="no"
+  HAVE_ZLIB="no"
     ;;
   no)
       ZLIB=""
-	HAVE_ZLIB="suppressed"
+  HAVE_ZLIB="suppressed"
     ;;
   *)
     if test -n "$withval" ; then
         z_lib="`echo $withval |cut -f2 -d, -s`"
-	ZLIB=$z_lib"/libz."$LLEXT
-	HAVE_ZLIB="yes"
+  ZLIB=$z_lib"/libz."$LLEXT
+  HAVE_ZLIB="yes"
     else
       ZLIB=""
-	HAVE_ZLIB="no"
+  HAVE_ZLIB="no"
     fi
 ;;
 esac
 if test -n "$ZLIB"; then
-	LIBS="$LIBS $ZLIB"
-	HAVE_ZLIB="yes"
+  LIBS="$LIBS $ZLIB"
+  HAVE_ZLIB="yes"
 fi
 AC_MSG_RESULT([$HAVE_ZLIB])
 if test $HAVE_ZLIB = "yes"; then
-    	AC_MSG_RESULT([zlib found: $ZLIB]);
+      AC_MSG_RESULT([zlib found: $ZLIB]);
 fi
 
 AC_MSG_CHECKING([jpeg compression])
@@ -202,30 +202,30 @@ AC_ARG_WITH(libjpeg,[  --with-libjpeg=LIB     Path to the jpeg library (required
 
 case "$withval" in
   yes)
-	HAVE_JPEG="no"
+  HAVE_JPEG="no"
     ;;
   no)
       JPEGLIB=""
-	HAVE_JPEG="suppressed"
+  HAVE_JPEG="suppressed"
     ;;
   *)
     if test -n "$withval" ; then
         jpeg_lib="`echo $withval |cut -f2 -d, -s`"
-	JPEGLIB=$jpeg_lib"/libjpeg."$LLEXT
-    	dnl AC_MSG_RESULT([jpeg found: $JPEGLIB]);
-	HAVE_JPEG="yes"
+  JPEGLIB=$jpeg_lib"/libjpeg."$LLEXT
+      dnl AC_MSG_RESULT([jpeg found: $JPEGLIB]);
+  HAVE_JPEG="yes"
     else
-	HAVE_JPEG="no"
+  HAVE_JPEG="no"
     fi
 ;;
 esac
 if test -n "$JPEGLIB"; then
-	LIBS="$LIBS $JPEGLIB"
-	HAVE_JPEG="yes"
+  LIBS="$LIBS $JPEGLIB"
+  HAVE_JPEG="yes"
 fi
 AC_MSG_RESULT([$HAVE_JPEG])
 if test $HAVE_JPEG = "yes"; then
-    	AC_MSG_RESULT([jpeg found: $JPEGLIB]);
+      AC_MSG_RESULT([jpeg found: $JPEGLIB]);
 fi
 
 AC_MSG_CHECKING([szip compression])
@@ -237,31 +237,31 @@ AC_ARG_WITH(libsz,[  --with-libsz=LIB     Path to the szip library (required if 
 case "$withval" in
   yes)
       SZLIB=""
-	HAVE_SZIP="no"
+  HAVE_SZIP="no"
     ;;
   no)
       SZLIB=""
-	HAVE_SZIP="suppressed"
+  HAVE_SZIP="suppressed"
     ;;
   *)
-	if test -n "$withval" ; then
-	    sz_lib="`echo $withval |cut -f2 -d, -s`"
-		SZLIB=$sz_lib"/libsz."$LLEXT
-		dnl AC_MSG_RESULT([szlib found: $SZLIB]);
-		HAVE_SZIP="yes"
-	else
-	      SZLIB=""
-		HAVE_SZIP="no"
-	fi
+  if test -n "$withval" ; then
+      sz_lib="`echo $withval |cut -f2 -d, -s`"
+    SZLIB=$sz_lib"/libszip."$LLEXT
+    dnl AC_MSG_RESULT([szlib found: $SZLIB]);
+    HAVE_SZIP="yes"
+  else
+        SZLIB=""
+    HAVE_SZIP="no"
+  fi
   ;;
 esac
 if test -n "$SZLIB"; then
-	LIBS="$LIBS $SZLIB"
-	HAVE_SZIP="yes"
+  LIBS="$LIBS $SZLIB"
+  HAVE_SZIP="yes"
 fi
 AC_MSG_RESULT([$HAVE_SZIP])
 if test $HAVE_SZIP = "yes"; then
-    	AC_MSG_RESULT([szlib found: $SZLIB]);
+      AC_MSG_RESULT([szlib found: $SZLIB]);
 fi
 
 dnl
@@ -278,36 +278,36 @@ case "$withval" in
   yes)
     dnl AC_MSG_ERROR(HDF4 library needed for compilation.)
       HDF4LIB=""
-	HAVE_HDF4="no"
+  HAVE_HDF4="no"
     ;;
   no)
       HDF4LIB=""
-	HAVE_HDF4="suppressed"
+  HAVE_HDF4="suppressed"
     ;;
   *)
-	if test -n "$withval" ; then
-	    hdf4_inc="`echo $withval |cut -f1 -d,`"
-	    if test -n "$hdf4_inc"; then
-	      HDF4INC="$hdf4_inc"
-	    fi
-	    hdf4_lib="`echo $withval |cut -f2 -d, -s`"
-	    if test -n "$hdf4_lib"; then
-		HDF4LIB=$hdf4_lib
-	    fi
-	    HAVE_HDF4="yes"
-	else
-	      HDF4LIB=""
-	    HAVE_HDF4="no"
-	fi
-	;;
+  if test -n "$withval" ; then
+      hdf4_inc="`echo $withval |cut -f1 -d,`"
+      if test -n "$hdf4_inc"; then
+        HDF4INC="$hdf4_inc"
+      fi
+      hdf4_lib="`echo $withval |cut -f2 -d, -s`"
+      if test -n "$hdf4_lib"; then
+    HDF4LIB=$hdf4_lib
+      fi
+      HAVE_HDF4="yes"
+  else
+        HDF4LIB=""
+      HAVE_HDF4="no"
+  fi
+  ;;
 esac
 if test -n "$HDF4LIB"; then
-	LIBS="$HDF4LIB/libdf.$LLEXT $HDF4LIB/libmfhdf.$LLEXT $LIBS"
-	HAVE_HDF4="yes"
+  LIBS="$HDF4LIB/libdf.$LLEXT $HDF4LIB/libmfhdf.$LLEXT $LIBS"
+  HAVE_HDF4="yes"
 fi
 AC_MSG_RESULT([$HAVE_HDF4])
 if test $HAVE_HDF4 = "yes"; then
-    	AC_MSG_RESULT([HDF4 found: $HDF4LIB]);
+      AC_MSG_RESULT([HDF4 found: $HDF4LIB]);
 fi
 
 dnl
@@ -316,28 +316,28 @@ dnl
 dnl  Must stop here if something is missing.
 dnl
 if test "$HAVE_HDF4" = "yes"; then
-	AC_MSG_CHECKING([dependencies for HDF4 library])
-	needjpg=`grep 'define H4_HAVE_LIBJPEG 1' $HDF4INC/h4config.h`
-	needgzip=`grep 'define H4_HAVE_LIBZ 1' $HDF4INC/h4config.h`
-	needszip=`grep 'define H4_HAVE_LIBSZ 1' $HDF4INC/h4config.h`
-	if test -n "$needjpg"; then
-		if test "$HAVE_JPEG" != "yes"; then
-		    AC_MSG_ERROR([ HDF4 library needs JPEG, JPEG not defined.])
-		fi
-	fi
+  AC_MSG_CHECKING([dependencies for HDF4 library])
+  needjpg=`grep 'define H4_HAVE_LIBJPEG 1' $HDF4INC/h4config.h`
+  needgzip=`grep 'define H4_HAVE_LIBZ 1' $HDF4INC/h4config.h`
+  needszip=`grep 'define H4_HAVE_LIBSZ 1' $HDF4INC/h4config.h`
+  if test -n "$needjpg"; then
+    if test "$HAVE_JPEG" != "yes"; then
+        AC_MSG_ERROR([ HDF4 library needs JPEG, JPEG not defined.])
+    fi
+  fi
 
-	if test -n "$needgzip"; then
-		if test "$HAVE_ZLIB" != "yes"; then
-		    AC_MSG_ERROR([ HDF4 library needs GZIP, GZIP not defined.])
-		fi
-	fi
+  if test -n "$needgzip"; then
+    if test "$HAVE_ZLIB" != "yes"; then
+        AC_MSG_ERROR([ HDF4 library needs GZIP, GZIP not defined.])
+    fi
+  fi
 
-	if test -n "$needszip"; then
-		if test "$HAVE_SZIP" != "yes"; then
-		    AC_MSG_ERROR([ HDF4 library needs SZIP, SZIP not defined.])
-		fi
-	fi
-	AC_MSG_RESULT([OK])
+  if test -n "$needszip"; then
+    if test "$HAVE_SZIP" != "yes"; then
+        AC_MSG_ERROR([ HDF4 library needs SZIP, SZIP not defined.])
+    fi
+  fi
+  AC_MSG_RESULT([OK])
 fi
 
 
@@ -354,38 +354,38 @@ AC_ARG_WITH(hdf5,[  --with-hdf5=LIB     Path to the hdf5 library (required if no
 case "$withval" in
   yes)
       HDF5LIB=""
-	HAVE_HDF5="no"
+  HAVE_HDF5="no"
     ;;
   no)
       HDF5LIB=""
-	HAVE_HDF5="suppressed"
+  HAVE_HDF5="suppressed"
     ;;
   *)
-	if test -n "$withval" ; then
-	    hdf5_lib="`echo $withval |cut -f2 -d, -s`"
-		HDF5LIB=$hdf5_lib"/libhdf.$LLEXT"
-	    hdf5_inc="`echo $withval |cut -f1 -d,`"
-	    if test -n "$hdf5_inc"; then
-	      HDF5INC="$hdf5_inc"
-	    fi
-	    hdf5_lib="`echo $withval |cut -f2 -d, -s`"
-	    if test -n "$hdf5_lib"; then
-		HDF5LIB=$hdf5_lib
-	    fi
-	    HAVE_HDF5="yes"
-	else
-	      HDF5LIB=""
-	    HAVE_HDF5="no"
-	fi
-	;;
+  if test -n "$withval" ; then
+      hdf5_lib="`echo $withval |cut -f2 -d, -s`"
+    HDF5LIB=$hdf5_lib"/libhdf.$LLEXT"
+      hdf5_inc="`echo $withval |cut -f1 -d,`"
+      if test -n "$hdf5_inc"; then
+        HDF5INC="$hdf5_inc"
+      fi
+      hdf5_lib="`echo $withval |cut -f2 -d, -s`"
+      if test -n "$hdf5_lib"; then
+    HDF5LIB=$hdf5_lib
+      fi
+      HAVE_HDF5="yes"
+  else
+        HDF5LIB=""
+      HAVE_HDF5="no"
+  fi
+  ;;
 esac
 if test -n "$HDF5LIB"; then
-	LIBS="$HDF5LIB/libhdf5.$LLEXT $LIBS"
-	HAVE_HDF5="yes"
+  LIBS="$HDF5LIB/libhdf5.$LLEXT $LIBS"
+  HAVE_HDF5="yes"
 fi
 AC_MSG_RESULT([$HAVE_HDF5])
 if test $HAVE_HDF5 = "yes"; then
-    	AC_MSG_RESULT([HDF5 found: $HDF5LIB]);
+      AC_MSG_RESULT([HDF5 found: $HDF5LIB]);
 fi
 
 dnl
@@ -394,22 +394,22 @@ dnl
 dnl  Must stop here if something is missing.
 dnl
 if test -n "$HDF5LIB"; then
-	AC_MSG_CHECKING([dependencies for HDF5 library])
-	DFL=`grep 'filters (external)' $HDF5LIB"/libhdf5.settings" | grep deflate`
-	SZP=`grep 'filters (external)' $HDF5LIB"/libhdf5.settings" | grep szip`
-	if test -n "$DFL";
-	then
-		if test "$HAVE_ZLIB" != "yes"; then
-		    AC_MSG_ERROR([ HDF5 library needs GZIP, GZIP not defined.])
-		fi
-	fi
-	if test -n "$SZP";
-	then
-		if test "$HAVE_SZIP" != "yes"; then
-		    AC_MSG_ERROR([ HDF5 library needs SZIP, SZIP not defined.])
-		fi
-	fi
-	AC_MSG_RESULT([OK])
+  AC_MSG_CHECKING([dependencies for HDF5 library])
+  DFL=`grep 'filters (external)' $HDF5LIB"/libhdf5.settings" | grep deflate`
+  SZP=`grep 'filters (external)' $HDF5LIB"/libhdf5.settings" | grep szip`
+  if test -n "$DFL";
+  then
+    if test "$HAVE_ZLIB" != "yes"; then
+        AC_MSG_ERROR([ HDF5 library needs GZIP, GZIP not defined.])
+    fi
+  fi
+  if test -n "$SZP";
+  then
+    if test "$HAVE_SZIP" != "yes"; then
+        AC_MSG_ERROR([ HDF5 library needs SZIP, SZIP not defined.])
+    fi
+  fi
+  AC_MSG_RESULT([OK])
 fi
 ac_cv_lib_HDF5=$HDF5LIB
 ac_cv_lib_HDF5INC=$HDF5INC
@@ -428,12 +428,12 @@ AC_SUBST(LIBH45) LIBH45=""
 AC_ARG_WITH(h4toh5,[  --with-h4toh5=INC,LIB     Path to the HDF 4 to 5 library (optional feature, if selected then path required is not in default path)],,)
 case "$withval" in
   yes)
-	USEH45="no"
+  USEH45="no"
     ;;
   no)
-	H45LIB=""
-	H45INC=""
-	USEH45="suppressed"
+  H45LIB=""
+  H45INC=""
+  USEH45="suppressed"
     ;;
   *)
     if test -n "$withval"; then
@@ -457,16 +457,16 @@ case "$withval" in
           AC_CHECK_LIB(h4toh5, H4toh5open,, LDFLAGS="$saved_LDFLAGS"
                      AC_MSG_ERROR(cannot find HDF45 library.))
         else
-    	 AC_MSG_ERROR(cannot find HDF45 library path.)
+       AC_MSG_ERROR(cannot find HDF45 library path.)
         fi
-	USEH45="yes"
+  USEH45="yes"
     fi
     ;;
 esac
 
 AC_MSG_RESULT([$USEH45])
 if test -n "$H45LIB"; then
-	AC_MSG_RESULT([h4toh5 library found at: $HDF45LIB])
+  AC_MSG_RESULT([h4toh5 library found at: $HDF45LIB])
 fi
 H45LIB=$HDF45LIB
 H45INC=$HDF45INC
@@ -509,7 +509,7 @@ case "$withval" in
     if test -n "$jdk_lib"; then
       JAVALIB="$jdk_lib"
     else
-	 AC_MSG_ERROR(cannot find jdk library path.)
+   AC_MSG_ERROR(cannot find jdk library path.)
     fi
     ;;
 esac
@@ -517,35 +517,35 @@ esac
 if test -n "$jdkclasses"; then
 
 if test -f $jdkclasses/classes.jar ; then
-	JAVACLASSES=$jdkclasses/classes.jar
-	JAVACLASSPATH_FOUND=1
+  JAVACLASSES=$jdkclasses/classes.jar
+  JAVACLASSPATH_FOUND=1
 else
-	 AC_MSG_ERROR(cannot find jdk classes in JDK lib path.)
+   AC_MSG_ERROR(cannot find jdk classes in JDK lib path.)
 fi
 else
 
 if test -f $JAVALIB/classes.zip ; then
-	JAVACLASSES=$JAVALIB/classes.zip
-	JAVACLASSPATH_FOUND=1
+  JAVACLASSES=$JAVALIB/classes.zip
+  JAVACLASSPATH_FOUND=1
 elif test -f $JAVALIB/core.jar ; then
-	JAVACLASSES=$JAVALIB/rt.jar
-	JAVACLASSPATH_FOUND=1
+  JAVACLASSES=$JAVALIB/rt.jar
+  JAVACLASSPATH_FOUND=1
 elif test -f $JAVALIB/rt.jar ; then
-	JAVACLASSES=$JAVALIB/rt.jar
-	JAVACLASSPATH_FOUND=1
+  JAVACLASSES=$JAVALIB/rt.jar
+  JAVACLASSPATH_FOUND=1
 elif test -d $JAVALIB/classes ; then
-	JAVACLASSES=$JAVALIB/classes
-	JAVACLASSPATH_FOUND=1
+  JAVACLASSES=$JAVALIB/classes
+  JAVACLASSPATH_FOUND=1
 else
-	JL=`dirname $JAVALIB`
-	if test -f $JL/jre/lib/rt.jar; then
-		JAVACLASSES=$JL/jre/lib/rt.jar
-		JAVACLASSPATH_FOUND=1
-		JAVALIB=$JL/jre/lib
-		AC_SUBST(JAVALIB) JAVALIB=""
-	else
-		 AC_MSG_ERROR(cannot find jdk classes in JDK lib path.)
-	fi
+  JL=`dirname $JAVALIB`
+  if test -f $JL/jre/lib/rt.jar; then
+    JAVACLASSES=$JL/jre/lib/rt.jar
+    JAVACLASSPATH_FOUND=1
+    JAVALIB=$JL/jre/lib
+    AC_SUBST(JAVALIB) JAVALIB=""
+  else
+     AC_MSG_ERROR(cannot find jdk classes in JDK lib path.)
+  fi
 fi
 fi
 HERE=`pwd`
@@ -591,7 +591,7 @@ case "$withval" in
   *)
     jhdf_jar="`echo $withval |cut -f1 -d,`"
     if test -n "$jhdf_jar"; then
-	CLASSPATH="$CLASSPATH"":""$jhdf_jar""/jhdf.jar"
+  CLASSPATH="$CLASSPATH"":""$jhdf_jar""/jhdf.jar"
     fi
     ;;
 esac
@@ -604,15 +604,15 @@ case "$withval" in
     ;;
   no)
     #AC_MSG_ERROR( jhdf5 needed for compilation.)
-	# use default path
+  # use default path
     ;;
   *)
     jhdf5_jar="`echo $withval |cut -f1 -d,`"
     if test -n "$jhdf5_jar"; then
-	CLASSPATH="$CLASSPATH"":""$jhdf5_jar""/jhdf5.jar"
+  CLASSPATH="$CLASSPATH"":""$jhdf5_jar""/jhdf5.jar"
     #else
-	   # AC_MSG_ERROR(jhdf5.jar needed for compilation.)
-	# use default path...
+     # AC_MSG_ERROR(jhdf5.jar needed for compilation.)
+  # use default path...
     fi
     ;;
 esac
@@ -621,9 +621,9 @@ ac_cv_lib_JAVAINC=$JAVAINC
 
 
 if test "$prefix" != "NONE" ; then
-	JH45INST="$prefix"
+  JH45INST="$prefix"
 else
-	JH45INST=""
+  JH45INST=""
 fi
 
 JH45INST_FOUND=1
@@ -631,28 +631,28 @@ if test -z "$JH45INST" ; then
 AC_CACHE_CHECK("JH45 install directory",ac_cv_lib_JH45INST,JH45INST_FOUND=0)
 fi
 if test $JH45INST_FOUND -eq 1; then
-	if test -z "$JH45INST" ; then
-		JH45INST=$ac_cv_lib_JH45INST;
-	fi
-	if test \( ! -d "$JH45INST" \); then
-		JH45INST_FOUND=0
-	fi
-	if test \( ! -w "$JH45INST" \); then
-		AC_MSG_ERROR( [ $JAVINST : not writable ])
-		JH45INST_FOUND=0
-	fi
+  if test -z "$JH45INST" ; then
+    JH45INST=$ac_cv_lib_JH45INST;
+  fi
+  if test \( ! -d "$JH45INST" \); then
+    JH45INST_FOUND=0
+  fi
+  if test \( ! -w "$JH45INST" \); then
+    AC_MSG_ERROR( [ $JAVINST : not writable ])
+    JH45INST_FOUND=0
+  fi
 fi
 until test $JH45INST_FOUND -eq 1; do
-	echo "Please type the directory in which to install the JH45"
-	read JH45INST
-	JH45INST_FOUND=1
-	if test \( ! -d "$JH45INST" \); then
-		JH45INST_FOUND=0
-	fi
-	if test \( ! -w "$JH45INST" \); then
-		AC_MSG_ERROR( [ $JAVINST : not writable ])
-		JH45INST_FOUND=0
-	fi
+  echo "Please type the directory in which to install the JH45"
+  read JH45INST
+  JH45INST_FOUND=1
+  if test \( ! -d "$JH45INST" \); then
+    JH45INST_FOUND=0
+  fi
+  if test \( ! -w "$JH45INST" \); then
+    AC_MSG_ERROR( [ $JAVINST : not writable ])
+    JH45INST_FOUND=0
+  fi
 done
 
 ac_cv_lib_JH45INST=$JH45INST
@@ -808,7 +808,8 @@ if test -d "./test"; then
 ##
 ##  Everything
 ##
-OUTPUT_FILES="$OUTPUT_FILES test/Makefile test/object/misc/testh4file.sh test/object/misc/testh5file.sh test/object/misc/Makefile test/object/misc/runtests.sh test/hdf5lib/junit.sh test/hdf5lib/Makefile test/uitest/junit.sh test/uitest/Makefile examples/Makefile examples/intro/Makefile examples/datasets/Makefile examples/datatypes/Makefile examples/groups/Makefile"
+# OUTPUT_FILES="$OUTPUT_FILES test/Makefile test/object/misc/testh4file.sh test/object/misc/testh5file.sh test/object/misc/Makefile test/object/misc/runtests.sh test/hdf5lib/junit.sh test/hdf5lib/Makefile test/uitest/junit.sh test/uitest/Makefile examples/Makefile examples/intro/Makefile examples/datasets/Makefile examples/datatypes/Makefile examples/groups/Makefile"
+OUTPUT_FILES="$OUTPUT_FILES test/Makefile test/object/misc/testh4file.sh test/object/misc/testh5file.sh test/object/misc/Makefile test/object/misc/runtests.sh test/hdf5lib/junit.sh test/hdf5lib/Makefile examples/Makefile examples/intro/Makefile examples/datasets/Makefile examples/datatypes/Makefile examples/groups/Makefile"
 else
 ##
 ##  H4, H5, H45, but NO tests
@@ -818,7 +819,8 @@ fi
 else
 if test -d "./test"; then
 ##  Don't use H4toH5 (but do include some tests)
-OUTPUT_FILES="$OUTPUT_FILES test/Makefile test/object/misc/Makefile test/object/misc/testh4file.sh test/object/misc/testh5file.sh test/object/misc/runtests.sh test/object/misc/TestH5Object.sh test/object/misc/TestH5Table.sh test/object/misc/TestH5MemoryLeak.sh test/object/Makefile test/object/unittests.sh test/hdf5lib/junit.sh test/hdf5lib/Makefile test/uitest/junit.sh test/uitest/Makefile examples/Makefile examples/intro/Makefile examples/datasets/Makefile examples/datatypes/Makefile examples/groups/Makefile examples/runExample.sh"
+#OUTPUT_FILES="$OUTPUT_FILES test/Makefile test/object/misc/Makefile test/object/misc/testh4file.sh test/object/misc/testh5file.sh test/object/misc/runtests.sh test/object/misc/TestH5Object.sh test/object/misc/TestH5Table.sh test/object/misc/TestH5MemoryLeak.sh test/object/Makefile test/object/unittests.sh test/hdf5lib/junit.sh test/hdf5lib/Makefile test/uitest/junit.sh test/uitest/Makefile examples/Makefile examples/intro/Makefile examples/datasets/Makefile examples/datatypes/Makefile examples/groups/Makefile examples/runExample.sh"
+OUTPUT_FILES="$OUTPUT_FILES test/Makefile test/object/misc/Makefile test/object/misc/testh4file.sh test/object/misc/testh5file.sh test/object/misc/runtests.sh test/object/misc/TestH5Object.sh test/object/misc/TestH5Table.sh test/object/misc/TestH5MemoryLeak.sh test/object/Makefile test/object/unittests.sh test/hdf5lib/junit.sh test/hdf5lib/Makefile examples/Makefile examples/intro/Makefile examples/datasets/Makefile examples/datatypes/Makefile examples/groups/Makefile examples/runExample.sh"
 else
 ##  Don't use H4toH5 (no tests)
 OUTPUT_FILES="$OUTPUT_FILES"
