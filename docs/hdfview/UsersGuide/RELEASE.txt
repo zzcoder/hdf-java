@@ -36,34 +36,31 @@ This release was built and tested for the following platforms:
 
 Changes to the Java HDF5 Interface(JHI5)
 ==================================================================================================================
-	-- The following 29 methods were added to JHI5: 
-		H5Diterate, 			H5Pget_buffer_size, 	H5Pget_char_encoding,			H5Pget_chunk_cache, 
-		H5Pget_driver, 			H5Pget_dxpl_multi, 		H5Pget_elink_file_cache_size,	H5Pget_fapl_multi, 
-		H5Pget_filter, 			H5Pget_filter2, 		H5Pget_gcreferences, 			H5Pget_mdc_config, 
-        H5Pget_meta_block_size,	H5Pget_obj_track_times, H5Pget_sieve_buf_size, 			H5Pset_char_encoding, 
-		H5Pset_chunk_cache, 	H5Pset_dxpl_multi, 		H5Pset_elink_file_cache_size, 	H5Pset_fapl_multi, 
-		H5Pset_fapl_sec2, 		H5Pset_fapl_split, 		H5Pset_fapl_stdio, 				H5Pset_fapl_windows, 
-		H5Pset_mdc_config, 		H5Pset_meta_block_size,	H5Pset_obj_track_times, 		H5Pset_sieve_buf_size, 
-		H5Sget_select_type.
-	-- 80 new unit tests were added to JHI5. 
+    -- The following 29 methods were added to JHI5: 
+        H5Diterate,             H5Pget_buffer_size,     H5Pget_char_encoding,           H5Pget_chunk_cache, 
+        H5Pget_driver,          H5Pget_dxpl_multi,      H5Pget_elink_file_cache_size,   H5Pget_fapl_multi, 
+        H5Pget_filter,          H5Pget_filter2,         H5Pget_gcreferences,            H5Pget_mdc_config, 
+        H5Pget_meta_block_size, H5Pget_obj_track_times, H5Pget_sieve_buf_size,          H5Pset_char_encoding, 
+        H5Pset_chunk_cache,     H5Pset_dxpl_multi,      H5Pset_elink_file_cache_size,   H5Pset_fapl_multi, 
+        H5Pset_fapl_sec2,       H5Pset_fapl_split,      H5Pset_fapl_stdio,              H5Pset_fapl_windows, 
+        H5Pset_mdc_config,      H5Pset_meta_block_size, H5Pset_obj_track_times,         H5Pset_sieve_buf_size, 
+        H5Sget_select_type.
+    -- 80 new unit tests were added to JHI5. 
 
 Major Enhancements
 ==================================================================================================================  
-    * When opening a file family, HDFView now selects the first file in the 
-      family
+    * When opening a file family, HDFView now selects the first file in the family
     * NaN and INF values are now ignored in TableView for better line plots
     * The fill value can now be set when a new dataset is created
     * If an object is copied to a group where the name already exist, the name 
       conflict can now be resolved
     * Image palettes can now be imported from or exported to a text file
-    * Users now have the option to show data values in a 0-based or 1-based 
-      index
+    * Users now have the option to show data values in a 0-based or 1-based index
     * The image origin can now be specified as UpperLeft, LowerLeft, 
       UpperRight, or LowerRight
     * Users now have the option to show values of selected bits or to apply 
       a bitmask for 1-byte or 2-byte integers
-    * A data distribution histogram has been added for changing the data 
-      range in ImageView
+    * A data distribution histogram has been added for changing the data range in ImageView
 
 
 Major Bug Fixes
@@ -75,15 +72,12 @@ Major Bug Fixes
       for 2D+ string datasets
     * Fixed the ability to refresh the image palette table after palette 
       values have been changed
-    * Fixed TableView so that users can flip through data of 3D compound 
-      datasets
+    * Fixed TableView so that users can flip through data of 3D compound datasets
     * Fixed HDF4 SDS creation so that unlimited dimensions cannot be used 
       with compression or chunking
-    * Fixed HDF-Java objects to use "/" for the root group instead of the 
-      file name
+    * Fixed HDF-Java objects to use "/" for the root group instead of the file name
     * Fixed HDFView to allow the renaming of committed (named) datatypes
-    * Fixed HDFView to allow the viewing of objects pointed to by external 
-      links 
+    * Fixed HDFView to allow the viewing of objects pointed to by external links 
 
 
 Limitations / Known Problems
