@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 2.8.3)
+cmake_minimum_required (VERSION 2.8.6)
 PROJECT (HDFJAVA_JNI_HDF5LIB C)
 
 SET (HDFJAVA_JNI_HDF5_CSRCS

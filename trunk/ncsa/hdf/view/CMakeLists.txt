@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 2.8.3)
+cmake_minimum_required (VERSION 2.8.6)
 PROJECT (HDFJAVA_NCSA_HDF_VIEW)
 
 SET (CMAKE_VERBOSE_MAKEFILE 1)
