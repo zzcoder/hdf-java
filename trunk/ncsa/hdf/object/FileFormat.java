@@ -25,9 +25,6 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
 
-import ncsa.hdf.hdf5lib.exceptions.HDF5Exception;
-
-
 /**
  * FileFormat defines general interfaces for working with files whose data is
  * organized according to a supported format.
@@ -1154,7 +1151,7 @@ public abstract class FileFormat extends File {
             Datatype type, long[] dims, long[] maxdims, long[] chunks,
             int gzip, Object data) throws Exception 
     {
-    	return createScalarDS(name, pgroup,type, dims,maxdims, chunks,
+        return createScalarDS(name, pgroup,type, dims,maxdims, chunks,
                 gzip,null, data);
     }
 
@@ -1806,7 +1803,7 @@ public abstract class FileFormat extends File {
      *            The current name of the attribute.
      * @param newAttrName
      *            The new name of the attribute.
-     * @throws HDF5Exception
+     * @throws Exception
      */
     public void renameAttribute(HObject obj, String oldAttrName, String newAttrName) throws Exception
     {
@@ -1819,7 +1816,7 @@ public abstract class FileFormat extends File {
      *                 The earliest version of the library.
      * @param high
      *                 The latest version of the library.
-     * @throws HDF5Exception
+     * @throws Exception
      */
     public void setLibBounds(int low, int high) throws Exception 
     {
@@ -1830,7 +1827,7 @@ public abstract class FileFormat extends File {
      * Gets the bounds of library versions
      * 
      * @return The earliest and latest library versions in an int array.
-     * @throws HDF5Exception
+     * @throws Exception
      */
     public int[] getLibBounds() throws Exception
     {
