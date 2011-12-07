@@ -2146,7 +2146,7 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
 
             imageByteData = Tools.getBytes(data, newRange, w, h, !dataset
                     .isDefaultImageOrder(), dataset.getFillValue(), true,
-                    imageByteData);
+                    null);
 
             image = createIndexedImage(imageByteData, imagePalette, w, h);
             setImage(image);
@@ -3505,14 +3505,14 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
             maxField.addPropertyChangeListener(this);
             maxField.setValue(new Double(max));
 
-            minSlider = new JSlider(JSlider.HORIZONTAL, (int)min, (int)max, (int) min);
+            minSlider = new JSlider(JSlider.HORIZONTAL, (int)minmaxOriginal[0], (int)minmaxOriginal[1], (int) min);
             minSlider.setMajorTickSpacing(tickSpace);
             minSlider.setPaintTicks(true);
             minSlider.setPaintLabels(true);
             minSlider.addChangeListener(this);
             minSlider.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
 
-            maxSlider = new JSlider(JSlider.HORIZONTAL, (int)min, (int)max, (int) max);
+            maxSlider = new JSlider(JSlider.HORIZONTAL, (int)minmaxOriginal[0], (int)minmaxOriginal[1], (int) max);
             maxSlider.setMajorTickSpacing(tickSpace);
             maxSlider.setPaintTicks(true);
             maxSlider.setPaintLabels(true);
