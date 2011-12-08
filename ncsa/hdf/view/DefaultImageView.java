@@ -3491,7 +3491,7 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
             minmax_previous[0] = min = minmax_current[0];
             minmax_previous[1] = max = minmax_current[1];
             
-            int tickSpace = (int) (max-min) / 10;
+            int tickSpace = (int) (minmaxOriginal[1]-minmaxOriginal[0]) / 10;
 
             final DecimalFormat numberFormat = new DecimalFormat("#.##E0");
             NumberFormatter formatter = new NumberFormatter(numberFormat);
@@ -3674,6 +3674,7 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
             	double maxValue = maxSlider.getValue();
                 if (value > maxValue) {
                     value = maxValue;
+                    slider.setValue((int)value);
                 }
 
                 minField.setValue(new Double(value));
@@ -3682,6 +3683,7 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
             	double minValue = minSlider.getValue();
                 if (value < minValue) {
                     value = minValue;
+                    slider.setValue((int)value);
                 }
                 maxField.setValue(new Double(value));
             }

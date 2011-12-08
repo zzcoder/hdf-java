@@ -1211,7 +1211,7 @@ public final class Tools {
     }
 
     /**
-     * Apply autocontrast parameters in place (destructive)
+     * Apply autocontrast parameters to the original data in place (destructive)
      * 
      * @param data_in
      *            the original data array of signed/unsigned integers
@@ -1219,8 +1219,11 @@ public final class Tools {
      *            the converted data array of signed/unsigned integers
      * @param params
      *            the auto gain parameter. params[0]=gain, params[1]=bias
+     * @param minmax
+     *            the data range. minmax[0]=min, minmax[1]=max
      * @param isUnsigned
      *            the flag to indicate if the data array is unsigned integer
+     *            
      * @return the data array with the auto contrast conversion; otherwise,
      *         returns null
      */
@@ -1246,10 +1249,10 @@ public final class Tools {
 
         double gain = params[0];
         double bias = params[1];
-        double value;
-
+        double value_out, value_in;
         String cname = data_in.getClass().getName();
         char dname = cname.charAt(cname.lastIndexOf("[") + 1);
+        
         switch (dname) {
         case 'B':
             byte[] b_in = (byte[]) data_in;
@@ -1260,22 +1263,12 @@ public final class Tools {
             byte b_max = (byte) MAX_INT8;
 
             for (int i = 0; i < size; i++) {
-            	if (b_in[i]<min)
-            		b_out[i] = 0;
-            	else if (b_in[i]>max)
-            		b_out[i] = b_max;
-            	else {
-                    value = (b_in[i] + bias) * gain;
-                    if (value < 0.0) {
-                        b_out[i] = 0;
-                    }
-                    else if (value > b_max) {
-                        b_out[i] = b_max;
-                    }
-                    else {
-                        b_out[i] = (byte) value;
-                    }            		
-            	}
+            	value_in = Math.max(b_in[i], min);
+            	value_in = Math.min(b_in[i], max);
+            	value_out = (value_in + bias) * gain;
+            	value_out = Math.max(value_out, 0.0);
+            	value_out = Math.min(value_out, b_max);
+            	b_out[i] =(byte)value_out;
             }
             break;
         case 'S':
@@ -1285,27 +1278,18 @@ public final class Tools {
             }
             short[] s_out = (short[]) data_out;
             short s_max = (short) MAX_INT16;
+            
             if (isUnsigned) {
                 s_max = (short) MAX_UINT8; // data was upgraded from unsigned byte
             }
 
             for (int i = 0; i < size; i++) {
-            	if (s_in[i]<min)
-            		s_out[i] = 0;
-            	else if (s_in[i]>max)
-            		s_out[i] = 255;
-            	else {
-            		value = (s_in[i] + bias) * gain;
-            		if (value < 0.0) {
-            			s_out[i] = 0;
-            		}
-            		else if (value > s_max) {
-            			s_out[i] = s_max;
-            		}
-            		else {
-            			s_out[i] = (short) value;
-            		}
-            	}
+            	value_in = Math.max(s_in[i], min);
+            	value_in = Math.min(s_in[i], max);
+            	value_out = (value_in + bias) * gain;
+            	value_out = Math.max(value_out, 0.0);
+            	value_out = Math.min(value_out, s_max);
+            	s_out[i] =(byte)value_out;
             }
             break;
         case 'I':
@@ -1320,23 +1304,12 @@ public final class Tools {
             }
 
             for (int i = 0; i < size; i++) {
-            	if (i_in[i]<min)
-            		i_out[i] = 0;
-            	else if (i_in[i]>max)
-            		i_out[i] = 255;
-            	else {
-            		value = (i_in[i] + bias) * gain;
-
-            		if (value < 0.0) {
-            			i_out[i] = 0;
-            		}
-            		else if (value > i_max) {
-            			i_out[i] = i_max;
-            		}
-            		else {
-            			i_out[i] = (int) value;
-            		}
-            	}
+            	value_in = Math.max(i_in[i], min);
+            	value_in = Math.min(i_in[i], max);
+            	value_out = (value_in + bias) * gain;
+            	value_out = Math.max(value_out, 0.0);
+            	value_out = Math.min(value_out, i_max);
+            	i_out[i] =(byte)value_out;
             }
             break;
         case 'J':
@@ -1351,22 +1324,12 @@ public final class Tools {
             }
 
             for (int i = 0; i < size; i++) {
-            	if (l_in[i]<min)
-            		l_out[i] = 0;
-            	else if (l_in[i]>max)
-            		l_out[i] = 255;
-            	else {
-            		value = (l_in[i] + bias) * gain;
-            		if (value < 0.0) {
-            			l_out[i] = 0;
-            		}
-            		else if (value > l_max) {
-            			l_out[i] = l_max;
-            		}
-            		else {
-            			l_out[i] = (long) value;
-            		}
-            	}
+            	value_in = Math.max(l_in[i], min);
+            	value_in = Math.min(l_in[i], max);
+            	value_out = (value_in + bias) * gain;
+            	value_out = Math.max(value_out, 0.0);
+            	value_out = Math.min(value_out, l_max);
+            	l_out[i] =(byte)value_out;
             }
             break;
         default:
@@ -1382,7 +1345,7 @@ public final class Tools {
      * The integer data is converted to byte data based on the following rule
      * 
      * <pre>
-     * uint_8       x
+     *         uint_8       x
      *         int_8       (x & 0x7F) << 1
      *         uint_16     (x >> 8) & 0xFF
      *         int_16      (x >> 7) & 0xFF
@@ -1397,7 +1360,7 @@ public final class Tools {
      * @param dst
      *            the destination data array of bytes
      * @param isUnsigned
-     *            the flag to indicate if the data array is unsiged integer
+     *            the flag to indicate if the data array is unsigned integer
      * @return non-negative if successful; otherwise, returns negative
      */
     public static int autoContrastConvertImageBuffer(Object src, byte[] dst,
