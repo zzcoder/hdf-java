@@ -136,7 +136,7 @@ public class DebugHDF {
 //        try {testH5TconvertStr(); } catch (Exception ex) {ex.printStackTrace();} 
 //        try {testH5DeleteDS("g:\\temp\\strs.h5"); } catch (Exception ex) {ex.printStackTrace();} 
 //        try {testExtendData("g:\\temp\\extended.h5", "dset", 1000, 1500); } catch (Exception ex) {ex.printStackTrace();} 
-//        try {createNestedcompound("g:\\temp\\nested_cmp.h5", "dset"); } catch (Exception ex) {ex.printStackTrace();}
+        try {createNestedcompound("g:\\temp\\nested_cmp.h5", "dset"); } catch (Exception ex) {ex.printStackTrace();}
 //        try {  testH5Vlen("G:\\temp\\str.h5") ; } catch (Exception ex) {ex.printStackTrace();}
 //        try {  testH5VlenObj("G:\\temp\\str2.h5") ; } catch (Exception ex) {ex.printStackTrace();}
 //        try {  testH5VlenAttr("G:\\temp\\vlen_str_attr.h5") ; } catch (Exception ex) {ex.printStackTrace();}
@@ -145,7 +145,7 @@ public class DebugHDF {
 //        try {testGroupMemoryLeak("G:\\temp\\mem_leak.h5"); } catch (Exception ex) {ex.printStackTrace();} 
 //        try { testH5OflushCrash("G:\\temp\\H5Oflush_crash.h5"); } catch (Exception ex) {ex.printStackTrace();}
         
-        testPrintData();
+//        testPrintData();
     }
     
     public static void testRefData(String fname, String dname)throws Exception
@@ -259,6 +259,13 @@ public class DebugHDF {
         testFile.close();
     }
     
+    /**
+     * Create a nested compound of {index, location{Lon, Lat}}
+     * 
+     * @param fname name of the file
+     * @param dname name of the dataset
+     * @throws Exception
+     */
     private static void createNestedcompound(String fname, String dname) throws Exception 
     {
         int DIM1 = 50;
