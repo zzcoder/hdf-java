@@ -443,12 +443,14 @@ public abstract class HObject implements Serializable, DataFormat {
         int n1 = theID.length;
         int n2 = oid.length;
 
-        if (n1 != n2) {
+        if (n1 == 0 || n2==0) {
             return false;
         }
 
+        int n = Math.min(n1, n2);
         boolean isMatched = (theID[0] == oid[0]);
-        for (int i = 1; isMatched && (i < n1); i++) {
+        
+        for (int i = 1; isMatched && (i < n); i++) {
             isMatched = (theID[i] == oid[i]);
         }
 
