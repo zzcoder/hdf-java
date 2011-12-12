@@ -813,6 +813,9 @@ public class DataOptionDialog extends JDialog implements ActionListener,
     }
     
     public boolean isIndexBase1() {
+    	if (base1Button==null)
+    		return false;
+    	
     	return base1Button.isSelected();
     }
 
