@@ -323,6 +323,7 @@ public abstract class ScalarDS extends Dataset {
      *         false.
      */
     public final boolean isImageDisplay() {
+
         return isImageDisplay;
     }
 

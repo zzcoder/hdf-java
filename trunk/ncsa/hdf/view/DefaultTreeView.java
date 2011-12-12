@@ -1989,12 +1989,6 @@ public class DefaultTreeView extends JPanel
             if (dialog.isCancelled()) {
                 return null;
             }
-
-            // allow to display the same dataset multiple times
-            // modified by Peter Cao, May 8, 2009
-            //  if (theFrame != null) {
-            //     ((DataView)theFrame).dispose();
-            //  }
             
             isImage = dialog.isImageDisplay();
             isDisplayTypeChar = dialog.isDisplayTypeChar();
@@ -2024,7 +2018,6 @@ public class DefaultTreeView extends JPanel
                 dataViewName = "ncsa.hdf.view.DefaultTableView";
             try { theClass = Class.forName(dataViewName); } catch (Exception ex){}
         }
-
         Object theView = null;
         Object[] initargs = {viewer};
         HashMap<DATA_VIEW_KEY, Serializable> map = new HashMap<DATA_VIEW_KEY, Serializable>(8);
@@ -2089,7 +2082,7 @@ public class DefaultTreeView extends JPanel
             Object[] tmpargs = { viewer, map };
             initargs = tmpargs;
         }
-        
+       
         ((JFrame)viewer).setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         try {
             theView = Tools.newInstance(theClass, initargs);
