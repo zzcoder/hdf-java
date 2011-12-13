@@ -186,6 +186,7 @@ public class H5CompoundDS extends CompoundDS {
                 did = H5.H5Dopen(getFID(), getPath() + getName(),
                         HDF5Constants.H5P_DEFAULT);
                 obj_info = H5.H5Oget_info(did);
+    			nAttributes = (int) obj_info.num_attrs;
             }
             catch (Exception ex) {
                 obj_info.num_attrs = 0;
