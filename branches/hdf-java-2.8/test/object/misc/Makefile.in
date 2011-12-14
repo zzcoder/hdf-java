@@ -1,0 +1,74 @@
+#/****************************************************************************
+# * NCSA HDF                                                                 *
+# * National Comptational Science Alliance                                   *
+# * University of Illinois at Urbana-Champaign                               *
+# * 605 E. Springfield, Champaign IL 61820                                   *
+# *                                                                          *
+# * For conditions of distribution and use, see the accompanying             *
+# * hdf-java/COPYING file.                                                   *
+# *                                                                          *
+# ****************************************************************************/
+
+ 
+TOP = ../../..
+DIR	= test/object/misc 
+
+@VERSION@
+
+JAVAC           = @JAVAC@
+JAVADOC         = @JAVADOC@
+JAR         	= @JAR@
+FIND            = @FIND@
+RM              = @RM@
+JAVADOC_FLAGS   = -version -author
+SLEXT=@SLEXT@
+JSLEXT=@JSLEXT@
+
+CLASSPATH=@CLASSPATH@:$(TOP)/lib
+JH45INSTALLDIR=@JH45INST@
+H45INC=@H45INC@
+H4INC=@HDF4INC@
+H5INC=@HDF5INC@
+
+#make this relative to the source root...
+LIBDIR=$(JH45INSTALLDIR)/lib
+BINDIR=$(JH45INSTALLDIR)/bin
+DOCDIR= $(JH45INSTALLDIR)/docs
+UGDIR= $(JH45INSTALLDIR)/UsersGuide
+
+CLASS_DIR=$(TOP)/lib
+CP="$(CLASSPATH):$(CLASS_DIR):. "
+
+CURRENTDIR = .
+JAR_DIR=$(CLASS_DIR)
+OUT_DIR=.
+
+.SUFFIXES: .java .class
+
+.java.class:
+	$(JAVAC) -classpath $(CLASSPATH) $<
+
+all: testh4file testh5file
+	chmod u+x runtests.sh
+
+testh4file: TestH4File.class
+	chmod u+x testh4file.sh
+
+testh5file: TestH5File.class
+	chmod u+x testh5file.sh
+
+runtests: all
+	chmod u+x runtests.sh
+
+check: all
+	./TestH5Object.sh
+
+check-memory-leak:
+	./TestH5MemoryLeak.sh
+
+clean:
+	$(RM) -f *.class
+	$(RM) -f *.hdf
+	$(RM) -f *.h5
+
+
