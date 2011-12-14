@@ -251,7 +251,7 @@ public class H5 implements java.io.Serializable {
      * 
      * Make sure to update the verions number when a different library is used.
      */
-    public final static int LIB_VERSION[] = { 1, 8, 8 };
+    public final static int LIB_VERSION[] = { 1, 8, 9 };
 
     public final static String H5PATH_PROPERTY_KEY = "ncsa.hdf.hdf5lib.H5.hdf5lib";
 
@@ -3556,13 +3556,13 @@ public synchronized static int H5Gget_obj_info_all(int loc_id, String name,
     }
     
     if (ltype == null)
-    	ltype = new int[otype.length];
+        ltype = new int[otype.length];
 
     if (fno == null)
-    	fno = new long[ref.length];
+        fno = new long[ref.length];
     
     if (indx_type < 0)
-    	indx_type = HDF5Constants.H5_INDEX_NAME;
+        indx_type = HDF5Constants.H5_INDEX_NAME;
     
     return H5Gget_obj_info_all(loc_id, name, oname, otype, ltype, fno, ref, oname.length, indx_type );
 }

@@ -24,7 +24,7 @@ import org.junit.Test;
 
 public class TestHDFViewMenu {
     private static FrameFixture mainFrameFixture;
-    private static String HDF5VERSION = "HDF5 1.8.8";
+    private static String HDF5VERSION = "HDF5 1.8.9";
     private static String HDF4VERSION = "HDF 4.2.6";
 
     private File createFile(String name, boolean hdf4_type) {
