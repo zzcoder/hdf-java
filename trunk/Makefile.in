@@ -1,0 +1,788 @@
+#****************************************************************************
+#* NCSA HDF                                                                 *
+#* National Comptational Science Alliance                                   *
+#* University of Illinois at Urbana-Champaign                               *
+#* 605 E. Springfield, Champaign IL 61820                                   *
+#*                                                                          *
+#* For conditions of distribution and use, see the accompanying             *
+#* COPYING file.                                                            *
+#*                                                                          *
+#****************************************************************************/
+ 
+TOP = .
+DIR	= . 
+
+@VERSION@
+
+JAVAC           = @JAVAC@
+JAVADOC         = @JAVADOC@
+JAR         	= @JAR@
+FIND            = @FIND@
+RM              = @RM@
+JAVADOC_FLAGS   = -version -author
+SLEXT=@SLEXT@
+JSLEXT=@JSLEXT@
+
+CLASSPATH=@CLASSPATH@
+JH45INSTALLDIR=@JH45INST@
+H45INC=@H45INC@
+H4INC=@HDF4INC@
+H5INC=@HDF5INC@
+
+#make this relative to the source root...
+LIBDIR=$(JH45INSTALLDIR)/lib
+BINDIR=$(JH45INSTALLDIR)/bin
+DOCDIR= $(JH45INSTALLDIR)/docs
+UGDIR= $(JH45INSTALLDIR)/UsersGuide
+
+CLASS_DIR=$(TOP)/lib
+CP="$(CLASSPATH):$(CLASS_DIR):. "
+
+CURRENTDIR = .
+JAR_DIR=$(CLASS_DIR)
+OUT_DIR=$(CLASS_DIR)/$(DIR)
+
+HDFVIEWDISTFILES= ./ncsa/hdf/view/*.java ./ncsa/hdf/view/Makefile.in ./ncsa/hdf/view/CMakeLists.txt $(HDFVIEWICONS)
+
+HDFOBJDISTFILES= ./ncsa/hdf/object/*.java ./ncsa/hdf/object/Makefile.in ./ncsa/hdf/object/CMakeLists.txt
+
+H4OBJDISTFILES= ./ncsa/hdf/object/h4/*.java ./ncsa/hdf/object/h4/Makefile.in ./ncsa/hdf/object/h4/CMakeLists.txt
+
+H5OBJDISTFILES= ./ncsa/hdf/object/h5/*.java ./ncsa/hdf/object/h5/Makefile.in ./ncsa/hdf/object/h5/CMakeLists.txt
+
+FITSDISTJARFILE = $(CLASS_DIR)/fits.jar
+NC2SDISTJARFILE = $(CLASS_DIR)/netcdf.jar
+JUNITSDISTJARFILE = $(CLASS_DIR)/junit.jar
+
+NC2OBJDISTFILES= ./ncsa/hdf/object/nc2/*.java ./ncsa/hdf/object/nc2/Makefile.in ./ncsa/hdf/object/nc2/CMakeLists.txt $(CLASS_DIR)/netcdf.jar 
+
+FITSOBJDISTFILES= ./ncsa/hdf/object/fits/*.java ./ncsa/hdf/object/fits/Makefile.in ./ncsa/hdf/object/fits/CMakeLists.txt $(CLASS_DIR)/fits.jar 
+
+TOPDIST=./VERSION ./COPYING ./Makefile.in ./CMakeLists.txt ./CTestConfig.cmake \
+	./Readme.txt \
+	./bin/hdfview.sh.in ./bin/hdfview.bat  \
+	./runconfig-example.sh \
+	./configure.in ./Config/config* ./Config/install-sh ./Config/Rules.mk \
+	./Config/config/CMake/* \
+	./samples/* \
+	./configure ./native/Makefile.in ./native/CMakeLists.txt \
+	./ncsa/Makefile.in ./ncsa/CMakeLists.txt ./ncsa/hdf/Makefile.in ./ncsa/hdf/CMakeLists.txt
+
+JHIDISTFILES=./native/hdflib/Makefile.in \
+	./native/hdflib/nt_makefile \
+	./native/hdflib/*.c \
+	./native/hdflib/Makefile.in ./native/hdflib/CMakeLists.txt \
+	./ncsa/hdf/hdflib/*.java \
+	./ncsa/hdf/hdflib/Makefile.in ./ncsa/hdf/hdflib/CMakeLists.txt
+
+JHI5DISTFILES= ./native/hdf5lib/Makefile.in \
+	./native/hdf5lib/nt_makefile \
+	./native/hdf5lib/*.c ./native/hdf5lib/*.h \
+	./native/hdf5lib/Makefile.in ./native/hdf5lib/CMakeLists.txt \
+	./ncsa/hdf/hdf5lib/*.java  \
+	./ncsa/hdf/hdf5lib/callbacks/*.java \
+	./ncsa/hdf/hdf5lib/exceptions/*.java \
+	./ncsa/hdf/hdf5lib/structs/*.java \
+	./ncsa/hdf/hdf5lib/Makefile.in ./ncsa/hdf/hdf5lib/CMakeLists.txt \
+	./ncsa/hdf/hdf5lib/callbacks/Makefile.in \
+	./ncsa/hdf/hdf5lib/exceptions/Makefile.in \
+	./ncsa/hdf/hdf5lib/structs/Makefile.in 
+
+EXAMPLESFILES=./examples/*.in ./examples/CMakeLists.txt \
+	./examples/intro/*.java ./examples/intro/*.in ./examples/intro/CMakeLists.txt \
+	./examples/groups/*.java ./examples/groups/*.in ./examples/groups/CMakeLists.txt ./examples/groups/*.h5 \
+	./examples/datasets/*.java ./examples/datasets/*.in ./examples/datsets/CMakeLists.txt \
+	./examples/datatypes/*.java ./examples/datatypes/*.in ./examples/datatypes/CMakeLists.txt \
+	./examples/testfiles/*.txt
+
+TESTFILES=./test/Makefile.in ./test/Makefile.in ./test/CMakeLists.txt \
+	./test/object/misc/*.java ./test/object/misc/*.in ./test/object/misc/CMakeLists.txt \
+	./test/object/*.in ./test/object/CMakeLists.txt ./test/object/*.java \
+	./test/hdf5lib/*.in ./test/hdf5lib/CMakeLists.txt ./test/hdf5lib/*.java \
+	./test/hdf5lib/h5ex_g_iterate.hdf ./test/object/h5ex_d_extern.data ./test/object/h5ex_d_extern.hdf5
+
+GUITESTFILES=./test/uitest/*.in ./test/uitest/CMakeLists.txt ./test/uitest/*.java \
+	$(CLASS_DIR)/fest-assert-1.2.jar $(CLASS_DIR)/fest-reflect-1.2.jar $(CLASS_DIR)/fest-swing-1.2.jar \
+	$(CLASS_DIR)/fest-util-1.1.2.jar $(CLASS_DIR)/fest-annotations-1.0.jar
+
+DOCFILES=./docs/*.html ./docs/*.gif ./docs/*.js ./docs/hdfview/*.html \
+         ./docs/hdfview/*.gif ./docs/hdfview/ModularGuide/*.html \
+         ./docs/hdfview/ModularGuide/*.gif ./docs/hdfview/UsersGuide/images/*.gif \
+         ./docs/hdfview/UsersGuide/images/*.jpg ./docs/hdfview/UsersGuide/*.html \
+         ./docs/hdfview/UsersGuide/*.txt
+
+WINDOWSFILES=./windows/hdfview.bat ./windows/copy_hdf.bat ./windows/javabuild.bat  \
+	./windows/javacheck.bat ./windows/javainstall.bat ./windows/jnibuild.bat \
+	./windows/proj/all/hdfjava.sln ./windows/proj/jhdf/jhdf.vcproj ./windows/proj/jhdf5/jhdf5.vcproj
+ 
+
+DISTFILES= $(TOPDIST) $(JHI5DISTFILES) $(JHIDISTFILES) $(HDFDISTFILES) $(HDFVIEWDISTFILES) $(HDFOBJDISTFILES) $(H4OBJDISTFILES) $(H5OBJDISTFILES) $(NC2OBJDISTFILES) $(FITSOBJDISTFILES) $(TESTFILES) $(DOCFILES) $(FITSDISTJARFILE) $(NC2DISTJARFILE) $(JUNITSDISTJARFILE) $(EXAMPLESFILES) $(WINDOWSFILES)
+
+
+JHIPACKAGES = \
+	ncsa.hdf.hdflib
+
+JHI5PACKAGES = \
+	ncsa.hdf.hdf5lib.callbacks \
+	ncsa.hdf.hdf5lib.exceptions \
+	ncsa.hdf.hdf5lib.structs \
+	ncsa.hdf.hdf5lib 
+
+HDFOBJPACKAGES = ncsa.hdf.object
+
+H4OBJPACKAGES = ncsa.hdf.object.h4
+
+H5OBJPACKAGES = ncsa.hdf.object.h5
+
+NC2OBJPACKAGES = ncsa.hdf.object.nc2
+
+FITSOBJPACKAGES = ncsa.hdf.object.fits
+
+HDFVIEWPACKAGES= ncsa.hdf.view
+
+TESTPACKAGES = test.object
+
+all: natives ncsa do-examples
+
+just-hdf4: hdflib jhdf-packages
+
+just-hdf5: hdf5lib jhdf5-packages
+
+install-just-hdf4: install-hdflib install-jhdf
+
+install-just-hdf5: install-hdf5lib install-jhdf5
+
+packages: jhdf-packages jhdf5-packages nc2-packages fits-packages jhdfobj-packages jhdfview-packages
+
+jhdf-packages: 
+	@if test -n "$(H4INC)" ; then $(MAKE) do-jhdf-packages; fi
+
+do-jhdf-packages: $(JHIPACKAGES)  
+	$(JAR) cf $(CLASS_DIR)/jhdf.jar -C $(CLASS_DIR) $(JHICLASSES)
+
+jhdf5-packages: $(JHI5PACKAGES)  
+	$(JAR) cf $(CLASS_DIR)/jhdf5.jar -C $(CLASS_DIR) $(JHI5CLASSES)
+
+nc2-packages: $(NC2OBJPACKAGES)
+	-mkdir -p $(CLASS_DIR)/ext 
+	$(JAR) cf $(CLASS_DIR)/ext/nc2obj.jar -C $(CLASS_DIR) $(NC2OBJCLASSES)
+
+fits-packages: $(FITSOBJPACKAGES)
+	-mkdir -p $(CLASS_DIR)/ext 
+	$(JAR) cf $(CLASS_DIR)/ext/fitsobj.jar -C $(CLASS_DIR) $(FITSOBJCLASSES)
+
+jhdfobj-packages: $(HDFOBJPACKAGES)  
+	$(JAR) cf $(CLASS_DIR)/jhdfobj.jar -C $(CLASS_DIR) $(HDFOBJCLASSES)
+	@if test -n "$(H4INC)" ; then $(MAKE) do-jh4obj-packages ; fi
+	@if test -n "$(H5INC)" ; then $(MAKE) do-jh5obj-packages ; fi
+
+do-jh4obj-packages: $(H4OBJPACKAGES)  
+	$(JAR) cf $(CLASS_DIR)/jhdf4obj.jar -C $(CLASS_DIR) $(H4OBJCLASSES)
+
+do-jh5obj-packages: $(H5OBJPACKAGES)  
+	$(JAR) cf $(CLASS_DIR)/jhdf5obj.jar -C $(CLASS_DIR) $(H5OBJCLASSES)
+
+jhdfview-packages: $(HDFVIEWPACKAGES)  
+	$(JAR) cf $(CLASS_DIR)/jhdfview.jar -C $(CLASS_DIR) $(HDFVIEWCLASSES) $(HDFVIEWICONS)
+
+classes: packages
+
+natives: FORCE
+	cd native; \
+	$(MAKE) 
+
+hdflib: FORCE
+	cd native; \
+	$(MAKE) hdflib
+
+hdf5lib: FORCE
+	cd native; \
+	$(MAKE) hdf5lib
+
+ncsa: FORCE
+	cd ncsa; \
+	$(MAKE) 
+
+FORCE:
+
+## revise arrangement of docs, java docs.
+
+docs: javadocs
+
+javadocs:
+	-mkdir -p docs/javadocs;
+	@if test -n "$(H45INC)" ; then \
+	$(JAVADOC) -sourcepath $(CLASSPATH) -d ./docs/javadocs $(JAVADOC_FLAGS) $(JH45PACKAGES) ncsa.hdf.hdflib $(JHI5PACKAGES) $(HDFOBJPACKAGES) $(H4OBJPACKAGES) $(H5OBJPACKAGES); \
+	else \
+	$(JAVADOC) -sourcepath $(CLASSPATH) -d ./docs/javadocs $(JAVADOC_FLAGS) ncsa.hdf.hdflib $(JHI5PACKAGES) $(HDFOBJPACKAGES) $(H4OBJPACKAGES) $(H5OBJPACKAGES) ; \
+	fi
+
+tests:
+	@if test -d "test"; then cd test; $(MAKE); fi
+
+do-examples:
+	@if test -d "examples"; then cd examples; $(MAKE); fi
+
+clean-examples:
+	@if test -d "examples"; then cd examples; $(MAKE) clean; fi
+
+clean-test:
+	@if test -d "test"; then  cd test; $(MAKE) clean; fi
+
+clean: clean-natives clean-ncsa clean-classes clean-test clean-examples
+
+clean-classes:
+	$(FIND) ./ncsa \( -name '#*' -o -name '*~' -o -name '*.class' \) -exec $(RM) -f {} \; ;\
+	$(RM) -f $(CLASS_DIR)/jhdf.jar
+	$(RM) -f $(CLASS_DIR)/jhdf5.jar
+	$(RM) -f $(CLASS_DIR)/jhdfobj.jar
+	$(RM) -f $(CLASS_DIR)/jhdf4obj.jar
+	$(RM) -f $(CLASS_DIR)/jhdf5obj.jar
+	$(RM) -f $(CLASS_DIR)/jhdfview.jar
+	$(RM) -f $(CLASS_DIR)/ext/nc2obj.jar
+	$(RM) -f $(CLASS_DIR)/ext/fitsobj.jar
+
+clean-packages: clean-classes
+
+clean-natives:
+	cd native; \
+	$(MAKE) clean;
+
+clean-ncsa:
+	cd ncsa; \
+	$(MAKE) clean;
+
+clean-hdflib:
+	cd native; \
+	$(MAKE) clean-hdflib;
+
+clean-hdf5lib:
+	cd native; \
+	$(MAKE) clean-hdf5lib;
+
+clean-docs:
+	cd docs; \
+	$(RM) *.html
+	cd docs/javadocs; \
+	$(RM) -r *.html
+
+check-all: check check-mem-leak
+	
+check-mem-leak:  install $(TESTPACKAGES)
+	cd test/object/misc; $(MAKE) check-memory-leak;
+
+check: packages
+	cd test; \
+	$(MAKE) check;
+	cd examples; \
+	$(MAKE) check;
+
+install: install-lib install-jhdf install-jhdf5 install-jhdfobj install-jhdfview
+	@echo "Install complete"
+
+uninstall: uninstall-jhdfview uninstall-jhdfobj uninstall-lib uninstall-jhi uninstall-jhi5 
+
+install-lib: natives
+	-mkdir -p $(LIBDIR);
+	-mkdir -p $(LIBDIR)/@JAVATARG@
+	@if test -n "$(H5INC)" ; then \
+	cp $(CLASS_DIR)/@JAVATARG@/libjhdf5.$(JSLEXT) $(LIBDIR)/@JAVATARG@ ; fi
+	@if test -n "$(H5INC)/../lib" ; then \
+	cp $(H5INC)/../lib/*.settings $(LIBDIR)/@JAVATARG@ ; fi
+	@if test -n "$(H4INC)" ; then \
+	cp $(CLASS_DIR)/@JAVATARG@/libjhdf.$(JSLEXT) $(LIBDIR)/@JAVATARG@ ; fi
+	@if test -n "$(H4INC)/../lib" ; then \
+	cp $(H4INC)/../lib/*.settings $(LIBDIR)/@JAVATARG@ ; fi
+	@if test -n "$(H45INC)" ; then \
+	cp $(CLASS_DIR)/@JAVATARG@/libjh4toh5.$(JSLEXT) $(LIBDIR)/@JAVATARG@ ; fi
+	@echo "Install Natives complete"
+
+install-hdflib: 
+	@if test -n "$(H4INC)" ; then $(MAKE) do-install-hdflib ; fi
+
+do-install-hdflib: hdflib
+	-mkdir -p $(LIBDIR);
+	-mkdir -p $(LIBDIR)/@JAVATARG@
+	cp $(CLASS_DIR)/@JAVATARG@/libjhdf.$(JSLEXT) $(LIBDIR)/@JAVATARG@
+	@echo "Install Native HDF complete"
+
+install-hdf5lib: hdf5lib
+	@if test -n "$(H5INC)" ; then $(MAKE) do-install-hdf5lib ; fi
+
+do-install-hdf5lib: hdf5lib
+	-mkdir -p $(LIBDIR);
+	-mkdir -p $(LIBDIR)/@JAVATARG@
+	cp $(CLASS_DIR)/@JAVATARG@/libjhdf5.$(JSLEXT) $(LIBDIR)/@JAVATARG@
+	echo "Install Native HDF5 complete"
+
+uninstall-lib:
+	$(RM) -f $(LIBDIR)/@JAVATARG@/libjhdf.$(JSLEXT)
+	$(RM) -f $(LIBDIR)/@JAVATARG@/libjhdf5.$(JSLEXT)
+
+install-jars: install-jhdf install-jhdf5 install-jhdfobject install-jhdfview
+
+install-jhdf: 
+	@if test -n "$(H4INC)" ; then $(MAKE) do-install-jhdf ; fi
+
+do-install-jhdf: jhdf-packages
+	-mkdir -p $(LIBDIR);
+	$(JAR) cf $(JH45INSTALLDIR)/lib/jhdf.jar -C $(CLASS_DIR) $(JHICLASSES)
+	@echo "Install JHI complete"
+
+install-jhdf5: 
+	@if test -n "$(H5INC)" ; then $(MAKE) do-install-jhdf5 ; fi
+
+do-install-jhdf5: jhdf5-packages
+	-mkdir -p $(LIBDIR);
+	$(JAR) cf $(JH45INSTALLDIR)/lib/jhdf5.jar -C $(CLASS_DIR) $(JHI5CLASSES)
+	@echo "Install JHI5 complete"
+
+install-jhdfobj: ncsa.hdf.object
+	-mkdir -p $(LIBDIR);
+	$(JAR) cf $(JH45INSTALLDIR)/lib/jhdfobj.jar -C $(CLASS_DIR) $(HDFOBJCLASSES)
+	@if test -n "$(H4INC)" ; then $(MAKE) do-install-jhdf4obj ; fi
+	@if test -n "$(H5INC)" ; then $(MAKE) do-install-jhdf5obj ; fi
+	@echo "Install HDFOBJ complete"
+
+do-install-jhdf4obj: ncsa.hdf.object.h4
+	-mkdir -p $(LIBDIR);
+	$(JAR) cf $(JH45INSTALLDIR)/lib/jhdf4obj.jar -C $(CLASS_DIR) $(H4OBJCLASSES)
+	@echo "Install JHDF4 complete"
+
+do-install-jhdf5obj: ncsa.hdf.object.h5
+	-mkdir -p $(LIBDIR);
+	$(JAR) cf $(JH45INSTALLDIR)/lib/jhdf5obj.jar -C $(CLASS_DIR) $(H5OBJCLASSES)
+	@echo "Install JHDF4 complete"
+
+install-jhdfview: ncsa.hdf.view
+	-mkdir -p $(LIBDIR);
+	$(JAR) cf $(JH45INSTALLDIR)/lib/jhdfview.jar -C $(CLASS_DIR) $(HDFVIEWCLASSES) $(HDFVIEWICONS)
+	-mkdir -p $(LIBDIR)/ext
+	$(JAR) cf $(JH45INSTALLDIR)/lib/ext/nc2obj.jar -C $(CLASS_DIR) $(NC2OBJCLASSES)
+	$(JAR) cf $(JH45INSTALLDIR)/lib/ext/fitsobj.jar -C $(CLASS_DIR) $(FITSOBJCLASSES)
+	$(RM) -rf $(UGDIR);
+	-mkdir -p $(UGDIR);
+	cp -R docs/hdfview/UsersGuide/* $(UGDIR);	
+	$(RM) -rf $(UGDIR)/.svn
+	$(RM) -rf $(UGDIR)/images/.svn
+	-mkdir -p $(BINDIR);
+	cp lib/netcdf.jar $(LIBDIR)
+	cp lib/fits.jar $(LIBDIR)
+	cp lib/junit.jar $(LIBDIR)
+	cp bin/hdfview.sh $(BINDIR)
+	chmod a+x $(BINDIR)/hdfview.sh
+	@echo "Install HDFVIEW complete"
+
+uninstall-jhi5: 
+	$(RM) -f $(JH45INSTALLDIR)/lib/jhdf5.jar
+
+uninstall-jhi: 
+	$(RM) -f $(JH45INSTALLDIR)/lib/jhdf.jar
+
+uninstall-jhdfobj: 
+	$(RM) -f $(JH45INSTALLDIR)/lib/jhdfobj.jar
+	$(RM) -f $(JH45INSTALLDIR)/lib/jhdf4obj.jar
+	$(RM) -f $(JH45INSTALLDIR)/lib/jhdf5obj.jar
+
+uninstall-jhdfview: 
+	$(RM) -f $(JH45INSTALLDIR)/lib/jhdfview.jar;
+	$(RM) -rf $(UGDIR)
+
+install-docs: install-javadocs install-ug
+
+install-javadocs:
+	-mkdir -p $(DOCDIR)/javadocs;
+	@if test -n "$(H45INC)" ; then \
+	$(JAVADOC) -sourcepath $(CLASSPATH) -d $(DOCDIR)/javadocs $(JAVADOC_FLAGS) $(JH45PACKAGES) ncsa.hdf.hdflib $(JHI5PACKAGES) $(HDFOBJPACKAGES); \
+	else \
+	$(JAVADOC) -sourcepath $(CLASSPATH) -d $(DOCDIR)/javadocs $(JAVADOC_FLAGS) ncsa.hdf.hdflib $(JHI5PACKAGES) $(HDFOBJPACKAGES); \
+	fi
+	-mkdir -p $(DOCDIR)/javadocs/images;
+	cp docs/javadocs/images/*.gif $(DOCDIR)/javadocs/images;
+
+uninstall-javadocs:
+	$(RM) -rf $(DOCDIR)/javadocs/*.html $(DOCDIR)/images
+
+install-ug:
+	-mkdir -p $(DOCDIR);
+	-mkdir -p $(DOCDIR)/hdfview/UsersGuide;
+	cp docs/hdfview/index.html $(DOCDIR)/hdfview/UsersGuide;
+	cp docs/hdfview/UsersGuide/*.html $(DOCDIR)/hdfview/UsersGuide;
+	cp docs/hdfview/UsersGuide/*.txt $(DOCDIR)/hdfview/UsersGuide;
+	-mkdir -p $(DOCDIR)/hdfview/UsersGuide/images;
+	cp docs/hdfview/UsersGuide/images/*.gif $(DOCDIR)/hdfview/UsersGuide/images;
+	-mkdir -p $(DOCDIR)/hdf-object;
+	cp docs/hdf-object/*.html $(DOCDIR)/hdf-object;
+	cp docs/hdf-object/*.jpg $(DOCDIR)/hdf-object;
+	cp docs/hdf-object/*.h5 $(DOCDIR)/hdf-object;
+
+uninstall-ug:
+	$(RM) -rf $(DOCDIR)/hdfview/UsersGuide/*
+	$(RM) -rf $(DOCDIR)/hdf-object/*
+
+distclean: clean-natives clean-ncsa clean-classes clean-test clean-examples
+	$(RM) -f config.cache config.status config.log 
+	$(RM) -rf $(CLASS_DIR)/@JAVATARG@
+	$(RM) -rf $(CLASS_DIR)/jhdf.jar
+	$(RM) -rf $(CLASS_DIR)/jhdf4obj.jar
+	$(RM) -rf $(CLASS_DIR)/jhdf5.jar
+	$(RM) -rf $(CLASS_DIR)/jhdf5obj.jar
+	$(RM) -rf $(CLASS_DIR)/jhdfobj.jar
+	$(RM) -rf $(CLASS_DIR)/jhdfview.jar
+	$(RM) -f ./native/Makefile
+	$(RM) -rf ./native/hdflib/Makefile
+	$(RM) -rf ./native/hdf5lib/Makefile
+	$(RM) -f ./ncsa/Makefile
+	$(RM) -rf ./ncsa/hdf/Makefile
+	$(RM) -rf ./ncsa/hdf/hdflib/Makefile
+	$(RM) -rf ./ncsa/hdf/hdf5lib/Makefile
+	$(RM) -rf ./ncsa/hdf/hdf5lib/callbacks/Makefile
+	$(RM) -rf ./ncsa/hdf/hdf5lib/exceptions/Makefile
+	$(RM) -rf ./ncsa/hdf/hdf5lib/structs/Makefile
+	$(RM) -rf ./ncsa/hdf/object/Makefile
+	$(RM) -rf ./ncsa/hdf/object/h4/Makefile
+	$(RM) -rf ./ncsa/hdf/object/h5/Makefile
+	$(RM) -rf ./ncsa/hdf/object/fits/Makefile
+	$(RM) -rf ./ncsa/hdf/object/nc2/Makefile
+	$(RM) -rf ./ncsa/hdf/view/Makefile
+	$(RM) -rf ./test/Makefile
+	$(RM) -rf ./test/hdf5lib/Makefile
+	$(RM) -rf ./test/hdf5lib/*.sh
+	$(RM) -rf ./test/object/Makefile
+	$(RM) -rf ./test/object/*.sh
+	$(RM) -rf ./test/object/misc/Makefile
+	$(RM) -rf ./test/object/misc/*.sh
+#	$(RM) -rf ./test/object/uitest/Makefile
+#	$(RM) -rf ./test/object/uitest/*.sh
+	$(RM) -rf ./examples/Makefile
+	$(RM) -rf ./examples/runExample.sh
+	$(RM) -rf ./examples/intro/Makefile
+	$(RM) -rf ./examples/groups/Makefile
+	$(RM) -rf ./examples/datasets/Makefile
+	$(RM) -rf ./examples/datatypes/Makefile
+	$(RM) -rf ./Makefile
+
+#build_package:
+#	./build/JDK/builddist solaris
+#	./build/JRE/buildjre solaris
+
+src-dist: docs
+	-mkdir -p hdf-java
+	tar cvf $(VERSION)-x.tar $(DISTFILES) ; mv $(VERSION)-x.tar hdf-java/
+	cd hdf-java ; tar xf $(VERSION)-x.tar ; $(RM) -f $(VERSION)-x.tar ; find . -name .svn -exec rm -rf {} \;
+	cd ..
+	tar cvf $(VERSION)-src.tar hdf-java/*
+#	$(JAR) cvf $(VERSION)-src.jar hdf-java/*
+	$(RM) -rf hdf-java
+
+
+# --------
+# Packages
+# --------
+
+ncsa.hdf.hdf5lib: \
+	$(CLASS_DIR)/ncsa/hdf/hdf5lib/H5.class \
+	$(CLASS_DIR)/ncsa/hdf/hdf5lib/HDF5Constants.class \
+	$(CLASS_DIR)/ncsa/hdf/hdf5lib/HDF5GroupInfo.class \
+	$(CLASS_DIR)/ncsa/hdf/hdf5lib/HDFArray.class \
+	$(CLASS_DIR)/ncsa/hdf/hdf5lib/HDFNativeData.class 
+
+ncsa.hdf.hdf5lib.exceptions: \
+	$(CLASS_DIR)/ncsa/hdf/hdf5lib/exceptions/HDF5AtomException.class \
+	$(CLASS_DIR)/ncsa/hdf/hdf5lib/exceptions/HDF5AttributeException.class \
+	$(CLASS_DIR)/ncsa/hdf/hdf5lib/exceptions/HDF5BtreeException.class \
+	$(CLASS_DIR)/ncsa/hdf/hdf5lib/exceptions/HDF5DataFiltersException.class \
+	$(CLASS_DIR)/ncsa/hdf/hdf5lib/exceptions/HDF5DataStorageException.class \
+	$(CLASS_DIR)/ncsa/hdf/hdf5lib/exceptions/HDF5DatasetInterfaceException.class \
+	$(CLASS_DIR)/ncsa/hdf/hdf5lib/exceptions/HDF5DataspaceInterfaceException.class \
+	$(CLASS_DIR)/ncsa/hdf/hdf5lib/exceptions/HDF5DatatypeInterfaceException.class \
+	$(CLASS_DIR)/ncsa/hdf/hdf5lib/exceptions/HDF5Exception.class \
+	$(CLASS_DIR)/ncsa/hdf/hdf5lib/exceptions/HDF5ExternalFileListException.class \
+	$(CLASS_DIR)/ncsa/hdf/hdf5lib/exceptions/HDF5FileInterfaceException.class \
+	$(CLASS_DIR)/ncsa/hdf/hdf5lib/exceptions/HDF5FunctionArgumentException.class \
+	$(CLASS_DIR)/ncsa/hdf/hdf5lib/exceptions/HDF5FunctionEntryExitException.class \
+	$(CLASS_DIR)/ncsa/hdf/hdf5lib/exceptions/HDF5HeapException.class \
+	$(CLASS_DIR)/ncsa/hdf/hdf5lib/exceptions/HDF5InternalErrorException.class \
+	$(CLASS_DIR)/ncsa/hdf/hdf5lib/exceptions/HDF5JavaException.class \
+	$(CLASS_DIR)/ncsa/hdf/hdf5lib/exceptions/HDF5LibraryException.class \
+	$(CLASS_DIR)/ncsa/hdf/hdf5lib/exceptions/HDF5LowLevelIOException.class \
+	$(CLASS_DIR)/ncsa/hdf/hdf5lib/exceptions/HDF5MetaDataCacheException.class \
+	$(CLASS_DIR)/ncsa/hdf/hdf5lib/exceptions/HDF5ObjectHeaderException.class \
+	$(CLASS_DIR)/ncsa/hdf/hdf5lib/exceptions/HDF5PropertyListInterfaceException.class \
+	$(CLASS_DIR)/ncsa/hdf/hdf5lib/exceptions/HDF5ReferenceException.class \
+	$(CLASS_DIR)/ncsa/hdf/hdf5lib/exceptions/HDF5ResourceUnavailableException.class \
+	$(CLASS_DIR)/ncsa/hdf/hdf5lib/exceptions/HDF5SymbolTableException.class 
+
+ncsa.hdf.hdf5lib.callbacks: \
+	$(CLASS_DIR)/ncsa/hdf/hdf5lib/callbacks/Callbacks.class \
+	$(CLASS_DIR)/ncsa/hdf/hdf5lib/callbacks/H5L_iterate_cb.class \
+	$(CLASS_DIR)/ncsa/hdf/hdf5lib/callbacks/H5L_iterate_t.class \
+	$(CLASS_DIR)/ncsa/hdf/hdf5lib/callbacks/H5O_iterate_cb.class \
+	$(CLASS_DIR)/ncsa/hdf/hdf5lib/callbacks/H5O_iterate_t.class
+
+ncsa.hdf.hdf5lib.structs: \
+	$(CLASS_DIR)/ncsa/hdf/hdf5lib/structs/H5_ih_info_t.class \
+	$(CLASS_DIR)/ncsa/hdf/hdf5lib/structs/H5A_info_t.class \
+	$(CLASS_DIR)/ncsa/hdf/hdf5lib/structs/H5G_info_t.class \
+	$(CLASS_DIR)/ncsa/hdf/hdf5lib/structs/H5L_info_t.class \
+	$(CLASS_DIR)/ncsa/hdf/hdf5lib/structs/H5O_info_t.class \
+	$(CLASS_DIR)/ncsa/hdf/hdf5lib/structs/H5O_hdr_info_t.class
+
+ncsa.hdf.hdflib: \
+	$(CLASS_DIR)/ncsa/hdf/hdflib/HDFArray.class \
+	$(CLASS_DIR)/ncsa/hdf/hdflib/HDFChunkInfo.class \
+	$(CLASS_DIR)/ncsa/hdf/hdflib/HDFCompInfo.class \
+	$(CLASS_DIR)/ncsa/hdf/hdflib/HDFConstants.class \
+	$(CLASS_DIR)/ncsa/hdf/hdflib/HDFDeflateCompInfo.class \
+	$(CLASS_DIR)/ncsa/hdf/hdflib/HDFDeprecated.class \
+	$(CLASS_DIR)/ncsa/hdf/hdflib/HDFException.class \
+	$(CLASS_DIR)/ncsa/hdf/hdflib/HDFIMCOMPCompInfo.class \
+	$(CLASS_DIR)/ncsa/hdf/hdflib/HDFJPEGCompInfo.class \
+	$(CLASS_DIR)/ncsa/hdf/hdflib/HDFJavaException.class \
+	$(CLASS_DIR)/ncsa/hdf/hdflib/HDFLibrary.class \
+	$(CLASS_DIR)/ncsa/hdf/hdflib/HDFLibraryException.class \
+	$(CLASS_DIR)/ncsa/hdf/hdflib/HDFNBITChunkInfo.class \
+	$(CLASS_DIR)/ncsa/hdf/hdflib/HDFNBITCompInfo.class \
+	$(CLASS_DIR)/ncsa/hdf/hdflib/HDFNativeData.class \
+	$(CLASS_DIR)/ncsa/hdf/hdflib/HDFNewCompInfo.class \
+	$(CLASS_DIR)/ncsa/hdf/hdflib/HDFNotImplementedException.class \
+	$(CLASS_DIR)/ncsa/hdf/hdflib/HDFOldCompInfo.class \
+	$(CLASS_DIR)/ncsa/hdf/hdflib/HDFOldRLECompInfo.class \
+	$(CLASS_DIR)/ncsa/hdf/hdflib/HDFRLECompInfo.class \
+	$(CLASS_DIR)/ncsa/hdf/hdflib/HDFSKPHUFFCompInfo.class \
+	$(CLASS_DIR)/ncsa/hdf/hdflib/HDFSZIPCompInfo.class \
+	$(CLASS_DIR)/ncsa/hdf/hdflib/HDFTable.class 
+
+ncsa.hdf.object: \
+	$(CLASS_DIR)/ncsa/hdf/object/Attribute.class \
+	$(CLASS_DIR)/ncsa/hdf/object/CompoundDS.class \
+	$(CLASS_DIR)/ncsa/hdf/object/DataFormat.class \
+	$(CLASS_DIR)/ncsa/hdf/object/Dataset.class \
+	$(CLASS_DIR)/ncsa/hdf/object/Group.class \
+	$(CLASS_DIR)/ncsa/hdf/object/HObject.class \
+	$(CLASS_DIR)/ncsa/hdf/object/ScalarDS.class \
+	$(CLASS_DIR)/ncsa/hdf/object/Datatype.class \
+	$(CLASS_DIR)/ncsa/hdf/object/FileFormat.class \
+	$(CLASS_DIR)/ncsa/hdf/object/Metadata.class 
+
+ncsa.hdf.object.h4:	\
+	$(CLASS_DIR)/ncsa/hdf/object/h4/H4GRImage.class \
+	$(CLASS_DIR)/ncsa/hdf/object/h4/H4Group.class \
+	$(CLASS_DIR)/ncsa/hdf/object/h4/H4SDS.class \
+	$(CLASS_DIR)/ncsa/hdf/object/h4/H4Vdata.class \
+	$(CLASS_DIR)/ncsa/hdf/object/h4/H4Datatype.class \
+	$(CLASS_DIR)/ncsa/hdf/object/h4/H4File.class \
+
+ncsa.hdf.object.h5:	\
+	$(CLASS_DIR)/ncsa/hdf/object/h5/H5CompoundDS.class \
+	$(CLASS_DIR)/ncsa/hdf/object/h5/H5Group.class \
+	$(CLASS_DIR)/ncsa/hdf/object/h5/H5ScalarDS.class \
+	$(CLASS_DIR)/ncsa/hdf/object/h5/H5Datatype.class \
+	$(CLASS_DIR)/ncsa/hdf/object/h5/H5File.class \
+
+ncsa.hdf.object.nc2: \
+	$(CLASS_DIR)/ncsa/hdf/object/nc2/NC2Dataset.class \
+	$(CLASS_DIR)/ncsa/hdf/object/nc2/NC2Datatype.class \
+	$(CLASS_DIR)/ncsa/hdf/object/nc2/NC2File.class \
+	$(CLASS_DIR)/ncsa/hdf/object/nc2/NC2Group.class
+
+ncsa.hdf.object.fits: \
+	$(CLASS_DIR)/ncsa/hdf/object/fits/FitsDataset.class \
+	$(CLASS_DIR)/ncsa/hdf/object/fits/FitsDatatype.class \
+	$(CLASS_DIR)/ncsa/hdf/object/fits/FitsFile.class \
+	$(CLASS_DIR)/ncsa/hdf/object/fits/FitsGroup.class
+
+#
+# The test files are not included in the preliminary source release
+#
+test.object: \
+	./test/object/misc/TestH4File.class \
+	./test/object/misc/TestH5File.class
+
+#
+#  The Hdfviewer
+#
+ncsa.hdf.view: \
+	$(CLASS_DIR)/ncsa/hdf/view/TreeView.class \
+	$(CLASS_DIR)/ncsa/hdf/view/FileConversionDialog.class \
+	$(CLASS_DIR)/ncsa/hdf/view/DataOptionDialog.class \
+	$(CLASS_DIR)/ncsa/hdf/view/HDFView.class \
+	$(CLASS_DIR)/ncsa/hdf/view/ImageView.class \
+	$(CLASS_DIR)/ncsa/hdf/view/TableView.class \
+	$(CLASS_DIR)/ncsa/hdf/view/TextView.class \
+	$(CLASS_DIR)/ncsa/hdf/view/ViewProperties.class \
+	$(CLASS_DIR)/ncsa/hdf/view/NewDatasetDialog.class \
+	$(CLASS_DIR)/ncsa/hdf/view/NewDatatypeDialog.class \
+	$(CLASS_DIR)/ncsa/hdf/view/NewLinkDialog.class \
+	$(CLASS_DIR)/ncsa/hdf/view/NewLinkDialog.class \
+	$(CLASS_DIR)/ncsa/hdf/view/NewTableDataDialog.class \
+	$(CLASS_DIR)/ncsa/hdf/view/NewFileDialog.class \
+	$(CLASS_DIR)/ncsa/hdf/view/UserOptionsDialog.class \
+	$(CLASS_DIR)/ncsa/hdf/view/DefaultFileFilter.class \
+	$(CLASS_DIR)/ncsa/hdf/view/MathConversionDialog.class \
+	$(CLASS_DIR)/ncsa/hdf/view/Tools.class \
+	$(CLASS_DIR)/ncsa/hdf/view/DataView.class \
+	$(CLASS_DIR)/ncsa/hdf/view/Chart.class \
+	$(CLASS_DIR)/ncsa/hdf/view/PaletteView.class \
+	$(CLASS_DIR)/ncsa/hdf/view/MetaDataView.class \
+	$(CLASS_DIR)/ncsa/hdf/view/HelpView.class \
+	$(CLASS_DIR)/ncsa/hdf/view/NewImageDialog.class \
+	$(CLASS_DIR)/ncsa/hdf/view/NewGroupDialog.class \
+	$(CLASS_DIR)/ncsa/hdf/view/NewAttributeDialog.class \
+	$(CLASS_DIR)/ncsa/hdf/view/DefaultImageView.class \
+	$(CLASS_DIR)/ncsa/hdf/view/DefaultTableView.class \
+	$(CLASS_DIR)/ncsa/hdf/view/DefaultTreeView.class \
+	$(CLASS_DIR)/ncsa/hdf/view/DefaultMetaDataView.class \
+	$(CLASS_DIR)/ncsa/hdf/view/DefaultTextView.class \
+	$(CLASS_DIR)/ncsa/hdf/view/ViewManager.class \
+	$(CLASS_DIR)/ncsa/hdf/view/DefaultPaletteView.class
+
+#  All classes that are built, including private classes:
+#     This is what is loaded into the 'jar' file.
+#
+
+
+JHI5CLASSES= ncsa/hdf/hdf5lib
+
+JHICLASSES= ncsa/hdf/hdflib
+
+HDFOBJCLASSES= ncsa/hdf/object
+
+H4OBJCLASSES= ncsa/hdf/object/h4
+
+H5OBJCLASSES= ncsa/hdf/object/h5
+
+NC2OBJCLASSES= ncsa/hdf/object/nc2
+
+FITSOBJCLASSES= ./ncsa/hdf/object/fits
+
+HDFVIEWCLASSES=./ncsa/hdf/view
+
+HDFVIEWICONS= ./ncsa/hdf/view/icons/*.gif \
+        ./ncsa/hdf/view/*.html
+
+##
+#  Source to pack for distribution
+##
+JAVASRCS= \
+./ncsa/hdf/hdf5lib/H5.java  \
+./ncsa/hdf/hdf5lib/HDF5Constants.java  \
+./ncsa/hdf/hdf5lib/HDF5GroupInfo.java  \
+./ncsa/hdf/hdf5lib/HDFArray.java  \
+./ncsa/hdf/hdf5lib/HDFNativeData.java  \
+./ncsa/hdf/hdf5lib/exceptions/HDF5AtomException.java  \
+./ncsa/hdf/hdf5lib/exceptions/HDF5AttributeException.java  \
+./ncsa/hdf/hdf5lib/exceptions/HDF5BtreeException.java  \
+./ncsa/hdf/hdf5lib/exceptions/HDF5DataFiltersException.java  \
+./ncsa/hdf/hdf5lib/exceptions/HDF5DataStorageException.java  \
+./ncsa/hdf/hdf5lib/exceptions/HDF5DatasetInterfaceException.java  \
+./ncsa/hdf/hdf5lib/exceptions/HDF5DataspaceInterfaceException.java  \
+./ncsa/hdf/hdf5lib/exceptions/HDF5DatatypeInterfaceException.java  \
+./ncsa/hdf/hdf5lib/exceptions/HDF5Exception.java  \
+./ncsa/hdf/hdf5lib/exceptions/HDF5ExternalFileListException.java  \
+./ncsa/hdf/hdf5lib/exceptions/HDF5FileInterfaceException.java  \
+./ncsa/hdf/hdf5lib/exceptions/HDF5FunctionArgumentException.java  \
+./ncsa/hdf/hdf5lib/exceptions/HDF5FunctionEntryExitException.java  \
+./ncsa/hdf/hdf5lib/exceptions/HDF5HeapException.java  \
+./ncsa/hdf/hdf5lib/exceptions/HDF5InternalErrorException.java  \
+./ncsa/hdf/hdf5lib/exceptions/HDF5JavaException.java  \
+./ncsa/hdf/hdf5lib/exceptions/HDF5LibraryException.java  \
+./ncsa/hdf/hdf5lib/exceptions/HDF5LowLevelIOException.java  \
+./ncsa/hdf/hdf5lib/exceptions/HDF5MetaDataCacheException.java  \
+./ncsa/hdf/hdf5lib/exceptions/HDF5ObjectHeaderException.java  \
+./ncsa/hdf/hdf5lib/exceptions/HDF5PropertyListInterfaceException.java  \
+./ncsa/hdf/hdf5lib/exceptions/HDF5ReferenceException.java  \
+./ncsa/hdf/hdf5lib/exceptions/HDF5ResourceUnavailableException.java  \
+./ncsa/hdf/hdf5lib/exceptions/HDF5SymbolTableException.java  \
+./ncsa/hdf/hdf5lib/callbacks/Callbacks.java \
+./ncsa/hdf/hdf5lib/callbacks/H5L_iterate_cb.java \
+./ncsa/hdf/hdf5lib/callbacks/H5L_iterate_t.java \
+./ncsa/hdf/hdf5lib/callbacks/H5O_iterate_cb.java \
+./ncsa/hdf/hdf5lib/callbacks/H5O_iterate_t.java \
+./ncsa/hdf/hdf5lib/structs/H5_ih_info_t.java \
+./ncsa/hdf/hdf5lib/structs/H5A_info_t.java \
+./ncsa/hdf/hdf5lib/structs/H5G_info_t.java \
+./ncsa/hdf/hdf5lib/structs/H5L_info_t.java \
+./ncsa/hdf/hdf5lib/structs/H5O_info_t.java \
+./ncsa/hdf/hdf5lib/structs/H5O_hdr_info_t.java \
+./ncsa/hdf/hdflib/HDFArray.java  \
+./ncsa/hdf/hdflib/HDFChunkInfo.java  \
+./ncsa/hdf/hdflib/HDFCompInfo.java  \
+./ncsa/hdf/hdflib/HDFConstants.java  \
+./ncsa/hdf/hdflib/HDFDeflateCompInfo.java  \
+./ncsa/hdf/hdflib/HDFDeprecated.java  \
+./ncsa/hdf/hdflib/HDFException.java  \
+./ncsa/hdf/hdflib/HDFIMCOMPCompInfo.java  \
+./ncsa/hdf/hdflib/HDFJPEGCompInfo.java  \
+./ncsa/hdf/hdflib/HDFSZIPCompInfo.java  \
+./ncsa/hdf/hdflib/HDFJavaException.java  \
+./ncsa/hdf/hdflib/HDFLibrary.java  \
+./ncsa/hdf/hdflib/HDFLibraryException.java  \
+./ncsa/hdf/hdflib/HDFNBITChunkInfo.java  \
+./ncsa/hdf/hdflib/HDFNBITCompInfo.java  \
+./ncsa/hdf/hdflib/HDFNativeData.java  \
+./ncsa/hdf/hdflib/HDFNewCompInfo.java  \
+./ncsa/hdf/hdflib/HDFNotImplementedException.java  \
+./ncsa/hdf/hdflib/HDFOldCompInfo.java  \
+./ncsa/hdf/hdflib/HDFOldRLECompInfo.java  \
+./ncsa/hdf/hdflib/HDFRLECompInfo.java  \
+./ncsa/hdf/hdflib/HDFSKPHUFFCompInfo.java  \
+./ncsa/hdf/hdflib/HDFTable.java  \
+./ncsa/hdf/object/Attribute.java  \
+./ncsa/hdf/object/CompoundDS.java  \
+./ncsa/hdf/object/DataFormat.java  \
+./ncsa/hdf/object/Dataset.java  \
+./ncsa/hdf/object/Group.java  \
+./ncsa/hdf/object/h4/H4GRImage.java  \
+./ncsa/hdf/object/h4/H4Group.java  \
+./ncsa/hdf/object/h4/H4SDS.java  \
+./ncsa/hdf/object/h4/H4Vdata.java  \
+./ncsa/hdf/object/h5/H5CompoundDS.java  \
+./ncsa/hdf/object/h5/H5Group.java  \
+./ncsa/hdf/object/h5/H5ScalarDS.java  \
+./ncsa/hdf/object/HObject.java  \
+./ncsa/hdf/object/ScalarDS.java \
+./ncsa/hdf/object/Metadata.java \
+./ncsa/hdf/object/FileFormat.java \
+./ncsa/hdf/object/h4/H4File.java \
+./ncsa/hdf/object/h5/H5File.java \
+./ncsa/hdf/object/Datatype.java \
+./ncsa/hdf/object/h4/H4Datatype.java \
+./ncsa/hdf/object/h5/H5Datatype.java \
+./ncsa/hdf/object/nc2/*.java \
+./ncsa/hdf/object/fits/*.java \
+./ncsa/hdf/view/DataOptionDialog.java \
+./ncsa/hdf/view/HDFView.java \
+./ncsa/hdf/view/ImageView.java \
+./ncsa/hdf/view/TableView.java \
+./ncsa/hdf/view/TextView.java \
+./ncsa/hdf/view/TreeView.java \
+./ncsa/hdf/view/ViewManager.java \
+./ncsa/hdf/view/ViewProperties.java \
+./ncsa/hdf/view/NewAttributeDialog.java \
+./ncsa/hdf/view/NewDatasetDialog.java \
+./ncsa/hdf/view/NewDatatypeDialog.java \
+./ncsa/hdf/view/NewLinkDialog.java \
+./ncsa/hdf/view/NewTableDataDialog.java \
+./ncsa/hdf/view/NewFileDialog.java \
+./ncsa/hdf/view/NewGroupDialog.java \
+./ncsa/hdf/view/DefaultFileFilter.java \
+./ncsa/hdf/view/FileConversionDialog.java \
+./ncsa/hdf/view/MathConversionDialog.java \
+./ncsa/hdf/view/NewImageDialog.java \
+./ncsa/hdf/view/UserOptionsDialog.java \
+./ncsa/hdf/view/Tools.java \
+./ncsa/hdf/view/Chart.java \
+./ncsa/hdf/view/DataView.java \
+./ncsa/hdf/view/DefaultImageView.java \
+./ncsa/hdf/view/DefaultMetaDataView.java \
+./ncsa/hdf/view/DefaultPaletteView.java \
+./ncsa/hdf/view/DefaultTableView.java \
+./ncsa/hdf/view/DefaultTextView.java \
+./ncsa/hdf/view/DefaultTreeView.java \
+./ncsa/hdf/view/MetaDataView.java \
+./ncsa/hdf/view/HelpView.java \
+./ncsa/hdf/view/PaletteView.java \
+./test/object/misc/TestH4File.java \
+./test/object/misc/TestH5File.java \
+
