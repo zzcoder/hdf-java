@@ -332,8 +332,9 @@ ChangeListener, DropTargetListener
         File theFile = null;
         for (int i=0; i<nfiles; i++) {
             theFile = flist.get(i);
+
             if (theFile.isFile()) {
-                currentDir = theFile.getParentFile().getAbsolutePath();
+                 currentDir = theFile.getParentFile().getAbsolutePath();
                 currentFile = theFile.getAbsolutePath();
 
                 try {
@@ -2245,7 +2246,8 @@ ChangeListener, DropTargetListener
         if (j>=0) {
             for (i = j; i<args.length; i++) {
                 tmpFile = new File(args[i]);
-                if (tmpFile.exists() && tmpFile.isFile()) {
+                if (tmpFile.exists() && 
+                   (tmpFile.isFile() || tmpFile.isDirectory())) {
                     flist.add(new File (tmpFile.getAbsolutePath()));
                 }
             }
