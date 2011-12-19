@@ -47,7 +47,7 @@ FILE (WRITE ${JUNIT_MENU_TEST_RUNNER}
   "EXECUTE_PROCESS(COMMAND
   ${CMAKE_Java_RUNTIME} -Xmx1024M 
   -Djava.library.path=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
-  -Dhdfview.root=\"${PROJECT_BINARY_DIR}\" 
+  -Dhdfview.root=${PROJECT_BINARY_DIR} 
   -cp \"${CMAKE_JAVA_CLASSPATH}\"
   -ea org.junit.runner.JUnitCore test.uitest.TestHDFViewMenu
   WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
@@ -62,7 +62,7 @@ FILE (WRITE ${JUNIT_TEST_RUNNER}
   "EXECUTE_PROCESS(COMMAND
   ${CMAKE_Java_RUNTIME} -Xmx1024M 
   -Djava.library.path=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
-  -Dhdfview.root=\"${PROJECT_BINARY_DIR}\" 
+  -Dhdfview.root=${PROJECT_BINARY_DIR} 
   -cp \"${CMAKE_JAVA_CLASSPATH}\"
   -ea org.junit.runner.JUnitCore test.uitest.TestTreeViewNewMenu
   WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
@@ -76,6 +76,8 @@ ADD_TEST (
     NAME JUnit-gui-clear-objects
     COMMAND    ${CMAKE_COMMAND}
         -E remove 
+        closebutton.hdf
+        testopenbutton.hdf
         testopenfile.hdf
         testopenrofile.h5
         testfile.hdf
@@ -86,6 +88,7 @@ ADD_TEST (
         testsavefile.h5
         testsaveasfile.h5
         testsaveasfile2.h5
+        testgrp.h5
         testds.h5
 )
 

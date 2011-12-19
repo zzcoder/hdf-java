@@ -47,6 +47,7 @@ public class TestHDFViewMenu {
         fileMenuItem.robot.waitForIdle();
         fileMenuItem.requireVisible();
         fileMenuItem.click();
+        mainFrameFixture.robot.waitForIdle();
 
         JFileChooserFixture fileChooser = JFileChooserFinder.findFileChooser().using(mainFrameFixture.robot);
         fileChooser.fileNameTextBox().setText(name + file_ext);
@@ -70,6 +71,7 @@ public class TestHDFViewMenu {
         fileMenuItem.robot.waitForIdle();
         fileMenuItem.requireVisible();
         fileMenuItem.click();
+        mainFrameFixture.robot.waitForIdle();
 
         if (delete_file) {
             assertTrue("File file deleted", hdf_file.delete());
@@ -81,7 +83,8 @@ public class TestHDFViewMenu {
     public static void setUpOnce() {
         FailOnThreadViolationRepaintManager.install();
         Robot robot = BasicRobot.robotWithNewAwtHierarchy();
-        application("ncsa.hdf.view.HDFView").start();
+        String envvalue = System.getProperty("hdfview.root");
+        application("ncsa.hdf.view.HDFView").withArgs("-root", envvalue, envvalue).start();
         mainFrameFixture = findFrame(
                 new GenericTypeMatcher<JFrame>(JFrame.class) {
                     protected boolean isMatching(JFrame frame) {
@@ -161,6 +164,7 @@ public class TestHDFViewMenu {
     public void verifyTextInLabelWhenClickingHDF4Button() {
         try {
             mainFrameFixture.button("HDF4 library").click();
+            mainFrameFixture.robot.waitForIdle();
             mainFrameFixture.dialog().optionPane().requirePlainMessage().requireMessage(HDF4VERSION);
             mainFrameFixture.dialog().optionPane().button("OptionPane.button").click();
         }
@@ -176,6 +180,7 @@ public class TestHDFViewMenu {
     public void verifyTextInLabelWhenClickingHDF5Button() {
         try {
             mainFrameFixture.button("HDF5 library").click();
+            mainFrameFixture.robot.waitForIdle();
             mainFrameFixture.dialog().optionPane().requirePlainMessage().requireMessage(HDF5VERSION);
             mainFrameFixture.dialog().optionPane().button("OptionPane.button").click();
         }
@@ -194,6 +199,7 @@ public class TestHDFViewMenu {
             closeFile(hdf_file, false);
 
             mainFrameFixture.button("Open").click();
+            mainFrameFixture.robot.waitForIdle();
             JFileChooserFixture fileChooser = JFileChooserFinder.findFileChooser().using(mainFrameFixture.robot);
             fileChooser.fileNameTextBox().setText("testopenbutton.hdf");
             fileChooser.approve();
@@ -223,6 +229,7 @@ public class TestHDFViewMenu {
 
             filetree.clickRow(0);
             mainFrameFixture.button("Close").click();
+            mainFrameFixture.robot.waitForIdle();
 
             assertTrue("Button-Close-HDF4 file deleted", hdf_file.delete());
             assertFalse("Button-Close-HDF4 file gone", hdf_file.exists());
@@ -245,6 +252,7 @@ public class TestHDFViewMenu {
             fileMenuItem.robot.waitForIdle();
             fileMenuItem.requireVisible();
             fileMenuItem.click();
+            mainFrameFixture.robot.waitForIdle();
             JFileChooserFixture fileChooser = JFileChooserFinder.findFileChooser().using(mainFrameFixture.robot);
             fileChooser.fileNameTextBox().setText("testopenfile.hdf");
             fileChooser.approve();
@@ -273,6 +281,7 @@ public class TestHDFViewMenu {
             fileMenuItem.robot.waitForIdle();
             fileMenuItem.requireVisible();
             fileMenuItem.click();
+            mainFrameFixture.robot.waitForIdle();
             JFileChooserFixture fileChooser = JFileChooserFinder.findFileChooser().using(mainFrameFixture.robot);
             fileChooser.fileNameTextBox().setText("testopenrofile.h5");
             fileChooser.approve();
@@ -302,6 +311,7 @@ public class TestHDFViewMenu {
             fileMenuItem.robot.waitForIdle();
             fileMenuItem.requireVisible();
             fileMenuItem.click();
+            mainFrameFixture.robot.waitForIdle();
 
             File hdf_file = new File("testfile.hdf");
             if (hdf_file.exists())
@@ -330,6 +340,7 @@ public class TestHDFViewMenu {
             fileMenuItem.robot.waitForIdle();
             fileMenuItem.requireVisible();
             fileMenuItem.click();
+            mainFrameFixture.robot.waitForIdle();
 
             File hdf_file = new File("testfile.h5");
             if (hdf_file.exists())
@@ -365,6 +376,7 @@ public class TestHDFViewMenu {
             fileMenuItem.robot.waitForIdle();
             fileMenuItem.requireVisible();
             fileMenuItem.click();
+            mainFrameFixture.robot.waitForIdle();
 
             assertTrue("File-Close-HDF4 file deleted", hdf_file.delete());
             assertFalse("File-Close-HDF4 file gone", hdf_file.exists());
@@ -396,6 +408,7 @@ public class TestHDFViewMenu {
             fileMenuItem.robot.waitForIdle();
             fileMenuItem.requireVisible();
             fileMenuItem.click();
+            mainFrameFixture.robot.waitForIdle();
 
             assertTrue("File-Close All-HDF4 file deleted", hdf4_file.delete());
             assertFalse("File-Close All-HDF4 file gone", hdf4_file.exists());
@@ -421,6 +434,7 @@ public class TestHDFViewMenu {
             groupMenuItem.robot.waitForIdle();
             groupMenuItem.requireVisible();
             groupMenuItem.click();
+            mainFrameFixture.robot.waitForIdle();
 
             mainFrameFixture.dialog().textBox("groupname").setText("grouptestname");
             mainFrameFixture.dialog().button("OK").click();
@@ -436,6 +450,7 @@ public class TestHDFViewMenu {
             fileMenuItem.robot.waitForIdle();
             fileMenuItem.requireVisible();
             fileMenuItem.click();
+            mainFrameFixture.robot.waitForIdle();
             JFileChooserFixture fileChooser = JFileChooserFinder.findFileChooser().using(mainFrameFixture.robot);
             fileChooser.fileNameTextBox().setText("testsavefile.h5");
             fileChooser.approve();
@@ -469,6 +484,7 @@ public class TestHDFViewMenu {
             groupMenuItem.robot.waitForIdle();
             groupMenuItem.requireVisible();
             groupMenuItem.click();
+            mainFrameFixture.robot.waitForIdle();
 
             mainFrameFixture.dialog().textBox("groupname").setText("grouptestname");
             mainFrameFixture.dialog().button("OK").click();
@@ -477,6 +493,7 @@ public class TestHDFViewMenu {
             fileMenuItem.robot.waitForIdle();
             fileMenuItem.requireVisible();
             fileMenuItem.click();
+            mainFrameFixture.robot.waitForIdle();
             JFileChooserFixture fileChooser = JFileChooserFinder.findFileChooser().using(mainFrameFixture.robot);
             fileChooser.fileNameTextBox().setText("testsaveasfile2.h5");
             fileChooser.approve();
@@ -487,6 +504,7 @@ public class TestHDFViewMenu {
             fileOpenMenuItem.robot.waitForIdle();
             fileOpenMenuItem.requireVisible();
             fileOpenMenuItem.click();
+            mainFrameFixture.robot.waitForIdle();
             fileChooser = JFileChooserFinder.findFileChooser().using(mainFrameFixture.robot);
             fileChooser.fileNameTextBox().setText("testsaveasfile2.h5");
             fileChooser.approve();
@@ -513,6 +531,7 @@ public class TestHDFViewMenu {
             fileMenuItem.robot.waitForIdle();
             fileMenuItem.requireVisible();
             fileMenuItem.click();
+            mainFrameFixture.robot.waitForIdle();
             mainFrameFixture.dialog().optionPane().requirePlainMessage().requireMessage(HDF4VERSION);
             mainFrameFixture.dialog().optionPane().button("OptionPane.button").click();
         }
@@ -531,6 +550,7 @@ public class TestHDFViewMenu {
             fileMenuItem.robot.waitForIdle();
             fileMenuItem.requireVisible();
             fileMenuItem.click();
+            mainFrameFixture.robot.waitForIdle();
             mainFrameFixture.dialog().optionPane().requirePlainMessage().requireMessage(HDF5VERSION);
             mainFrameFixture.dialog().optionPane().button("OptionPane.button").click();
         }
@@ -549,6 +569,7 @@ public class TestHDFViewMenu {
             fileMenuItem.robot.waitForIdle();
             fileMenuItem.requireVisible();
             fileMenuItem.click();
+            mainFrameFixture.robot.waitForIdle();
             mainFrameFixture.dialog().optionPane().requirePlainMessage().requireMessage("Compiled at jdk 1.6.*\\sRunning at.*");
             mainFrameFixture.dialog().optionPane().button("OptionPane.button").click();
         }
@@ -567,6 +588,7 @@ public class TestHDFViewMenu {
             fileMenuItem.robot.waitForIdle();
             fileMenuItem.requireVisible();
             fileMenuItem.click();
+            mainFrameFixture.robot.waitForIdle();
             mainFrameFixture.dialog().optionPane().requirePlainMessage().requireMessage("HDF Viewer, Version 2.8\\sFor.*\\s\\sCopyright.*2006-2011 The HDF Group.\\sAll rights reserved.");
             mainFrameFixture.dialog().optionPane().button("OptionPane.button").click();
         }
@@ -585,6 +607,7 @@ public class TestHDFViewMenu {
             fileMenuItem.robot.waitForIdle();
             fileMenuItem.requireVisible();
             fileMenuItem.click();
+            mainFrameFixture.robot.waitForIdle();
             mainFrameFixture.dialog().optionPane().requirePlainMessage().requireMessage("\\sSupported File Formats: \\s.*HDF5\\s.*HDF4\\s\\s");
             mainFrameFixture.dialog().optionPane().okButton().click();
         }
@@ -603,6 +626,7 @@ public class TestHDFViewMenu {
             fileMenuItem.robot.waitForIdle();
             fileMenuItem.requireVisible();
             fileMenuItem.click();
+            mainFrameFixture.robot.waitForIdle();
             mainFrameFixture.dialog().optionPane().textBox("OptionPane.textField").setText("FITS:ncsa.hdf.object.fits.FitsFile:fits");
             mainFrameFixture.dialog().optionPane().okButton().click();
             
@@ -610,6 +634,7 @@ public class TestHDFViewMenu {
             fileMenuItem.robot.waitForIdle();
             fileMenuItem.requireVisible();
             fileMenuItem.click();
+            mainFrameFixture.robot.waitForIdle();
             mainFrameFixture.dialog().optionPane().requirePlainMessage().requireMessage("\\sSupported File Formats: \\s.*HDF5\\s.*HDF4\\s.*FITS\\s\\s");
             mainFrameFixture.dialog().optionPane().okButton().click();
 
@@ -629,6 +654,7 @@ public class TestHDFViewMenu {
             fileMenuItem.robot.waitForIdle();
             fileMenuItem.requireVisible();
             fileMenuItem.click();
+            mainFrameFixture.robot.waitForIdle();
             mainFrameFixture.dialog().optionPane().comboBox("OptionPane.comboBox").selectItem("FITS");
             mainFrameFixture.dialog().optionPane().okButton().click();
             
@@ -636,6 +662,7 @@ public class TestHDFViewMenu {
             fileMenuItem.robot.waitForIdle();
             fileMenuItem.requireVisible();
             fileMenuItem.click();
+            mainFrameFixture.robot.waitForIdle();
             mainFrameFixture.dialog().optionPane().requirePlainMessage().requireMessage("\\sSupported File Formats: \\s.*HDF5\\s.*HDF4\\s\\s");
             mainFrameFixture.dialog().optionPane().okButton().click();
 
