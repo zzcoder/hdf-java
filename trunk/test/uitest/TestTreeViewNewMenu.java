@@ -53,6 +53,7 @@ public class TestTreeViewNewMenu {
         fileMenuItem.robot.waitForIdle();
         fileMenuItem.requireVisible();
         fileMenuItem.click();
+        mainFrameFixture.robot.waitForIdle();
 
         if(delete_file) {
             assertTrue("File file deleted", hdf_file.delete());
@@ -64,7 +65,8 @@ public class TestTreeViewNewMenu {
     public static void setUpOnce() {
         FailOnThreadViolationRepaintManager.install();
         Robot robot = BasicRobot.robotWithNewAwtHierarchy(); 
-        application("ncsa.hdf.view.HDFView").start();
+        String envvalue = System.getProperty("hdfview.root");
+        application("ncsa.hdf.view.HDFView").withArgs("-root", envvalue, envvalue).start();
         mainFrameFixture = findFrame(new GenericTypeMatcher<JFrame>(JFrame.class) {
             protected boolean isMatching(JFrame frame) {
                 return "HDFView".equals(frame.getTitle()) && frame.isShowing();
@@ -84,12 +86,12 @@ public class TestTreeViewNewMenu {
     @Test 
     public void createNewHDF5Group() {
         try {
-            File hdf_file = createHDF5File("testds");
+            File hdf_file = createHDF5File("testgrp");
 
             JTreeFixture filetree = mainFrameFixture.tree().focus();
             filetree.requireVisible();
             assertTrue("File-Dataset-HDF5 filetree shows:", filetree.target.getRowCount()==1);
-            assertTrue("File-Dataset-HDF5 filetree has file", (filetree.valueAt(0)).compareTo("testds.h5")==0);
+            assertTrue("File-Dataset-HDF5 filetree has file", (filetree.valueAt(0)).compareTo("testgrp.h5")==0);
 
             JMenuItemFixture groupMenuItem = filetree.showPopupMenuAt(0).menuItemWithPath("New","Group");
             groupMenuItem.robot.waitForIdle();
@@ -101,7 +103,7 @@ public class TestTreeViewNewMenu {
 
             filetree = mainFrameFixture.tree().focus();
             assertTrue("File-Dataset-HDF5 filetree shows:", filetree.target.getRowCount()==2);
-            assertTrue("File-Dataset-HDF5 filetree has file", (filetree.valueAt(0)).compareTo("testds.h5")==0);
+            assertTrue("File-Dataset-HDF5 filetree has file", (filetree.valueAt(0)).compareTo("testgrp.h5")==0);
             assertTrue("File-Dataset-HDF5 filetree has group", (filetree.valueAt(1)).compareTo("testgroupname")==0);
             
             closeFile(hdf_file, true);

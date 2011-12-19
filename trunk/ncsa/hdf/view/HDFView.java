@@ -349,7 +349,7 @@ ChangeListener, DropTargetListener
                 }
             }
             else {
-                currentDir = theFile.getAbsolutePath();;
+                currentDir = theFile.getAbsolutePath();
             }
         }
 
@@ -2172,31 +2172,27 @@ ChangeListener, DropTargetListener
         
         String rootDir = System.getProperty("user.dir");
         File tmpFile = null;
-        int i=0, j=0, W=0, H=0, X=0, Y=0;
+        int i=0, j=-1, W=0, H=0, X=0, Y=0;
         
-        for ( i = 0; i < args.length; i++)
-        {
-            if ("-root".equalsIgnoreCase(args[i]))
-            {
+        for (i = 0; i < args.length; i++) {
+            if ("-root".equalsIgnoreCase(args[i])) {
                 try {
                     tmpFile = new File(args[++i]);
-                    j = i;
+                    j = i + 1;
 
-                    if (tmpFile.isDirectory())
-                    {
+                    if (tmpFile.isDirectory()) {
                         rootDir = tmpFile.getPath();
                     }
-                    else if (tmpFile.isFile())
-                    {
+                    else if (tmpFile.isFile()) {
                         rootDir = tmpFile.getParent();
                     }
                 } catch (Exception e) {}
-            } else if ("-g".equalsIgnoreCase(args[i]) || "-geometry".equalsIgnoreCase(args[i]))
-            {
+            } 
+            else if ("-g".equalsIgnoreCase(args[i]) || "-geometry".equalsIgnoreCase(args[i])) {
                 // -geometry WIDTHxHEIGHT+XOFF+YOFF 
                 try {
                   String geom = args[++i];
-                    j = i;
+                    j = i + 1;
                     
                   int idx = 0;
                     int idx0 = geom.lastIndexOf('-');
@@ -2227,8 +2223,8 @@ ChangeListener, DropTargetListener
                     H = Integer.parseInt(geom.substring(idx+1));
                   }
                 } catch (Exception e) {e.printStackTrace();}
-            } else if ("-java.vm.version".equalsIgnoreCase(args[i]))
-            {
+            } 
+            else if ("-java.vm.version".equalsIgnoreCase(args[i])) {
                 String info = "Compiled at "+JAVA_COMPILER+
                     "\nRunning at "+System.getProperty("java.vm.version");
                 JOptionPane.showMessageDialog(
