@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-MACRO (EXTERNAL_JPEG_LIBRARY compress_type libtype jpeg_pic)
+MACRO (EXTERNAL_JPEG_LIBRARY compress_type libtype jpeg_pic jpeg_version)
   # May need to build JPEG with PIC on x64 machines with gcc
   # Need to use CMAKE_ANSI_CFLAGS define so that compiler test works
 
@@ -59,8 +59,8 @@ MACRO (EXTERNAL_JPEG_LIBRARY compress_type libtype jpeg_pic)
     ELSE (WIN32 AND NOT MINGW)
       SET_TARGET_PROPERTIES(jpeg PROPERTIES
           IMPORTED_LOCATION "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${CMAKE_SHARED_LIBRARY_PREFIX}${JPEG_LIB_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX}"
-          IMPORTED_SONAME "${CMAKE_SHARED_LIBRARY_PREFIX}${JPEG_LIB_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX}.2.1"
-          SOVERSION "2.1"
+          IMPORTED_SONAME "${CMAKE_SHARED_LIBRARY_PREFIX}${JPEG_LIB_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX}.${JPEG_VERSION_STRING}"
+          SOVERSION "${JPEG_VERSION_STRING}"
       )
     ENDIF (WIN32 AND NOT MINGW)
   ELSE (${libtype} MATCHES "SHARED")
@@ -88,7 +88,7 @@ MACRO (EXTERNAL_JPEG_LIBRARY compress_type libtype jpeg_pic)
 ENDMACRO (EXTERNAL_JPEG_LIBRARY)
 
 #-------------------------------------------------------------------------------
-MACRO (PACKAGE_JPEG_LIBRARY compress_type)
+MACRO (PACKAGE_JPEG_LIBRARY compress_type libtype)
   ADD_CUSTOM_TARGET (JPEG-GenHeader-Copy ALL
       COMMAND ${CMAKE_COMMAND} -E copy_if_different ${JPEG_INCLUDE_DIR_GEN}/jconfig.h ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/
       COMMENT "Copying ${JPEG_INCLUDE_DIR_GEN}/jconfig.h to ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/"
