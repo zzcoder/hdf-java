@@ -1,4 +1,4 @@
-The current HDF-Java products are available for download at http://www.hdfgroup.org/downloads/
+The current HDF-Java products can be downloaded at http://www.hdfgroup.org/downloads/
 
 Files included in the release:
 /src            -- include all source files
