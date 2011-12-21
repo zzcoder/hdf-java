@@ -118,9 +118,9 @@ Limitations / Known Problems
              * public synchronized static native long H5Tget_size_long(int type_id)
         -- HDF-Java does not support any filters/features that are not compiled 
            and distributed with the HDF5 library. For example, HDFView will not 
-           be able to show data that requires a filter that is not in the HDF5
-           library.
-          
+           be able to show data that requires a compresson filter that is not 
+           in the HDF5 library.
+
 
 Other Notes
 ==================================================================================================================  
