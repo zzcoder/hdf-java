@@ -1664,8 +1664,7 @@ public abstract class FileFormat extends File {
             path = path + "/";
         }
 
-        DefaultMutableTreeNode theRoot = (DefaultMutableTreeNode) file
-                .getRootNode();
+        DefaultMutableTreeNode theRoot = (DefaultMutableTreeNode) file.getRootNode();
 
         if (theRoot == null) {
             return null;
@@ -1682,7 +1681,7 @@ public abstract class FileFormat extends File {
             theObj = (HObject) theNode.getUserObject();
             String fullPath = theObj.getFullName() + "/";
 
-            if (path.equals(fullPath)) {
+            if (path.equals(fullPath) &&  theObj.getPath() != null ) {
                 break;
             }
             else {
