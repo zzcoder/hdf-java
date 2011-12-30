@@ -48,7 +48,9 @@ import ncsa.hdf.object.ScalarDS;
  * Datatype. Starting from the root of the tree, <i>rootNode</i>, the tree can
  * be traversed to find a specific object.
  * <p>
- * The following example shows how to find an object by a given path
+ * The following example shows the implementation of finding an object for
+ * a given path in FileFormat. User applications can directly call the 
+ * static method FileFormat.findObject(file, objPath) to get the object.
  * 
  * <pre>
  * HObject findObject(FileFormat file, String path) {
@@ -62,6 +64,7 @@ import ncsa.hdf.object.ScalarDS;
  *         return null;
  *     else if (path.equals(&quot;/&quot;))
  *         return (HObject) theRoot.getUserObject();
+ *         
  *     Enumeration local_enum = ((DefaultMutableTreeNode) theRoot)
  *             .breadthFirstEnumeration();
  *     DefaultMutableTreeNode theNode = null;
@@ -70,7 +73,7 @@ import ncsa.hdf.object.ScalarDS;
  *         theNode = (DefaultMutableTreeNode) local_enum.nextElement();
  *         theObj = (HObject) theNode.getUserObject();
  *         String fullPath = theObj.getFullName() + &quot;/&quot;;
- *         if (path.equals(fullPath))
+ *         if (path.equals(fullPath) &&  theObj.getPath() != null ) {
  *             break;
  *     }
  *     return theObj;
