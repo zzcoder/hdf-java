@@ -1420,8 +1420,8 @@ public class DefaultTreeView extends JPanel
         }
 
         String oldName = selectedObject.getName();
-        String newName = JOptionPane.showInputDialog(this, "Rename \""+ oldName + "\" to:",
-                "Rename...", JOptionPane.INFORMATION_MESSAGE);
+        String newName = (String) JOptionPane.showInputDialog(this, "Rename \""+ oldName + "\" to:",
+                "Rename...", JOptionPane.INFORMATION_MESSAGE, null, null, oldName);
 
         if (newName == null) {
             return;
