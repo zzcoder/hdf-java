@@ -34,11 +34,6 @@ PROJECT ( HDFJAVA C Java )
 #   to ensure that the correct versions configured are used.
 #
 #-----------------------------------------------------------------------------
-IF (BUILD_SHARED_LIBS)
-  SET (BUILD_NAME_EXT "SHARED")
-ELSE (BUILD_SHARED_LIBS)
-  SET (BUILD_NAME_EXT "STATIC")
-ENDIF (BUILD_SHARED_LIBS)
 
 #-----------------------------------------------------------------------------
 # Set the core names of all the libraries
