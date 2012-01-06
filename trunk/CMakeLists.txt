@@ -238,8 +238,6 @@ IF (HDF_BUILD_EXAMPLES AND BUILD_TESTING)
   ADD_EXECUTABLE(${XLATE_UTILITY} ${HDFJAVA_RESOURCES_DIR}/xlatefile.c)
 ENDIF (HDF_BUILD_EXAMPLES AND BUILD_TESTING)
 
-FIND_PACKAGE(JNI)
-
 #-----------------------------------------------------------------------------
 # Dashboard and Testing Settings
 #-----------------------------------------------------------------------------

@@ -1,6 +1,10 @@
 cmake_minimum_required (VERSION 2.8.6)
 PROJECT (HDFJAVA_JNI C)
 
+FIND_PACKAGE(JNI)
+
+INCLUDE_DIRECTORIES( ${JNI_INCLUDE_DIRS} )
+
 #-----------------------------------------------------------------------------
 # Option to Build Shared/Static libs, default is static
 #-----------------------------------------------------------------------------
