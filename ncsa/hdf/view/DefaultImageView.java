@@ -2477,6 +2477,7 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
 
             x = (int) (x / zoomFactor);
             int w = originalSize.width;
+            
             if ((x < 0) || (x >= w)) {
                 return; // out of image bound
             }
@@ -2502,7 +2503,7 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
             strBuff.append(",   y=");
             strBuff.append(y+indexBase);
             strBuff.append(",   value=");
-
+            
             if (isTrueColor) {
                 strBuff.append("(");
                 int i0, i1, i2;
@@ -2534,11 +2535,16 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
                 strBuff.append(")");
             } // if (isTrueColor)
             else {
+
+            	int idx = y * w + x;
+            	if (!dataset.isDefaultImageOrder())
+            		idx = x*h+y;
+            		
                 if (isUnsigned && !isUnsignedConverted) {
-                    strBuff.append(convertUnsignedPoint(y * w + x));
+                    strBuff.append(convertUnsignedPoint(idx));
                 }
                 else {
-                    strBuff.append(Array.get(data, y * w + x));
+                    strBuff.append(Array.get(data, idx));
                 }
             }
 
