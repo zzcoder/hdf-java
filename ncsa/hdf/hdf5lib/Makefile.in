@@ -36,4 +36,4 @@ HDF5GroupInfo.java  \
 HDFArray.java  \
 HDFNativeData.java
 
-include $(TOP)/Config/Rules.mk
+include $(TOP)/config/Rules.mk

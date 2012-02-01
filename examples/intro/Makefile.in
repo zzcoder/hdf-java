@@ -38,4 +38,4 @@ H5_CreateGroupAbsoluteRelative.java  \
 H5_CreateGroupDataset.java  \
 H5_ReadWrite.java
 
-include $(TOP)/Config/Rules.mk
+include $(TOP)/config/Rules.mk

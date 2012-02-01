@@ -35,4 +35,4 @@ FitsDatatype.java  \
 FitsFile.java  \
 FitsGroup.java
 
-include $(TOP)/Config/Rules.mk
+include $(TOP)/config/Rules.mk

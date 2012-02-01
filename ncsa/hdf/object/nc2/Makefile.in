@@ -35,4 +35,4 @@ NC2Datatype.java  \
 NC2File.java  \
 NC2Group.java
 
-include $(TOP)/Config/Rules.mk
+include $(TOP)/config/Rules.mk

@@ -55,4 +55,4 @@ HDF5ReferenceException.java  \
 HDF5ResourceUnavailableException.java  \
 HDF5SymbolTableException.java
 
-include $(TOP)/Config/Rules.mk
+include $(TOP)/config/Rules.mk

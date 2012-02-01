@@ -54,4 +54,4 @@ HDFRLECompInfo.java  \
 HDFSKPHUFFCompInfo.java  \
 HDFTable.java
 
-include $(TOP)/Config/Rules.mk
+include $(TOP)/config/Rules.mk

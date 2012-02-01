@@ -89,7 +89,7 @@ SET (HDFJAVA_NCSA_VIEW_LIB_TARGET     ${HDFJAVA_NCSA_VIEW_LIB_CORENAME})
 #-----------------------------------------------------------------------------
 # Define some CMake variables for use later in the project
 #-----------------------------------------------------------------------------
-SET (HDFJAVA_RESOURCES_DIR       ${HDFJAVA_SOURCE_DIR}/Config/cmake)
+SET (HDFJAVA_RESOURCES_DIR       ${HDFJAVA_SOURCE_DIR}/config/cmake)
 SET (HDFJAVA_JNI_SRC_DIR         ${HDFJAVA_SOURCE_DIR}/native)
 SET (HDFJAVA_JAVA_SRC_DIR        ${HDFJAVA_SOURCE_DIR}/ncsa/hdf)
 SET (HDFJAVA_JAVA_OBJECT_SRC_DIR ${HDFJAVA_SOURCE_DIR}/ncsa/hdf/object)

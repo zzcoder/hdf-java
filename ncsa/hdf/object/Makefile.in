@@ -41,4 +41,4 @@ HObject.java  \
 Metadata.java  \
 ScalarDS.java
 
-include $(TOP)/Config/Rules.mk
+include $(TOP)/config/Rules.mk
