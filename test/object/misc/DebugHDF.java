@@ -136,7 +136,7 @@ public class DebugHDF {
 //        try {testH5TconvertStr(); } catch (Exception ex) {ex.printStackTrace();} 
 //        try {testH5DeleteDS("g:\\temp\\strs.h5"); } catch (Exception ex) {ex.printStackTrace();} 
 //        try {testExtendData("g:\\temp\\extended.h5", "dset", 1000, 1500); } catch (Exception ex) {ex.printStackTrace();} 
-        try {createNestedcompound("g:\\temp\\nested_cmp.h5", "dset"); } catch (Exception ex) {ex.printStackTrace();}
+//        try {createNestedcompound("g:\\temp\\nested_cmp.h5", "dset"); } catch (Exception ex) {ex.printStackTrace();}
 //        try {  testH5Vlen("G:\\temp\\str.h5") ; } catch (Exception ex) {ex.printStackTrace();}
 //        try {  testH5VlenObj("G:\\temp\\str2.h5") ; } catch (Exception ex) {ex.printStackTrace();}
 //        try {  testH5VlenAttr("G:\\temp\\vlen_str_attr.h5") ; } catch (Exception ex) {ex.printStackTrace();}
@@ -146,6 +146,9 @@ public class DebugHDF {
 //        try { testH5OflushCrash("G:\\temp\\H5Oflush_crash.h5"); } catch (Exception ex) {ex.printStackTrace();}
         
 //        testPrintData();
+        
+        try { testObjReadData("g:\\temp\\dset.h5", "dset"); } catch (Exception ex) {ex.printStackTrace();}
+
     }
     
     public static void testRefData(String fname, String dname)throws Exception
@@ -3744,5 +3747,59 @@ public class DebugHDF {
     		
 
     	return 0;
-    }    
+    }
+    
+    private static void testObjReadData(String filename, String dname) throws Exception
+    {
+        long[] dims2D = {20, 10};
+
+        createFile(filename, dname, dims2D);
+
+        H5File file = new H5File(filename, H5File.WRITE);
+        file.open();
+
+        System.runFinalization();
+        
+        Dataset dataset = (Dataset)file.get(dname);
+
+        int[] buf = (int[])dataset.read();
+
+        for (int i=0; i<dims2D[0]; i++)
+        {
+            System.out.print("\n"+buf[(int)(i*dims2D[1])]);
+            for (int j=1; j<dims2D[1]; j++)
+            {
+                System.out.print(", "+buf[i*(int)dims2D[1]+j]);
+            }
+        }
+
+        file.close();
+    }
+
+    /**
+     * create the file and add groups ans dataset into the file,
+     * which is the same as javaExample.H5DatasetCreate
+     * @see javaExample.H5DatasetCreate
+     * @throws Exception
+     */
+    private static void createFile(String filename, String dname, long[] dims2D) throws Exception
+    {
+        H5File file = new H5File(filename, H5File.CREATE);
+        file.open();
+
+        int[] dataIn = new int[(int)(dims2D[0]*dims2D[1])];
+        for (int i=0; i<dims2D[0]; i++)
+        {
+            for (int j=0; j<dims2D[1]; j++)
+            {
+                dataIn[(int)(i*dims2D[1]+j)] = 1000+i*100+j;
+            }
+        }
+
+        Datatype dtype = file.createDatatype(Datatype.CLASS_INTEGER, 4, Datatype.NATIVE, Datatype.NATIVE);
+        Dataset dataset = file.createScalarDS (dname, null, dtype, dims2D, null, null, 0, dataIn);
+
+        file.close();
+    }
+ 
 }
