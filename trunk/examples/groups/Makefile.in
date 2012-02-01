@@ -42,4 +42,4 @@ check: all
 	cp h5ex_g_iterate.h5 $(TOP)/lib/$(DIR)
 	cp h5ex_g_visit.h5 $(TOP)/lib/$(DIR)
 
-include $(TOP)/Config/Rules.mk
+include $(TOP)/config/Rules.mk

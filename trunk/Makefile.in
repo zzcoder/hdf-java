@@ -62,8 +62,8 @@ TOPDIST=./VERSION ./COPYING ./Makefile.in ./CMakeLists.txt ./CTestConfig.cmake \
 	./Readme.txt \
 	./bin/hdfview.sh.in ./bin/hdfview.bat  \
 	./runconfig-example.sh \
-	./configure.in ./Config/config* ./Config/install-sh ./Config/Rules.mk \
-	./Config/config/CMake/* \
+	./configure.in ./config/config* ./config/install-sh ./config/Rules.mk \
+	./config/config/CMake/* \
 	./samples/* \
 	./configure ./native/Makefile.in ./native/CMakeLists.txt \
 	./ncsa/Makefile.in ./ncsa/CMakeLists.txt ./ncsa/hdf/Makefile.in ./ncsa/hdf/CMakeLists.txt

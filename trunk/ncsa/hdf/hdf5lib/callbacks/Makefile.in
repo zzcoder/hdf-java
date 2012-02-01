@@ -38,4 +38,4 @@ H5O_iterate_t.java \
 H5D_iterate_cb.java \
 H5D_iterate_t.java
 
-include $(TOP)/Config/Rules.mk
+include $(TOP)/config/Rules.mk

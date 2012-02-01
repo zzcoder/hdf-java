@@ -67,4 +67,4 @@ check: all
 	cp h5ex_g_iterate.hdf $(TOP)/lib/$(DIR)
 	chmod u+x junit.sh; ./junit.sh
 
-include $(TOP)/Config/Rules.mk
+include $(TOP)/config/Rules.mk

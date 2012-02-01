@@ -37,4 +37,4 @@ H5Group.java  \
 H5Link.java  \
 H5ScalarDS.java
 
-include $(TOP)/Config/Rules.mk
+include $(TOP)/config/Rules.mk

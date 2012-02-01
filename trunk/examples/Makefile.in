@@ -29,7 +29,7 @@ H45INC=@H45INC@
 H4INC=@HDF4INC@
 H5INC=@HDF5INC@
 
-include $(TOP)/Config/Rules.mk
+include $(TOP)/config/Rules.mk
 
 check:
 	(cd groups; $(MAKE) check;)

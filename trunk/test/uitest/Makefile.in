@@ -33,7 +33,7 @@ JAVA_SRCS = \
 TestHDFView.java \
 AllTests.java 
 
-include $(TOP)/Config/Rules.mk
+include $(TOP)/config/Rules.mk
 
 check: all
 	chmod u+x junit.sh; ./junit.sh

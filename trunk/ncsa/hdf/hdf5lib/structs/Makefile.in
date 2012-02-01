@@ -38,4 +38,4 @@ H5O_info_t.java \
 H5O_hdr_info_t.java \
 H5AC_cache_config_t.java
 
-include $(TOP)/Config/Rules.mk
+include $(TOP)/config/Rules.mk

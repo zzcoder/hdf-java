@@ -12,7 +12,7 @@ dnl****************************************************************************/
 dnl Process this file with autoconf to produce a configure script.
 
 AC_INIT(native/hdflib/hdfImp.c)
-AC_CONFIG_AUX_DIR(./Config)
+AC_CONFIG_AUX_DIR(./config)
 
 dnl ----------------------------------------------------------------------
 dnl Some platforms have broken tr, basename, and/or xargs programs. Check

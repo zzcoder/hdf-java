@@ -63,4 +63,4 @@ MetaDataView.java \
 HelpView.java \
 PaletteView.java
 
-include $(TOP)/Config/Rules.mk
+include $(TOP)/config/Rules.mk

@@ -49,4 +49,4 @@ H5Ex_T_String.java \
 H5Ex_T_StringAttribute.java \
 H5Ex_T_VLString.java
 
-include $(TOP)/Config/Rules.mk
+include $(TOP)/config/Rules.mk
