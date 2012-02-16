@@ -1131,8 +1131,9 @@ public class H5File extends FileFormat {
         else {
             // separate the parent path and the object name
             if (path.endsWith("/")) {
-                path = path.substring(0, path.length() - 2);
+                path = path.substring(0, path.length()-1);
             }
+            
             int idx = path.lastIndexOf('/');
             name = path.substring(idx + 1);
             if (idx == 0) {
