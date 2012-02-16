@@ -147,7 +147,8 @@ public class DebugHDF {
         
 //        testPrintData();
         
-        try { testObjReadData("g:\\temp\\dset.h5", "dset"); } catch (Exception ex) {ex.printStackTrace();}
+        //try { testObjReadData("g:\\temp\\dset.h5", "dset"); } catch (Exception ex) {ex.printStackTrace();}
+        try { testH5FileGet("g:\\temp\\dset.h5", "/dset/"); } catch (Exception ex) {ex.printStackTrace();}
 
     }
     
@@ -3767,6 +3768,7 @@ public class DebugHDF {
         for (int i=0; i<dims2D[0]; i++)
         {
             System.out.print("\n"+buf[(int)(i*dims2D[1])]);
+
             for (int j=1; j<dims2D[1]; j++)
             {
                 System.out.print(", "+buf[i*(int)dims2D[1]+j]);
@@ -3775,6 +3777,24 @@ public class DebugHDF {
 
         file.close();
     }
+    
+    private static void testH5FileGet(String filename, String dname) throws Exception
+    {
+        long[] dims2D = {20, 10};
+
+        createFile(filename, dname, dims2D);
+
+        H5File file = new H5File(filename, H5File.WRITE);
+    //    file.open();
+
+        System.runFinalization();
+        
+        Dataset dataset = (Dataset)file.get(dname);
+        
+        System.out.println(dataset.getFullName());
+
+        file.close();
+    }    
 
     /**
      * create the file and add groups ans dataset into the file,
