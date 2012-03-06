@@ -1642,8 +1642,27 @@ ChangeListener, DropTargetListener
 
         JInternalFrame frame = (JInternalFrame)dataView;
         contentPane.add(frame);
-        HObject dataObject = dataView.getDataObject();
+        HObject dataObject = null;
+        try {
+            dataObject = dataView.getDataObject();
+        }
+        catch(Exception ex){
+            JOptionPane
+            .showMessageDialog(
+                    this,
+                    ex.getMessage(),
+                    getTitle(), JOptionPane.ERROR_MESSAGE);
+        }
+        if (dataObject == null) {
+            toolkit.beep();
+            JOptionPane
+                    .showMessageDialog(
+                            this,
+                            "Unsupported DataObject: the data object is not supported.",
+                            getTitle(), JOptionPane.ERROR_MESSAGE);
+            return;
 
+        }
         String fullPath = dataObject.getPath()+dataObject.getName();
         String cmd = "SHOW WINDOW"+dataObject.getFID() + fullPath; // make the window to be uniquie: fid+path
 

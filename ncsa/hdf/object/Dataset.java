@@ -697,7 +697,7 @@ public abstract class Dataset extends HObject {
      * </pre>
      * 
      * getData() returns a list of six arrays: {int[], float[], char[],
-     * Stirng[], long[] and double[]}.
+     * String[], long[] and double[]}.
      * 
      * @return the memory buffer of the dataset.
      */

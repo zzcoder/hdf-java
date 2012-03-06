@@ -282,10 +282,10 @@ implements TableView, ActionListener, MouseListener
             
             b = (Boolean) map.get(ViewProperties.DATA_VIEW_KEY.INDEXBASE1);
             if (b != null) {
-            	if (b.booleanValue())
-            		indexBase = 1;
-            	else
-            		indexBase = 0;
+                if (b.booleanValue())
+                    indexBase = 1;
+                else
+                    indexBase = 0;
             }
         }
 
@@ -1205,12 +1205,12 @@ implements TableView, ActionListener, MouseListener
                 lineLabels[i] = String.valueOf(rows[i]);
                 for (int j=0; j<cols.length; j++)
                 {
-                	data[i][j] = 0;
+                    data[i][j] = 0;
                     try {
-                    	value = Double.parseDouble(table.getValueAt(rows[i], cols[j]).toString());
-                    	data[i][j] = value;
-                    	yRange[0] = Math.min(yRange[0], value);
-                    	yRange[1] = Math.max(yRange[1], value);                        	
+                        value = Double.parseDouble(table.getValueAt(rows[i], cols[j]).toString());
+                        data[i][j] = value;
+                        yRange[0] = Math.min(yRange[0], value);
+                        yRange[1] = Math.max(yRange[1], value);                            
                     } catch (NumberFormatException ex) {}
                 } // for (int j=0; j<ncols; j++)
             } // for (int i=0; i<rows.length; i++)
@@ -1220,10 +1220,10 @@ implements TableView, ActionListener, MouseListener
                 xData = new double[cols.length];
                 for (int j=0; j<cols.length; j++)
                 {
-                	xData[j] = 0;
+                    xData[j] = 0;
                     try { 
-                    	value = Double.parseDouble( table.getValueAt(xIndex, cols[j]).toString());
-                   		xData[j] = value;
+                        value = Double.parseDouble( table.getValueAt(xIndex, cols[j]).toString());
+                           xData[j] = value;
                     } catch (NumberFormatException ex) {}
                 }
             }
@@ -1250,12 +1250,12 @@ implements TableView, ActionListener, MouseListener
                 lineLabels[j] = table.getColumnName(cols[j]);
                 for (int i=0; i<rows.length; i++)
                 {
-                	data[j][i] = 0;
+                    data[j][i] = 0;
                     try {
-                    	value = Double.parseDouble(table.getValueAt(rows[i], cols[j]).toString());
-                    	data[j][i] = value;
-                    	yRange[0] = Math.min(yRange[0], value);
-                    	yRange[1] = Math.max(yRange[1], value);                        	
+                        value = Double.parseDouble(table.getValueAt(rows[i], cols[j]).toString());
+                        data[j][i] = value;
+                        yRange[0] = Math.min(yRange[0], value);
+                        yRange[1] = Math.max(yRange[1], value);                            
                     } catch (NumberFormatException ex) {}
                 } // for (int j=0; j<ncols; j++)
             } // for (int i=0; i<rows.length; i++)
@@ -1265,10 +1265,10 @@ implements TableView, ActionListener, MouseListener
                  xData = new double[rows.length];
                 for (int j=0; j<rows.length; j++)
                 {
-                	xData[j] = 0;
+                    xData[j] = 0;
                     try { 
-                    	value = Double.parseDouble( table.getValueAt(rows[j], xIndex).toString());
-                   		xData[j] = value;
+                        value = Double.parseDouble( table.getValueAt(rows[j], xIndex).toString());
+                           xData[j] = value;
                     } catch (NumberFormatException ex) {}
                 }
             }
@@ -1276,17 +1276,17 @@ implements TableView, ActionListener, MouseListener
 
         int n = removeInvalidPlotData(data, xData, yRange);
         if (n<data[0].length) {
-        	double[][] dataNew = new double[data.length][n];
-        	for (int i=0; i<data.length; i++)
-        		System.arraycopy(data[i], 0, dataNew[i], 0, n);
-        	
-        	data = dataNew;
-        	
-        	if (xData!=null) {
-        		double[] xDataNew = new double[n];
-        		System.arraycopy(xData,  0, xDataNew, 0, n);
-        		xData = xDataNew;
-        	}
+            double[][] dataNew = new double[data.length][n];
+            for (int i=0; i<data.length; i++)
+                System.arraycopy(data[i], 0, dataNew[i], 0, n);
+            
+            data = dataNew;
+            
+            if (xData!=null) {
+                double[] xDataNew = new double[n];
+                System.arraycopy(xData,  0, xDataNew, 0, n);
+                xData = xDataNew;
+            }
         }
         
         if (yRange[0] == yRange[1])
@@ -1324,40 +1324,40 @@ implements TableView, ActionListener, MouseListener
      */
     private int removeInvalidPlotData(double[][] data,  double[] xData, double[] yRange) 
     {
-    	int idx = 0;
-    	boolean hasInvalid = false;
-    	
-    	if (data==null || yRange==null)
-    		return -1;
-    	
-    	yRange[0] = Double.POSITIVE_INFINITY;
-    	yRange[1] = Double.NEGATIVE_INFINITY;
-    	
-    	for (int i=0; i<data[0].length; i++) {
-    		hasInvalid = false;
-    		
-    		for (int j=0; j<data.length; j++) {
-    			hasInvalid = Tools.isNaNINF(data[j][i]);
-    			if (xData != null)
-    				hasInvalid = hasInvalid || Tools.isNaNINF(xData[i]);
-    			
-    			if (hasInvalid)
-    				break;
-    			else {
-    				data[j][idx] = data[j][i];
-    				if (xData!=null)
-    					xData[idx] = xData[i];
+        int idx = 0;
+        boolean hasInvalid = false;
+        
+        if (data==null || yRange==null)
+            return -1;
+        
+        yRange[0] = Double.POSITIVE_INFINITY;
+        yRange[1] = Double.NEGATIVE_INFINITY;
+        
+        for (int i=0; i<data[0].length; i++) {
+            hasInvalid = false;
+            
+            for (int j=0; j<data.length; j++) {
+                hasInvalid = Tools.isNaNINF(data[j][i]);
+                if (xData != null)
+                    hasInvalid = hasInvalid || Tools.isNaNINF(xData[i]);
+                
+                if (hasInvalid)
+                    break;
+                else {
+                    data[j][idx] = data[j][i];
+                    if (xData!=null)
+                        xData[idx] = xData[i];
                     yRange[0] = Math.min(yRange[0], data[j][idx]);
                     yRange[1] = Math.max(yRange[1], data[j][idx]);   
-    			}
-     		}
-    		
-    		if (!hasInvalid)
-				idx++;
+                }
+             }
+            
+            if (!hasInvalid)
+                idx++;
 
-    	}
-    	
-    	return idx;
+        }
+        
+        return idx;
     }    
 
     /**
@@ -1532,17 +1532,27 @@ implements TableView, ActionListener, MouseListener
         int rows=0, cols=0;
 
         int rank = d.getRank();
-        if (rank <= 0)
-        {
-            d.init();
+        if (rank <= 0) {
+            try {
+                d.init();
+            }
+            catch (Exception ex) {
+                JOptionPane.showMessageDialog(
+                    this,
+                    ex,
+                    "createTable:"+getTitle(),
+                    JOptionPane.ERROR_MESSAGE);
+                dataValue = null;
+                return null;
+            }
+
             rank = d.getRank();
         }
         long[] dims = d.getSelectedDims();
 
         rows = (int)dims[0];
         cols = 1;
-        if (rank > 1)
-        {
+        if (rank > 1) {
             rows = d.getHeight();
             cols = d.getWidth();
         }
@@ -1550,12 +1560,19 @@ implements TableView, ActionListener, MouseListener
         dataValue = null;
         try {
             dataValue = d.getData();
+            if(dataValue == null) {
+                JOptionPane.showMessageDialog(
+                    this,
+                    "No data read",
+                    "ScalarDS createTable:"+getTitle(),
+                    JOptionPane.WARNING_MESSAGE);
+            }
             
             if (Tools.applyBitmask(dataValue, bitmask, bitmaskOP) ) {
                 isReadOnly = true;
                 String opName = "Extract bits ";
                 if (bitmaskOP==ViewProperties.BITMASK_OP.AND)
-                	opName = "Apply bitwise AND ";
+                    opName = "Apply bitwise AND ";
                 
                 Border border = BorderFactory.createCompoundBorder(
                         BorderFactory.createRaisedBevelBorder(),
@@ -1575,12 +1592,11 @@ implements TableView, ActionListener, MouseListener
             if (Array.getLength(dataValue)<=rows)
                 cols = 1;
         }
-        catch (Exception ex)
-        {
+        catch (Exception ex) {
             JOptionPane.showMessageDialog(
                 this,
                 ex,
-                getTitle(),
+                "ScalarDS createTable:"+getTitle(),
                 JOptionPane.ERROR_MESSAGE);
             dataValue = null;
         }
@@ -1600,12 +1616,10 @@ implements TableView, ActionListener, MouseListener
 
         // convert nubmerical data into char
         // only possible cases are byte[] and short[] (converted from unsigned byte)
-        if (isDisplayTypeChar && ((NT == 'B') || (NT == 'S')))
-        {
+        if (isDisplayTypeChar && ((NT == 'B') || (NT == 'S'))) {
             int n = Array.getLength(dataValue);
             char[] charData = new char[n];
-            for (int i=0; i<n; i++)
-            {
+            for (int i=0; i<n; i++) {
                 if (NT == 'B') {
                     charData[i] = (char)Array.getByte(dataValue, i);
                 } else if (NT == 'S') {
@@ -1614,7 +1628,8 @@ implements TableView, ActionListener, MouseListener
             }
 
             dataValue = charData;
-        } else if ((NT == 'B') && dataset.getDatatype().getDatatypeClass()==Datatype.CLASS_ARRAY) {
+        } 
+        else if ((NT == 'B') && dataset.getDatatype().getDatatypeClass()==Datatype.CLASS_ARRAY) {
             Datatype baseType = dataset.getDatatype().getBasetype();
             if (baseType.getDatatypeClass()==Datatype.CLASS_STRING) {
                 dataValue = Dataset.byteToString((byte[])dataValue, baseType.getDatatypeSize());
@@ -1632,18 +1647,16 @@ implements TableView, ActionListener, MouseListener
         int start = 0;
         int stride = 1;
 
-        if (rank > 1)
-        {
+        if (rank > 1) {
             start = (int)startArray[selectedIndex[1]];
             stride = (int)strideArray[selectedIndex[1]];
         }
 
-        for (int i=0; i<cols; i++)
-        {
+        for (int i=0; i<cols; i++) {
             columnNames[i] = String.valueOf(start+indexBase+i*stride);
         }
 
-        AbstractTableModel tm =  new AbstractTableModel()
+        AbstractTableModel tm =  new AbstractTableModel() 
         {
             private static final long serialVersionUID = 254175303655079056L;
             private final StringBuffer stringBuffer = new StringBuffer();
@@ -1687,7 +1700,8 @@ implements TableView, ActionListener, MouseListener
                             if(stringBuffer.length()>0 && i<(i1-1))
                             stringBuffer.append(", ");
                         }
-                    } else {
+                    } 
+                    else {
                         for (int i=i0; i<i1; i++) {
                             stringBuffer.append(Array.get(dataValue, i));
                             if(stringBuffer.length()>0 && i<(i1-1))
@@ -1695,7 +1709,8 @@ implements TableView, ActionListener, MouseListener
                         }
                     }
                     theValue = stringBuffer;
-               } else {
+               } 
+                else {
                     int selectedIndex[] = dataset.getSelectedIndex();
                     int index = column*rowCount+row;
                     
@@ -1720,7 +1735,8 @@ implements TableView, ActionListener, MouseListener
                             BigInteger big = big1.add(big2);
                             theValue = big.toString();
                         }
-                    } else if (showAsHex && isInt) {
+                    } 
+                    else if (showAsHex && isInt) {
                         // show in Hexadecimal
                         theValue = Long.toHexString(Long.valueOf(theValue.toString()));
                     }
@@ -1748,7 +1764,8 @@ implements TableView, ActionListener, MouseListener
             {
                 if (isReadOnly || isDisplayTypeChar || isArray || showAsBin || showAsHex) {
                     return false;
-                } else {
+                } 
+                else {
                     return true;
                 }
             }
@@ -1785,16 +1802,14 @@ implements TableView, ActionListener, MouseListener
  
                 Object source = e.getSource();
 
-                if (source instanceof CellEditor)
-                {
+                if (source instanceof CellEditor) {
                     CellEditor editor = (CellEditor)source;
                     String cellValue = (String)editor.getCellEditorValue();
                     
                     try {
                         updateValueInMemory(cellValue, row, col);
                     }
-                    catch (Exception ex)
-                    {
+                    catch (Exception ex) {
                         toolkit.beep();
                         JOptionPane.showMessageDialog(
                         this,
@@ -1807,8 +1822,7 @@ implements TableView, ActionListener, MouseListener
 
             public boolean isCellSelected(int row, int column)
             {
-                if ((getSelectedRow()==row) && (getSelectedColumn()==column))
-                {
+                if ((getSelectedRow()==row) && (getSelectedColumn()==column)) {
                     cellLabel.setText(
                         String.valueOf(rowStart+indexBase+row*rowStride)+
                         ", "+
@@ -1830,7 +1844,8 @@ implements TableView, ActionListener, MouseListener
                             strVal = obj.getFullName() + " " + reg.substring(reg.indexOf("{"));
                         }
                         catch (Exception ex) { strVal = null; }
-                    } else if (isObjRef) {
+                    } 
+                    else if (isObjRef) {
                         Long ref = (Long) val;
                         long oid[] = {ref.longValue()};
                         
@@ -1879,14 +1894,15 @@ implements TableView, ActionListener, MouseListener
         }
 
         dataValue = null;
-        try { dataValue = d.getData(); }
-        catch (Exception ex)
-        {
+        try { 
+            dataValue = d.getData(); 
+        }
+        catch (Exception ex) {
             toolkit.beep();
             JOptionPane.showMessageDialog(
                 this,
                 ex,
-                getTitle(),
+                "TableView"+getTitle(),
                 JOptionPane.ERROR_MESSAGE);
             dataValue = null;
         }
@@ -3909,7 +3925,17 @@ implements TableView, ActionListener, MouseListener
         } else if (e.getClickCount() == 2) {
             // double click
             viewType = ViewType.TABLE;
-            Object theData = getSelectedData();
+            Object theData = null;
+            try {
+                theData = getDataObject();
+            }
+            catch(Exception ex){
+                JOptionPane
+                .showMessageDialog(
+                        this,
+                        ex.getMessage(),
+                        getTitle(), JOptionPane.ERROR_MESSAGE);
+            }
             
             if (theData == null) {
                 toolkit.beep();
@@ -4006,7 +4032,15 @@ implements TableView, ActionListener, MouseListener
             paramObj = new Object[] {dset.getFileFormat(), dset.getName(), dset.getPath()};
             dset_copy = (ScalarDS)constructor.newInstance(paramObj);
             data = dset_copy.getData();
-        } catch (Exception ex) { data = null; }
+        } 
+        catch (Exception ex) { 
+            JOptionPane.showMessageDialog(
+                    this,
+                    ex,
+                    "Object Reference:"+getTitle(),
+                    JOptionPane.ERROR_MESSAGE);
+            data = null; 
+        }
         
         if (data == null)
             return;        
@@ -4182,8 +4216,17 @@ implements TableView, ActionListener, MouseListener
             }
             
             Object data = null;
-            try { data = dset_copy.getData(); }
-            catch (Exception ex) {data = null; }
+            try { 
+                data = dset_copy.getData(); 
+            }
+            catch (Exception ex) {
+                JOptionPane.showMessageDialog(
+                        this,
+                        ex,
+                        "Region Reference:"+getTitle(),
+                        JOptionPane.ERROR_MESSAGE);
+                data = null; 
+            }
             
             JInternalFrame dataView = null;
             HashMap map = new HashMap(1);
