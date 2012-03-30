@@ -491,4 +491,47 @@ public class TestH5S {
         }
     }
 
+    @Test
+    public void testH5Sget_select_valid() {
+        int space1 = -1;
+        long start[] = {1,0}; 
+        long stride[] = {1,1}; 
+        long count[] = {2,3}; 
+        long block[] = {1,1}; 
+        long offset[] = {0,0};    // Offset of selection
+
+        try {
+            // Copy "all" selection & space
+            space1 = H5.H5Scopy(H5sid);
+            assertTrue("H5.H5Scopy", H5sid > 0);
+            // 'AND' "all" selection with another hyperslab
+            H5.H5Sselect_hyperslab(space1, HDF5Constants.H5S_SELECT_SET, start, stride, count, block);
+    
+            // Check a valid offset
+            offset[0]=-1; 
+            offset[1]=0;
+            H5.H5Soffset_simple(space1, offset);
+            assertTrue("H5Sselect_valid", H5.H5Sselect_valid(space1));
+    
+            // Check an invalid offset
+            offset[0]=10;
+            offset[1]=0;
+            H5.H5Soffset_simple(space1, offset);
+            assertFalse("H5Sselect_valid", H5.H5Sselect_valid(space1));
+
+            /* Reset offset */
+            offset[0]=0;
+            offset[1]=0;
+            H5.H5Soffset_simple(space1, offset);
+            assertTrue("H5Sselect_valid", H5.H5Sselect_valid(space1));
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("testH5Sget_select_valid: " + err);
+        }
+        finally {
+            try {H5.H5Sclose(space1);} catch (Exception ex) {}
+        }
+    }
+
 }
