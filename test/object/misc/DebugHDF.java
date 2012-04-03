@@ -148,7 +148,17 @@ public class DebugHDF {
 //        testPrintData();
         
         //try { testObjReadData("g:\\temp\\dset.h5", "dset"); } catch (Exception ex) {ex.printStackTrace();}
-        try { testH5FileGet("g:\\temp\\dset.h5", "/dset/"); } catch (Exception ex) {ex.printStackTrace();}
+        //try { testH5FileGet("g:\\temp\\dset.h5", "/dset/"); } catch (Exception ex) {ex.printStackTrace();}
+        
+        try {
+        	String fname = "g:\\temp\\dset.h5";
+        	new File(fname).delete(); // clean up existing file
+        	
+        	for (int i=0; i<10; i++)
+        	    testCreateDS(fname, "dset"+i);
+        	
+        } catch (Exception ex) {ex.printStackTrace();}
+        
 
     }
     
@@ -3818,6 +3828,31 @@ public class DebugHDF {
 
         Datatype dtype = file.createDatatype(Datatype.CLASS_INTEGER, 4, Datatype.NATIVE, Datatype.NATIVE);
         Dataset dataset = file.createScalarDS (dname, null, dtype, dims2D, null, null, 0, dataIn);
+
+        file.close();
+    }
+    
+    /**
+     * create the file and add groups ans dataset into the file,
+     * which is the same as javaExample.H5DatasetCreate
+     * @see javaExample.H5DatasetCreate
+     * @throws Exception
+     */
+    private static void testCreateDS(String filename, String dname) throws Exception
+    {
+    	long[] dims = {20};
+    	
+        H5File file = (H5File) (new H5File()).createFile(filename, H5File.FILE_CREATE_OPEN);
+        file.open();
+
+        int[] dataIn = new int[(int)dims[0]];
+        for (int i=0; i<dims[0]; i++)
+        {
+            dataIn[i] = (int) (1000*Math.random());
+        }
+
+        Datatype dtype = file.createDatatype(Datatype.CLASS_INTEGER, 4, Datatype.NATIVE, Datatype.NATIVE);
+        Dataset dataset = file.createScalarDS (dname, null, dtype, dims, null, null, 0, dataIn);
 
         file.close();
     }
