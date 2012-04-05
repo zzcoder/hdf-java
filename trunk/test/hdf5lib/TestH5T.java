@@ -81,6 +81,7 @@ public class TestH5T {
     @Test
     public void testH5Tget_size() {
         long dt_size = -1; 
+        
         try {
             dt_size = H5.H5Tget_size(H5strdid);
         }
@@ -94,6 +95,7 @@ public class TestH5T {
     @Test
     public void testH5Tset_size() {
         long dt_size = 5; 
+        
         try {
             H5.H5Tset_size(H5strdid, dt_size);
         }
@@ -123,6 +125,34 @@ public class TestH5T {
        catch (Throwable err) {
            err.printStackTrace();
            fail("testH5Tarray_create.H5Tarray_create " + err);
+       }
+       finally {
+           if (filetype_id >= 0)
+               try {H5.H5Tclose(filetype_id);} catch (Exception ex) {}
+       }
+    }
+    
+    @Test
+    public void testH5Tget_array_ndims() {
+       int filetype_id = -1;
+       int ndims = 0;
+       long[] adims = { 3, 5 };
+
+       try {
+           filetype_id = H5.H5Tarray_create(HDF5Constants.H5T_STD_I64LE, 2, adims);
+       }
+       catch (Throwable err) {
+           err.printStackTrace();
+           fail("testH5Tarray_create.H5Tarray_create " + err);
+       }
+       assertTrue("testH5Tget_array_ndims:H5Tarray_create", filetype_id > 0);
+       try {
+           ndims = H5.H5Tget_array_ndims(filetype_id);
+           assertTrue("testH5Tget_array_ndims", ndims == 2);
+       }
+       catch (Throwable err) {
+           err.printStackTrace();
+           fail("testH5Tget_array_ndims.H5Tget_array_ndims " + err);
        }
        finally {
            if (filetype_id >= 0)
@@ -163,106 +193,188 @@ public class TestH5T {
     
     @Test
     public void testH5Tenum_functions() {
-        int       tid=-1;
-        String    enum_type="Enum_type";
+        int       filetype_id =-1;
+        String    enum_type ="Enum_type";
         byte[]    enum_val = new byte[1];
-        String    enum_name;
+        String    enum_name = null;
 
         /* Create a enumerate datatype */
         try {
-            tid=H5.H5Tcreate(HDF5Constants.H5T_ENUM, (long)1);
+            filetype_id = H5.H5Tcreate(HDF5Constants.H5T_ENUM, (long)1);
         }
         catch (Throwable err) {
             err.printStackTrace();
             fail("testH5Tenum_functions:H5Tcreate " + err);
         }
-        assertTrue("testH5Tenum_functions:H5Tcreate", tid > 0);
+        assertTrue("testH5Tenum_functions:H5Tcreate", filetype_id > 0);
         try {
             enum_val[0]=10;
-            H5.H5Tenum_insert(tid, "RED", enum_val);
+            H5.H5Tenum_insert(filetype_id, "RED", enum_val);
             enum_val[0]=11;
-            H5.H5Tenum_insert(tid, "GREEN", enum_val);
+            H5.H5Tenum_insert(filetype_id, "GREEN", enum_val);
             enum_val[0]=12;
-            H5.H5Tenum_insert(tid, "BLUE", enum_val);
+            H5.H5Tenum_insert(filetype_id, "BLUE", enum_val);
             enum_val[0]=13;
-            H5.H5Tenum_insert(tid, "ORANGE", enum_val);
+            H5.H5Tenum_insert(filetype_id, "ORANGE", enum_val);
             enum_val[0]=14;
-            H5.H5Tenum_insert(tid, "YELLOW", enum_val);
-        }
-        catch (Throwable err) {
-            err.printStackTrace();
-            fail("testH5Tenum_functions:H5Tenum_insert " + err);
-        }
+            H5.H5Tenum_insert(filetype_id, "YELLOW", enum_val);
 
-        try {
             /* Query member number and member index by member name, for enumeration type. */
-            assertTrue("Can't get member number", H5.H5Tget_nmembers(tid) == 5);
-            assertTrue("Can't get correct index number", H5.H5Tget_member_index(tid, "ORANGE") == 3);
-        }
-        catch (Throwable err) {
-            err.printStackTrace();
-            fail("testH5Tenum_functions:H5Tget_nmembers " + err);
-        }
+            assertTrue("Can't get member number", H5.H5Tget_nmembers(filetype_id) == 5);
+            assertTrue("Can't get correct index number", H5.H5Tget_member_index(filetype_id, "ORANGE") == 3);
 
-        /* Commit enumeration datatype and close it */
-        try {
-            H5.H5Tcommit(H5fid, enum_type, tid, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
-        }
-        catch (Throwable err) {
-            err.printStackTrace();
-            fail("testH5Tenum_functions:H5Tcommit " + err);
-        }
-        try {
-            if(tid > 0) 
-                H5.H5Tclose(tid);
-        }
-        catch (Throwable err) {
-            err.printStackTrace();
-            fail("testH5Tenum_functions:H5Tclose " + err);
-        }
+            /* Commit enumeration datatype and close it */
+            H5.H5Tcommit(H5fid, enum_type, filetype_id, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
 
-        /* Open the dataytpe for query */
-        try {
-            tid = H5.H5Topen(H5fid, enum_type, HDF5Constants.H5P_DEFAULT);
-        }
-        catch (Throwable err) {
-            err.printStackTrace();
-            fail("testH5Tenum_functions:H5Topen2 " + err);
-        }
-        assertTrue("testH5Tenum_functions:H5Tcreate",tid > 0);
+            H5.H5Tclose(filetype_id);
 
-        try {
+            /* Open the dataytpe for query */
+            filetype_id = H5.H5Topen(H5fid, enum_type, HDF5Constants.H5P_DEFAULT);
+            assertTrue("testH5Tenum_functions:H5Tcreate", filetype_id > 0);
+
             /* Query member number and member index by member name, for enumeration type */
-            assertTrue("Can't get member number", H5.H5Tget_nmembers(tid) == 5);
-            assertTrue("Can't get correct index number", H5.H5Tget_member_index(tid, "ORANGE") == 3);
+            assertTrue("Can't get member number", H5.H5Tget_nmembers(filetype_id) == 5);
+            assertTrue("Can't get correct index number", H5.H5Tget_member_index(filetype_id, "ORANGE") == 3);
     
             /* Query member value by member name, for enumeration type */
-            H5.H5Tenum_valueof (tid, "ORANGE", enum_val);
+            H5.H5Tenum_valueof (filetype_id, "ORANGE", enum_val);
             assertTrue("Incorrect value for enum member", enum_val[0]==13);
     
             /* Query member value by member index, for enumeration type */
-            H5.H5Tget_member_value (tid, 2, enum_val);
+            H5.H5Tget_member_value (filetype_id, 2, enum_val);
             assertTrue("Incorrect value for enum member", enum_val[0]==12);
     
             /* Query member name by member value, for enumeration type */
             enum_val[0] = 14;
-            enum_name = H5.H5Tenum_nameof(tid, enum_val, 16);
+            enum_name = H5.H5Tenum_nameof(filetype_id, enum_val, 16);
             assertTrue("Incorrect name for enum member", enum_name.compareTo("YELLOW")==0);
         }
         catch (Throwable err) {
             err.printStackTrace();
             fail("testH5Tenum_functions:query " + err);
         }
+        finally {
+            if (filetype_id >= 0)
+                try {H5.H5Tclose(filetype_id);} catch (Exception ex) {}
+        }
+    }
+    
+    @Test
+    public void testH5Tenum_create_functions() {
+        int       filetype_id = -1;
+        byte[]    enum_val = new byte[1];
 
-        /* Close datatype and file */
+        /* Create a enumerate datatype */
         try {
-            if(tid > 0) 
-                H5.H5Tclose(tid);
+            filetype_id = H5.H5Tenum_create(HDF5Constants.H5T_NATIVE_INT);
         }
         catch (Throwable err) {
             err.printStackTrace();
-            fail("testH5Tenum_functions:H5Tclose " + err);
+            fail("testH5Tenum_create_functions:H5Tcreate " + err);
         }
+        assertTrue("testH5Tenum_create_functions:H5Tcreate", filetype_id > 0);
+        try {
+            enum_val[0]=10;
+            H5.H5Tenum_insert(filetype_id, "RED", enum_val);
+            enum_val[0]=11;
+            H5.H5Tenum_insert(filetype_id, "GREEN", enum_val);
+            enum_val[0]=12;
+            H5.H5Tenum_insert(filetype_id, "BLUE", enum_val);
+            enum_val[0]=13;
+            H5.H5Tenum_insert(filetype_id, "ORANGE", enum_val);
+            enum_val[0]=14;
+            H5.H5Tenum_insert(filetype_id, "YELLOW", enum_val);
+
+            /* Query member number and member index by member name, for enumeration type. */
+            assertTrue("Can't get member number", H5.H5Tget_nmembers(filetype_id) == 5);
+            assertTrue("Can't get correct index number", H5.H5Tget_member_index(filetype_id, "ORANGE") == 3);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("testH5Tenum_create_functions:H5Tget_nmembers " + err);
+        }
+        finally {
+            if (filetype_id >= 0)
+                try {H5.H5Tclose(filetype_id);} catch (Exception ex) {}
+        }
+    }
+    
+    @Test
+    public void testH5Topaque_functions() {
+        int       filetype_id = -1;
+        String    opaque_name = null;
+
+        /* Create a enumerate datatype */
+        try {
+            filetype_id = H5.H5Tcreate(HDF5Constants.H5T_OPAQUE, (long)4);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("testH5Topaque_functions:H5Tcreate " + err);
+        }
+        assertTrue("testH5Topaque_functions:H5Tcreate", filetype_id > 0);
+
+        try {
+            H5.H5Tset_tag(filetype_id, "opaque type");
+            opaque_name = H5.H5Tget_tag(filetype_id);
+            assertTrue("Incorrect tag for opaque type", opaque_name.compareTo("opaque type")==0);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("testH5Topaque_functions:H5Tset_get_tag " + err);
+        }
+        finally {
+            if (filetype_id >= 0)
+                try {H5.H5Tclose(filetype_id);} catch (Exception ex) {}
+        }
+    }
+    
+    @Test
+    public void testH5Tvlen_create() {
+       int filetype_id = -1;
+
+       try {
+           filetype_id = H5.H5Tvlen_create(HDF5Constants.H5T_C_S1);
+           assertTrue("testH5Tvlen_create", filetype_id > 0);
+       }
+       catch (Throwable err) {
+           err.printStackTrace();
+           fail("testH5Tvlen_create.H5Tvlen_create " + err);
+       }
+       finally {
+           if (filetype_id >= 0)
+               try {H5.H5Tclose(filetype_id);} catch (Exception ex) {}
+       }
+    }
+    
+    @Test
+    public void testH5Tis_variable_str() {
+       int filetype_id = -1;
+
+       try {
+           filetype_id = H5.H5Tcopy(HDF5Constants.H5T_C_S1);
+           assertTrue("testH5Tis_variable_str", filetype_id > 0);
+
+           /* Convert to variable-length string */
+           H5.H5Tset_size(filetype_id, HDF5Constants.H5T_VARIABLE);
+
+           /* Check if datatype is VL string */
+           int vlclass = H5.H5Tget_class(filetype_id);
+           assertTrue("testH5Tis_variable_str:H5Tget_class", vlclass == HDF5Constants.H5T_STRING);
+           
+           assertTrue("testH5Tis_variable_str:H5Tis_variable_str", H5.H5Tis_variable_str(filetype_id));
+
+           /* Verify that the class detects as a string */
+           assertTrue("testH5Tis_variable_str:H5Tdetect_class", H5.H5Tdetect_class(filetype_id, HDF5Constants.H5T_STRING));
+       }
+       catch (Throwable err) {
+           err.printStackTrace();
+           fail("testH5Tis_variable_str.H5Tis_variable_str " + err);
+       }
+       finally {
+           if (filetype_id >= 0)
+               try {H5.H5Tclose(filetype_id);} catch (Exception ex) {}
+       }
     }
 
 }
