@@ -107,4 +107,32 @@ public class TestH5Tbasic {
             assertTrue((new String(buf, i*dstLen, dstLen)).startsWith(strs[i]));
         }
     }
+    
+    @Test
+    public void testH5Torder_size() {
+        int H5strdid = -1;
+        try {
+            // Fixed length string
+            H5strdid = H5.H5Tcopy(HDF5Constants.H5T_C_S1);
+            assertTrue("H5.H5Tcopy",H5strdid > 0);
+            H5.H5Tset_size(H5strdid, (long)5);
+            assertTrue(HDF5Constants.H5T_ORDER_NONE == H5.H5Tget_order(H5strdid));
+            H5.H5Tset_order(H5strdid, HDF5Constants.H5T_ORDER_NONE);
+            assertTrue(HDF5Constants.H5T_ORDER_NONE == H5.H5Tget_order(H5strdid));
+            assertTrue(5 == H5.H5Tget_size(H5strdid));
+
+            // Variable length string
+            H5.H5Tset_size(H5strdid, HDF5Constants.H5T_VARIABLE);
+            H5.H5Tset_order(H5strdid, HDF5Constants.H5T_ORDER_BE);
+            assertTrue(HDF5Constants.H5T_ORDER_BE == H5.H5Tget_order(H5strdid));
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("testH5Torder: " + err);
+        }
+        finally {
+            if (H5strdid >= 0)
+                try {H5.H5Tclose(H5strdid);} catch (Exception ex) {}
+        }
+    }
 }
