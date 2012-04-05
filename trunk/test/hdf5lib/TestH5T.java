@@ -1,5 +1,6 @@
 package test.hdf5lib;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -198,7 +199,7 @@ public class TestH5T {
         byte[]    enum_val = new byte[1];
         String    enum_name = null;
 
-        /* Create a enumerate datatype */
+        // Create a enumerate datatype
         try {
             filetype_id = H5.H5Tcreate(HDF5Constants.H5T_ENUM, (long)1);
         }
@@ -219,32 +220,32 @@ public class TestH5T {
             enum_val[0]=14;
             H5.H5Tenum_insert(filetype_id, "YELLOW", enum_val);
 
-            /* Query member number and member index by member name, for enumeration type. */
+            // Query member number and member index by member name, for enumeration type.
             assertTrue("Can't get member number", H5.H5Tget_nmembers(filetype_id) == 5);
             assertTrue("Can't get correct index number", H5.H5Tget_member_index(filetype_id, "ORANGE") == 3);
 
-            /* Commit enumeration datatype and close it */
+            // Commit enumeration datatype and close it */
             H5.H5Tcommit(H5fid, enum_type, filetype_id, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
 
             H5.H5Tclose(filetype_id);
 
-            /* Open the dataytpe for query */
+            // Open the dataytpe for query
             filetype_id = H5.H5Topen(H5fid, enum_type, HDF5Constants.H5P_DEFAULT);
             assertTrue("testH5Tenum_functions:H5Tcreate", filetype_id > 0);
 
-            /* Query member number and member index by member name, for enumeration type */
+            // Query member number and member index by member name, for enumeration type
             assertTrue("Can't get member number", H5.H5Tget_nmembers(filetype_id) == 5);
             assertTrue("Can't get correct index number", H5.H5Tget_member_index(filetype_id, "ORANGE") == 3);
     
-            /* Query member value by member name, for enumeration type */
+            // Query member value by member name, for enumeration type
             H5.H5Tenum_valueof (filetype_id, "ORANGE", enum_val);
             assertTrue("Incorrect value for enum member", enum_val[0]==13);
     
-            /* Query member value by member index, for enumeration type */
+            // Query member value by member index, for enumeration type
             H5.H5Tget_member_value (filetype_id, 2, enum_val);
             assertTrue("Incorrect value for enum member", enum_val[0]==12);
     
-            /* Query member name by member value, for enumeration type */
+            // Query member name by member value, for enumeration type
             enum_val[0] = 14;
             enum_name = H5.H5Tenum_nameof(filetype_id, enum_val, 16);
             assertTrue("Incorrect name for enum member", enum_name.compareTo("YELLOW")==0);
@@ -264,7 +265,7 @@ public class TestH5T {
         int       filetype_id = -1;
         byte[]    enum_val = new byte[1];
 
-        /* Create a enumerate datatype */
+        // Create a enumerate datatype
         try {
             filetype_id = H5.H5Tenum_create(HDF5Constants.H5T_NATIVE_INT);
         }
@@ -285,7 +286,7 @@ public class TestH5T {
             enum_val[0]=14;
             H5.H5Tenum_insert(filetype_id, "YELLOW", enum_val);
 
-            /* Query member number and member index by member name, for enumeration type. */
+            // Query member number and member index by member name, for enumeration type.
             assertTrue("Can't get member number", H5.H5Tget_nmembers(filetype_id) == 5);
             assertTrue("Can't get correct index number", H5.H5Tget_member_index(filetype_id, "ORANGE") == 3);
         }
@@ -304,7 +305,7 @@ public class TestH5T {
         int       filetype_id = -1;
         String    opaque_name = null;
 
-        /* Create a enumerate datatype */
+        // Create a enumerate datatype
         try {
             filetype_id = H5.H5Tcreate(HDF5Constants.H5T_OPAQUE, (long)4);
         }
@@ -355,16 +356,16 @@ public class TestH5T {
            filetype_id = H5.H5Tcopy(HDF5Constants.H5T_C_S1);
            assertTrue("testH5Tis_variable_str", filetype_id > 0);
 
-           /* Convert to variable-length string */
+           // Convert to variable-length string
            H5.H5Tset_size(filetype_id, HDF5Constants.H5T_VARIABLE);
 
-           /* Check if datatype is VL string */
+           // Check if datatype is VL string
            int vlclass = H5.H5Tget_class(filetype_id);
            assertTrue("testH5Tis_variable_str:H5Tget_class", vlclass == HDF5Constants.H5T_STRING);
            
            assertTrue("testH5Tis_variable_str:H5Tis_variable_str", H5.H5Tis_variable_str(filetype_id));
 
-           /* Verify that the class detects as a string */
+           // Verify that the class detects as a string
            assertTrue("testH5Tis_variable_str:H5Tdetect_class", H5.H5Tdetect_class(filetype_id, HDF5Constants.H5T_STRING));
        }
        catch (Throwable err) {
@@ -375,6 +376,63 @@ public class TestH5T {
            if (filetype_id >= 0)
                try {H5.H5Tclose(filetype_id);} catch (Exception ex) {}
        }
+    }
+    
+    @Test
+    public void testH5Tcompound_functions() {
+        int       filetype_id =-1;
+
+        // Create a enumerate datatype
+        try {
+            filetype_id = H5.H5Tcreate(HDF5Constants.H5T_COMPOUND, (long)16);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("testH5Tcompound_functions:H5Tcreate " + err);
+        }
+        assertTrue("testH5Tcompound_functions:H5Tcreate", filetype_id > 0);
+        try {
+            H5.H5Tinsert(filetype_id, "Lon", 0, HDF5Constants.H5T_NATIVE_DOUBLE);
+            H5.H5Tinsert(filetype_id, "Lat", 8, HDF5Constants.H5T_NATIVE_DOUBLE);
+
+            // Query member number and member index by member name, for enumeration type.
+            assertTrue("Can't get member number", H5.H5Tget_nmembers(filetype_id) == 2);
+            assertTrue("Can't get correct index number", H5.H5Tget_member_index(filetype_id, "Lat") == 1);
+
+            // We started to support this function for compound type in 1.8.6 release.
+            int order = H5.H5Tget_order(filetype_id);
+            assertFalse("Can't get order for compound type.", order == HDF5Constants.H5T_ORDER_ERROR);
+            assertTrue("Wrong order for this type.", (order == HDF5Constants.H5T_ORDER_LE) || (order == HDF5Constants.H5T_ORDER_BE));
+
+            // Make certain that the correct classes can be detected
+            assertTrue("Can't get correct class", H5.H5Tdetect_class(filetype_id, HDF5Constants.H5T_COMPOUND));
+            assertTrue("Can't get correct class", H5.H5Tdetect_class(filetype_id, HDF5Constants.H5T_FLOAT));
+            // Make certain that an incorrect class is not detected
+            assertFalse("Can get incorrect class", H5.H5Tdetect_class(filetype_id, HDF5Constants.H5T_TIME));
+            
+            // Query member name by member index
+            String index_name = H5.H5Tget_member_name (filetype_id, 0);
+            assertTrue("Incorrect name for member index", index_name.compareTo("Lon")==0);
+            
+            // Query member offset by member no
+            long index_offset = H5.H5Tget_member_offset (filetype_id, 1);
+            assertTrue("Incorrect offset for member no", index_offset == 8);
+            
+            // Query member type by member index
+            int index_type = H5.H5Tget_member_type (filetype_id, 0);
+            assertTrue("Incorrect type for member index", H5.H5Tequal(HDF5Constants.H5T_NATIVE_DOUBLE, index_type));
+            if (index_type >= 0)
+                try {H5.H5Tclose(index_type);} catch (Exception ex) {}
+           
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("testH5Tcompound_functions:query " + err);
+        }
+        finally {
+            if (filetype_id >= 0)
+                try {H5.H5Tclose(filetype_id);} catch (Exception ex) {}
+        }
     }
 
 }
