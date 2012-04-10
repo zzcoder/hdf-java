@@ -1289,7 +1289,12 @@ implements TableView, ActionListener, MouseListener
             }
         }
         
-        if (yRange[0] == yRange[1])
+        // allow to draw a flat line: all values are the same
+        if (yRange[0] == yRange[1]) {
+        	yRange[1] +=1;
+        	yRange[0] -=1;
+        }
+        else if (yRange[0] > yRange[1])
         {
             toolkit.beep();
             JOptionPane.showMessageDialog(
