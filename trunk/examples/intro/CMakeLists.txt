@@ -32,7 +32,11 @@ FOREACH (CMAKE_INCLUDE_PATH ${CMAKE_JAVA_INCLUDE_PATH})
 ENDFOREACH(CMAKE_INCLUDE_PATH)
 
 FOREACH (example ${HDF_JAVA_EXAMPLES})
-  ADD_JAR (${example} ${example}.java)
+  FILE (WRITE ${PROJECT_BINARY_DIR}/Manifest.txt
+  "Main-Class: examples.intro.${example}
+"
+  )
+  ADD_JAR (${example} ${PROJECT_BINARY_DIR}/Manifest.txt ${example}.java)
   GET_TARGET_PROPERTY(${example}_JAR_FILE ${example} JAR_FILE)
 #  INSTALL_JAR (${example} ${HJAVA_INSTALL_DATA_DIR}/examples examples)
   GET_TARGET_PROPERTY(${example}_CLASSPATH ${example} CLASS_DIR)
