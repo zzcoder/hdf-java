@@ -198,7 +198,7 @@ endfunction (__java_copy_file src dest comment)
 set(_JAVA_CLASS_FILELIST_SCRIPT ${CMAKE_CURRENT_LIST_DIR}/UseJavaClassFilelist.cmake)
 set(_JAVA_SYMLINK_SCRIPT ${CMAKE_CURRENT_LIST_DIR}/UseJavaSymlinks.cmake)
 
-function(add_jar _TARGET_NAME)
+function(add_jar _TARGET_NAME _MANIFEST_TXT)
     set(_JAVA_SOURCE_FILES ${ARGN})
 
     if (LIBRARY_OUTPUT_PATH)
@@ -355,6 +355,9 @@ function(add_jar _TARGET_NAME)
                 -D_JAVA_TARGET_OUTPUT_NAME=${_JAVA_TARGET_OUTPUT_NAME}
                 -D_JAVA_TARGET_OUTPUT_LINK=${_JAVA_TARGET_OUTPUT_LINK}
                 -P ${_JAVA_SYMLINK_SCRIPT}
+            COMMAND ${Java_JAR_EXECUTABLE}
+                -ufm ${CMAKE_CURRENT_BINARY_DIR}/${_JAVA_TARGET_OUTPUT_NAME}
+                ${_MANIFEST_TXT}
             WORKING_DIRECTORY ${CMAKE_JAVA_CLASS_OUTPUT_PATH}
             DEPENDS ${_JAVA_RESOURCE_LIST} ${_JAVA_DEPENDS} ${CMAKE_JAVA_CLASS_OUTPUT_PATH}/java_class_filelist
             COMMENT "Creating Java archive ${_JAVA_TARGET_OUTPUT_NAME}"
