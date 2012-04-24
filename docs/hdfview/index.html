@@ -105,6 +105,26 @@ distribution. No additional software is needed to run HDFView.
   </ul>
 </ul>
 
+<h3>Install HDFView in Silent Mode</H3>
+<ol>
+    <li>Edit Installer.properties file for customisation <br />
+
+    Eg: EDIT the installation directory in USER_INSTALL_DIR property  <br />
+    <br />
+    # Installation mode (Silent) <br />
+    INSTALLER_UI=SILENT <br />
+    <br />
+    # Installation directory - use "\\" to separate directories. <br />
+    USER_INSTALL_DIR=C:\\Program files\\TheHDFGroup\\HDFView <br />
+    <br />
+    # Installation set (Complete/Upgrade) <br />
+    CHOSEN_INSTALL_SET=Complete <br />
+    </li>
+    <li> Place the installer.properties file along with hdfview_install_xxx.exe[.bin] </li>
+    <li> run the HDFView installer with the following command, e.g.<br />
+     hdfview_install_win64.exe -f installer.properties </li>
+</ol>
+
 <hr>
 <H3>Documentation</H3>
 
