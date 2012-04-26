@@ -99,7 +99,7 @@ IF (BUILD_TESTING)
           NAME groups-${example}-clearall-h5s
           COMMAND    ${CMAKE_COMMAND}
               -E remove
-              ${example}.h5
+              ${HDFJAVA_EXAMPLES_BINARY_DIR}/${example}.h5
       )
       IF (NOT "${last_test}" STREQUAL "")
         SET_TESTS_PROPERTIES (groups-${example}-clearall-h5s PROPERTIES DEPENDS ${last_test})

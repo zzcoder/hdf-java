@@ -82,7 +82,7 @@ IF (BUILD_TESTING)
         NAME datatypes-${example}-clearall-objects
         COMMAND    ${CMAKE_COMMAND}
             -E remove
-            ${example}.h5
+            ${HDFJAVA_EXAMPLES_BINARY_DIR}/${example}.h5
             ${example}.out
             ${example}.out.err
     )
