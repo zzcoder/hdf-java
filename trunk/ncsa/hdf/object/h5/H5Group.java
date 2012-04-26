@@ -344,7 +344,7 @@ public class H5Group extends Group {
             }
         } 
         
-        if (name == null) {
+        if ((name == null) || (pgroup == null)) {
             return null;
         }
 
@@ -352,11 +352,6 @@ public class H5Group extends Group {
 
         if (file == null) {
             return null;
-        }
-
-        // By default, add the new group to the root
-        if (pgroup == null) {
-            pgroup = (Group) file.get("/");
         }
 
         String path = HObject.separator;

@@ -7,7 +7,7 @@ import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 
 public class H5_CreateDataset {
-	private static String FILENAME = "dset.h5";
+	private static String FILENAME = "H5_CreateDataset.h5";
 	private static String DATASETNAME = "dset";
 	private static final int DIM_X = 4;
 	private static final int DIM_Y = 6;

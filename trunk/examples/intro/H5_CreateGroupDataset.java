@@ -7,7 +7,7 @@ import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 
 public class H5_CreateGroupDataset {
-	private static String FILENAME = "groups.h5";
+	private static String FILENAME = "H5_CreateGroupDataset.h5";
 	private static String GROUPNAME = "MyGroup";
 	private static String GROUPNAME_A = "GroupA";
 	private static String DATASETNAME1 = "dset1";
@@ -99,7 +99,7 @@ public class H5_CreateGroupDataset {
 		// Open an existing group of the specified file.
 		try {
 			if (file_id >= 0)
-				group_id = H5.H5Gopen(file_id, "/" + GROUPNAME + "/" + GROUPNAME_A);
+				group_id = H5.H5Gopen(file_id, "/" + GROUPNAME + "/" + GROUPNAME_A, HDF5Constants.H5P_DEFAULT);
 		}
 		catch (Exception e) {
 			e.printStackTrace();

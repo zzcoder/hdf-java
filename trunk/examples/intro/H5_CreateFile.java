@@ -7,7 +7,7 @@ import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 
 public class H5_CreateFile {
-	static final String FILENAME = "file.h5";
+	static final String FILENAME = "H5_CreateFile.h5";
 
 	private static void CreateFile() {
 		int file_id = -1;

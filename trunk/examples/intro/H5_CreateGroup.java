@@ -7,7 +7,7 @@ import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 
 public class H5_CreateGroup {
-	private static String FILENAME = "group.h5";
+	private static String FILENAME = "H5_CreateGroup.h5";
 	private static String GROUPNAME = "MyGroup";
 
 	private static void CreateGroup() {
@@ -27,7 +27,7 @@ public class H5_CreateGroup {
 		try {
 			if (file_id >= 0)
 				group_id = H5.H5Gcreate(file_id, "/" + GROUPNAME,
-						HDF5Constants.H5P_DEFAULT);
+				        HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
