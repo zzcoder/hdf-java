@@ -12,11 +12,16 @@ import java.util.Map;
 
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
+import ncsa.hdf.hdf5lib.exceptions.HDF5Exception;
 import ncsa.hdf.hdf5lib.structs.H5G_info_t;
+import ncsa.hdf.object.FileFormat;
+import ncsa.hdf.object.Group;
+import ncsa.hdf.object.h5.H5File;
+import ncsa.hdf.object.h5.H5Group;
 
 
-public class H5Ex_G_Phase {
-    private static String FILE = "H5Ex_G_Phase.h5";
+public class H5ObjectEx_G_Phase {
+    private static String FILE = "H5ObjectEx_G_Phase.h5";
     private static int MAX_GROUPS = 7;
     private static int MAX_COMPACT = 5;
     private static int MIN_DENSE = 3;
@@ -50,9 +55,10 @@ public class H5Ex_G_Phase {
     }
 
     private static void CreateGroup() {
+        H5File         file = null;
+        H5Group        grp = null;
         int            file_id = -1;
         int            group_id = -1;
-        int            subgroup_id = -1;
         int            fapl_id = -1;
         int            gcpl_id = -1;
         H5G_info_t     ginfo;
@@ -69,20 +75,12 @@ public class H5Ex_G_Phase {
             e.printStackTrace();
         }
 
-        //Create group access property list and set the phase change conditions.  
-        try {
-            gcpl_id = H5.H5Pcreate(HDF5Constants.H5P_GROUP_CREATE);
-            if(gcpl_id >= 0)
-                H5.H5Pset_link_phase_change (gcpl_id, MAX_COMPACT, MIN_DENSE);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-
         //Create a new file using the default properties.
         try {
-            if(fapl_id >= 0)
-                file_id = H5.H5Fcreate (FILE, HDF5Constants.H5F_ACC_TRUNC, HDF5Constants.H5P_DEFAULT, fapl_id);
+            if(fapl_id >= 0) {
+                file = new H5File(FILE, FileFormat.CREATE);
+                file.open(fapl_id);
+            }
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -90,8 +88,13 @@ public class H5Ex_G_Phase {
 
         //Create primary group.
         try {
-            if((file_id >= 0) && (gcpl_id >= 0))
-                group_id = H5.H5Gcreate(file_id, name, HDF5Constants.H5P_DEFAULT, gcpl_id, HDF5Constants.H5P_DEFAULT);
+            //Create group creation property list and set the phase change conditions.  
+            gcpl_id = file.createGcpl(0, MAX_COMPACT, MIN_DENSE);
+            if(gcpl_id >= 0) {
+                grp = (H5Group) file.createGroup(name, null, HDF5Constants.H5P_DEFAULT, gcpl_id);
+                gcpl_id = -1; //Create closes the group creation property list
+                group_id = grp.open();
+            }
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -103,11 +106,7 @@ public class H5Ex_G_Phase {
             char append = (char) (((char)i) + '0');
             name = name + append; /* G1, G2, G3 etc. */
             try {
-                if(group_id >= 0) {
-                    subgroup_id = H5.H5Gcreate(group_id, name, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT,
-                            HDF5Constants.H5P_DEFAULT);
-                    H5.H5Gclose (subgroup_id);
-                }
+                file.createGroup(name, grp);
             }
             catch (Exception e) {
                 e.printStackTrace();
@@ -141,7 +140,11 @@ public class H5Ex_G_Phase {
         for (i = MAX_GROUPS; i >= 1; i--) {
             //Define the subgroup name and delete the subgroup.
             try {
-                H5.H5Ldelete(group_id, name, HDF5Constants.H5P_DEFAULT);
+                Group subgrp = (Group) file.get("/G0/" + name);
+                if(subgrp == null)
+                    throw new HDF5Exception(
+                            "The subgroup - "+name+" - object could not be found.");
+                file.delete(subgrp);
             }
             catch(Exception e) {
                 e.printStackTrace();
@@ -179,18 +182,10 @@ public class H5Ex_G_Phase {
             e.printStackTrace();
         }
 
-        try {
-            if(gcpl_id >= 0)
-                H5.H5Pclose (gcpl_id);
-        }
-        catch(Exception e) {
-            e.printStackTrace();
-        }
-
         //Close the group
         try {
             if(group_id >= 0)
-                H5.H5Gclose (group_id);
+                grp.close (group_id);
         }
         catch(Exception e) {
             e.printStackTrace();
@@ -198,8 +193,7 @@ public class H5Ex_G_Phase {
 
         //Close the file
         try {
-            if(file_id >= 0)
-                H5.H5Fclose (file_id);
+            file.close();
         }
         catch(Exception e) {
             e.printStackTrace();
@@ -207,7 +201,7 @@ public class H5Ex_G_Phase {
 
     }
     public static void main(String[] args) {
-        H5Ex_G_Phase.CreateGroup();
+        H5ObjectEx_G_Phase.CreateGroup();
     }
 
 }

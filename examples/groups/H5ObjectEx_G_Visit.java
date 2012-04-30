@@ -20,15 +20,17 @@ import ncsa.hdf.hdf5lib.callbacks.H5O_iterate_cb;
 import ncsa.hdf.hdf5lib.callbacks.H5O_iterate_t;
 import ncsa.hdf.hdf5lib.structs.H5L_info_t;
 import ncsa.hdf.hdf5lib.structs.H5O_info_t;
+import ncsa.hdf.object.FileFormat;
+import ncsa.hdf.object.h5.H5File;
 
 
-public class H5Ex_G_Visit {
+public class H5ObjectEx_G_Visit {
 
     private static String FILE = "groups/h5ex_g_visit.h5";
     
     public static void main(String[] args) {
         try {
-            (new H5Ex_G_Visit()).VisitGroup();
+            (new H5ObjectEx_G_Visit()).VisitGroup();
         }
         catch(Exception ex) {
             ex.printStackTrace();
@@ -36,12 +38,13 @@ public class H5Ex_G_Visit {
     }    
 
     private void VisitGroup() throws Exception {
-
-        int file_id = -1;
+        H5File      file = null;
+        int         file_id = -1;
 
         try {
             //Open file
-            file_id = H5.H5Fopen(FILE, HDF5Constants.H5F_ACC_RDONLY, HDF5Constants.H5P_DEFAULT);
+            file = new H5File(FILE, FileFormat.READ);
+            file_id = file.open();
 
             //Begin iteration using H5Ovisit
             System.out.println("Objects in the file:");
@@ -60,9 +63,7 @@ public class H5Ex_G_Visit {
             e.printStackTrace();
         }
         finally {
-            //Close and release resources.
-            if(file_id >= 0) 
-                H5.H5Fclose (file_id);
+            file.close();
         }
     }
 
