@@ -1105,6 +1105,7 @@ public class H5File extends FileFormat {
         HObject obj = null;
 
         if ((path == null) || (path.length() <= 0)) {
+            System.err.println("(path == null) || (path.length() <= 0)");
             return null;
         }
 
@@ -1148,6 +1149,7 @@ public class H5File extends FileFormat {
         int fid_before_open = fid;
         fid = open(false);
         if (fid < 0) {
+            System.err.println("Could not open file handler");
             return null;
         }
 
@@ -1207,6 +1209,8 @@ public class H5File extends FileFormat {
             }
         }
         catch (Exception ex) {
+            System.err.println("Exception finding obj:");
+            ex.printStackTrace();
             obj = null;
         }
         finally {
@@ -2496,6 +2500,10 @@ public class H5File extends FileFormat {
                 }
                 group.addToMemberList(d);
             } 
+            else if (obj_info.type == HDF5Constants.H5O_TYPE_NAMED_DATATYPE) {
+                Datatype t = new H5Datatype(this, link_name, thisFullName); 
+                group.addToMemberList(t);
+            }
         } // End of for loop.
         try{
             if(oid>=0)

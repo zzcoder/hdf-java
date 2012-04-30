@@ -308,7 +308,8 @@ public class H5Group extends Group {
      * <p>
      * The gplist contains a sequence of group creation property list
      * identifiers, lcpl, gcpl, gapl. It allows the user to create a group with
-     * group creation properties.
+     * group creation properties. It will close the group creation
+     * properties specified in gplist.
      * 
      * @see ncsa.hdf.hdf5lib.H5#H5Gcreate(int, String, int, int, int) for the
      *      order of property list identifiers.
@@ -345,12 +346,14 @@ public class H5Group extends Group {
         } 
         
         if ((name == null) || (pgroup == null)) {
+            System.err.println("(name == null) || (pgroup == null)");
             return null;
         }
 
         H5File file = (H5File) pgroup.getFileFormat();
 
         if (file == null) {
+            System.err.println("Could not get file that contains object");
             return null;
         }
 
