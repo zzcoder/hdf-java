@@ -7,11 +7,14 @@ import java.util.Map;
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 import ncsa.hdf.hdf5lib.structs.H5G_info_t;
+import ncsa.hdf.object.FileFormat;
+import ncsa.hdf.object.h5.H5File;
+import ncsa.hdf.object.h5.H5Group;
 
-public class H5Ex_G_Compact {
+public class H5ObjectEx_G_Compact {
 
-    private static final String FILE1 = "H5Ex_G_Compact1.h5";
-    private static final String FILE2 = "H5Ex_G_Compact2.h5";
+    private static final String FILE1 = "H5ObjectEx_G_Compact1.h5";
+    private static final String FILE2 = "H5ObjectEx_G_Compact2.h5";
     private static final String GROUP = "G1";
 
     enum H5G_storage {
@@ -43,6 +46,8 @@ public class H5Ex_G_Compact {
     }
 
     public static void CreateGroup() {
+        H5File      file = null;
+        H5Group     grp = null;
         int         file_id = -1;
         int         group_id = -1;
         int         fapl_id = -1; 
@@ -51,15 +56,16 @@ public class H5Ex_G_Compact {
 
         //Create file 1.  This file will use original format groups.
         try {
-            file_id = H5.H5Fcreate (FILE1, HDF5Constants.H5F_ACC_TRUNC, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+            file = new H5File(FILE1, FileFormat.CREATE);
+            file.open();
         }
         catch (Exception e) {
             e.printStackTrace();
         }
         //Create a group in the file1.
         try {
-            if(file_id >= 0)
-                group_id = H5.H5Gcreate(file_id, GROUP, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+            grp = (H5Group)file.createGroup(GROUP, null);
+            group_id = grp.open();
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -89,7 +95,7 @@ public class H5Ex_G_Compact {
         // Close the group. 
         try {
             if (group_id >= 0)
-                H5.H5Gclose(group_id);
+                grp.close(group_id);
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -97,8 +103,7 @@ public class H5Ex_G_Compact {
 
         //close the file 1.
         try {
-            if (file_id >= 0)
-                H5.H5Fclose (file_id);
+            file.close();
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -107,7 +112,8 @@ public class H5Ex_G_Compact {
 
         // Re-open file 1.  Need to get the correct file size.
         try {
-            file_id = H5.H5Fopen(FILE1, HDF5Constants.H5F_ACC_RDONLY, HDF5Constants.H5P_DEFAULT);
+            file = new H5File(FILE1, FileFormat.READ);
+            file_id = file.open();
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -115,7 +121,7 @@ public class H5Ex_G_Compact {
 
         //Obtain and print the file size.
         try {
-            if(file_id >= 0){
+            if(file_id >= 0) {
                 size = H5.H5Fget_filesize (file_id);
                 System.out.println ("File size for " + FILE1 + " is: "  +  size + " bytes" );
             }
@@ -126,8 +132,7 @@ public class H5Ex_G_Compact {
 
         //Close FILE1.
         try {
-            if (file_id >= 0)
-                H5.H5Fclose (file_id);
+            file.close();
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -147,15 +152,16 @@ public class H5Ex_G_Compact {
         System.out.println();
         //Create file 2 using the new file access property list.
         try {
-            file_id = H5.H5Fcreate(FILE2, HDF5Constants.H5F_ACC_TRUNC, HDF5Constants.H5P_DEFAULT, fapl_id);
+            file = new H5File(FILE2, FileFormat.CREATE);
+            file.open(fapl_id);
         }
         catch (Exception e) {
             e.printStackTrace();
         }
         //Create group in file2.
         try {
-            if(file_id >= 0)
-                group_id = H5.H5Gcreate(file_id, GROUP, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+            grp = (H5Group)file.createGroup(GROUP, null);
+            group_id = grp.open();
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -185,7 +191,7 @@ public class H5Ex_G_Compact {
         // Close the group. 
         try {
             if (group_id >= 0)
-                H5.H5Gclose(group_id);
+                grp.close(group_id);
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -193,8 +199,7 @@ public class H5Ex_G_Compact {
 
         //close the file 2.
         try {
-            if (file_id >= 0)
-                H5.H5Fclose (file_id);
+            file.close();
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -202,7 +207,8 @@ public class H5Ex_G_Compact {
 
         //Re-open file 2.  Needed to get the correct file size.
         try {
-            file_id = H5.H5Fopen (FILE2, HDF5Constants.H5F_ACC_RDONLY, fapl_id);
+            file = new H5File(FILE2, FileFormat.READ);
+            file_id = file.open(fapl_id);
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -221,8 +227,7 @@ public class H5Ex_G_Compact {
 
         //Close FILE2.
         try {
-            if (file_id >= 0)
-                H5.H5Fclose (file_id);
+            file.close();
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -230,6 +235,6 @@ public class H5Ex_G_Compact {
     }
 
     public static void main(String[] args) {
-        H5Ex_G_Compact.CreateGroup();
+        H5ObjectEx_G_Compact.CreateGroup();
     }
 }

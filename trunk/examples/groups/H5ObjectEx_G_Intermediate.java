@@ -13,31 +13,33 @@ import ncsa.hdf.hdf5lib.HDF5Constants;
 import ncsa.hdf.hdf5lib.callbacks.H5O_iterate_cb;
 import ncsa.hdf.hdf5lib.callbacks.H5O_iterate_t;
 import ncsa.hdf.hdf5lib.structs.H5O_info_t;
+import ncsa.hdf.object.FileFormat;
+import ncsa.hdf.object.h5.H5File;
 
-public class H5Ex_G_Intermediate {
+public class H5ObjectEx_G_Intermediate {
 
-    private static String FILE = "H5Ex_G_Intermediate.h5";
+    private static String FILE = "H5ObjectEx_G_Intermediate.h5";
 
     private void CreateGroup() throws Exception {
-
+        H5File      file = null;
         int     file_id = -1;
-        int     group_id = -1;
-        int     gcpl_id = -1;
+        int     lcpl_id = -1;
 
         try {
             // Create a new file_id using the default properties.
-            file_id = H5.H5Fcreate(FILE, HDF5Constants.H5F_ACC_TRUNC, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+            file = new H5File(FILE, FileFormat.CREATE);
+            file_id = file.open();
 
             //Create group_id creation property list and set it to allow creation of intermediate group_ids.
-            gcpl_id = H5.H5Pcreate (HDF5Constants.H5P_LINK_CREATE);
-            H5.H5Pset_create_intermediate_group(gcpl_id, true);
+            lcpl_id = H5.H5Pcreate (HDF5Constants.H5P_LINK_CREATE);
+            H5.H5Pset_create_intermediate_group(lcpl_id, true);
 
             /*
              * Create the group_id /G1/G2/G3.  Note that /G1 and /G1/G2 do not
              * exist yet.  This call would cause an error if we did not use the
              * previously created property list.
              */
-            group_id = H5.H5Gcreate(file_id, "/G1/G2/G3", gcpl_id, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+            file.createGroup("/G1/G2/G3", null, lcpl_id);
             //Print all the objects in the file_ids to show that intermediate group_ids have been created. 
             System.out.println("Objects in the file_id:");
 
@@ -52,18 +54,15 @@ public class H5Ex_G_Intermediate {
         }
         finally{
             //Close and release resources.
-            if (gcpl_id >= 0)
-                H5.H5Pclose (gcpl_id);
-            if (group_id >= 0)
-                H5.H5Gclose (group_id);
-            if(file_id >= 0)
-                H5.H5Fclose (file_id);
+            if (lcpl_id >= 0)
+                H5.H5Pclose (lcpl_id);
+            file.close();
         }
     }
 
     public static void main(String[] args) {
         try {
-            (new H5Ex_G_Intermediate()).CreateGroup();
+            (new H5ObjectEx_G_Intermediate()).CreateGroup();
         }
         catch(Exception ex) {
             ex.printStackTrace();
