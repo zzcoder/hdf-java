@@ -1,5 +1,4 @@
 /************************************************************
-
   This example shows how to read and write data to a dataset
   using the shuffle filter with gzip compression.  The
   program first checks if the shuffle and gzip filters are
@@ -8,9 +7,6 @@
   it reopens the file, reads back the data, and outputs the
   types of filters and the maximum value in the dataset to
   the screen.
-
-  This file is intended for use with HDF5 Library verion 1.6
-
  ************************************************************/
 package examples.datasets;
 
@@ -22,7 +18,7 @@ import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 
 public class H5Ex_D_Shuffle {
-    private static String FILENAME = "h5ex_d_shuffle.h5";
+    private static String FILENAME = "H5Ex_D_Shuffle.h5";
     private static String DATASETNAME = "DS1";
     private static final int DIM_X = 32;
     private static final int DIM_Y = 64;
@@ -33,9 +29,11 @@ public class H5Ex_D_Shuffle {
 
     // Values for the status of space allocation
     enum H5Z_filter {
-        H5Z_FILTER_ERROR(-1), H5Z_FILTER_NONE(0), H5Z_FILTER_DEFLATE(1), H5Z_FILTER_SHUFFLE(
-                2), H5Z_FILTER_FLETCHER32(3), H5Z_FILTER_SZIP(4), H5Z_FILTER_NBIT(5), H5Z_FILTER_SCALEOFFSET(
-                6), H5Z_FILTER_RESERVED(256), H5Z_FILTER_MAX(65535);
+        H5Z_FILTER_ERROR(HDF5Constants.H5Z_FILTER_ERROR), H5Z_FILTER_NONE(HDF5Constants.H5Z_FILTER_NONE), 
+        H5Z_FILTER_DEFLATE(HDF5Constants.H5Z_FILTER_DEFLATE), H5Z_FILTER_SHUFFLE(HDF5Constants.H5Z_FILTER_SHUFFLE), 
+        H5Z_FILTER_FLETCHER32(HDF5Constants.H5Z_FILTER_FLETCHER32), H5Z_FILTER_SZIP(HDF5Constants.H5Z_FILTER_SZIP), 
+        H5Z_FILTER_NBIT(HDF5Constants.H5Z_FILTER_NBIT), H5Z_FILTER_SCALEOFFSET(HDF5Constants.H5Z_FILTER_SCALEOFFSET), 
+        H5Z_FILTER_RESERVED(HDF5Constants.H5Z_FILTER_RESERVED), H5Z_FILTER_MAX(HDF5Constants.H5Z_FILTER_MAX);
         private static final Map<Integer, H5Z_filter> lookup = new HashMap<Integer, H5Z_filter>();
 
         static {
@@ -60,8 +58,7 @@ public class H5Ex_D_Shuffle {
 
     private static boolean checkGzipFilter() {
         try {
-            int available = H5.H5Zfilter_avail(H5Z_filter.H5Z_FILTER_DEFLATE
-                    .getCode());
+            int available = H5.H5Zfilter_avail(HDF5Constants.H5Z_FILTER_DEFLATE);
             if (available == 0) {
                 System.out.println("gzip filter not available.");
                 return false;
@@ -75,8 +72,7 @@ public class H5Ex_D_Shuffle {
             int filter_info = H5.H5Zget_filter_info(HDF5Constants.H5Z_FILTER_DEFLATE);
             if (((filter_info & HDF5Constants.H5Z_FILTER_CONFIG_ENCODE_ENABLED) == 0)
                     || ((filter_info & HDF5Constants.H5Z_FILTER_CONFIG_DECODE_ENABLED) == 0)) {
-                System.out
-                        .println("gzip filter not available for encoding and decoding.");
+                System.out.println("gzip filter not available for encoding and decoding.");
                 return false;
             }
         }
@@ -88,8 +84,7 @@ public class H5Ex_D_Shuffle {
 
     private static boolean checkShuffleFilter() {
         try {
-            int available = H5.H5Zfilter_avail(H5Z_filter.H5Z_FILTER_SHUFFLE
-                    .getCode());
+            int available = H5.H5Zfilter_avail(HDF5Constants.H5Z_FILTER_SHUFFLE);
             if (available == 0) {
                 System.out.println("Shuffle filter not available.");
                 return false;
@@ -103,8 +98,7 @@ public class H5Ex_D_Shuffle {
             int filter_info = H5.H5Zget_filter_info(HDF5Constants.H5Z_FILTER_SHUFFLE);
             if (((filter_info & HDF5Constants.H5Z_FILTER_CONFIG_ENCODE_ENABLED) == 0)
                     || ((filter_info & HDF5Constants.H5Z_FILTER_CONFIG_DECODE_ENABLED) == 0)) {
-                System.out
-                        .println("Shuffle filter not available for encoding and decoding.");
+                System.out.println("Shuffle filter not available for encoding and decoding.");
                 return false;
             }
         }
@@ -230,8 +224,7 @@ public class H5Ex_D_Shuffle {
 
         // Open an existing file.
         try {
-            file_id = H5.H5Fopen(FILENAME, HDF5Constants.H5F_ACC_RDONLY,
-                    HDF5Constants.H5P_DEFAULT);
+            file_id = H5.H5Fopen(FILENAME, HDF5Constants.H5F_ACC_RDONLY, HDF5Constants.H5P_DEFAULT);
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -284,6 +277,12 @@ public class H5Ex_D_Shuffle {
                     case H5Z_FILTER_SZIP:
                         System.out.println("H5Z_FILTER_SZIP");
                         break;
+                    case H5Z_FILTER_NBIT:
+                        System.out.println("H5Z_FILTER_NBIT");
+                        break;
+                    case H5Z_FILTER_SCALEOFFSET:
+                        System.out.println("H5Z_FILTER_SCALEOFFSET");
+                        break;    
                     default:
                         System.out.println("H5Z_FILTER_ERROR");
                     }

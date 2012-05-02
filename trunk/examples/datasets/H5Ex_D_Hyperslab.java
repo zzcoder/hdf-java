@@ -1,5 +1,4 @@
 /************************************************************
-
   This example shows how to read and write data to a
   dataset by hyberslabs.  The program first writes integers
   in a hyperslab selection to a dataset with dataspace
@@ -8,9 +7,6 @@
   the screen.  Finally it reads the data again using a
   different hyperslab selection, and outputs the result to
   the screen.
-
-  This file is intended for use with HDF5 Library verion 1.6
-
  ************************************************************/
 package examples.datasets;
 
@@ -18,7 +14,7 @@ import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 
 public class H5Ex_D_Hyperslab {
-	private static String FILENAME = "h5ex_d_hyper.h5";
+	private static String FILENAME = "H5Ex_D_Hyperslab.h5";
 	private static String DATASETNAME = "DS1";
 	private static final int DIM_X = 6;
 	private static final int DIM_Y = 8;
@@ -125,6 +121,7 @@ public class H5Ex_D_Hyperslab {
 		catch (Exception e) {
 			e.printStackTrace();
 		}
+        
 
 		// Close the file.
 		try {
@@ -145,8 +142,7 @@ public class H5Ex_D_Hyperslab {
 
 		// Open an existing file.
 		try {
-			file_id = H5.H5Fopen(FILENAME, HDF5Constants.H5F_ACC_RDONLY,
-					HDF5Constants.H5P_DEFAULT);
+			file_id = H5.H5Fopen(FILENAME, HDF5Constants.H5F_ACC_RDONLY, HDF5Constants.H5P_DEFAULT);
 		}
 		catch (Exception e) {
 			e.printStackTrace();

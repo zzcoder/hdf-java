@@ -1,5 +1,4 @@
 /************************************************************
-
   This example shows how to read and write data to a dataset
   using the Fletcher32 checksum filter.  The program first
   checks if the Fletcher32 filter is available, then if it
@@ -8,9 +7,6 @@
   the data, checks if the filter detected an error and
   outputs the type of filter and the maximum value in the
   dataset to the screen.
-
-  This file is intended for use with HDF5 Library verion 1.6
-
  ************************************************************/
 package examples.datasets;
 
@@ -22,7 +18,7 @@ import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 
 public class H5Ex_D_Checksum {
-    private static String FILENAME = "h5ex_d_checksum.h5";
+    private static String FILENAME = "H5Ex_D_Checksum.h5";
     private static String DATASETNAME = "DS1";
     private static final int DIM_X = 32;
     private static final int DIM_Y = 64;
@@ -60,8 +56,7 @@ public class H5Ex_D_Checksum {
 
     private static boolean checkFletcher32Filter() {
         try {
-            int available = H5.H5Zfilter_avail(H5Z_filter.H5Z_FILTER_FLETCHER32
-                    .getCode());
+            int available = H5.H5Zfilter_avail(H5Z_filter.H5Z_FILTER_FLETCHER32.getCode());
             if (available == 0) {
                 System.out.println("N-Bit filter not available.");
                 return false;
@@ -72,8 +67,7 @@ public class H5Ex_D_Checksum {
         }
 
         try {
-            int filter_info = H5
-                    .H5Zget_filter_info(HDF5Constants.H5Z_FILTER_FLETCHER32);
+            int filter_info = H5.H5Zget_filter_info(HDF5Constants.H5Z_FILTER_FLETCHER32);
             if (((filter_info & HDF5Constants.H5Z_FILTER_CONFIG_ENCODE_ENABLED) == 0)
                     || ((filter_info & HDF5Constants.H5Z_FILTER_CONFIG_DECODE_ENABLED) == 0)) {
                 System.out

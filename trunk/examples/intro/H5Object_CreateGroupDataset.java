@@ -3,12 +3,12 @@
 
 package examples.intro;
 
+import ncsa.hdf.object.Dataset;
 import ncsa.hdf.object.Datatype;
 import ncsa.hdf.object.FileFormat;
 import ncsa.hdf.object.h5.H5Datatype;
 import ncsa.hdf.object.h5.H5File;
 import ncsa.hdf.object.h5.H5Group;
-import ncsa.hdf.object.h5.H5ScalarDS;
 
 public class H5Object_CreateGroupDataset {
 	private static String FILENAME = "H5Object_CreateGroupDataset.h5";
@@ -25,7 +25,7 @@ public class H5Object_CreateGroupDataset {
 	private static void h5_crtgrpd() {
         H5File file = null;
         H5Group grp = null;
-        H5ScalarDS dset = null;
+        Dataset dset = null;
 		int[][] dset1_data = new int[DIM1_X][DIM1_Y];
 		int[][] dset2_data = new int[DIM2_X][DIM2_Y];
 		long[] dims1 = { DIM1_X, DIM1_Y };
@@ -63,7 +63,7 @@ public class H5Object_CreateGroupDataset {
 		// Create the dataset in group "MyGroup".
 		// Write the first dataset.
 		try {
-            dset = H5ScalarDS.create("/" + GROUPNAME + "/" + DATASETNAME1, grp, typeInt,
+            dset = file.createScalarDS("/" + GROUPNAME + "/" + DATASETNAME1, grp, typeInt,
                     dims1, null, null, 0,
                     dset1_data);
 		}
@@ -73,7 +73,7 @@ public class H5Object_CreateGroupDataset {
 
 		// Create the second dataset in group "Group_A".
 		try {
-            dset = H5ScalarDS.create("/" + GROUPNAME + "/" + DATASETNAME2, grp, typeInt,
+            dset = file.createScalarDS("/" + GROUPNAME + "/" + DATASETNAME2, grp, typeInt,
                     dims2, null, null, 0,
                     dset2_data);
 		}

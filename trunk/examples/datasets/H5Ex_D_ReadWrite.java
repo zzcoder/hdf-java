@@ -5,9 +5,6 @@
   with dataspace dimensions of DIM_XxDIM_Y, then closes the
   file.  Next, it reopens the file, reads back the data, and
   outputs it to the screen.
-
-  This file is intended for use with HDF5 Library verion 1.6
-
  ************************************************************/
 package examples.datasets;
 
@@ -15,7 +12,7 @@ import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 
 public class H5Ex_D_ReadWrite {
-	private static String FILENAME = "h5ex_d_rdwr.h5";
+	private static String FILENAME = "H5Ex_D_ReadWrite.h5";
 	private static String DATASETNAME = "DS1";
 	private static final int DIM_X = 4;
 	private static final int DIM_Y = 7;
@@ -107,8 +104,7 @@ public class H5Ex_D_ReadWrite {
 
 		// Open file using the default properties.
 		try {
-			file_id = H5.H5Fopen(FILENAME, HDF5Constants.H5F_ACC_RDWR,
-					HDF5Constants.H5P_DEFAULT);
+			file_id = H5.H5Fopen(FILENAME, HDF5Constants.H5F_ACC_RDWR, HDF5Constants.H5P_DEFAULT);
 		}
 		catch (Exception e) {
 			e.printStackTrace();

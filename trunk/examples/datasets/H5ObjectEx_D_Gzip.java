@@ -15,9 +15,16 @@ import java.util.Map;
 
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
+import ncsa.hdf.object.Dataset;
+import ncsa.hdf.object.Datatype;
+import ncsa.hdf.object.FileFormat;
+import ncsa.hdf.object.Group;
+import ncsa.hdf.object.h5.H5Datatype;
+import ncsa.hdf.object.h5.H5File;
+import ncsa.hdf.object.h5.H5ScalarDS;
 
-public class H5Ex_D_Gzip {
-    private static String FILENAME = "H5Ex_D_Gzip.h5";
+public class H5ObjectEx_D_Gzip {
+    private static String FILENAME = "H5ObjectEx_D_Gzip.h5";
     private static String DATASETNAME = "DS1";
     private static final int DIM_X = 32;
     private static final int DIM_Y = 64;
@@ -25,6 +32,7 @@ public class H5Ex_D_Gzip {
     private static final int CHUNK_Y = 8;
     private static final int RANK = 2;
     private static final int NDIMS = 2;
+    private static final int DATATYPE_SIZE = 4;
 
     // Values for the status of space allocation
     enum H5Z_filter {
@@ -82,13 +90,18 @@ public class H5Ex_D_Gzip {
     }
 
     private static void writeGzip() {
+        H5File file = null;
+        Dataset dset = null;
         int file_id = -1;
         int filespace_id = -1;
         int dataset_id = -1;
         int dcpl_id = -1;
+        int type_id = -1;
         long[] dims = { DIM_X, DIM_Y };
         long[] chunk_dims = { CHUNK_X, CHUNK_Y };
         int[][] dset_data = new int[DIM_X][DIM_Y];
+        final H5Datatype typeInt = new H5Datatype(Datatype.CLASS_INTEGER,
+                DATATYPE_SIZE, Datatype.ORDER_LE, -1);
 
         // Initialize data.
         for (int indx = 0; indx < DIM_X; indx++)
@@ -97,8 +110,8 @@ public class H5Ex_D_Gzip {
 
         // Create a new file using default properties.
         try {
-            file_id = H5.H5Fcreate(FILENAME, HDF5Constants.H5F_ACC_TRUNC,
-                    HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+            file = new H5File(FILENAME, FileFormat.CREATE);
+            file_id = file.open();
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -108,6 +121,7 @@ public class H5Ex_D_Gzip {
         // size to be the current size.
         try {
             filespace_id = H5.H5Screate_simple(RANK, dims, null);
+            type_id = typeInt.toNative();
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -131,8 +145,10 @@ public class H5Ex_D_Gzip {
         try {
             if ((file_id >= 0) && (filespace_id >= 0) && (dcpl_id >= 0))
                 dataset_id = H5.H5Dcreate(file_id, DATASETNAME,
-                        HDF5Constants.H5T_STD_I32LE, filespace_id, 
-                        HDF5Constants.H5P_DEFAULT, dcpl_id, HDF5Constants.H5P_DEFAULT);
+                        type_id, filespace_id, HDF5Constants.H5P_DEFAULT, dcpl_id, HDF5Constants.H5P_DEFAULT);
+            dset = new H5ScalarDS(file, DATASETNAME, "/");
+            Group pgroup = (Group) file.get("/");
+            pgroup.addToMemberList(dset);
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -140,10 +156,7 @@ public class H5Ex_D_Gzip {
 
         // Write the data to the dataset.
         try {
-            if (dataset_id >= 0)
-                H5.H5Dwrite(dataset_id, HDF5Constants.H5T_NATIVE_INT,
-                        HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL, HDF5Constants.H5P_DEFAULT, 
-                        dset_data);
+            dset.write(dset_data);
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -157,10 +170,18 @@ public class H5Ex_D_Gzip {
         catch (Exception e) {
             e.printStackTrace();
         }
+        
+        try {
+            if (type_id >= 0)
+                H5.H5Tclose(type_id);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
 
         try {
             if (dataset_id >= 0)
-                H5.H5Dclose(dataset_id);
+                dset.close(dataset_id);
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -176,8 +197,7 @@ public class H5Ex_D_Gzip {
 
         // Close the file.
         try {
-            if (file_id >= 0)
-                H5.H5Fclose(file_id);
+            file.close();
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -185,14 +205,16 @@ public class H5Ex_D_Gzip {
     }
 
     private static void readGzip() {
-        int file_id = -1;
+        H5File file = null;
+        Dataset dset = null;
         int dataset_id = -1;
         int dcpl_id = -1;
-        int[][] dset_data = new int[DIM_X][DIM_Y];
+        int[] dset_data = new int[DIM_X*DIM_Y];
 
         // Open an existing file.
         try {
-            file_id = H5.H5Fopen(FILENAME, HDF5Constants.H5F_ACC_RDONLY, HDF5Constants.H5P_DEFAULT);
+            file = new H5File(FILENAME, FileFormat.READ);
+            file.open();
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -200,8 +222,8 @@ public class H5Ex_D_Gzip {
 
         // Open an existing dataset.
         try {
-            if (file_id >= 0)
-                dataset_id = H5.H5Dopen(file_id, DATASETNAME, HDF5Constants.H5P_DEFAULT);
+            dset = (Dataset) file.get(DATASETNAME);
+            dataset_id = dset.open();
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -261,11 +283,8 @@ public class H5Ex_D_Gzip {
 
         // Read the data using the default properties.
         try {
-            if (dataset_id >= 0) {
-                H5.H5Dread(dataset_id, HDF5Constants.H5T_NATIVE_INT,
-                        HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL,
-                        HDF5Constants.H5P_DEFAULT, dset_data);
-            }
+            dset.init();
+            dset_data = (int[]) dset.getData();
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -273,11 +292,11 @@ public class H5Ex_D_Gzip {
 
         // Find the maximum value in the dataset, to verify that it was read
         // correctly.
-        int max = dset_data[0][0];
+        int max = dset_data[0];
         for (int indx = 0; indx < DIM_X; indx++) {
             for (int jndx = 0; jndx < DIM_Y; jndx++)
-                if (max < dset_data[indx][jndx])
-                    max = dset_data[indx][jndx];
+                if (max < dset_data[indx*DIM_Y+jndx])
+                    max = dset_data[indx*DIM_Y+jndx];
         }
         // Print the maximum value.
         System.out.println("Maximum value in " + DATASETNAME + " is: " + max);
@@ -293,7 +312,7 @@ public class H5Ex_D_Gzip {
 
         try {
             if (dataset_id >= 0)
-                H5.H5Dclose(dataset_id);
+                dset.close(dataset_id);
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -301,8 +320,7 @@ public class H5Ex_D_Gzip {
 
         // Close the file.
         try {
-            if (file_id >= 0)
-                H5.H5Fclose(file_id);
+            file.close();
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -315,9 +333,9 @@ public class H5Ex_D_Gzip {
         // checking in these examples for the sake of clarity, but in this
         // case we will make an exception because this filter is an
         // optional part of the hdf5 library.
-        if (H5Ex_D_Gzip.checkGzipFilter()) {
-            H5Ex_D_Gzip.writeGzip();
-            H5Ex_D_Gzip.readGzip();
+        if (H5ObjectEx_D_Gzip.checkGzipFilter()) {
+            H5ObjectEx_D_Gzip.writeGzip();
+            H5ObjectEx_D_Gzip.readGzip();
         }
     }
 

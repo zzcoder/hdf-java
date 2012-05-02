@@ -3,12 +3,11 @@
 
 package examples.intro;
 
+import ncsa.hdf.object.Dataset;
 import ncsa.hdf.object.Datatype;
 import ncsa.hdf.object.FileFormat;
 import ncsa.hdf.object.h5.H5Datatype;
 import ncsa.hdf.object.h5.H5File;
-import ncsa.hdf.object.h5.H5Group;
-import ncsa.hdf.object.h5.H5ScalarDS;
 
 
 public class H5Object_ReadWrite {
@@ -20,7 +19,7 @@ public class H5Object_ReadWrite {
 
 	private static void ReadWriteDataset() {
         H5File file = null;
-        H5ScalarDS dset = null;
+        Dataset dset = null;
 		int[][] dset_data = new int[DIM_X][DIM_Y];
         long[] dims = { DIM_X, DIM_Y };
         final H5Datatype typeInt = new H5Datatype(Datatype.CLASS_INTEGER,
@@ -42,8 +41,7 @@ public class H5Object_ReadWrite {
 
         // Create the dataset.
         try {
-            final H5Group rootGrp = (H5Group)file.get("/");
-            dset = H5ScalarDS.create("/" + DATASETNAME, rootGrp, typeInt,
+            dset = file.createScalarDS("/" + DATASETNAME, null, typeInt,
                     dims, null, null, 0,
                     dset_data);
         }
