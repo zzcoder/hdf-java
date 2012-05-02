@@ -57,7 +57,6 @@ public class H5ObjectEx_G_Phase {
     private static void CreateGroup() {
         H5File         file = null;
         H5Group        grp = null;
-        int            file_id = -1;
         int            group_id = -1;
         int            fapl_id = -1;
         int            gcpl_id = -1;

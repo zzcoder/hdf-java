@@ -12,9 +12,15 @@ package examples.datasets;
 
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
+import ncsa.hdf.object.Datatype;
+import ncsa.hdf.object.FileFormat;
+import ncsa.hdf.object.Group;
+import ncsa.hdf.object.h5.H5Datatype;
+import ncsa.hdf.object.h5.H5File;
+import ncsa.hdf.object.h5.H5ScalarDS;
 
-public class H5Ex_D_FillValue {
-	private static String FILENAME = "H5Ex_D_FillValue.h5";
+public class H5ObjectEx_D_FillValue {
+	private static String FILENAME = "H5ObjectEx_D_FillValue.h5";
 	private static String DATASETNAME = "ExtendibleArray";
 	private static final int DIM_X = 4;
 	private static final int DIM_Y = 7;
@@ -25,19 +31,25 @@ public class H5Ex_D_FillValue {
 	private static final int RANK = 2;
 	private static final int NDIMS = 2;
 	private static final int FILLVAL = 99;
+    private static final int DATATYPE_SIZE = 4;
 
 	private static void fillValue() {
+        H5File file = null;
+        H5ScalarDS dset = null;
 		int file_id = -1;
 		int dcpl_id = -1;
 		int dataspace_id = -1;
 		int dataset_id = -1;
+        int type_id = -1;
 		long[] dims = { DIM_X, DIM_Y };
 		long[] extdims = { EDIM_X, EDIM_Y };
 		long[] chunk_dims = { CHUNK_X, CHUNK_Y };
 		long[] maxdims = { HDF5Constants.H5S_UNLIMITED, HDF5Constants.H5S_UNLIMITED };
 		int[][] write_dset_data = new int[DIM_X][DIM_Y];
-		int[][] read_dset_data = new int[DIM_X][DIM_Y];
-		int[][] extend_dset_data = new int[EDIM_X][EDIM_Y];
+		int[] read_dset_data = new int[DIM_X*DIM_Y];
+		int[] extend_dset_data = new int[EDIM_X*EDIM_Y];
+        final H5Datatype typeInt = new H5Datatype(Datatype.CLASS_INTEGER,
+                DATATYPE_SIZE, Datatype.ORDER_LE, -1);
 
 		// Initialize the dataset.
 		for (int indx = 0; indx < DIM_X; indx++)
@@ -46,8 +58,8 @@ public class H5Ex_D_FillValue {
 
 		// Create a new file using default properties.
 		try {
-			file_id = H5.H5Fcreate(FILENAME, HDF5Constants.H5F_ACC_TRUNC,
-					HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+            file = new H5File(FILENAME, FileFormat.CREATE);
+            file_id = file.open();
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -56,6 +68,7 @@ public class H5Ex_D_FillValue {
 		// Create dataspace with unlimited dimensions.
 		try {
 			dataspace_id = H5.H5Screate_simple(RANK, dims, maxdims);
+            type_id = typeInt.toNative();
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -103,7 +116,10 @@ public class H5Ex_D_FillValue {
 		try {
 			if ((file_id >= 0) && (dataspace_id >= 0) && (dcpl_id >= 0))
 				dataset_id = H5.H5Dcreate(file_id, DATASETNAME,
-						HDF5Constants.H5T_STD_I32LE, dataspace_id, HDF5Constants.H5P_DEFAULT, dcpl_id, HDF5Constants.H5P_DEFAULT);
+				        type_id, dataspace_id, HDF5Constants.H5P_DEFAULT, dcpl_id, HDF5Constants.H5P_DEFAULT);
+            dset = new H5ScalarDS(file, DATASETNAME, "/");
+            Group pgroup = (Group) file.get("/");
+            pgroup.addToMemberList(dset);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -111,10 +127,8 @@ public class H5Ex_D_FillValue {
 
 		// Read values from the dataset, which has not been written to yet.
 		try {
-			if (dataset_id >= 0)
-				H5.H5Dread(dataset_id, HDF5Constants.H5T_NATIVE_INT,
-						HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL,
-						HDF5Constants.H5P_DEFAULT, read_dset_data);
+            dset.init();
+            read_dset_data = (int[]) dset.getData();
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -125,17 +139,14 @@ public class H5Ex_D_FillValue {
 		for (int indx = 0; indx < DIM_X; indx++) {
 			System.out.print(" [ ");
 			for (int jndx = 0; jndx < DIM_Y; jndx++)
-				System.out.print(read_dset_data[indx][jndx] + " ");
+				System.out.print(read_dset_data[indx*DIM_Y+jndx] + " ");
 			System.out.println("]");
 		}
 		System.out.println();
 
 		// Write the data to the dataset.
 		try {
-			if (dataset_id >= 0)
-				H5.H5Dwrite(dataset_id, HDF5Constants.H5T_NATIVE_INT,
-						HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL,
-						HDF5Constants.H5P_DEFAULT, write_dset_data);
+            dset.write(write_dset_data);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -143,10 +154,8 @@ public class H5Ex_D_FillValue {
 
 		// Read the data back.
 		try {
-			if (dataset_id >= 0)
-				H5.H5Dread(dataset_id, HDF5Constants.H5T_NATIVE_INT,
-						HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL,
-						HDF5Constants.H5P_DEFAULT, read_dset_data);
+            dset.init();
+            read_dset_data = (int[]) dset.getData();
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -157,15 +166,14 @@ public class H5Ex_D_FillValue {
 		for (int indx = 0; indx < DIM_X; indx++) {
 			System.out.print(" [ ");
 			for (int jndx = 0; jndx < DIM_Y; jndx++)
-				System.out.print(read_dset_data[indx][jndx] + " ");
+				System.out.print(read_dset_data[indx*DIM_Y+jndx] + " ");
 			System.out.println("]");
 		}
 		System.out.println();
 
 		// Extend the dataset.
 		try {
-			if (dataset_id >= 0)
-				H5.H5Dset_extent(dataset_id, extdims);
+		    dset.extend(extdims);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -173,10 +181,8 @@ public class H5Ex_D_FillValue {
 
 		// Read from the extended dataset.
 		try {
-			if (dataset_id >= 0)
-				H5.H5Dread(dataset_id, HDF5Constants.H5T_NATIVE_INT,
-						HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL,
-						HDF5Constants.H5P_DEFAULT, extend_dset_data);
+            dset.init();
+            extend_dset_data = (int[]) dset.getData();
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -187,15 +193,31 @@ public class H5Ex_D_FillValue {
 		for (int indx = 0; indx < EDIM_X; indx++) {
 			System.out.print(" [ ");
 			for (int jndx = 0; jndx < EDIM_Y; jndx++)
-				System.out.print(extend_dset_data[indx][jndx] + " ");
+				System.out.print(extend_dset_data[indx*EDIM_Y+jndx] + " ");
 			System.out.println("]");
 		}
 		System.out.println();
 
 		// End access to the dataset and release resources used by it.
 		try {
+			if (dcpl_id >= 0)
+				H5.H5Pclose(dcpl_id);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+        
+        try {
+            if (type_id >= 0)
+                H5.H5Tclose(type_id);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
+		try {
 			if (dataset_id >= 0)
-				H5.H5Dclose(dataset_id);
+                dset.close(dataset_id);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -209,18 +231,9 @@ public class H5Ex_D_FillValue {
 			e.printStackTrace();
 		}
 
-		try {
-			if (dcpl_id >= 0)
-				H5.H5Pclose(dcpl_id);
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-
 		// Close the file.
 		try {
-			if (file_id >= 0)
-				H5.H5Fclose(file_id);
+            file.close();
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -229,7 +242,7 @@ public class H5Ex_D_FillValue {
 	}
 
 	public static void main(String[] args) {
-		H5Ex_D_FillValue.fillValue();
+		H5ObjectEx_D_FillValue.fillValue();
 	}
 
 }

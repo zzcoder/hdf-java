@@ -16,9 +16,16 @@ import java.util.Map;
 
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
+import ncsa.hdf.object.Dataset;
+import ncsa.hdf.object.Datatype;
+import ncsa.hdf.object.FileFormat;
+import ncsa.hdf.object.Group;
+import ncsa.hdf.object.h5.H5Datatype;
+import ncsa.hdf.object.h5.H5File;
+import ncsa.hdf.object.h5.H5ScalarDS;
 
-public class H5Ex_D_Chunk {
-	private static String FILENAME = "H5Ex_D_Chunk.h5";
+public class H5ObjectEx_D_Chunk {
+	private static String FILENAME = "H5ObjectEx_D_Chunk.h5";
 	private static String DATASETNAME = "DS1";
 	private static final int DIM_X = 6;
 	private static final int DIM_Y = 8;
@@ -26,6 +33,7 @@ public class H5Ex_D_Chunk {
 	private static final int CHUNK_Y = 4;
 	private static final int RANK = 2;
 	private static final int NDIMS = 2;
+    private static final int DATATYPE_SIZE = 4;
 
 	// Values for the status of space allocation
 	enum H5D_layout {
@@ -53,13 +61,18 @@ public class H5Ex_D_Chunk {
 	}
 
 	private static void writeChunk() {
+        H5File file = null;
+        Dataset dset = null;
 		int file_id = -1;
 		int filespace_id = -1;
 		int dataset_id = -1;
 		int dcpl_id = -1;
+        int type_id = -1;
 		long[] dims = { DIM_X, DIM_Y };
 		long[] chunk_dims = { CHUNK_X, CHUNK_Y };
 		int[][] dset_data = new int[DIM_X][DIM_Y];
+        final H5Datatype typeInt = new H5Datatype(Datatype.CLASS_INTEGER,
+                DATATYPE_SIZE, Datatype.ORDER_LE, -1);
 
 		// Initialize data to "1", to make it easier to see the selections.
 		for (int indx = 0; indx < DIM_X; indx++)
@@ -78,8 +91,8 @@ public class H5Ex_D_Chunk {
 
 		// Create a new file using default properties.
 		try {
-			file_id = H5.H5Fcreate(FILENAME, HDF5Constants.H5F_ACC_TRUNC,
-					HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+            file = new H5File(FILENAME, FileFormat.CREATE);
+            file_id = file.open();
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -89,6 +102,7 @@ public class H5Ex_D_Chunk {
 		// size to be the current size.
 		try {
 			filespace_id = H5.H5Screate_simple(RANK, dims, null);
+            type_id = typeInt.toNative();
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -113,9 +127,13 @@ public class H5Ex_D_Chunk {
 
 		// Create the chunked dataset.
 		try {
-			if ((file_id >= 0) && (filespace_id >= 0) && (dcpl_id >= 0))
-				dataset_id = H5.H5Dcreate(file_id, DATASETNAME,
-						HDF5Constants.H5T_STD_I32LE, filespace_id, HDF5Constants.H5P_DEFAULT, dcpl_id, HDF5Constants.H5P_DEFAULT);
+			if ((file_id >= 0) && (filespace_id >= 0) && (dcpl_id >= 0)) {
+				dataset_id = H5.H5Dcreate(file_id, DATASETNAME, type_id, filespace_id, 
+				        HDF5Constants.H5P_DEFAULT, dcpl_id, HDF5Constants.H5P_DEFAULT);
+                dset = new H5ScalarDS(file, DATASETNAME, "/");
+                Group pgroup = (Group) file.get("/");
+                pgroup.addToMemberList(dset);
+			}
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -145,10 +163,10 @@ public class H5Ex_D_Chunk {
 						start, stride, count, block);
 
 				// Write the data to the dataset.
-				if (dataset_id >= 0)
-					H5.H5Dwrite(dataset_id, HDF5Constants.H5T_NATIVE_INT,
-							HDF5Constants.H5S_ALL, filespace_id, HDF5Constants.H5P_DEFAULT,
-							dset_data);
+                if (dataset_id >= 0)
+                    H5.H5Dwrite(dataset_id, HDF5Constants.H5T_NATIVE_INT,
+                            HDF5Constants.H5S_ALL, filespace_id, HDF5Constants.H5P_DEFAULT,
+                            dset_data);
 			}
 		}
 		catch (Exception e) {
@@ -163,10 +181,18 @@ public class H5Ex_D_Chunk {
 		catch (Exception e) {
 			e.printStackTrace();
 		}
+        
+        try {
+            if (type_id >= 0)
+                H5.H5Tclose(type_id);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
 
 		try {
 			if (dataset_id >= 0)
-				H5.H5Dclose(dataset_id);
+                dset.close(dataset_id);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -182,8 +208,7 @@ public class H5Ex_D_Chunk {
 
 		// Close the file.
 		try {
-			if (file_id >= 0)
-				H5.H5Fclose(file_id);
+            file.close();
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -191,16 +216,17 @@ public class H5Ex_D_Chunk {
 	}
 
 	private static void readChunk() {
-		int file_id = -1;
+        H5File file = null;
+        Dataset dset = null;
 		int filespace_id = -1;
 		int dataset_id = -1;
 		int dcpl_id = -1;
-		int[][] dset_data = new int[DIM_X][DIM_Y];
+		int[] dset_data = new int[DIM_X*DIM_Y];
 
 		// Open an existing file.
 		try {
-			file_id = H5.H5Fopen(FILENAME, HDF5Constants.H5F_ACC_RDONLY,
-					HDF5Constants.H5P_DEFAULT);
+            file = new H5File(FILENAME, FileFormat.READ);
+            file.open();
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -208,8 +234,8 @@ public class H5Ex_D_Chunk {
 
 		// Open an existing dataset.
 		try {
-			if (file_id >= 0)
-				dataset_id = H5.H5Dopen(file_id, DATASETNAME, HDF5Constants.H5P_DEFAULT);
+            dset = (Dataset) file.get(DATASETNAME);
+            dataset_id = dset.open();
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -249,10 +275,8 @@ public class H5Ex_D_Chunk {
 
 		// Read the data using the default properties.
 		try {
-			if (dataset_id >= 0)
-				H5.H5Dread(dataset_id, HDF5Constants.H5T_NATIVE_INT,
-						HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL,
-						HDF5Constants.H5P_DEFAULT, dset_data);
+            dset.init();
+            dset_data = (int[]) dset.getData();
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -263,7 +287,7 @@ public class H5Ex_D_Chunk {
 		for (int indx = 0; indx < DIM_X; indx++) {
 			System.out.print(" [ ");
 			for (int jndx = 0; jndx < DIM_Y; jndx++)
-				System.out.print(dset_data[indx][jndx] + " ");
+				System.out.print(dset_data[indx*DIM_Y+jndx] + " ");
 			System.out.println("]");
 		}
 		System.out.println();
@@ -271,7 +295,7 @@ public class H5Ex_D_Chunk {
 		// Initialize the read array.
 		for (int indx = 0; indx < DIM_X; indx++)
 			for (int jndx = 0; jndx < DIM_Y; jndx++)
-				dset_data[indx][jndx] = 0;
+				dset_data[indx*DIM_Y+jndx] = 0;
 
 		// Define and select the hyperslab to use for reading.
 		try {
@@ -304,7 +328,7 @@ public class H5Ex_D_Chunk {
 		for (int indx = 0; indx < DIM_X; indx++) {
 			System.out.print(" [ ");
 			for (int jndx = 0; jndx < DIM_Y; jndx++)
-				System.out.print(dset_data[indx][jndx] + " ");
+				System.out.print(dset_data[indx*DIM_Y+jndx] + " ");
 			System.out.println("]");
 		}
 		System.out.println();
@@ -320,15 +344,15 @@ public class H5Ex_D_Chunk {
 
 		try {
 			if (dataset_id >= 0)
-				H5.H5Dclose(dataset_id);
+                dset.close(dataset_id);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
 		}
 
 		try {
-			if (filespace_id >= 0)
-				H5.H5Sclose(filespace_id);
+            if (filespace_id >= 0)
+                H5.H5Sclose(filespace_id);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -336,8 +360,7 @@ public class H5Ex_D_Chunk {
 
 		// Close the file.
 		try {
-			if (file_id >= 0)
-				H5.H5Fclose(file_id);
+            file.close();
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -345,8 +368,8 @@ public class H5Ex_D_Chunk {
 	}
 
 	public static void main(String[] args) {
-		H5Ex_D_Chunk.writeChunk();
-		H5Ex_D_Chunk.readChunk();
+		H5ObjectEx_D_Chunk.writeChunk();
+		H5ObjectEx_D_Chunk.readChunk();
 	}
 
 }

@@ -6,8 +6,6 @@
       closes the file Next, it reopens the file, reads back the
       data, and outputs the type of filter and the maximum value
       in the dataset to the screen.
-
-      This file is intended for use with HDF5 Library version 1.8
  ************************************************************/
 package examples.datasets;
 
@@ -20,18 +18,22 @@ import ncsa.hdf.hdf5lib.HDF5Constants;
 
 public class H5Ex_D_Soint {
 
-    private static String FILE = "h5ex_d_soint.h5";
-    private static String DATASET = "DS1";
+    private static String FILENAME = "H5Ex_D_Soint.h5";
+    private static String DATASETNAME = "DS1";
     private static final int DIM_X = 32;
     private static final int DIM_Y = 64;
     private static final int CHUNK_X = 4;
     private static final int CHUNK_Y = 8;
+    private static final int RANK = 2;
+    private static final int NDIMS = 2;
 
     // Values for the status of space allocation
     enum H5Z_filter {
-        H5Z_FILTER_ERROR(-1), H5Z_FILTER_NONE(0), H5Z_FILTER_DEFLATE(1), H5Z_FILTER_SHUFFLE(
-                2), H5Z_FILTER_FLETCHER32(3), H5Z_FILTER_SZIP(4), H5Z_FILTER_NBIT(5), H5Z_FILTER_SCALEOFFSET(
-                6), H5Z_FILTER_RESERVED(256), H5Z_FILTER_MAX(65535);
+        H5Z_FILTER_ERROR(HDF5Constants.H5Z_FILTER_ERROR), H5Z_FILTER_NONE(HDF5Constants.H5Z_FILTER_NONE), 
+        H5Z_FILTER_DEFLATE(HDF5Constants.H5Z_FILTER_DEFLATE), H5Z_FILTER_SHUFFLE(HDF5Constants.H5Z_FILTER_SHUFFLE), 
+        H5Z_FILTER_FLETCHER32(HDF5Constants.H5Z_FILTER_FLETCHER32), H5Z_FILTER_SZIP(HDF5Constants.H5Z_FILTER_SZIP), 
+        H5Z_FILTER_NBIT(HDF5Constants.H5Z_FILTER_NBIT), H5Z_FILTER_SCALEOFFSET(HDF5Constants.H5Z_FILTER_SCALEOFFSET), 
+        H5Z_FILTER_RESERVED(HDF5Constants.H5Z_FILTER_RESERVED), H5Z_FILTER_MAX(HDF5Constants.H5Z_FILTER_MAX);
         private static final Map<Integer, H5Z_filter> lookup = new HashMap<Integer, H5Z_filter>();
 
         static {
@@ -81,32 +83,30 @@ public class H5Ex_D_Soint {
     }
 
     private static void writeData() {
-
-        int file_id = -1;
-        int space_id = -1;
-        int dset_id = -1;
-        int dcpl_id = -1;
-        long[] dims = { DIM_X, DIM_Y };
-        long[] chunk_dims = { CHUNK_X, CHUNK_Y };
+        int     file_id = -1;
+        int     filespace_id = -1;
+        int     dataset_id = -1;
+        int     dcpl_id = -1;
+        long[]  dims = { DIM_X, DIM_Y };
+        long[]  chunk_dims = { CHUNK_X, CHUNK_Y };
         int[][] dset_data = new int[DIM_X][DIM_Y];
-        int             i, j;
 
         //Initialize data.
-        for (i=0; i<DIM_X; i++)
-            for (j=0; j<DIM_Y; j++)
-                dset_data[i][j] = i * j - j;
+        for (int indx = 0; indx < DIM_X; indx++)
+            for (int jndx = 0; jndx < DIM_Y; jndx++)
+                dset_data[indx][jndx] = indx * jndx - jndx;
 
         //Create a new file using the default properties.
-        try{
-            file_id = H5.H5Fcreate (FILE, HDF5Constants.H5F_ACC_TRUNC, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+        try {
+            file_id = H5.H5Fcreate(FILENAME, HDF5Constants.H5F_ACC_TRUNC, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
         }
         catch (Exception e) {
             e.printStackTrace();
         }
 
         //Create dataspace.  Setting maximum size to NULL sets the maximum size to be the current size.
-        try{
-            space_id = H5.H5Screate_simple (2, dims, null);
+        try {
+            filespace_id = H5.H5Screate_simple(RANK, dims, null);
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -114,11 +114,11 @@ public class H5Ex_D_Soint {
 
         //Create the dataset creation property list, add the Scale-Offset
         // filter and set the chunk size.
-        try{
-            dcpl_id = H5.H5Pcreate (HDF5Constants.H5P_DATASET_CREATE);
-            if(dcpl_id>=0){
+        try {
+            dcpl_id = H5.H5Pcreate(HDF5Constants.H5P_DATASET_CREATE);
+            if (dcpl_id >= 0) {
                 H5.H5Pset_scaleoffset(dcpl_id, HDF5Constants.H5Z_SO_INT, HDF5Constants.H5Z_SO_INT_MINBITS_DEFAULT);
-                H5.H5Pset_chunk(dcpl_id, 2, chunk_dims);
+                H5.H5Pset_chunk(dcpl_id, NDIMS, chunk_dims);
             }
         }
         catch (Exception e) {
@@ -126,19 +126,20 @@ public class H5Ex_D_Soint {
         }
 
         //Create the dataset.
-        try{
-            if ((file_id >= 0) && (space_id >= 0) && (dcpl_id >= 0))
-                dset_id = H5.H5Dcreate(file_id, DATASET, HDF5Constants.H5T_STD_I32LE, space_id, HDF5Constants.H5P_DEFAULT, dcpl_id,
-                        HDF5Constants.H5P_DEFAULT);
+        try {
+            if ((file_id >= 0) && (filespace_id >= 0) && (dcpl_id >= 0))
+                dataset_id = H5.H5Dcreate(file_id, DATASETNAME, HDF5Constants.H5T_STD_I32LE, filespace_id, 
+                        HDF5Constants.H5P_DEFAULT, dcpl_id, HDF5Constants.H5P_DEFAULT);
         }
         catch (Exception e) {
             e.printStackTrace();
         }
 
         //Write the data to the dataset.
-        try{
-            if(dset_id>=0)
-                H5.H5Dwrite(dset_id, HDF5Constants.H5T_NATIVE_INT, HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL, HDF5Constants.H5P_DEFAULT,
+        try {
+            if (dataset_id >= 0)
+                H5.H5Dwrite(dataset_id, HDF5Constants.H5T_NATIVE_INT, 
+                        HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL, HDF5Constants.H5P_DEFAULT,
                         dset_data);
         }
         catch (Exception e) {
@@ -146,68 +147,66 @@ public class H5Ex_D_Soint {
         }
 
         //Close and release resources.
-        try{
-            if(dcpl_id>=0)
-                H5.H5Pclose (dcpl_id);
+        try {
+            if (dcpl_id >= 0)
+                H5.H5Pclose(dcpl_id);
         }
         catch (Exception e) {
             e.printStackTrace();
         }    
 
-        try{
-            if(dset_id>=0)
-                H5.H5Dclose (dset_id);
+        try {
+            if (dataset_id >= 0)
+                H5.H5Dclose(dataset_id);
         }
         catch (Exception e) {
             e.printStackTrace();
         }
 
-        try{
-            if(space_id>=0)
-                H5.H5Sclose (space_id);
+        try {
+            if (filespace_id >= 0)
+                H5.H5Sclose(filespace_id);
         }
         catch (Exception e) {
             e.printStackTrace();
         }
 
         //Close file
-        try{
-            if(file_id>=0)
-                H5.H5Fclose (file_id);
+        try {
+            if (file_id >= 0)
+                H5.H5Fclose(file_id);
         }
         catch (Exception e) {
             e.printStackTrace();
         }
     }
-    private static void readData() {
 
+    private static void readData() {
         int file_id = -1;
-        int dset_id = -1;
+        int dataset_id = -1;
         int dcpl_id = -1;
         int[][] dset_data = new int[DIM_X][DIM_Y];
-        int             i, j;
-        int max;
 
         // Open file using the default properties.
-        try{
-            file_id = H5.H5Fopen (FILE, HDF5Constants.H5F_ACC_RDONLY, HDF5Constants.H5P_DEFAULT);
+        try {
+            file_id = H5.H5Fopen(FILENAME, HDF5Constants.H5F_ACC_RDONLY, HDF5Constants.H5P_DEFAULT);
         }
         catch (Exception e) {
             e.printStackTrace();
         }
         // Open dataset using the default properties.
-        try{
-            if(file_id>=0)
-                dset_id = H5.H5Dopen (file_id, DATASET, HDF5Constants.H5P_DEFAULT);
+        try {
+            if (file_id >= 0)
+                dataset_id = H5.H5Dopen(file_id, DATASETNAME, HDF5Constants.H5P_DEFAULT);
         }
         catch (Exception e) {
             e.printStackTrace();
         }
 
         //Retrieve dataset creation property list.
-        try{
-            if(dset_id>=0)
-                dcpl_id = H5.H5Dget_create_plist(dset_id);
+        try {
+            if (dataset_id >= 0)
+                dcpl_id = H5.H5Dget_create_plist(dataset_id);
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -226,7 +225,7 @@ public class H5Ex_D_Soint {
                 int filter_type = -1;
 
                 filter_type = H5.H5Pget_filter(dcpl_id, 0, flags, cd_nelmts, cd_values,
-                        10, filter_name, filter_config);
+                        120, filter_name, filter_config);
                 System.out.print("Filter type is: ");
                 switch (H5Z_filter.get(filter_type)) {
                 case H5Z_FILTER_DEFLATE:
@@ -258,9 +257,10 @@ public class H5Ex_D_Soint {
         }
 
         //Read the data using the default properties.
-        try{
-            if(dset_id>=0)
-                H5.H5Dread (dset_id, HDF5Constants.H5T_NATIVE_INT, HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL, HDF5Constants.H5P_DEFAULT,
+        try {
+            if (dataset_id >= 0)
+                H5.H5Dread(dataset_id, HDF5Constants.H5T_NATIVE_INT, 
+                        HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL, HDF5Constants.H5P_DEFAULT,
                         dset_data);
         }
         catch (Exception e) {
@@ -268,15 +268,15 @@ public class H5Ex_D_Soint {
         }
 
         //Find the maximum value in the dataset, to verify that it was read correctly.
-        max = dset_data[0][0];
-        for (i=0; i<DIM_X; i++)
-            for (j=0; j<DIM_Y; j++) {
-                if (max < dset_data[i][j])
-                    max = dset_data[i][j];
+        int max = dset_data[0][0];
+        for (int indx = 0; indx < DIM_X; indx++)
+            for (int jndx = 0; jndx < DIM_Y; jndx++) {
+                if (max < dset_data[indx][jndx])
+                    max = dset_data[indx][jndx];
             }
 
         //Print the maximum value.
-        System.out.println("Maximum value in "+ DATASET + " is: " + max);
+        System.out.println("Maximum value in "+ DATASETNAME + " is: " + max);
 
         // End access to the dataset and release resources used by it.
         try {
@@ -288,8 +288,8 @@ public class H5Ex_D_Soint {
         }
 
         try {
-            if (dset_id >= 0)
-                H5.H5Dclose(dset_id);
+            if (dataset_id >= 0)
+                H5.H5Dclose(dataset_id);
         }
         catch (Exception e) {
             e.printStackTrace();

@@ -1,5 +1,4 @@
 /************************************************************
-
   This example shows how to create and extend an unlimited
   dataset.  The program first writes integers to a dataset
   with dataspace dimensions of DIM_XxDIM_Y, then closes the
@@ -8,9 +7,6 @@
   new data to the entire extended dataset.  Finally it
   reopens the file again, reads back the data, and utputs it
   to the screen.
-
-  This file is intended for use with HDF5 Library verion 1.6
-
  ************************************************************/
 package examples.datasets;
 
@@ -18,7 +14,7 @@ import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 
 public class H5Ex_D_UnlimitedMod {
-	private static String FILENAME = "h5ex_d_unlimmod.h5";
+	private static String FILENAME = "H5Ex_D_UnlimitedMod.h5";
 	private static String DATASETNAME = "DS1";
 	private static final int DIM_X = 4;
 	private static final int DIM_Y = 7;
@@ -82,7 +78,8 @@ public class H5Ex_D_UnlimitedMod {
 		try {
 			if ((file_id >= 0) && (dataspace_id >= 0) && (dcpl_id >= 0))
 				dataset_id = H5.H5Dcreate(file_id, DATASETNAME,
-						HDF5Constants.H5T_STD_I32LE, dataspace_id, HDF5Constants.H5P_DEFAULT, dcpl_id, HDF5Constants.H5P_DEFAULT);
+						HDF5Constants.H5T_STD_I32LE, dataspace_id, 
+						HDF5Constants.H5P_DEFAULT, dcpl_id, HDF5Constants.H5P_DEFAULT);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -92,8 +89,8 @@ public class H5Ex_D_UnlimitedMod {
 		try {
 			if (dataset_id >= 0)
 				H5.H5Dwrite(dataset_id, HDF5Constants.H5T_NATIVE_INT,
-						HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL,
-						HDF5Constants.H5P_DEFAULT, dset_data);
+						HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL, HDF5Constants.H5P_DEFAULT, 
+						dset_data);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -145,8 +142,7 @@ public class H5Ex_D_UnlimitedMod {
 
 		// Open an existing file.
 		try {
-			file_id = H5.H5Fopen(FILENAME, HDF5Constants.H5F_ACC_RDWR,
-					HDF5Constants.H5P_DEFAULT);
+			file_id = H5.H5Fopen(FILENAME, HDF5Constants.H5F_ACC_RDWR, HDF5Constants.H5P_DEFAULT);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -187,8 +183,8 @@ public class H5Ex_D_UnlimitedMod {
 		try {
 			if (dataset_id >= 0)
 				H5.H5Dread(dataset_id, HDF5Constants.H5T_NATIVE_INT,
-						HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL,
-						HDF5Constants.H5P_DEFAULT, dset_data);
+						HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL, HDF5Constants.H5P_DEFAULT, 
+						dset_data);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -282,8 +278,7 @@ public class H5Ex_D_UnlimitedMod {
 
 		// Open an existing file.
 		try {
-			file_id = H5.H5Fopen(FILENAME, HDF5Constants.H5F_ACC_RDONLY,
-					HDF5Constants.H5P_DEFAULT);
+			file_id = H5.H5Fopen(FILENAME, HDF5Constants.H5F_ACC_RDONLY, HDF5Constants.H5P_DEFAULT);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -321,8 +316,8 @@ public class H5Ex_D_UnlimitedMod {
 		try {
 			if (dataset_id >= 0)
 				H5.H5Dread(dataset_id, HDF5Constants.H5T_NATIVE_INT,
-						HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL,
-						HDF5Constants.H5P_DEFAULT, dset_data);
+						HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL, HDF5Constants.H5P_DEFAULT, 
+						dset_data);
 		}
 		catch (Exception e) {
 			e.printStackTrace();

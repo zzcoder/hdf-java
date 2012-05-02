@@ -15,15 +15,23 @@ import java.util.Map;
 
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
+import ncsa.hdf.object.Dataset;
+import ncsa.hdf.object.Datatype;
+import ncsa.hdf.object.FileFormat;
+import ncsa.hdf.object.Group;
+import ncsa.hdf.object.h5.H5Datatype;
+import ncsa.hdf.object.h5.H5File;
+import ncsa.hdf.object.h5.H5ScalarDS;
 
-public class H5Ex_D_Alloc {
-	private static String FILENAME = "H5Ex_D_Alloc.h5";
+public class H5ObjectEx_D_Alloc {
+	private static String FILENAME = "H5ObjectEx_D_Alloc.h5";
 	private static String DATASETNAME1 = "DS1";
 	private static String DATASETNAME2 = "DS2";
 	private static final int DIM_X = 4;
 	private static final int DIM_Y = 7;
 	private static final int FILLVAL = 99;
-	private static final int RANK = 2;
+    private static final int RANK = 2;
+    private static final int DATATYPE_SIZE = 4;
 
 	// Values for the status of space allocation
 	enum H5D_space_status {
@@ -52,15 +60,21 @@ public class H5Ex_D_Alloc {
 	}
 
 	private static void allocation() {
-		int file_id = -1;
-		int filespace_id = -1;
+        H5File file = null;
+        Dataset dset1 = null;
+        Dataset dset2 = null;
+        int file_id = -1;
+        int filespace_id = -1;
 		int dataset_id1 = -1;
 		int dataset_id2 = -1;
-		int dcpl_id = -1;
+        int dcpl_id = -1;
+        int type_id = -1;
 		long[] dims = { DIM_X, DIM_Y };
 		int[][] dset_data = new int[DIM_X][DIM_Y];
 		int[] space_status = new int[1];
 		long storage_size = 0;
+        final H5Datatype typeInt = new H5Datatype(Datatype.CLASS_INTEGER,
+                DATATYPE_SIZE, Datatype.ORDER_BE, -1);
 
 		// Initialize the dataset.
 		for (int indx = 0; indx < DIM_X; indx++)
@@ -69,21 +83,31 @@ public class H5Ex_D_Alloc {
 
 		// Create a file using default properties.
 		try {
-			file_id = H5.H5Fcreate(FILENAME, HDF5Constants.H5F_ACC_TRUNC,
-					HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+            file = new H5File(FILENAME, FileFormat.CREATE);
+            file_id = file.open();
 		}
 		catch (Exception e) {
 			e.printStackTrace();
 		}
 
-		// Create dataspace. Setting maximum size to NULL sets the maximum
-		// size to be the current size.
+		System.out.println("Creating datasets...");
+		System.out.println(DATASETNAME1
+				+ " has allocation time H5D_ALLOC_TIME_LATE");
+
+		// Create the dataset using the dataset default creation property list.
 		try {
-			filespace_id = H5.H5Screate_simple(RANK, dims, null);
+            dset1 = file.createScalarDS(DATASETNAME1, null, typeInt,
+                    dims, null, null, 0,
+                    null);
+            dataset_id1 = dset1.open();
 		}
 		catch (Exception e) {
 			e.printStackTrace();
 		}
+		
+        System.out.println(DATASETNAME2
+                + " has allocation time H5D_ALLOC_TIME_EARLY");
+        System.out.println();
 
 		// Create the dataset creation property list, and set the chunk size.
 		try {
@@ -104,29 +128,17 @@ public class H5Ex_D_Alloc {
 			e.printStackTrace();
 		}
 
-		System.out.println("Creating datasets...");
-		System.out.println(DATASETNAME1
-				+ " has allocation time H5D_ALLOC_TIME_LATE");
-		System.out.println(DATASETNAME2
-				+ " has allocation time H5D_ALLOC_TIME_EARLY");
-		System.out.println();
-
-		// Create the dataset using the dataset default creation property list.
-		try {
-			if ((file_id >= 0) && (filespace_id >= 0))
-				dataset_id1 = H5.H5Dcreate(file_id, DATASETNAME1,
-						HDF5Constants.H5T_NATIVE_INT, filespace_id,
-						HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-
 		// Create the dataset using the dataset creation property list.
 		try {
-			if ((file_id >= 0) && (filespace_id >= 0) && (dcpl_id >= 0))
-				dataset_id2 = H5.H5Dcreate(file_id, DATASETNAME2,
-						HDF5Constants.H5T_NATIVE_INT, filespace_id, HDF5Constants.H5P_DEFAULT, dcpl_id, HDF5Constants.H5P_DEFAULT);
+            filespace_id = H5.H5Screate_simple(RANK, dims, null);
+            type_id = typeInt.toNative();
+			if ((file_id >= 0) && (filespace_id >= 0) && (type_id >= 0) && (dcpl_id >= 0)) {
+				dataset_id2 = H5.H5Dcreate(file_id, DATASETNAME2, type_id, filespace_id, 
+				        HDF5Constants.H5P_DEFAULT, dcpl_id, HDF5Constants.H5P_DEFAULT);
+				dset2 = new H5ScalarDS(file, DATASETNAME2, "/");
+				Group pgroup = (Group) file.get("/");
+	            pgroup.addToMemberList(dset2);
+			}
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -184,19 +196,15 @@ public class H5Ex_D_Alloc {
 
 		// Write the data to the datasets.
 		try {
-			if (dataset_id1 >= 0)
-				H5.H5Dwrite(dataset_id1, HDF5Constants.H5T_NATIVE_INT,
-						HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL,
-						HDF5Constants.H5P_DEFAULT, dset_data[0]);
+			if (dset1 != null)
+                dset1.write(dset_data);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
 		}
 		try {
-			if (dataset_id2 >= 0)
-				H5.H5Dwrite(dataset_id2, HDF5Constants.H5T_NATIVE_INT,
-						HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL,
-						HDF5Constants.H5P_DEFAULT, dset_data[0]);
+			if (dset2 != null)
+                dset2.write(dset_data);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -257,10 +265,18 @@ public class H5Ex_D_Alloc {
 		catch (Exception e) {
 			e.printStackTrace();
 		}
+        
+        try {
+            if (type_id >= 0)
+                H5.H5Tclose(type_id);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
 
 		try {
 			if (dataset_id1 >= 0)
-				H5.H5Dclose(dataset_id1);
+			    dset1.close(dataset_id1);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -268,7 +284,7 @@ public class H5Ex_D_Alloc {
 
 		try {
 			if (dataset_id2 >= 0)
-				H5.H5Dclose(dataset_id2);
+			    dset2.close(dataset_id2);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -284,8 +300,7 @@ public class H5Ex_D_Alloc {
 
 		// Close the file.
 		try {
-			if (file_id >= 0)
-				H5.H5Fclose(file_id);
+            file.close();
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -293,7 +308,7 @@ public class H5Ex_D_Alloc {
 	}
 
 	public static void main(String[] args) {
-		H5Ex_D_Alloc.allocation();
+		H5ObjectEx_D_Alloc.allocation();
 	}
 
 }
