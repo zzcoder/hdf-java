@@ -24,23 +24,23 @@ import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 
 public class H5Ex_T_Commit {
-	private static String FILENAME = "h5ex_t_commit.h5";
+	private static String FILENAME = "H5Ex_T_Commit.h5";
 	private static String DATATYPENAME = "Sensor_Type";
 
 	// Values for the various classes of datatypes
 	enum H5T_class {
-    H5T_NO_CLASS(-1),  // error
-    H5T_INTEGER(0),    // integer types
-    H5T_FLOAT(1),      // floating-point types
-    H5T_TIME(2),       // date and time types
-    H5T_STRING(3),     // character string types
-    H5T_BITFIELD(4),   // bit field types
-    H5T_OPAQUE(5),     // opaque types
-    H5T_COMPOUND(6),   // compound types
-    H5T_REFERENCE(7),  // reference types
-    H5T_ENUM(8),	     // enumeration types
-    H5T_VLEN(9),	     // Variable-Length types
-    H5T_ARRAY(10),	   // Array types
+    H5T_NO_CLASS(HDF5Constants.H5T_NO_CLASS),  // error
+    H5T_INTEGER(HDF5Constants.H5T_INTEGER),    // integer types
+    H5T_FLOAT(HDF5Constants.H5T_FLOAT),      // floating-point types
+    H5T_TIME(HDF5Constants.H5T_TIME),       // date and time types
+    H5T_STRING(HDF5Constants.H5T_STRING),     // character string types
+    H5T_BITFIELD(HDF5Constants.H5T_BITFIELD),   // bit field types
+    H5T_OPAQUE(HDF5Constants.H5T_OPAQUE),     // opaque types
+    H5T_COMPOUND(HDF5Constants.H5T_COMPOUND),   // compound types
+    H5T_REFERENCE(HDF5Constants.H5T_REFERENCE),  // reference types
+    H5T_ENUM(HDF5Constants.H5T_ENUM),	     // enumeration types
+    H5T_VLEN(HDF5Constants.H5T_VLEN),	     // Variable-Length types
+    H5T_ARRAY(HDF5Constants.H5T_ARRAY),	   // Array types
 
     H5T_NCLASSES(11);  // this must be last
 		private static final Map<Integer, H5T_class> lookup = new HashMap<Integer, H5T_class>();
@@ -75,8 +75,7 @@ public class H5Ex_T_Commit {
 		protected static final int DOUBLESIZE = 8;
 		protected final static int MAXSTRINGSIZE = 80;
 
-		public void readExternal(ObjectInput in) throws IOException,
-				ClassNotFoundException {
+		public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
 		}
 
 		public void writeExternal(ObjectOutput out) throws IOException {
@@ -90,16 +89,30 @@ public class H5Ex_T_Commit {
 		static int numberMembers = 5;
 		static int[] memberDims = { 1, 1, 1, 1, 1 };
 
-		String[] memberNames = { "ObjectHeader", "Serial number", "Location",
-				"Temperature (F)", "Pressure (inHg)" };
-		int[] memberMemTypes = { HDF5Constants.H5T_NATIVE_SHORT,
-				HDF5Constants.H5T_NATIVE_INT, HDF5Constants.H5T_C_S1,
-				HDF5Constants.H5T_NATIVE_DOUBLE, HDF5Constants.H5T_NATIVE_DOUBLE };
-		int[] memberFileTypes = { HDF5Constants.H5T_STD_I16BE,
-				HDF5Constants.H5T_STD_I32BE, HDF5Constants.H5T_C_S1,
-				HDF5Constants.H5T_IEEE_F64BE, HDF5Constants.H5T_IEEE_F64BE };
-		static int[] memberStorage = { OBJHEADERSIZE, INTEGERSIZE, MAXSTRINGSIZE,
-				DOUBLESIZE, DOUBLESIZE };
+		String[] memberNames = { 
+		        "ObjectHeader", 
+		        "Serial number", 
+		        "Location",
+				"Temperature (F)", 
+				"Pressure (inHg)" };
+		int[] memberMemTypes = { 
+		        HDF5Constants.H5T_NATIVE_SHORT,
+				HDF5Constants.H5T_NATIVE_INT, 
+				HDF5Constants.H5T_C_S1,
+				HDF5Constants.H5T_NATIVE_DOUBLE, 
+				HDF5Constants.H5T_NATIVE_DOUBLE };
+		int[] memberFileTypes = {
+		        HDF5Constants.H5T_STD_I16BE,
+				HDF5Constants.H5T_STD_I32BE,
+				HDF5Constants.H5T_C_S1,
+				HDF5Constants.H5T_IEEE_F64BE, 
+				HDF5Constants.H5T_IEEE_F64BE };
+		static int[] memberStorage = { 
+		        OBJHEADERSIZE, 
+		        INTEGERSIZE, 
+		        MAXSTRINGSIZE,
+				DOUBLESIZE, 
+				DOUBLESIZE };
 
 		// Data size is the storage size for the members not the object.
 		// Java Externalization also adds a 4-byte "Magic Number" to the beginning 
@@ -148,8 +161,7 @@ public class H5Ex_T_Commit {
 		// the corresponding native types, we must manually calculate the
 		// offset of each member.
 		try {
-			filetype_id = H5.H5Tcreate(HDF5Constants.H5T_COMPOUND, Sensor_Datatype
-					.getDataSize());
+			filetype_id = H5.H5Tcreate(HDF5Constants.H5T_COMPOUND, Sensor_Datatype.getDataSize());
 			if (filetype_id >= 0) {
 				for (int indx = 0; indx < Sensor_Datatype.numberMembers; indx++) {
 					int type_id = datatypes.memberFileTypes[indx];
@@ -164,11 +176,11 @@ public class H5Ex_T_Commit {
 			e.printStackTrace();
 		}
 
-		// Commit the compound datatype to the file, creating a named
-    // datatype.
+		// Commit the compound datatype to the file, creating a named datatype.
 		try {
 			if ((file_id >= 0) && (filetype_id >= 0))
-				H5.H5Tcommit(file_id, DATATYPENAME, filetype_id);
+				H5.H5Tcommit(file_id, DATATYPENAME, filetype_id,
+	                    HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -210,8 +222,7 @@ public class H5Ex_T_Commit {
 
 		// Open an existing file.
 		try {
-			file_id = H5.H5Fopen(FILENAME, HDF5Constants.H5F_ACC_RDONLY,
-					HDF5Constants.H5P_DEFAULT);
+			file_id = H5.H5Fopen(FILENAME, HDF5Constants.H5F_ACC_RDONLY, HDF5Constants.H5P_DEFAULT);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -220,17 +231,16 @@ public class H5Ex_T_Commit {
 		// Open named datatype.
 		try {
 			if (file_id >= 0)
-				filetype_id = H5.H5Topen(file_id, DATATYPENAME);
+				filetype_id = H5.H5Topen(file_id, DATATYPENAME, HDF5Constants.H5P_DEFAULT);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
 		}
 
-    // Output the data to the screen.
+		// Output the data to the screen.
 		System.out.println("Named datatype:  " + DATATYPENAME+": ");
 
-    // Get datatype class.  If it isn't compound, we won't print
-    // anything.
+		// Get datatype class.  If it isn't compound, we won't print anything.
 		try {
 			if (filetype_id >= 0)
 				typeclass_id = H5.H5Tget_class(filetype_id);
@@ -240,14 +250,14 @@ public class H5Ex_T_Commit {
 		}
 		// Read data.
 		try {
-			if(H5T_class.get(typeclass_id)==H5T_class.H5T_COMPOUND) {
-				System.out.println("   Class: H5T_COMPOUND");
-        int nmembs = H5.H5Tget_nmembers (filetype_id);
-        // Iterate over compound datatype members.
-        for (int indx=0; indx<nmembs; indx++) {
-          String member_name = H5.H5Tget_member_name (filetype_id, indx);
-    			System.out.println("    " + member_name);
-        }
+            if (H5T_class.get(typeclass_id) == H5T_class.H5T_COMPOUND) {
+                System.out.println("   Class: H5T_COMPOUND");
+                int nmembs = H5.H5Tget_nmembers(filetype_id);
+                // Iterate over compound datatype members.
+                for (int indx = 0; indx < nmembs; indx++) {
+                    String member_name = H5.H5Tget_member_name(filetype_id, indx);
+                    System.out.println("    " + member_name);
+                }
 			}
 		}
 		catch (Exception e) {

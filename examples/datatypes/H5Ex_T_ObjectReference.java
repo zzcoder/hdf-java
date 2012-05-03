@@ -20,7 +20,7 @@ import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 
 public class H5Ex_T_ObjectReference {
-	private static String FILENAME = "h5ex_t_objref.h5";
+	private static String FILENAME = "H5Ex_T_ObjectReference.h5";
 	private static String DATASETNAME = "DS1";
 	private static String DATASETNAME2 = "DS2";
 	private static String GROUPNAME = "G1";
@@ -29,15 +29,15 @@ public class H5Ex_T_ObjectReference {
 
 	// Values for the status of space allocation
 	enum H5G_obj {
-		H5G_UNKNOWN(-1), /* Unknown object type */
-		H5G_GROUP(0), /* Object is a group */
-		H5G_DATASET(1), /* Object is a dataset */
-		H5G_TYPE(2), /* Object is a named data type */
-		H5G_LINK(3), /* Object is a symbolic link */
-		H5G_UDLINK(4), /* Object is a user-defined link */
-		H5G_RESERVED_5(5), /* Reserved for future use */
-		H5G_RESERVED_6(6), /* Reserved for future use */
-		H5G_RESERVED_7(7); /* Reserved for future use */
+        H5G_UNKNOWN(HDF5Constants.H5G_UNKNOWN), /* Unknown object type */
+        H5G_GROUP(HDF5Constants.H5G_GROUP), /* Object is a group */
+        H5G_DATASET(HDF5Constants.H5G_DATASET), /* Object is a dataset */
+        H5G_TYPE(HDF5Constants.H5G_TYPE), /* Object is a named data type */
+        H5G_LINK(HDF5Constants.H5G_LINK), /* Object is a symbolic link */
+        H5G_UDLINK(HDF5Constants.H5G_UDLINK), /* Object is a user-defined link */
+        H5G_RESERVED_5(HDF5Constants.H5G_RESERVED_5), /* Reserved for future use */
+        H5G_RESERVED_6(HDF5Constants.H5G_RESERVED_6), /* Reserved for future use */
+        H5G_RESERVED_7(HDF5Constants.H5G_RESERVED_7); /* Reserved for future use */
 		private static final Map<Integer, H5G_obj> lookup = new HashMap<Integer, H5G_obj>();
 
 		static {
@@ -99,7 +99,8 @@ public class H5Ex_T_ObjectReference {
 		// Create a group in the file.
 		try {
 			if (file_id >= 0)
-				group_id = H5.H5Gcreate(file_id, GROUPNAME, HDF5Constants.H5P_DEFAULT);
+				group_id = H5.H5Gcreate(file_id, GROUPNAME, 
+                        HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
 			if (group_id >= 0)
 				H5.H5Gclose(group_id);
 			group_id = -1;
@@ -113,10 +114,8 @@ public class H5Ex_T_ObjectReference {
 		// besides valid dataspaces result in an error.
 		try {
 			if (file_id >= 0) {
-				byte rbuf0[] = H5.H5Rcreate(file_id, GROUPNAME,
-						HDF5Constants.H5R_OBJECT, -1);
-				byte rbuf1[] = H5.H5Rcreate(file_id, DATASETNAME2,
-						HDF5Constants.H5R_OBJECT, -1);
+				byte rbuf0[] = H5.H5Rcreate(file_id, GROUPNAME, HDF5Constants.H5R_OBJECT, -1);
+				byte rbuf1[] = H5.H5Rcreate(file_id, DATASETNAME2, HDF5Constants.H5R_OBJECT, -1);
 				for (int indx = 0; indx < 8; indx++) {
 					dset_data[0][indx] = rbuf0[indx];
 					dset_data[1][indx] = rbuf1[indx];
@@ -151,8 +150,8 @@ public class H5Ex_T_ObjectReference {
 		try {
 			if (dataset_id >= 0)
 				H5.H5Dwrite(dataset_id, HDF5Constants.H5T_STD_REF_OBJ,
-						HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL,
-						HDF5Constants.H5P_DEFAULT, dset_data);
+						HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL, HDF5Constants.H5P_DEFAULT, 
+						dset_data);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -197,8 +196,7 @@ public class H5Ex_T_ObjectReference {
 
 		// Open an existing file.
 		try {
-			file_id = H5.H5Fopen(FILENAME, HDF5Constants.H5F_ACC_RDONLY,
-					HDF5Constants.H5P_DEFAULT);
+			file_id = H5.H5Fopen(FILENAME, HDF5Constants.H5F_ACC_RDONLY, HDF5Constants.H5P_DEFAULT);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -238,8 +236,8 @@ public class H5Ex_T_ObjectReference {
 		try {
 			if (dataset_id >= 0) {
 				H5.H5Dread(dataset_id, HDF5Constants.H5T_STD_REF_OBJ,
-						HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL,
-						HDF5Constants.H5P_DEFAULT, dset_data);
+						HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL, HDF5Constants.H5P_DEFAULT, 
+						dset_data);
 			}
 		}
 		catch (Exception e) {
@@ -253,10 +251,9 @@ public class H5Ex_T_ObjectReference {
 			// Open the referenced object, get its name and type.
 			try {
 				if (dataset_id >= 0) {
-					object_id = H5.H5Rdereference(dataset_id, HDF5Constants.H5R_OBJECT,
-							dset_data[indx]);
-					object_type = H5.H5Rget_obj_type(dataset_id,
-							HDF5Constants.H5R_OBJECT, dset_data[indx]);
+                    int[] otype = { 1 };
+					object_id = H5.H5Rdereference(dataset_id, HDF5Constants.H5R_OBJECT, dset_data[indx]);
+					object_type = H5.H5Rget_obj_type(dataset_id, HDF5Constants.H5R_OBJECT, dset_data[indx], otype);
 				}
 				String[] obj_name = new String[1];
 				long name_size = 1;

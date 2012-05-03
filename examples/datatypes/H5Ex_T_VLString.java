@@ -9,10 +9,13 @@ public class H5Ex_T_VLString
     private static String DATASETNAME = "DS1";
 
     private static void createDataset() {
-        int fid=-1, tid=-1, sid =-1, did=-1;
+        int     fid = -1;
+        int     tid = -1;
+        int     sid = -1;
+        int     did = -1;
+        int     rank = 1;
         String[] str_data = { "Parting", "is such", "sweet", "sorrow." };
-        int rank = 1;
-        long[] dims = { str_data.length };
+        long[]  dims = { str_data.length };
 
         // Create a new file using default properties.
         try {
@@ -43,7 +46,8 @@ public class H5Ex_T_VLString
         // Create the dataset and write the string data to it.
         try {
             if ((fid >= 0) && (tid >= 0) && (sid >= 0)) {
-                did = H5.H5Dcreate(fid, DATASETNAME, tid, sid, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+                did = H5.H5Dcreate(fid, DATASETNAME, tid, sid, 
+                        HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
              }
         }
         catch (Exception e) {
@@ -53,7 +57,9 @@ public class H5Ex_T_VLString
         // Write the data to the dataset.
         try {
             if (did >=0)
-                H5.H5DwriteString(did, tid, HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL, HDF5Constants.H5P_DEFAULT, str_data);
+                H5.H5DwriteString(did, tid, 
+                        HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL, HDF5Constants.H5P_DEFAULT, 
+                        str_data);
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -64,31 +70,47 @@ public class H5Ex_T_VLString
             H5.H5Tclose(tid);
             H5.H5Dclose(did);
             H5.H5Fclose(fid);         
-        } catch (Exception e) {e.printStackTrace(); }
+        } 
+        catch (Exception e) {
+            e.printStackTrace(); 
+        }
     }
     
     private static void readDataset() {
-        int fid=-1, tid=-1, did=-1;
+        int     fid = -1;
+        int     tid = -1;
+        int     did = -1;
         String[] str_data = { "", "", "", "" };
 
-         try {
+        try {
             fid = H5.H5Fopen(FILENAME, HDF5Constants.H5F_ACC_RDONLY, HDF5Constants.H5P_DEFAULT);;
-        } catch (Exception e) { e.printStackTrace(); }
+        } 
+        catch (Exception e) {
+            e.printStackTrace();
+        }
 
         try {
              did = H5.H5Dopen(fid, DATASETNAME, HDF5Constants.H5P_DEFAULT);
              tid = H5.H5Dget_type(did);
-             H5.H5DreadVL(did, tid, HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL, HDF5Constants.H5P_DEFAULT, str_data);
-        } catch (Exception e) { e.printStackTrace(); }
+             H5.H5DreadVL(did, tid, 
+                     HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL, HDF5Constants.H5P_DEFAULT, 
+                     str_data);
+        } 
+        catch (Exception e) {
+            e.printStackTrace();
+        }
         
-        for (int i=0; i<str_data.length; i++)
-            System.out.println(DATASETNAME + " [" + i + "]: " + str_data[i]);
+        for (int indx = 0; indx < str_data.length; indx++)
+            System.out.println(DATASETNAME + " [" + indx + "]: " + str_data[indx]);
 
-        try  {
-             H5.H5Tclose(tid);
+        try {
+            H5.H5Tclose(tid);
             H5.H5Dclose(did);
             H5.H5Fclose(fid);         
-        } catch (Exception e) {e.printStackTrace(); }
+        } 
+        catch (Exception e) {
+            e.printStackTrace();
+        }
     }    
 
     public static void main(String[] args) {

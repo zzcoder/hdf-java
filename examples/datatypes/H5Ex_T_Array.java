@@ -16,7 +16,7 @@ import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 
 public class H5Ex_T_Array {
-	private static String FILENAME = "h5ex_t_array.h5";
+	private static String FILENAME = "H5Ex_T_Array.h5";
 	private static String DATASETNAME = "DS1";
 	private static final int DIM0 = 4;
 	private static final int ADIM0 = 3;
@@ -31,7 +31,7 @@ public class H5Ex_T_Array {
 		int dataspace_id = -1;
 		int dataset_id = -1;
 		long[] dims = { DIM0 };
-		int[] adims = { ADIM0, ADIM1 };
+		long[] adims = { ADIM0, ADIM1 };
 		int[][][] dset_data = new int[DIM0][ADIM0][ADIM1];
 
 		// Initialize data. indx is the element in the dataspace, jndx and kndx the
@@ -52,8 +52,7 @@ public class H5Ex_T_Array {
 
 		// Create array datatypes for file.
 		try {
-			filetype_id = H5.H5Tarray_create(HDF5Constants.H5T_STD_I64LE, NDIMS,
-					adims, null);
+			filetype_id = H5.H5Tarray_create(HDF5Constants.H5T_STD_I64LE, NDIMS, adims);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -61,8 +60,7 @@ public class H5Ex_T_Array {
 
 		// Create array datatypes for memory.
 		try {
-			memtype_id = H5.H5Tarray_create(HDF5Constants.H5T_NATIVE_INT, NDIMS,
-					adims, null);
+			memtype_id = H5.H5Tarray_create(HDF5Constants.H5T_NATIVE_INT, NDIMS, adims);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -80,8 +78,9 @@ public class H5Ex_T_Array {
 		// Create the dataset.
 		try {
 			if ((file_id >= 0) && (dataspace_id >= 0) && (filetype_id >= 0))
-				dataset_id = H5.H5Dcreate(file_id, DATASETNAME, filetype_id,
-						dataspace_id, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+				dataset_id = H5.H5Dcreate(file_id, DATASETNAME, 
+				        filetype_id, dataspace_id, 
+				        HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -90,8 +89,9 @@ public class H5Ex_T_Array {
 		// Write the dataset.
 		try {
 			if ((dataset_id >= 0) && (memtype_id >= 0))
-				H5.H5Dwrite(dataset_id, memtype_id, HDF5Constants.H5S_ALL,
-						HDF5Constants.H5S_ALL, HDF5Constants.H5P_DEFAULT, dset_data);
+				H5.H5Dwrite(dataset_id, memtype_id, 
+				        HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL, HDF5Constants.H5P_DEFAULT, 
+				        dset_data);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -151,13 +151,12 @@ public class H5Ex_T_Array {
 		int dataspace_id = -1;
 		int dataset_id = -1;
 		long[] dims = { DIM0 };
-		int[] adims = { ADIM0, ADIM1 };
+		long[] adims = { ADIM0, ADIM1 };
 		int[][][] dset_data;
 
 		// Open an existing file.
 		try {
-			file_id = H5.H5Fopen(FILENAME, HDF5Constants.H5F_ACC_RDONLY,
-					HDF5Constants.H5P_DEFAULT);
+			file_id = H5.H5Fopen(FILENAME, HDF5Constants.H5F_ACC_RDONLY, HDF5Constants.H5P_DEFAULT);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -184,7 +183,7 @@ public class H5Ex_T_Array {
 		// Get the datatype's dimensions.
 		try {
 			if (filetype_id >= 0)
-				H5.H5Tget_array_dims(filetype_id, adims, null);
+				H5.H5Tget_array_dims(filetype_id, adims);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -209,12 +208,11 @@ public class H5Ex_T_Array {
 
 		// Allocate array of pointers to two-dimensional arrays (the
 		// elements of the dataset.
-		dset_data = new int[(int) dims[0]][(adims[0])][(adims[1])];
+		dset_data = new int[(int) dims[0]][(int) (adims[0])][(int) (adims[1])];
 
 		// Create array datatypes for memory.
 		try {
-			memtype_id = H5.H5Tarray_create(HDF5Constants.H5T_NATIVE_INT, 2, adims,
-					null);
+			memtype_id = H5.H5Tarray_create(HDF5Constants.H5T_NATIVE_INT, 2, adims);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -223,8 +221,9 @@ public class H5Ex_T_Array {
 		// Read data.
 		try {
 			if ((dataset_id >= 0) && (memtype_id >= 0))
-				H5.H5Dread(dataset_id, memtype_id, HDF5Constants.H5S_ALL,
-						HDF5Constants.H5S_ALL, HDF5Constants.H5P_DEFAULT, dset_data);
+				H5.H5Dread(dataset_id, memtype_id, 
+				        HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL, HDF5Constants.H5P_DEFAULT, 
+				        dset_data);
 		}
 		catch (Exception e) {
 			e.printStackTrace();

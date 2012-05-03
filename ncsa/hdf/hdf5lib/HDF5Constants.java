@@ -256,6 +256,7 @@ public class HDF5Constants {
     public static final int H5G_DATASET = H5G_DATASET();
     public static final int H5G_GROUP = H5G_GROUP();
     public static final int H5G_LINK = H5G_LINK();
+    public static final int H5G_UDLINK = H5G_UDLINK();
     public static final int H5G_LINK_ERROR = H5G_LINK_ERROR();
     public static final int H5G_LINK_HARD = H5G_LINK_HARD();
     public static final int H5G_LINK_SOFT = H5G_LINK_SOFT();
@@ -1063,6 +1064,8 @@ public class HDF5Constants {
     private static native final int H5G_GROUP();
 
     private static native final int H5G_LINK();
+
+    private static native final int H5G_UDLINK();
 
     private static native final int H5G_LINK_ERROR();
 

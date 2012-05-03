@@ -16,7 +16,7 @@ import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 
 public class H5Ex_T_Opaque {
-	private static String FILENAME = "h5ex_t_opaque.h5";
+	private static String FILENAME = "H5Ex_T_Opaque.h5";
 	private static String DATASETNAME = "DS1";
 	private static final int DIM0 = 4;
 	private static final int LEN = 7;
@@ -74,8 +74,9 @@ public class H5Ex_T_Opaque {
 		// automatically converts between different integer types.
 		try {
 			if ((file_id >= 0) && (datatype_id >= 0) && (dataspace_id >= 0))
-				dataset_id = H5.H5Dcreate(file_id, DATASETNAME, datatype_id,
-						dataspace_id, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+				dataset_id = H5.H5Dcreate(file_id, DATASETNAME, 
+				        datatype_id, dataspace_id, 
+				        HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -84,8 +85,9 @@ public class H5Ex_T_Opaque {
 		// Write the opaque data to the dataset.
 		try {
 			if ((dataset_id >= 0) && (datatype_id >= 0))
-				H5.H5Dwrite(dataset_id, datatype_id, HDF5Constants.H5S_ALL,
-						HDF5Constants.H5S_ALL, HDF5Constants.H5P_DEFAULT, dset_data);
+				H5.H5Dwrite(dataset_id, datatype_id, 
+				        HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL, HDF5Constants.H5P_DEFAULT, 
+				        dset_data);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -140,8 +142,7 @@ public class H5Ex_T_Opaque {
 
 		// Open an existing file.
 		try {
-			file_id = H5.H5Fopen(FILENAME, HDF5Constants.H5F_ACC_RDONLY,
-					HDF5Constants.H5P_DEFAULT);
+			file_id = H5.H5Fopen(FILENAME, HDF5Constants.H5F_ACC_RDONLY, HDF5Constants.H5P_DEFAULT);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -192,8 +193,9 @@ public class H5Ex_T_Opaque {
 		// Read data.
 		try {
 			if ((dataset_id >= 0) && (datatype_id >= 0))
-				H5.H5Dread(dataset_id, datatype_id, HDF5Constants.H5S_ALL,
-						HDF5Constants.H5S_ALL, HDF5Constants.H5P_DEFAULT, dset_data);
+				H5.H5Dread(dataset_id, datatype_id, 
+				        HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL, HDF5Constants.H5P_DEFAULT, 
+				        dset_data);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
