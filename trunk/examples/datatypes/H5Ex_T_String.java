@@ -16,7 +16,7 @@ import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 
 public class H5Ex_T_String {
-	private static String FILENAME = "h5ex_t_string.h5";
+	private static String FILENAME = "H5Ex_T_String.h5";
 	private static String DATASETNAME = "DS1";
 	private static final int DIM0 = 4;
 	private static final int SDIM = 8;
@@ -30,8 +30,10 @@ public class H5Ex_T_String {
 		int dataset_id = -1;
 		long[] dims = { DIM0 };
 		byte[][] dset_data = new byte[DIM0][SDIM];
-		StringBuffer[] str_data = { new StringBuffer("Parting"),
-				new StringBuffer("is such"), new StringBuffer("sweet"),
+		StringBuffer[] str_data = { 
+		        new StringBuffer("Parting"),
+				new StringBuffer("is such"), 
+				new StringBuffer("sweet"),
 				new StringBuffer("sorrow.") };
 
 		// Create a new file using default properties.
@@ -75,8 +77,9 @@ public class H5Ex_T_String {
 		// Create the dataset and write the string data to it.
 		try {
 			if ((file_id >= 0) && (filetype_id >= 0) && (dataspace_id >= 0))
-				dataset_id = H5.H5Dcreate(file_id, DATASETNAME, filetype_id,
-						dataspace_id, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+				dataset_id = H5.H5Dcreate(file_id, DATASETNAME, 
+				        filetype_id, dataspace_id,
+				        HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -93,8 +96,9 @@ public class H5Ex_T_String {
 				}
 			}
 			if ((dataset_id >= 0) && (memtype_id >= 0))
-				H5.H5Dwrite(dataset_id, memtype_id, HDF5Constants.H5S_ALL,
-						HDF5Constants.H5S_ALL, HDF5Constants.H5P_DEFAULT, dset_data);
+				H5.H5Dwrite(dataset_id, memtype_id, 
+				        HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL, HDF5Constants.H5P_DEFAULT, 
+				        dset_data);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -160,8 +164,7 @@ public class H5Ex_T_String {
 
 		// Open an existing file.
 		try {
-			file_id = H5.H5Fopen(FILENAME, HDF5Constants.H5F_ACC_RDONLY,
-					HDF5Constants.H5P_DEFAULT);
+			file_id = H5.H5Fopen(FILENAME, HDF5Constants.H5F_ACC_RDONLY, HDF5Constants.H5P_DEFAULT);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -223,8 +226,9 @@ public class H5Ex_T_String {
 		// Read data.
 		try {
 			if ((dataset_id >= 0) && (memtype_id >= 0))
-				H5.H5Dread(dataset_id, memtype_id, HDF5Constants.H5S_ALL,
-						HDF5Constants.H5S_ALL, HDF5Constants.H5P_DEFAULT, dset_data);
+				H5.H5Dread(dataset_id, memtype_id, 
+				        HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL, HDF5Constants.H5P_DEFAULT, 
+				        dset_data);
 			byte[] tempbuf = new byte[sdim];
 			for (int indx = 0; indx < (int) dims[0]; indx++) {
 				for (int jndx = 0; jndx < sdim; jndx++) {

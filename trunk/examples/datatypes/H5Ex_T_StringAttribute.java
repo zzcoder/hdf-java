@@ -16,7 +16,7 @@ import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 
 public class H5Ex_T_StringAttribute {
-	private static String FILENAME = "h5ex_t_stringatt.h5";
+	private static String FILENAME = "H5Ex_T_StringAttribute.h5";
 	private static String DATASETNAME = "DS1";
 	private static String ATTRIBUTENAME = "A1";
 	private static final int DIM0 = 4;
@@ -32,8 +32,10 @@ public class H5Ex_T_StringAttribute {
 		int attribute_id = -1;
 		long[] dims = { DIM0 };
 		byte[][] dset_data = new byte[DIM0][SDIM];
-		StringBuffer[] str_data = { new StringBuffer("Parting"),
-				new StringBuffer("is such"), new StringBuffer("sweet"),
+		StringBuffer[] str_data = { 
+		        new StringBuffer("Parting"),
+				new StringBuffer("is such"), 
+				new StringBuffer("sweet"),
 				new StringBuffer("sorrow.") };
 
 		// Create a new file using default properties.
@@ -92,8 +94,9 @@ public class H5Ex_T_StringAttribute {
 		// Create the attribute.
 		try {
 			if ((dataset_id >= 0) && (dataspace_id >= 0) && (filetype_id >= 0))
-				attribute_id = H5.H5Acreate(dataset_id, ATTRIBUTENAME, filetype_id,
-						dataspace_id, HDF5Constants.H5P_DEFAULT);
+				attribute_id = H5.H5Acreate(dataset_id, ATTRIBUTENAME, 
+				        filetype_id, dataspace_id, 
+				        HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -185,8 +188,7 @@ public class H5Ex_T_StringAttribute {
 
 		// Open an existing file.
 		try {
-			file_id = H5.H5Fopen(FILENAME, HDF5Constants.H5F_ACC_RDONLY,
-					HDF5Constants.H5P_DEFAULT);
+			file_id = H5.H5Fopen(FILENAME, HDF5Constants.H5F_ACC_RDONLY, HDF5Constants.H5P_DEFAULT);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -203,7 +205,8 @@ public class H5Ex_T_StringAttribute {
 
 		try {
 			if (dataset_id >= 0)
-				attribute_id = H5.H5Aopen_name(dataset_id, ATTRIBUTENAME);
+				attribute_id = H5.H5Aopen_by_name(dataset_id, ".", ATTRIBUTENAME, 
+				        HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
 		}
 		catch (Exception e) {
 			e.printStackTrace();

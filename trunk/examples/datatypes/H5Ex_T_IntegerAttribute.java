@@ -18,7 +18,7 @@ import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 
 public class H5Ex_T_IntegerAttribute {
-	private static String FILENAME = "h5ex_t_intatt.h5";
+	private static String FILENAME = "H5Ex_T_IntegerAttribute.h5";
 	private static String DATASETNAME = "DS1";
 	private static String ATTRIBUTENAME = "A1";
 	private static final int DIM0 = 4;
@@ -77,7 +77,7 @@ public class H5Ex_T_IntegerAttribute {
 			if ((dataset_id >= 0) && (dataspace_id >= 0))
 				attribute_id = H5.H5Acreate(dataset_id, ATTRIBUTENAME,
 						HDF5Constants.H5T_STD_I64BE, dataspace_id,
-						HDF5Constants.H5P_DEFAULT);
+						HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -139,8 +139,7 @@ public class H5Ex_T_IntegerAttribute {
 
 		// Open an existing file.
 		try {
-			file_id = H5.H5Fopen(FILENAME, HDF5Constants.H5F_ACC_RDONLY,
-					HDF5Constants.H5P_DEFAULT);
+			file_id = H5.H5Fopen(FILENAME, HDF5Constants.H5F_ACC_RDONLY, HDF5Constants.H5P_DEFAULT);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -157,7 +156,8 @@ public class H5Ex_T_IntegerAttribute {
 
 		try {
 			if (dataset_id >= 0)
-				attribute_id = H5.H5Aopen_name(dataset_id, ATTRIBUTENAME);
+				attribute_id = H5.H5Aopen_by_name(dataset_id, ".", ATTRIBUTENAME, 
+				        HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
 		}
 		catch (Exception e) {
 			e.printStackTrace();

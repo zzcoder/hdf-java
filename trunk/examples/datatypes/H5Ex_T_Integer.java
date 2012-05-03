@@ -18,7 +18,7 @@ import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 
 public class H5Ex_T_Integer {
-	private static String FILENAME = "h5ex_t_int.h5";
+	private static String FILENAME = "H5Ex_T_Integer.h5";
 	private static String DATASETNAME = "DS1";
 	private static final int DIM0 = 4;
 	private static final int DIM1 = 7;
@@ -73,8 +73,8 @@ public class H5Ex_T_Integer {
 		try {
 			if (dataset_id >= 0)
 				H5.H5Dwrite(dataset_id, HDF5Constants.H5T_NATIVE_INT,
-						HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL,
-						HDF5Constants.H5P_DEFAULT, dset_data);
+						HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL, HDF5Constants.H5P_DEFAULT, 
+						dset_data);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -118,8 +118,7 @@ public class H5Ex_T_Integer {
 
 		// Open an existing file.
 		try {
-			file_id = H5.H5Fopen(FILENAME, HDF5Constants.H5F_ACC_RDONLY,
-					HDF5Constants.H5P_DEFAULT);
+			file_id = H5.H5Fopen(FILENAME, HDF5Constants.H5F_ACC_RDONLY, HDF5Constants.H5P_DEFAULT);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -159,8 +158,8 @@ public class H5Ex_T_Integer {
 		try {
 			if (dataset_id >= 0)
 				H5.H5Dread(dataset_id, HDF5Constants.H5T_NATIVE_INT,
-						HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL,
-						HDF5Constants.H5P_DEFAULT, dset_data);
+						HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL, HDF5Constants.H5P_DEFAULT, 
+						dset_data);
 		}
 		catch (Exception e) {
 			e.printStackTrace();

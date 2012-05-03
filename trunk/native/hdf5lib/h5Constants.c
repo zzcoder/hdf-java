@@ -284,6 +284,7 @@ JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5FD_1DEFAULT_1HADDR
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5G_1DATASET(JNIEnv *env, jclass cls) { return H5G_DATASET; }
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5G_1GROUP(JNIEnv *env, jclass cls) { return H5G_GROUP; }
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5G_1LINK(JNIEnv *env, jclass cls) { return H5G_LINK; }
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5G_1UDLINK(JNIEnv *env, jclass cls) { return H5G_UDLINK; }
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5G_1LINK_1ERROR(JNIEnv *env, jclass cls) { return H5G_LINK_ERROR; }
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5G_1LINK_1HARD(JNIEnv *env, jclass cls) { return H5G_LINK_HARD; }
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5G_1LINK_1SOFT(JNIEnv *env, jclass cls) { return H5G_LINK_SOFT; }

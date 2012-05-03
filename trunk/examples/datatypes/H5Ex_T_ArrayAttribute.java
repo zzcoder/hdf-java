@@ -16,7 +16,7 @@ import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 
 public class H5Ex_T_ArrayAttribute {
-	private static String FILENAME = "h5ex_t_arrayatt.h5";
+	private static String FILENAME = "H5Ex_T_ArrayAttribute.h5";
 	private static String DATASETNAME = "DS1";
 	private static String ATTRIBUTENAME = "A1";
 	private static final int DIM0 = 4;
@@ -33,7 +33,7 @@ public class H5Ex_T_ArrayAttribute {
 		int dataset_id = -1;
 		int attribute_id = -1;
 		long[] dims = { DIM0 };
-		int[] adims = { ADIM0, ADIM1 };
+		long[] adims = { ADIM0, ADIM1 };
 		int[][][] dset_data = new int[DIM0][ADIM0][ADIM1];
 
 		// Initialize data. indx is the element in the dataspace, jndx and kndx the
@@ -54,8 +54,7 @@ public class H5Ex_T_ArrayAttribute {
 
 		// Create array datatypes for file.
 		try {
-			filetype_id = H5.H5Tarray_create(HDF5Constants.H5T_STD_I64LE, NDIMS,
-					adims, null);
+			filetype_id = H5.H5Tarray_create(HDF5Constants.H5T_STD_I64LE, NDIMS, adims);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -63,8 +62,7 @@ public class H5Ex_T_ArrayAttribute {
 
 		// Create array datatypes for memory.
 		try {
-			memtype_id = H5.H5Tarray_create(HDF5Constants.H5T_NATIVE_INT, NDIMS,
-					adims, null);
+			memtype_id = H5.H5Tarray_create(HDF5Constants.H5T_NATIVE_INT, NDIMS, adims);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -97,8 +95,9 @@ public class H5Ex_T_ArrayAttribute {
 		// Create the attribute and write the array data to it.
 		try {
 			if ((dataset_id >= 0) && (dataspace_id >= 0) && (filetype_id >= 0))
-				attribute_id = H5.H5Acreate(dataset_id, ATTRIBUTENAME, filetype_id,
-						dataspace_id, HDF5Constants.H5P_DEFAULT);
+				attribute_id = H5.H5Acreate(dataset_id, ATTRIBUTENAME, 
+				        filetype_id, dataspace_id, 
+				        HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -176,13 +175,12 @@ public class H5Ex_T_ArrayAttribute {
 		int dataset_id = -1;
 		int attribute_id = -1;
 		long[] dims = { DIM0 };
-		int[] adims = { ADIM0, ADIM1 };
+		long[] adims = { ADIM0, ADIM1 };
 		int[][][] dset_data;
 
 		// Open an existing file.
 		try {
-			file_id = H5.H5Fopen(FILENAME, HDF5Constants.H5F_ACC_RDONLY,
-					HDF5Constants.H5P_DEFAULT);
+			file_id = H5.H5Fopen(FILENAME, HDF5Constants.H5F_ACC_RDONLY, HDF5Constants.H5P_DEFAULT);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -199,7 +197,8 @@ public class H5Ex_T_ArrayAttribute {
 
 		try {
 			if (dataset_id >= 0)
-				attribute_id = H5.H5Aopen_name(dataset_id, ATTRIBUTENAME);
+                attribute_id = H5.H5Aopen_by_name(dataset_id, ".", ATTRIBUTENAME, 
+                        HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -217,7 +216,7 @@ public class H5Ex_T_ArrayAttribute {
 		// Get the datatype's dimensions.
 		try {
 			if (filetype_id >= 0)
-				H5.H5Tget_array_dims(filetype_id, adims, null);
+				H5.H5Tget_array_dims(filetype_id, adims);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -244,12 +243,11 @@ public class H5Ex_T_ArrayAttribute {
 
 		// Allocate array of pointers to two-dimensional arrays (the
 		// elements of the dataset.
-		dset_data = new int[(int) dims[0]][(adims[0])][(adims[1])];
+		dset_data = new int[(int) dims[0]][(int) (adims[0])][(int) (adims[1])];
 
 		// Create array datatypes for memory.
 		try {
-			memtype_id = H5.H5Tarray_create(HDF5Constants.H5T_NATIVE_INT, 2, adims,
-					null);
+			memtype_id = H5.H5Tarray_create(HDF5Constants.H5T_NATIVE_INT, 2, adims);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
