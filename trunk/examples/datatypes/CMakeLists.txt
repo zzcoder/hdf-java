@@ -31,6 +31,27 @@ SET (HDF_JAVA_EXAMPLES
     H5Ex_T_VLString
 )
 
+SET (HDF_JAVA_OBJECT_EXAMPLES
+    H5ObjectEx_T_Array
+    H5ObjectEx_T_ArrayAttribute
+    H5ObjectEx_T_Bit
+    H5ObjectEx_T_BitAttribute
+    H5ObjectEx_T_Commit
+    H5ObjectEx_T_Compound
+    H5ObjectEx_T_CompoundAttribute
+    H5ObjectEx_T_Float
+    H5ObjectEx_T_FloatAttribute
+    H5ObjectEx_T_Integer
+    H5ObjectEx_T_IntegerAttribute
+    H5ObjectEx_T_ObjectReference
+    H5ObjectEx_T_ObjectReferenceAttribute
+    H5ObjectEx_T_Opaque
+    H5ObjectEx_T_OpaqueAttribute
+    H5ObjectEx_T_String
+    H5ObjectEx_T_StringAttribute
+    H5ObjectEx_T_VLString
+)
+
 IF (WIN32 AND NOT CYGWIN)
   SET(CMAKE_JAVA_INCLUDE_FLAG_SEP ";")
 ELSE (WIN32 AND NOT CYGWIN)
@@ -53,6 +74,18 @@ FOREACH (example ${HDF_JAVA_EXAMPLES})
   GET_TARGET_PROPERTY(${example}_CLASSPATH ${example} CLASS_DIR)
   ADD_DEPENDENCIES (${example} ${HDFJAVA_NCSA_HDF5_LIB_TARGET})
 ENDFOREACH (example ${HDF_JAVA_EXAMPLES})
+
+FOREACH (example ${HDF_JAVA_OBJECT_EXAMPLES})
+  FILE (WRITE ${PROJECT_BINARY_DIR}/Manifest.txt
+  "Main-Class: examples.datatypes.${example}
+"
+  )
+  ADD_JAR (${example} ${PROJECT_BINARY_DIR}/Manifest.txt ${example}.java)
+  GET_TARGET_PROPERTY(${example}_JAR_FILE ${example} JAR_FILE)
+#  INSTALL_JAR (${example} ${HJAVA_INSTALL_DATA_DIR}/examples examples)
+  GET_TARGET_PROPERTY(${example}_CLASSPATH ${example} CLASS_DIR)
+  ADD_DEPENDENCIES (${example} ${HDFJAVA_NCSA_OBJECT_LIB_TARGET})
+ENDFOREACH (example ${HDF_JAVA_OBJECT_EXAMPLES})
 
 MACRO (ADD_H5_TEST resultfile resultcode)
   ADD_TEST (
@@ -100,6 +133,30 @@ IF (BUILD_TESTING)
     SET (last_test "datatypes-${example}-copy-objects")
     ADD_H5_TEST (${example} 0)
   ENDFOREACH (example ${HDF_JAVA_EXAMPLES})
+
+  FOREACH (example ${HDF_JAVA_OBJECT_EXAMPLES})
+    ADD_TEST (
+        NAME datatypes-${example}-clearall-objects
+        COMMAND    ${CMAKE_COMMAND}
+            -E remove
+            ${HDFJAVA_EXAMPLES_BINARY_DIR}/${example}.h5
+            ${example}.out
+            ${example}.out.err
+    )
+    IF (NOT "${last_test}" STREQUAL "")
+      SET_TESTS_PROPERTIES (datatypes-${example}-clearall-objects PROPERTIES DEPENDS ${last_test})
+    ENDIF (NOT "${last_test}" STREQUAL "")
+    ADD_TEST (
+        NAME datatypes-${example}-copy-objects
+        COMMAND    ${CMAKE_COMMAND}
+            -E copy_if_different 
+            ${HDFJAVA_EXAMPLES_SOURCE_DIR}/testfiles/examples.datatypes.${example}.txt
+            ${HDFJAVA_EXAMPLES_DATATYPES_BINARY_DIR}/${example}.txt  
+    )
+    SET_TESTS_PROPERTIES (datatypes-${example}-copy-objects PROPERTIES DEPENDS datatypes-${example}-clearall-objects)
+    SET (last_test "datatypes-${example}-copy-objects")
+    ADD_H5_TEST (${example} 0)
+  ENDFOREACH (example ${HDF_JAVA_OBJECT_EXAMPLES})
 
 ENDIF (BUILD_TESTING)
    

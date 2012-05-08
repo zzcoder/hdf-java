@@ -1,10 +1,10 @@
 /************************************************************
 
   This example shows how to read and write array datatypes
-  to a dataset.  The program first writes integers arrays of
-  dimension ADIM0xADIM1 to a dataset with a dataspace of
-  DIM0, then closes the  file.  Next, it reopens the file,
-  reads back the data, and outputs it to the screen.
+  to an attribute.  The program first writes integers arrays
+  of dimension ADIM0xADIM1 to an attribute with a dataspace
+  of DIM0, then closes the  file.  Next, it reopens the
+  file, reads back the data, and outputs it to the screen.
 
   This file is intended for use with HDF5 Library verion 1.6
 
@@ -14,25 +14,34 @@ package examples.datatypes;
 
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
+import ncsa.hdf.object.Attribute;
+import ncsa.hdf.object.Datatype;
+import ncsa.hdf.object.FileFormat;
+import ncsa.hdf.object.h5.H5Datatype;
+import ncsa.hdf.object.h5.H5File;
+import ncsa.hdf.object.h5.H5ScalarDS;
 
-public class H5Ex_T_Array {
-	private static String FILENAME = "H5Ex_T_Array.h5";
+public class H5ObjectEx_T_ArrayAttribute {
+	private static String FILENAME = "H5ObjectEx_T_ArrayAttribute.h5";
 	private static String DATASETNAME = "DS1";
+	private static String ATTRIBUTENAME = "A1";
 	private static final int DIM0 = 4;
 	private static final int ADIM0 = 3;
 	private static final int ADIM1 = 5;
-	private static final int RANK = 1;
 	private static final int NDIMS = 2;
 
 	private static void CreateDataset() {
-		int file_id = -1;
+        H5File file = null;
+        H5ScalarDS dset = null;
 		int filetype_id = -1;
 		int memtype_id = -1;
-		int dataspace_id = -1;
 		int dataset_id = -1;
+		int attribute_id = -1;
 		long[] dims = { DIM0 };
 		long[] adims = { ADIM0, ADIM1 };
 		int[][][] dset_data = new int[DIM0][ADIM0][ADIM1];
+        final H5Datatype typeIntArray = new H5Datatype(Datatype.CLASS_ARRAY, 8, Datatype.ORDER_LE, -1);
+        final H5Datatype typeInt = new H5Datatype(Datatype.CLASS_INTEGER, 4, Datatype.ORDER_LE, -1);
 
 		// Initialize data. indx is the element in the dataspace, jndx and kndx the
 		// elements within the array datatype.
@@ -43,8 +52,8 @@ public class H5Ex_T_Array {
 
 		// Create a new file using default properties.
 		try {
-			file_id = H5.H5Fcreate(FILENAME, HDF5Constants.H5F_ACC_TRUNC,
-					HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+            file = new H5File(FILENAME, FileFormat.CREATE);
+            file.open();
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -53,6 +62,7 @@ public class H5Ex_T_Array {
 		// Create array datatypes for file.
 		try {
 			filetype_id = H5.H5Tarray_create(HDF5Constants.H5T_STD_I64LE, NDIMS, adims);
+            typeIntArray.fromNative(filetype_id);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -66,21 +76,19 @@ public class H5Ex_T_Array {
 			e.printStackTrace();
 		}
 
-		// Create dataspace. Setting maximum size to NULL sets the maximum
-		// size to be the current size.
+		// Create dataset with a scalar dataspace.
 		try {
-			dataspace_id = H5.H5Screate_simple(RANK, dims, null);
+            dset = (H5ScalarDS) file.createScalarDS(DATASETNAME, null, typeInt, dims, null, null, 0, null);
+            dataset_id = dset.open();
 		}
 		catch (Exception e) {
 			e.printStackTrace();
 		}
 
-		// Create the dataset.
+		// Create the attribute and write the array data to it.
 		try {
-			if ((file_id >= 0) && (dataspace_id >= 0) && (filetype_id >= 0))
-				dataset_id = H5.H5Dcreate(file_id, DATASETNAME, 
-				        filetype_id, dataspace_id, 
-				        HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+		    Attribute dataArray = new Attribute(ATTRIBUTENAME, typeIntArray, dims);
+		    dset.writeMetadata(dataArray);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -88,10 +96,11 @@ public class H5Ex_T_Array {
 
 		// Write the dataset.
 		try {
-			if ((dataset_id >= 0) && (memtype_id >= 0))
-				H5.H5Dwrite(dataset_id, memtype_id, 
-				        HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL, HDF5Constants.H5P_DEFAULT, 
-				        dset_data);
+            if (dataset_id >= 0)
+                attribute_id = H5.H5Aopen_by_name(dataset_id, ".", ATTRIBUTENAME, 
+                        HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+			if ((attribute_id >= 0) && (memtype_id >= 0))
+				H5.H5Awrite(attribute_id, memtype_id, dset_data);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -99,17 +108,16 @@ public class H5Ex_T_Array {
 
 		// End access to the dataset and release resources used by it.
 		try {
-			if (dataset_id >= 0)
-				H5.H5Dclose(dataset_id);
+			if (attribute_id >= 0)
+				H5.H5Aclose(attribute_id);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
 		}
 
-		// Terminate access to the data space.
 		try {
-			if (dataspace_id >= 0)
-				H5.H5Sclose(dataspace_id);
+			if (dataset_id >= 0)
+                dset.close(dataset_id);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -135,8 +143,7 @@ public class H5Ex_T_Array {
 
 		// Close the file.
 		try {
-			if (file_id >= 0)
-				H5.H5Fclose(file_id);
+            file.close();
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -145,17 +152,20 @@ public class H5Ex_T_Array {
 	}
 
 	private static void ReadDataset() {
-		int file_id = -1;
+        H5File file = null;
+        H5ScalarDS dset = null;
 		int filetype_id = -1;
 		int memtype_id = -1;
 		int dataset_id = -1;
+		int attribute_id = -1;
 		long[] dims = { DIM0 };
 		long[] adims = { ADIM0, ADIM1 };
 		int[][][] dset_data;
 
 		// Open an existing file.
 		try {
-			file_id = H5.H5Fopen(FILENAME, HDF5Constants.H5F_ACC_RDONLY, HDF5Constants.H5P_DEFAULT);
+            file = new H5File(FILENAME, FileFormat.READ);
+            file.open();
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -163,8 +173,17 @@ public class H5Ex_T_Array {
 
 		// Open an existing dataset.
 		try {
-			if (file_id >= 0)
-				dataset_id = H5.H5Dopen(file_id, DATASETNAME, HDF5Constants.H5P_DEFAULT);
+            dset = (H5ScalarDS) file.get(DATASETNAME);
+            dataset_id = dset.open();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		try {
+			if (dataset_id >= 0)
+                attribute_id = H5.H5Aopen_by_name(dataset_id, ".", ATTRIBUTENAME, 
+                        HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -172,8 +191,8 @@ public class H5Ex_T_Array {
 
 		// Get the datatype.
 		try {
-			if (dataset_id >= 0)
-				filetype_id = H5.H5Dget_type(dataset_id);
+			if (attribute_id >= 0)
+				filetype_id = H5.H5Aget_type(attribute_id);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -202,10 +221,8 @@ public class H5Ex_T_Array {
 
 		// Read data.
 		try {
-			if ((dataset_id >= 0) && (memtype_id >= 0))
-				H5.H5Dread(dataset_id, memtype_id, 
-				        HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL, HDF5Constants.H5P_DEFAULT, 
-				        dset_data);
+			if ((attribute_id >= 0) && (memtype_id >= 0))
+				H5.H5Aread(attribute_id, memtype_id, dset_data);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -213,7 +230,7 @@ public class H5Ex_T_Array {
 
 		// Output the data to the screen.
 		for (int indx = 0; indx < dims[0]; indx++) {
-			System.out.println(DATASETNAME + " [" + indx + "]:");
+			System.out.println(ATTRIBUTENAME + " [" + indx + "]:");
 			for (int jndx = 0; jndx < adims[0]; jndx++) {
 				System.out.print(" [");
 				for (int kndx = 0; kndx < adims[1]; kndx++)
@@ -226,8 +243,16 @@ public class H5Ex_T_Array {
 
 		// End access to the dataset and release resources used by it.
 		try {
+			if (attribute_id >= 0)
+				H5.H5Aclose(attribute_id);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		try {
 			if (dataset_id >= 0)
-				H5.H5Dclose(dataset_id);
+                dset.close(dataset_id);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -253,8 +278,7 @@ public class H5Ex_T_Array {
 
 		// Close the file.
 		try {
-			if (file_id >= 0)
-				H5.H5Fclose(file_id);
+            file.close();
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -263,12 +287,12 @@ public class H5Ex_T_Array {
 	}
 
 	public static void main(String[] args) {
-		H5Ex_T_Array.CreateDataset();
+		H5ObjectEx_T_ArrayAttribute.CreateDataset();
 		// Now we begin the read section of this example. Here we assume
 		// the dataset and array have the same name and rank, but can have
 		// any size. Therefore we must allocate a new array to read in
 		// data using malloc().
-		H5Ex_T_Array.ReadDataset();
+		H5ObjectEx_T_ArrayAttribute.ReadDataset();
 	}
 
 }

@@ -9,17 +9,17 @@ public class H5Ex_T_VLString
     private static String DATASETNAME = "DS1";
 
     private static void createDataset() {
-        int     fid = -1;
-        int     tid = -1;
-        int     sid = -1;
-        int     did = -1;
+        int     file_id = -1;
+        int     type_id = -1;
+        int     dataspace_id = -1;
+        int     dataset_id = -1;
         int     rank = 1;
         String[] str_data = { "Parting", "is such", "sweet", "sorrow." };
         long[]  dims = { str_data.length };
 
         // Create a new file using default properties.
         try {
-            fid = H5.H5Fcreate(FILENAME, HDF5Constants.H5F_ACC_TRUNC,
+            file_id = H5.H5Fcreate(FILENAME, HDF5Constants.H5F_ACC_TRUNC,
                     HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
         }
         catch (Exception e) {
@@ -27,8 +27,8 @@ public class H5Ex_T_VLString
         }
 
         try {
-            tid = H5.H5Tcopy(HDF5Constants.H5T_C_S1);
-               H5.H5Tset_size(tid, HDF5Constants.H5T_VARIABLE);
+            type_id = H5.H5Tcopy(HDF5Constants.H5T_C_S1);
+            H5.H5Tset_size(type_id, HDF5Constants.H5T_VARIABLE);
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -37,7 +37,7 @@ public class H5Ex_T_VLString
         // Create dataspace. Setting maximum size to NULL sets the maximum
         // size to be the current size.
         try {
-            sid = H5.H5Screate_simple(rank, dims, null);
+            dataspace_id = H5.H5Screate_simple(rank, dims, null);
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -45,8 +45,8 @@ public class H5Ex_T_VLString
 
         // Create the dataset and write the string data to it.
         try {
-            if ((fid >= 0) && (tid >= 0) && (sid >= 0)) {
-                did = H5.H5Dcreate(fid, DATASETNAME, tid, sid, 
+            if ((file_id >= 0) && (type_id >= 0) && (dataspace_id >= 0)) {
+                dataset_id = H5.H5Dcreate(file_id, DATASETNAME, type_id, dataspace_id, 
                         HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
              }
         }
@@ -56,8 +56,8 @@ public class H5Ex_T_VLString
 
         // Write the data to the dataset.
         try {
-            if (did >=0)
-                H5.H5DwriteString(did, tid, 
+            if (dataset_id >=0)
+                H5.H5DwriteString(dataset_id, type_id, 
                         HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL, HDF5Constants.H5P_DEFAULT, 
                         str_data);
         }
@@ -66,10 +66,10 @@ public class H5Ex_T_VLString
         }
 
         try  {
-            H5.H5Sclose(sid);
-            H5.H5Tclose(tid);
-            H5.H5Dclose(did);
-            H5.H5Fclose(fid);         
+            H5.H5Sclose(dataspace_id);
+            H5.H5Tclose(type_id);
+            H5.H5Dclose(dataset_id);
+            H5.H5Fclose(file_id);         
         } 
         catch (Exception e) {
             e.printStackTrace(); 
@@ -77,22 +77,22 @@ public class H5Ex_T_VLString
     }
     
     private static void readDataset() {
-        int     fid = -1;
-        int     tid = -1;
-        int     did = -1;
+        int     file_id = -1;
+        int     type_id = -1;
+        int     dataset_id = -1;
         String[] str_data = { "", "", "", "" };
 
         try {
-            fid = H5.H5Fopen(FILENAME, HDF5Constants.H5F_ACC_RDONLY, HDF5Constants.H5P_DEFAULT);;
+            file_id = H5.H5Fopen(FILENAME, HDF5Constants.H5F_ACC_RDONLY, HDF5Constants.H5P_DEFAULT);;
         } 
         catch (Exception e) {
             e.printStackTrace();
         }
 
         try {
-             did = H5.H5Dopen(fid, DATASETNAME, HDF5Constants.H5P_DEFAULT);
-             tid = H5.H5Dget_type(did);
-             H5.H5DreadVL(did, tid, 
+            dataset_id = H5.H5Dopen(file_id, DATASETNAME, HDF5Constants.H5P_DEFAULT);
+            type_id = H5.H5Dget_type(dataset_id);
+            H5.H5DreadVL(dataset_id, type_id, 
                      HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL, HDF5Constants.H5P_DEFAULT, 
                      str_data);
         } 
@@ -104,9 +104,9 @@ public class H5Ex_T_VLString
             System.out.println(DATASETNAME + " [" + indx + "]: " + str_data[indx]);
 
         try {
-            H5.H5Tclose(tid);
-            H5.H5Dclose(did);
-            H5.H5Fclose(fid);         
+            H5.H5Tclose(type_id);
+            H5.H5Dclose(dataset_id);
+            H5.H5Fclose(file_id);         
         } 
         catch (Exception e) {
             e.printStackTrace();
