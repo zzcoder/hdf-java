@@ -14,25 +14,30 @@ package examples.datatypes;
 
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
+import ncsa.hdf.object.Datatype;
+import ncsa.hdf.object.FileFormat;
+import ncsa.hdf.object.h5.H5Datatype;
+import ncsa.hdf.object.h5.H5File;
+import ncsa.hdf.object.h5.H5ScalarDS;
 
-public class H5Ex_T_Array {
-	private static String FILENAME = "H5Ex_T_Array.h5";
+public class H5ObjectEx_T_Array {
+	private static String FILENAME = "H5ObjectEx_T_Array.h5";
 	private static String DATASETNAME = "DS1";
 	private static final int DIM0 = 4;
 	private static final int ADIM0 = 3;
 	private static final int ADIM1 = 5;
-	private static final int RANK = 1;
 	private static final int NDIMS = 2;
 
 	private static void CreateDataset() {
-		int file_id = -1;
+        H5File file = null;
+        H5ScalarDS dset = null;
 		int filetype_id = -1;
 		int memtype_id = -1;
-		int dataspace_id = -1;
 		int dataset_id = -1;
 		long[] dims = { DIM0 };
 		long[] adims = { ADIM0, ADIM1 };
 		int[][][] dset_data = new int[DIM0][ADIM0][ADIM1];
+        final H5Datatype typeIntArray = new H5Datatype(Datatype.CLASS_ARRAY, 8, Datatype.ORDER_LE, -1);
 
 		// Initialize data. indx is the element in the dataspace, jndx and kndx the
 		// elements within the array datatype.
@@ -43,8 +48,8 @@ public class H5Ex_T_Array {
 
 		// Create a new file using default properties.
 		try {
-			file_id = H5.H5Fcreate(FILENAME, HDF5Constants.H5F_ACC_TRUNC,
-					HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+            file = new H5File(FILENAME, FileFormat.CREATE);
+            file.open();
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -53,6 +58,7 @@ public class H5Ex_T_Array {
 		// Create array datatypes for file.
 		try {
 			filetype_id = H5.H5Tarray_create(HDF5Constants.H5T_STD_I64LE, NDIMS, adims);
+            typeIntArray.fromNative(filetype_id);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -66,21 +72,10 @@ public class H5Ex_T_Array {
 			e.printStackTrace();
 		}
 
-		// Create dataspace. Setting maximum size to NULL sets the maximum
-		// size to be the current size.
-		try {
-			dataspace_id = H5.H5Screate_simple(RANK, dims, null);
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-
 		// Create the dataset.
 		try {
-			if ((file_id >= 0) && (dataspace_id >= 0) && (filetype_id >= 0))
-				dataset_id = H5.H5Dcreate(file_id, DATASETNAME, 
-				        filetype_id, dataspace_id, 
-				        HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+            dset = (H5ScalarDS) file.createScalarDS(DATASETNAME, null, typeIntArray, dims, null, null, 0, null);
+            dataset_id = dset.open();
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -100,16 +95,7 @@ public class H5Ex_T_Array {
 		// End access to the dataset and release resources used by it.
 		try {
 			if (dataset_id >= 0)
-				H5.H5Dclose(dataset_id);
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		// Terminate access to the data space.
-		try {
-			if (dataspace_id >= 0)
-				H5.H5Sclose(dataspace_id);
+                dset.close(dataset_id);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -135,8 +121,7 @@ public class H5Ex_T_Array {
 
 		// Close the file.
 		try {
-			if (file_id >= 0)
-				H5.H5Fclose(file_id);
+            file.close();
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -145,7 +130,8 @@ public class H5Ex_T_Array {
 	}
 
 	private static void ReadDataset() {
-		int file_id = -1;
+        H5File file = null;
+        H5ScalarDS dset = null;
 		int filetype_id = -1;
 		int memtype_id = -1;
 		int dataset_id = -1;
@@ -155,7 +141,8 @@ public class H5Ex_T_Array {
 
 		// Open an existing file.
 		try {
-			file_id = H5.H5Fopen(FILENAME, HDF5Constants.H5F_ACC_RDONLY, HDF5Constants.H5P_DEFAULT);
+            file = new H5File(FILENAME, FileFormat.READ);
+            file.open();
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -163,8 +150,8 @@ public class H5Ex_T_Array {
 
 		// Open an existing dataset.
 		try {
-			if (file_id >= 0)
-				dataset_id = H5.H5Dopen(file_id, DATASETNAME, HDF5Constants.H5P_DEFAULT);
+            dset = (H5ScalarDS) file.get(DATASETNAME);
+            dataset_id = dset.open();
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -227,7 +214,7 @@ public class H5Ex_T_Array {
 		// End access to the dataset and release resources used by it.
 		try {
 			if (dataset_id >= 0)
-				H5.H5Dclose(dataset_id);
+                dset.close(dataset_id);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -253,8 +240,7 @@ public class H5Ex_T_Array {
 
 		// Close the file.
 		try {
-			if (file_id >= 0)
-				H5.H5Fclose(file_id);
+            file.close();
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -263,12 +249,12 @@ public class H5Ex_T_Array {
 	}
 
 	public static void main(String[] args) {
-		H5Ex_T_Array.CreateDataset();
+		H5ObjectEx_T_Array.CreateDataset();
 		// Now we begin the read section of this example. Here we assume
 		// the dataset and array have the same name and rank, but can have
 		// any size. Therefore we must allocate a new array to read in
 		// data using malloc().
-		H5Ex_T_Array.ReadDataset();
+		H5ObjectEx_T_Array.ReadDataset();
 	}
 
 }

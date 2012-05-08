@@ -22,9 +22,11 @@ import java.util.Map;
 
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
+import ncsa.hdf.object.FileFormat;
+import ncsa.hdf.object.h5.H5File;
 
-public class H5Ex_T_Commit {
-	private static String FILENAME = "H5Ex_T_Commit.h5";
+public class H5ObjectEx_T_Commit {
+	private static String FILENAME = "H5ObjectEx_T_Commit.h5";
 	private static String DATATYPENAME = "Sensor_Type";
 
 	// Values for the various classes of datatypes
@@ -133,14 +135,16 @@ public class H5Ex_T_Commit {
 	}
 
 	private static void CreateDataType() {
+        H5File file = null;
 		int file_id = -1;
 		int strtype_id = -1;
 		int filetype_id = -1;
 		Sensor_Datatype datatypes = new Sensor_Datatype();
+		
 		// Create a new file using default properties.
 		try {
-			file_id = H5.H5Fcreate(FILENAME, HDF5Constants.H5F_ACC_TRUNC,
-					HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+            file = new H5File(FILENAME, FileFormat.CREATE);
+            file_id = file.open();
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -206,8 +210,7 @@ public class H5Ex_T_Commit {
 
 		// Close the file.
 		try {
-			if (file_id >= 0)
-				H5.H5Fclose(file_id);
+            file.close();
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -216,13 +219,15 @@ public class H5Ex_T_Commit {
 	}
 
 	private static void ReadDataType() {
+        H5File file = null;
 		int file_id = -1;
 		int typeclass_id = -1;
 		int filetype_id = -1;
 
 		// Open an existing file.
 		try {
-			file_id = H5.H5Fopen(FILENAME, HDF5Constants.H5F_ACC_RDONLY, HDF5Constants.H5P_DEFAULT);
+            file = new H5File(FILENAME, FileFormat.READ);
+            file_id = file.open();
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -275,8 +280,7 @@ public class H5Ex_T_Commit {
 
 		// Close the file.
 		try {
-			if (file_id >= 0)
-				H5.H5Fclose(file_id);
+            file.close();
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -285,12 +289,12 @@ public class H5Ex_T_Commit {
 	}
 
 	public static void main(String[] args) {
-		H5Ex_T_Commit.CreateDataType();
+		H5ObjectEx_T_Commit.CreateDataType();
 		// Now we begin the read section of this example. Here we assume
 		// the dataset and array have the same name and rank, but can have
 		// any size. Therefore we must allocate a new array to read in
 		// data using malloc().
-		H5Ex_T_Commit.ReadDataType();
+		H5ObjectEx_T_Commit.ReadDataType();
 	}
 
 }
