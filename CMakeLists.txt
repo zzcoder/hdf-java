@@ -304,6 +304,11 @@ INSTALL (
     USE_SOURCE_PERMISSIONS 
     COMPONENT docs
 )
+INSTALL (
+    FILES ${HDFJAVA_RESOURCES_DIR}/FindHDFJAVA.cmake
+    DESTINATION ${HJAVA_INSTALL_DATA_DIR}
+    COMPONENT docs
+)
 
 #-----------------------------------------------------------------------------
 # Add Target(s) to CMake Install for import into other projects
