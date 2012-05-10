@@ -97,4 +97,14 @@ public class H5Link extends HObject {
         return null;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ncsa.hdf.object.HObject#setName(java.lang.String)
+     */
+    @Override
+    public void setName(String newName) throws Exception {
+        H5File.renameObject(this, newName);
+        super.setName(newName);
+    }    
 }

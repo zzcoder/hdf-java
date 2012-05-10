@@ -2581,7 +2581,7 @@ public class H5File extends FileFormat {
     public static void renameObject(HObject obj, String newName) throws Exception {
         String currentFullPath = obj.getPath() + obj.getName();
         String newFullPath = obj.getPath() + newName;
-
+        
         currentFullPath = currentFullPath.replaceAll("//", "/");
         newFullPath = newFullPath.replaceAll("//", "/");
 
