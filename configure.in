@@ -638,7 +638,7 @@ if test $JH45INST_FOUND -eq 1; then
     JH45INST_FOUND=0
   fi
   if test \( ! -w "$JH45INST" \); then
-    AC_MSG_ERROR( [ $JAVINST : not writable ])
+    AC_MSG_ERROR( [ $JH45INST : not writable ])
     JH45INST_FOUND=0
   fi
 fi
@@ -650,7 +650,7 @@ until test $JH45INST_FOUND -eq 1; do
     JH45INST_FOUND=0
   fi
   if test \( ! -w "$JH45INST" \); then
-    AC_MSG_ERROR( [ $JAVINST : not writable ])
+    AC_MSG_ERROR( [ $JH45INST : not writable ])
     JH45INST_FOUND=0
   fi
 done
