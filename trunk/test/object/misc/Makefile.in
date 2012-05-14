@@ -11,13 +11,11 @@
 
  
 TOP = ../../..
-DIR	= test/object/misc 
-
-@VERSION@
+DIR = test/object/misc 
 
 JAVAC           = @JAVAC@
 JAVADOC         = @JAVADOC@
-JAR         	= @JAR@
+JAR             = @JAR@
 FIND            = @FIND@
 RM              = @RM@
 JAVADOC_FLAGS   = -version -author

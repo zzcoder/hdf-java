@@ -267,7 +267,7 @@ clean-docs:
 	$(RM) -r *.html
 
 check-all: check check-mem-leak
-	
+
 check-mem-leak:  install $(TESTPACKAGES)
 	cd test/object/misc; $(MAKE) check-memory-leak;
 
@@ -286,12 +286,10 @@ install-lib: natives
 	-mkdir -p $(LIBDIR);
 	-mkdir -p $(LIBDIR)/@JAVATARG@
 	@if test -n "$(H5INC)" ; then \
-	cp $(CLASS_DIR)/@JAVATARG@/libjhdf5.$(JSLEXT) $(LIBDIR)/@JAVATARG@ ; fi
-	@if test -n "$(H5INC)/../lib" ; then \
+	cp $(CLASS_DIR)/@JAVATARG@/libjhdf5.$(JSLEXT) $(LIBDIR)/@JAVATARG@ ;  \
 	cp $(H5INC)/../lib/*.settings $(LIBDIR)/@JAVATARG@ ; fi
 	@if test -n "$(H4INC)" ; then \
-	cp $(CLASS_DIR)/@JAVATARG@/libjhdf.$(JSLEXT) $(LIBDIR)/@JAVATARG@ ; fi
-	@if test -n "$(H4INC)/../lib" ; then \
+	cp $(CLASS_DIR)/@JAVATARG@/libjhdf.$(JSLEXT) $(LIBDIR)/@JAVATARG@ ;  \
 	cp $(H4INC)/../lib/*.settings $(LIBDIR)/@JAVATARG@ ; fi
 	@if test -n "$(H45INC)" ; then \
 	cp $(CLASS_DIR)/@JAVATARG@/libjh4toh5.$(JSLEXT) $(LIBDIR)/@JAVATARG@ ; fi
