@@ -26,7 +26,6 @@ import ncsa.hdf.object.Group;
 import ncsa.hdf.object.ScalarDS;
 import ncsa.hdf.object.h5.H5Datatype;
 import ncsa.hdf.object.h5.H5File;
-import ncsa.hdf.object.h5.H5Group;
 import ncsa.hdf.object.h5.H5ScalarDS;
 
 /**
@@ -210,7 +209,7 @@ public class H5ScalarDSTest extends TestCase {
             tmpDset = (H5ScalarDS) testFile.get(DNAME);
         }
         catch (final Exception ex) {
-            tmpDset = null; // Expected - intentional
+            fail("setName() get(oldname) failed. " + ex);
         }
         assertNull("The dataset should be null because it has been renamed",
                 tmpDset);

@@ -115,8 +115,7 @@ public class H5FileTest extends TestCase {
         typeStr = new H5Datatype(Datatype.CLASS_STRING, H5TestFile.STR_LEN, -1,
                 -1);
 
-        testFile = (H5File) H5FILE.open(H5TestFile.NAME_FILE_H5,
-                FileFormat.WRITE);
+        testFile = new H5File(H5TestFile.NAME_FILE_H5, FileFormat.WRITE);
         assertNotNull(testFile);
 
         testFile.open();
@@ -163,8 +162,7 @@ public class H5FileTest extends TestCase {
         for (int i = 0; i < NLOOPS; i++) {
             int nObjs = 0;
             int fid = -1;
-            final H5File file = new H5File(H5TestFile.NAME_FILE_H5,
-                    FileFormat.WRITE);
+            final H5File file = new H5File(H5TestFile.NAME_FILE_H5, FileFormat.WRITE);
 
             try {
                 fid = file.open(); // open the full tree
@@ -235,7 +233,7 @@ public class H5FileTest extends TestCase {
         H5File file = null;
 
         try {
-            file = (H5File) H5FILE.create(nameNew);
+            file = (H5File) H5FILE.createFile(nameNew, FileFormat.FILE_CREATE_DELETE);
         }
         catch (final Exception ex) {
             fail("file.create() failed. " + ex);
@@ -316,7 +314,7 @@ public class H5FileTest extends TestCase {
         H5File file = null;
 
         try {
-            file = (H5File) H5FILE.create(nameNew);
+            file = (H5File) H5FILE.createFile(nameNew, FileFormat.FILE_CREATE_DELETE);
         }
         catch (final Exception ex) {
             fail("file.create() failed. " + ex);
@@ -388,7 +386,7 @@ public class H5FileTest extends TestCase {
         H5G_info_t ginfo;
 
         try {
-            file = (H5File) H5FILE.create(nameNew);
+            file = (H5File) H5FILE.createFile(nameNew, FileFormat.FILE_CREATE_DELETE);
         } catch (final Exception ex) {
             fail("file.create() failed. " + ex);
         }
@@ -499,7 +497,7 @@ public class H5FileTest extends TestCase {
         H5G_info_t ginfo;
 
         try {
-            file = (H5File) H5FILE.create(nameNew);
+            file = (H5File) H5FILE.createFile(nameNew, FileFormat.FILE_CREATE_DELETE);
         } catch (final Exception ex) {
             fail("file.create() failed. " + ex);
         }
@@ -710,7 +708,7 @@ public class H5FileTest extends TestCase {
         assertTrue(n > 0);
 
         try {
-            file = (H5File) H5FILE.create(nameNewFile);
+            file = (H5File) H5FILE.createFile(nameNewFile, FileFormat.FILE_CREATE_DELETE);
             file.open();
         }
         catch (final Exception ex) {
@@ -842,8 +840,7 @@ public class H5FileTest extends TestCase {
                 obj = file.get(obj.getFullName());
             }
             catch (final Exception ex) {
-                obj = null;
-                ; // Expected to fail, intentional;
+                fail("file.get(getFullName) failed. " + ex);
             }
             assertNull(obj);
         }
@@ -1113,7 +1110,7 @@ public class H5FileTest extends TestCase {
             dset.getData();
         }
         catch (final Exception ex) {
-            ; // Expected. The file is empty.
+            fail("file.get(NAME_DATASET_FLOAT) failed. " + ex);
         }
 
         try {
@@ -1246,7 +1243,7 @@ public class H5FileTest extends TestCase {
         assertTrue(n > 0);
 
         try {
-            file = (H5File) H5FILE.create(nameNewFile);
+            file = (H5File) H5FILE.createFile(nameNewFile, FileFormat.FILE_CREATE_DELETE);
             file.open();
         }
         catch (final Exception ex) {
@@ -1452,7 +1449,7 @@ public class H5FileTest extends TestCase {
         Dataset d1 = null;
 
         try {
-            file = (H5File) H5FILE.create(nameNew);
+            file = (H5File) H5FILE.createFile(nameNew, FileFormat.FILE_CREATE_DELETE);
         }
         catch (final Exception ex) {
             fail("file.create() failed. " + ex);
@@ -1505,7 +1502,7 @@ public class H5FileTest extends TestCase {
         //Check the name of the target object the link points to is correct.
         String linkTargetObjName = null;       
         try{
-            linkTargetObjName = file.getLinkTargetName(obj);
+            linkTargetObjName = H5File.getLinkTargetName(obj);
         }catch (final Exception ex) {
             ex.printStackTrace();
             fail("file.getLinkInfo() failed. " + ex);
@@ -1616,7 +1613,7 @@ public class H5FileTest extends TestCase {
 
         //Create File1.
         try {
-            file1 = (H5File) H5FILE.create(nameNew);
+            file1 = (H5File) H5FILE.createFile(nameNew, FileFormat.FILE_CREATE_DELETE);
         }
         catch (final Exception ex) {
             fail("file1.create() failed. " + ex);
@@ -1653,7 +1650,7 @@ public class H5FileTest extends TestCase {
 
         //Create File2
         try {
-            file2 = (H5File) H5FILE.create("TESTExternal.h5");
+            file2 = (H5File) H5FILE.createFile("TESTExternal.h5", FileFormat.FILE_CREATE_DELETE);
         }
         catch (final Exception ex) {
             fail("file2.create() failed. " + ex);
@@ -1686,7 +1683,7 @@ public class H5FileTest extends TestCase {
         //Check the name of the target object the link points to is correct.
         String linkTargetObjName = null;
         try{
-            linkTargetObjName = file2.getLinkTargetName(obj);
+            linkTargetObjName = H5File.getLinkTargetName(obj);
         }catch (final Exception ex) {
             ex.printStackTrace();
             fail("file.getLinkInfo() failed. " + ex);
@@ -1780,7 +1777,7 @@ public class H5FileTest extends TestCase {
         Dataset d1 = null;
 
         try {
-            file = (H5File) H5FILE.create(nameNew); // Create File1.
+            file = (H5File) H5FILE.createFile(nameNew, FileFormat.FILE_CREATE_DELETE); // Create File1.
         } catch (final Exception ex) {
             fail("file1.create() failed. " + ex);
         }
@@ -1825,7 +1822,7 @@ public class H5FileTest extends TestCase {
         }
         List attributeList = null;
         try {
-            attributeList = file
+            attributeList = H5File
                     .getAttribute(gid, HDF5Constants.H5_INDEX_CRT_ORDER,
                             HDF5Constants.H5_ITER_INC);//Retrieve attributes in increasing creation order.
             assertEquals(attr2.getName(), attributeList.get(1).toString());
@@ -1834,7 +1831,7 @@ public class H5FileTest extends TestCase {
         }
 
         try {
-            attributeList = file.getAttribute(gid); //Retrieve attributes in increasing alphabetical order.
+            attributeList = H5File.getAttribute(gid); //Retrieve attributes in increasing alphabetical order.
             assertEquals(attr2.getName(), attributeList.get(2).toString());
         } catch (final Exception ex) {
             fail("file.getAttribute() failed. " + ex);
@@ -1876,7 +1873,7 @@ public class H5FileTest extends TestCase {
         Datatype d1 = null;
 
         try {
-            file = (H5File) H5FILE.create(nameNew); // Create File
+            file = (H5File) H5FILE.createFile(nameNew, FileFormat.FILE_CREATE_DELETE); // Create File
         } catch (final Exception ex) {
             fail("file.create() failed. " + ex);
         }
@@ -1937,7 +1934,7 @@ public class H5FileTest extends TestCase {
         Datatype d1 = null;
 
         try {
-            file = (H5File) H5FILE.create(nameNew); // Create File
+            file = (H5File) H5FILE.createFile(nameNew, FileFormat.FILE_CREATE_DELETE); // Create File
         } catch (final Exception ex) {
             fail("file.create() failed. " + ex);
         }
