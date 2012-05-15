@@ -38,8 +38,7 @@ public class HObjectTest extends TestCase {
 	protected void setUp() throws Exception {
         super.setUp();
 
-        testFile = (H5File) H5FILE.open(H5TestFile.NAME_FILE_H5,
-                FileFormat.WRITE);
+        testFile = new H5File(H5TestFile.NAME_FILE_H5, FileFormat.WRITE);
         assertNotNull(testFile);
         testObj = testFile.get(GNAME);
         assertNotNull(testObj);
@@ -208,13 +207,13 @@ public class HObjectTest extends TestCase {
             fail("setName() failed. " + ex);
         }
 
-        HObject tmpObj;
+        HObject tmpObj = null;
         // test the old name
         try {
             tmpObj = testFile.get(GNAME);
         }
         catch (final Exception ex) {
-            tmpObj = null; // Expected - intentional
+            fail("testFile.get(GNAME) failed. " + ex);
         }
         assertNull("The dataset should be null because it has been renamed",
                 tmpObj);

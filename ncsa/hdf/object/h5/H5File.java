@@ -1209,8 +1209,7 @@ public class H5File extends FileFormat {
             }
         }
         catch (Exception ex) {
-            System.err.println("Exception finding obj:");
-            ex.printStackTrace();
+            System.err.println("Exception finding obj");
             obj = null;
         }
         finally {

@@ -161,7 +161,7 @@ public class H5GroupTest extends TestCase {
             tmpDset = (H5Group) testFile.get(GNAME);
         }
         catch (final Exception ex) {
-            tmpDset = null; // Expected - intentional
+            fail("setName() get(oldname) failed. " + ex);
         }
         assertNull("The dataset should be null because it has been renamed",
                 tmpDset);
@@ -796,7 +796,7 @@ public class H5GroupTest extends TestCase {
             grp = (Group) testFile.get(nameNew);
         }
         catch (final Exception ex) {
-            ; // Expected - intentional
+            fail("testFile.get(deleted_newname) failed. " + ex);
         }
         assertNull(grp);
         int nObjs = 0;
@@ -931,7 +931,7 @@ public class H5GroupTest extends TestCase {
         try {
             grp = (Group) testFile.get(nameNew);
         } catch (final Exception ex) {
-            ; // Expected - intentional
+            fail("testFile.get(deleted_newgroup) failed. " + ex);
         }
         assertNull(grp);
 

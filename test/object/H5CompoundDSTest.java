@@ -25,7 +25,6 @@ import ncsa.hdf.object.h5.H5CompoundDS;
 import ncsa.hdf.object.h5.H5Datatype;
 import ncsa.hdf.object.h5.H5File;
 import ncsa.hdf.object.h5.H5Group;
-import ncsa.hdf.object.h5.H5ScalarDS;
 
 /**
  * TestCase for H5CompoundDS.
@@ -206,8 +205,8 @@ public class H5CompoundDSTest extends TestCase {
         try {
             tmpDset = (H5CompoundDS) testFile.get(DNAME);
         }
-        catch (final Exception ex) {
-            tmpDset = null; // Expected - intentional
+        catch (Exception ex) {
+            fail("setName() get(oldname) failed. " + ex);
         }
         assertNull("The dataset should be null because it has been renamed",
                 tmpDset);
