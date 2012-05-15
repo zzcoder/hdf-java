@@ -246,7 +246,7 @@ case "$withval" in
   *)
   if test -n "$withval" ; then
       sz_lib="`echo $withval |cut -f2 -d, -s`"
-    SZLIB=$sz_lib"/libszip."$LLEXT
+    SZLIB=$sz_lib"/libsz."$LLEXT
     dnl AC_MSG_RESULT([szlib found: $SZLIB]);
     HAVE_SZIP="yes"
   else
