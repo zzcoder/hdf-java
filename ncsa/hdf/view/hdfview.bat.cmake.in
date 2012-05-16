@@ -21,7 +21,7 @@ pushd %~dp0
 
 set JAVABIN=@JAVA_PATH@
 echo.Setting environment
-if !%JAVABIN%!"\java.exe"=="\java.exe" (
+if "!%JAVABIN%!\java.exe"=="\java.exe" (
         echo.%JAVABIN%\java.exe not found,
         echo.please check your java bin directory and update this script.
         exit /b 1
