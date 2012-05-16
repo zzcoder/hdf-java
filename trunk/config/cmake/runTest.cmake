@@ -76,5 +76,5 @@ IF (NOT TEST_SKIP_COMPARE)
 ENDIF (NOT TEST_SKIP_COMPARE)
 
 # everything went fine...
-MESSAGE ("Passed: The output of ${TEST_PROGRAM} matches ${TEST_REFERENCE}")
+MESSAGE ("${TEST_PROGRAM} Passed")
 
