@@ -1450,7 +1450,7 @@ herr_t H5DreadVL_str (JNIEnv *env, hid_t did, hid_t tid, hid_t mem_sid, hid_t
     herr_t  status = -1;
 
     n = ENVPTR->GetArrayLength(ENVPAR buf);
-    strs =(char**)malloc(n * sizeof(char*));
+    strs =(char**)calloc(n, sizeof(char*));
 
     if (strs == NULL) {
         h5JNIFatalError(env, "H5DreadVL:  failed to allocate buff for read variable length strings");
