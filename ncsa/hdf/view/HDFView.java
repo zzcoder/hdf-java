@@ -1047,45 +1047,7 @@ ChangeListener, DropTargetListener
         }
         else if (cmd.equals("Close file"))
         {
-            FileFormat theFile = treeView.getSelectedFile();
-            if (theFile == null)
-            {
-                toolkit.beep();
-                JOptionPane.showMessageDialog( this, "Select a file to close", getTitle(), JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            // close all the data windows of this file
-            JInternalFrame[] frames = contentPane.getAllFrames();
-            if (frames != null)
-            {
-                for (int i=0; i<frames.length; i++)
-                {
-                    HObject obj = (HObject)(((DataView)frames[i]).getDataObject());
-                    if (obj == null) {
-                        continue;
-                    }
-
-                    if ( obj.getFileFormat().equals(theFile))
-                    {
-                        frames[i].dispose();
-                        frames[i] = null;
-                    }
-                }
-            }
-
-            String fname = (String) urlBar.getSelectedItem();
-            if (theFile.getFilePath().equals(fname))
-            {
-                currentFile = null;
-                urlBar.setSelectedIndex(-1);
-            }
-
-            try { treeView.closeFile(theFile); }
-            catch (Exception ex) {;}
-            theFile = null;
-            attributeArea.setText("");
-            System.gc();
+            closeFile(treeView.getSelectedFile());
         }
         else if (cmd.equals("Close all file"))
         {
@@ -1099,6 +1061,26 @@ ChangeListener, DropTargetListener
             currentFile = null;
 
             attributeArea.setText("");
+        }
+        
+        else if (cmd.equals("Reload file"))
+        {
+            FileFormat theFile = treeView.getSelectedFile();
+            closeFile(theFile);
+
+             if (theFile == null)
+            {
+                toolkit.beep();
+                JOptionPane.showMessageDialog( this, "Select a file to close", getTitle(), JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
+            try {
+                if (theFile.isReadOnly())
+                	treeView.openFile(theFile.getAbsolutePath(), FileFormat.READ);
+                else
+                	treeView.openFile(theFile.getAbsolutePath(), FileFormat.WRITE);
+            } catch (Exception ex) {}
         }
         else if (cmd.equals("Save current file as"))
         {
@@ -1485,6 +1467,47 @@ ChangeListener, DropTargetListener
             } // for (int i=0; i<n; i++)
         }
     }
+
+	private void closeFile (FileFormat theFile) {
+		if (theFile == null)
+		{
+		    toolkit.beep();
+		    JOptionPane.showMessageDialog( this, "Select a file to close", getTitle(), JOptionPane.ERROR_MESSAGE);
+		    return;
+		}
+
+		// close all the data windows of this file
+		JInternalFrame[] frames = contentPane.getAllFrames();
+		if (frames != null)
+		{
+		    for (int i=0; i<frames.length; i++)
+		    {
+		        HObject obj = (HObject)(((DataView)frames[i]).getDataObject());
+		        if (obj == null) {
+		            continue;
+		        }
+
+		        if ( obj.getFileFormat().equals(theFile))
+		        {
+		            frames[i].dispose();
+		            frames[i] = null;
+		        }
+		    }
+		}
+
+		String fname = (String) urlBar.getSelectedItem();
+		if (theFile.getFilePath().equals(fname))
+		{
+		    currentFile = null;
+		    urlBar.setSelectedIndex(-1);
+		}
+
+		try { treeView.closeFile(theFile); }
+		catch (Exception ex) {;}
+		theFile = null;
+		attributeArea.setText("");
+		System.gc();
+	}
 
     public void stateChanged(ChangeEvent e)
     {

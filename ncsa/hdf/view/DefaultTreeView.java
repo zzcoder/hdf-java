@@ -383,6 +383,12 @@ public class DefaultTreeView extends JPanel
         item.setActionCommand("Close file");
         menu.add(item);
         
+        item = new JMenuItem( "Reload File");
+        //item.setMnemonic(KeyEvent.VK_R);
+        item.addActionListener(this);
+        item.setActionCommand("Reload file");
+        menu.add(item);
+        
         menu.add(separator);
         menu.add(setLibVerBoundsItem);
 
@@ -1498,6 +1504,9 @@ public class DefaultTreeView extends JPanel
         if (cmd.equals("Close file")) {
             ((HDFView)viewer).actionPerformed(e);
         }
+        else if (cmd.equals("Reload file")) {
+            ((HDFView)viewer).actionPerformed(e);
+        }        
         else if (cmd.equals("Add group")) {
             addGroup();
         }
