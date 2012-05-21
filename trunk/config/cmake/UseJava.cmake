@@ -25,6 +25,15 @@
 #       set(CMAKE_JAVA_TARGET_OUTPUT_NAME shibboleet.jar)
 #       add_jar(foobar foobar.java)
 #
+#   To use a different output directory than CMAKE_CURRENT_BINARY_DIR
+#   you can set it with:
+#
+#       set(CMAKE_JAVA_TARGET_OUTPUT_DIR ${PROJECT_BINARY_DIR}/bin)
+#
+#   To define an entry point in your jar you can set it with:
+#
+#       set(CMAKE_JAVA_JAR_ENTRY_POINT com/examples/MyProject/Main)
+#
 #   To add a VERSION to the target output name you can set it using
 #   CMAKE_JAVA_TARGET_VERSION. This will create a jar file with the name
 #   shibboleet-1.0.0.jar and will create a symlink shibboleet.jar
@@ -65,7 +74,7 @@
 #                      This is used by install_jni_symlink().
 #   JAR_FILE           The location of the jar file so that you can include
 #                      it.
-#   CLASS_DIR          The directory where the class files can be found. For
+#   CLASSDIR           The directory where the class files can be found. For
 #                      example to use them with javah.
 #
 # find_jar(<VAR>
@@ -112,7 +121,7 @@
 #                [VERSION TRUE|FALSE]
 #               )
 #
-# Create jave documentation based on files or packages. For more
+# Create java documentation based on files or packages. For more
 # details please read the javadoc manpage.
 #
 # There are two main signatures for create_javadoc. The first
@@ -201,10 +210,19 @@ set(_JAVA_SYMLINK_SCRIPT ${CMAKE_CURRENT_LIST_DIR}/UseJavaSymlinks.cmake)
 function(add_jar _TARGET_NAME _MANIFEST_TXT)
     set(_JAVA_SOURCE_FILES ${ARGN})
 
+    if (NOT DEFINED CMAKE_JAVA_TARGET_OUTPUT_DIR)
+      set(CMAKE_JAVA_TARGET_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR})
+    endif(NOT DEFINED CMAKE_JAVA_TARGET_OUTPUT_DIR)
+
+    if (CMAKE_JAVA_JAR_ENTRY_POINT)
+      set(_ENTRY_POINT_OPTION e)
+      set(_ENTRY_POINT_VALUE ${CMAKE_JAVA_JAR_ENTRY_POINT})
+    endif (CMAKE_JAVA_JAR_ENTRY_POINT)
+
     if (LIBRARY_OUTPUT_PATH)
         set(CMAKE_JAVA_LIBRARY_OUTPUT_PATH ${LIBRARY_OUTPUT_PATH})
     else (LIBRARY_OUTPUT_PATH)
-        set(CMAKE_JAVA_LIBRARY_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR})
+        set(CMAKE_JAVA_LIBRARY_OUTPUT_PATH ${CMAKE_JAVA_TARGET_OUTPUT_DIR})
     endif (LIBRARY_OUTPUT_PATH)
 
     set(CMAKE_JAVA_INCLUDE_PATH
@@ -224,7 +242,7 @@ function(add_jar _TARGET_NAME _MANIFEST_TXT)
        set(CMAKE_JAVA_INCLUDE_PATH_FINAL "${CMAKE_JAVA_INCLUDE_PATH_FINAL}${CMAKE_JAVA_INCLUDE_FLAG_SEP}${JAVA_INCLUDE_DIR}")
     endforeach(JAVA_INCLUDE_DIR)
 
-    set(CMAKE_JAVA_CLASS_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${_TARGET_NAME}.dir")
+    set(CMAKE_JAVA_CLASS_OUTPUT_PATH "${CMAKE_JAVA_TARGET_OUTPUT_DIR}${CMAKE_FILES_DIRECTORY}/${_TARGET_NAME}.dir")
     if (CMAKE_JAVA_RESOURCE_PATH)
         set (_CMAKE_JAVA_RESOURCE_PATH "${CMAKE_JAVA_CLASS_OUTPUT_PATH}/${CMAKE_JAVA_RESOURCE_PATH}")
     else (CMAKE_JAVA_RESOURCE_PATH)
@@ -257,7 +275,7 @@ function(add_jar _TARGET_NAME _MANIFEST_TXT)
         get_filename_component(_JAVA_PATH ${_JAVA_SOURCE_FILE} PATH)
         get_filename_component(_JAVA_FULL ${_JAVA_SOURCE_FILE} ABSOLUTE)
 
-        file(RELATIVE_PATH _JAVA_REL_BINARY_PATH ${CMAKE_CURRENT_BINARY_DIR} ${_JAVA_FULL})
+        file(RELATIVE_PATH _JAVA_REL_BINARY_PATH ${CMAKE_JAVA_TARGET_OUTPUT_DIR} ${_JAVA_FULL})
         file(RELATIVE_PATH _JAVA_REL_SOURCE_PATH ${CMAKE_CURRENT_SOURCE_DIR} ${_JAVA_FULL})
         string(LENGTH ${_JAVA_REL_BINARY_PATH} _BIN_LEN)
         string(LENGTH ${_JAVA_REL_SOURCE_PATH} _SRC_LEN)
@@ -324,20 +342,22 @@ function(add_jar _TARGET_NAME _MANIFEST_TXT)
     endif (_JAVA_COMPILE_FILES)
 
     # create the jar file
+    set(_JAVA_JAR_OUTPUT_PATH
+      ${CMAKE_JAVA_TARGET_OUTPUT_DIR}/${_JAVA_TARGET_OUTPUT_NAME})
     if (CMAKE_JNI_TARGET)
         add_custom_command(
-            OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${_JAVA_TARGET_OUTPUT_NAME}
+            OUTPUT ${_JAVA_JAR_OUTPUT_PATH}
             COMMAND ${Java_JAR_EXECUTABLE}
-                -cf ${CMAKE_CURRENT_BINARY_DIR}/${_JAVA_TARGET_OUTPUT_NAME}
+                -cf${_ENTRY_POINT_OPTION} ${_JAVA_JAR_OUTPUT_PATH} ${_ENTRY_POINT_VALUE}
                 ${_JAVA_RESOURCE_FILES} @java_class_filelist
             COMMAND ${CMAKE_COMMAND}
-                -D_JAVA_TARGET_DIR=${CMAKE_CURRENT_BINARY_DIR}
+                -D_JAVA_TARGET_DIR=${CMAKE_JAVA_TARGET_OUTPUT_DIR}
                 -D_JAVA_TARGET_OUTPUT_NAME=${_JAVA_TARGET_OUTPUT_NAME}
                 -D_JAVA_TARGET_OUTPUT_LINK=${_JAVA_TARGET_OUTPUT_LINK}
                 -P ${_JAVA_SYMLINK_SCRIPT}
             COMMAND ${CMAKE_COMMAND}
-                -D_JAVA_TARGET_DIR=${CMAKE_CURRENT_BINARY_DIR}
-                -D_JAVA_TARGET_OUTPUT_NAME=${CMAKE_CURRENT_BINARY_DIR}/${_JAVA_TARGET_OUTPUT_NAME}
+                -D_JAVA_TARGET_DIR=${CMAKE_JAVA_TARGET_OUTPUT_DIR}
+                -D_JAVA_TARGET_OUTPUT_NAME=${_JAVA_JAR_OUTPUT_PATH}
                 -D_JAVA_TARGET_OUTPUT_LINK=${_JAVA_TARGET_OUTPUT_LINK}
                 -P ${_JAVA_SYMLINK_SCRIPT}
             DEPENDS ${_JAVA_RESOURCE_LIST} ${_JAVA_DEPENDS} ${CMAKE_JAVA_CLASS_OUTPUT_PATH}/java_class_filelist
@@ -346,17 +366,17 @@ function(add_jar _TARGET_NAME _MANIFEST_TXT)
         )
     else ()
         add_custom_command(
-            OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${_JAVA_TARGET_OUTPUT_NAME}
+            OUTPUT ${_JAVA_JAR_OUTPUT_PATH}
             COMMAND ${Java_JAR_EXECUTABLE}
-                -cf ${CMAKE_CURRENT_BINARY_DIR}/${_JAVA_TARGET_OUTPUT_NAME}
+                -cf${_ENTRY_POINT_OPTION} ${_JAVA_JAR_OUTPUT_PATH} ${_ENTRY_POINT_VALUE}
                 ${_JAVA_RESOURCE_FILES} @java_class_filelist
             COMMAND ${CMAKE_COMMAND}
-                -D_JAVA_TARGET_DIR=${CMAKE_CURRENT_BINARY_DIR}
+                -D_JAVA_TARGET_DIR=${CMAKE_JAVA_TARGET_OUTPUT_DIR}
                 -D_JAVA_TARGET_OUTPUT_NAME=${_JAVA_TARGET_OUTPUT_NAME}
                 -D_JAVA_TARGET_OUTPUT_LINK=${_JAVA_TARGET_OUTPUT_LINK}
                 -P ${_JAVA_SYMLINK_SCRIPT}
             COMMAND ${Java_JAR_EXECUTABLE}
-                -ufm ${CMAKE_CURRENT_BINARY_DIR}/${_JAVA_TARGET_OUTPUT_NAME}
+                -ufm ${_JAVA_JAR_OUTPUT_PATH}
                 ${_MANIFEST_TXT}
             WORKING_DIRECTORY ${CMAKE_JAVA_CLASS_OUTPUT_PATH}
             DEPENDS ${_JAVA_RESOURCE_LIST} ${_JAVA_DEPENDS} ${CMAKE_JAVA_CLASS_OUTPUT_PATH}/java_class_filelist
@@ -365,14 +385,14 @@ function(add_jar _TARGET_NAME _MANIFEST_TXT)
     endif (CMAKE_JNI_TARGET)
 
     # Add the target and make sure we have the latest resource files.
-    add_custom_target(${_TARGET_NAME} ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${_JAVA_TARGET_OUTPUT_NAME})
+    add_custom_target(${_TARGET_NAME} ALL DEPENDS ${_JAVA_JAR_OUTPUT_PATH})
 
     set_property(
         TARGET
             ${_TARGET_NAME}
         PROPERTY
             INSTALL_FILES
-                ${CMAKE_CURRENT_BINARY_DIR}/${_JAVA_TARGET_OUTPUT_NAME}
+                ${_JAVA_JAR_OUTPUT_PATH}
     )
 
     if (_JAVA_TARGET_OUTPUT_LINK)
@@ -381,8 +401,8 @@ function(add_jar _TARGET_NAME _MANIFEST_TXT)
                 ${_TARGET_NAME}
             PROPERTY
                 INSTALL_FILES
-                    ${CMAKE_CURRENT_BINARY_DIR}/${_JAVA_TARGET_OUTPUT_NAME}
-                    ${CMAKE_CURRENT_BINARY_DIR}/${_JAVA_TARGET_OUTPUT_LINK}
+                    ${_JAVA_JAR_OUTPUT_PATH}
+                    ${CMAKE_JAVA_TARGET_OUTPUT_DIR}/${_JAVA_TARGET_OUTPUT_LINK}
         )
 
         if (CMAKE_JNI_TARGET)
@@ -391,7 +411,7 @@ function(add_jar _TARGET_NAME _MANIFEST_TXT)
                     ${_TARGET_NAME}
                 PROPERTY
                     JNI_SYMLINK
-                        ${CMAKE_CURRENT_BINARY_DIR}/${_JAVA_TARGET_OUTPUT_LINK}
+                        ${CMAKE_JAVA_TARGET_OUTPUT_DIR}/${_JAVA_TARGET_OUTPUT_LINK}
             )
         endif (CMAKE_JNI_TARGET)
     endif (_JAVA_TARGET_OUTPUT_LINK)
@@ -401,7 +421,7 @@ function(add_jar _TARGET_NAME _MANIFEST_TXT)
             ${_TARGET_NAME}
         PROPERTY
             JAR_FILE
-                ${CMAKE_CURRENT_BINARY_DIR}/${_JAVA_TARGET_OUTPUT_NAME}
+                ${_JAVA_JAR_OUTPUT_PATH}
     )
 
     set_property(

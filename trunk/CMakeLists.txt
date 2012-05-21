@@ -181,6 +181,10 @@ IF (NOT HDFJAVA_EXTERNALLY_CONFIGURED)
   SET (CMAKE_ARCHIVE_OUTPUT_DIRECTORY
       ${PROJECT_BINARY_DIR}/bin CACHE PATH "Single Directory for all static libraries."
   )
+  SET (CMAKE_JAVA_TARGET_OUTPUT_DIR 
+      ${PROJECT_BINARY_DIR}/bin CACHE PATH "Single Directory for all java jars."
+  )
+  
 ELSE (NOT HDFJAVA_EXTERNALLY_CONFIGURED)
   # if we are externally configured, but the project uses old cmake scripts
   # this may not be set and utilities like Hdetect will fail
