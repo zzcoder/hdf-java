@@ -10,11 +10,11 @@ INCLUDE_DIRECTORIES(
     ${HDFJAVA_LIB_DIR}
 )
 
-SET (CMAKE_JAVA_INCLUDE_PATH ${CMAKE_JAVA_INCLUDE_PATH} ${HDFJAVA_JARS_TO_EXPORT})
-
 ###########################################################################
 # TestH5Object
 ###########################################################################
+
+SET (CMAKE_JAVA_INCLUDE_PATH ${HDFJAVA_OBJECT_JARS})
 
 FILE (WRITE ${PROJECT_BINARY_DIR}/TestH5Object_Manifest.txt
 "Main-Class: test.object.misc.TestH5Object
