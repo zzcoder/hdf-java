@@ -20,7 +20,9 @@ import java.awt.Cursor;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.BufferedInputStream;
@@ -198,6 +200,7 @@ public class DefaultTreeView extends JPanel
         tree.setLargeModel(true);
         tree.setCellRenderer(new HTreeCellRenderer());
         tree.addMouseListener(new HTreeMouseAdapter());
+        tree.addKeyListener(new HTreeKeyAdapter());
         tree.setRootVisible(false);
         //tree.setShowsRootHandles(true);
         int rowheight = 23 + (int)((tree.getFont().getSize()-12)*0.5);
@@ -2424,7 +2427,7 @@ public class DefaultTreeView extends JPanel
     /**
      * Handle mouse clicks on data object in the tree view.
      * A right mouse-click to show the popup menu for user choice.
-     * A doulbe left-mouse-click to display the data content.
+     * A double left-mouse-click to display the data content.
      * A single left-mouse-click to select the current data object.
      */
     private class HTreeMouseAdapter extends MouseAdapter
@@ -2487,4 +2490,63 @@ public class DefaultTreeView extends JPanel
             }
         } // public void mousePressed(MouseEvent e)
     } // private class HTreeMouseAdapter extends MouseAdapter
+
+    /**
+     * Handle key pressed event.
+     */
+    private class HTreeKeyAdapter extends KeyAdapter
+    {
+
+    	@Override
+    	public void keyTyped(KeyEvent e) {
+    		// TODO Auto-generated method stub
+    		
+    	}
+
+    	@Override
+    	public void keyPressed(KeyEvent e) {
+    	}
+
+    	@Override
+    	public void keyReleased(KeyEvent e) {
+    		// TODO Auto-generated method stub
+    		
+    		// TODO Auto-generated method stub
+    		int key = e.getKeyCode();
+    		if (key == KeyEvent.VK_KP_LEFT ||
+    				key == KeyEvent.VK_KP_RIGHT ||
+    				key == KeyEvent.VK_KP_UP ||
+    				key == KeyEvent.VK_KP_DOWN ||
+    				key == KeyEvent.VK_LEFT ||
+    				key == KeyEvent.VK_RIGHT ||
+    				key == KeyEvent.VK_UP ||
+    				key == KeyEvent.VK_DOWN) {
+
+    			TreePath selPath = ((JTree)e.getComponent()).getSelectionPath();
+                if (selPath == null) {
+                    return;
+                }
+
+                DefaultMutableTreeNode theNode = (DefaultMutableTreeNode)
+                		selPath.getLastPathComponent();
+                
+                if (!theNode.equals(selectedNode))
+                {
+                    selectedTreePath = selPath;
+                    selectedNode = theNode;
+                    selectedObject = ((HObject)(selectedNode.getUserObject()));
+                    FileFormat theFile = selectedObject.getFileFormat();
+                    if ((theFile!= null) && !theFile.equals(selectedFile))
+                    {
+                        // a different file is selected, handle only one file a time
+                        selectedFile = theFile;
+                        tree.clearSelection();
+                        tree.setSelectionPath(selPath);
+                    }
+                    
+                    ((HDFView)viewer).showMetaData(selectedObject);
+                }
+    		}
+    	}
+    }
 }

@@ -1788,7 +1788,7 @@ ChangeListener, DropTargetListener
         }
     }
 
-    private void showMetaData(HObject obj)
+    public void showMetaData(HObject obj)
     {
         if (obj == null ||  currentFile == null) {
             return;
