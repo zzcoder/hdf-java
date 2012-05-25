@@ -1035,7 +1035,7 @@ herr_t obj_info_all(hid_t loc_id, const char *name, const H5L_info_t *info, void
         strcpy(*(datainfo->objname+datainfo->count), name);
 
 		*(datainfo->fno+datainfo->count) = object_info.fileno;
-		*(datainfo->objno+datainfo->count) = object_info.addr;
+		*(datainfo->objno+datainfo->count) = (unsigned long)object_info.addr;
 		/*
         if(info->type==H5L_TYPE_HARD)
             *(datainfo->objno+datainfo->count) = (unsigned long)info->u.address;
