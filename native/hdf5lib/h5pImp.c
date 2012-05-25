@@ -4351,7 +4351,6 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1elink_1file_1cache_1size
 {
 #if (H5_VERS_RELEASE > 6) /* H5_VERSION_GE(1,8,7) */
     herr_t   status;
-    jboolean isCopy;
     unsigned  s;
 
     status = H5Pget_elink_file_cache_size((hid_t)plist, &s);
