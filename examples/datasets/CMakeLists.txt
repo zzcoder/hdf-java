@@ -104,9 +104,9 @@ MACRO (ADD_H5_TEST resultfile resultcode)
           -D "TEST_PROGRAM=examples.datasets.${resultfile}"
           -D "TEST_LIBRARY_DIRECTORY=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
           -D "TEST_FOLDER=${HDFJAVA_EXAMPLES_BINARY_DIR}"
-          -D "TEST_OUTPUT=${HDFJAVA_EXAMPLES_DATASETS_BINARY_DIR}/${resultfile}.out"
+          -D "TEST_OUTPUT=datasets/${resultfile}.out"
           -D "TEST_EXPECT=${resultcode}"
-          -D "TEST_REFERENCE=${HDFJAVA_EXAMPLES_DATASETS_BINARY_DIR}/${resultfile}.txt"
+          -D "TEST_REFERENCE=datasets/${resultfile}.txt"
           -P "${HDFJAVA_RESOURCES_DIR}/runTest.cmake"
   )
   IF (NOT "${last_test}" STREQUAL "")
