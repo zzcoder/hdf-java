@@ -1497,12 +1497,15 @@ public final class Tools {
 
         String cname = data.getClass().getName();
         char dname = cname.charAt(cname.lastIndexOf("[") + 1);
+        
         minmax[0] = Float.MAX_VALUE;
         minmax[1] = -Float.MAX_VALUE;
 
         switch (dname) {
         case 'B':
             byte[] b = (byte[]) data;
+            minmax[0] = minmax[1] = b[0];
+            
             if (hasFillValue)
                 fill = ((byte[]) fillValue)[0];
             for (int i = 0; i < n; i++) {
@@ -1518,6 +1521,8 @@ public final class Tools {
             break;
         case 'S':
             short[] s = (short[]) data;
+            minmax[0] = minmax[1] = s[0];
+
             if (hasFillValue)
                 fill = ((short[]) fillValue)[0];
 
@@ -1534,6 +1539,8 @@ public final class Tools {
             break;
         case 'I':
             int[] ia = (int[]) data;
+            minmax[0] = minmax[1] = ia[0];
+
             if (hasFillValue)
                 fill = ((int[]) fillValue)[0];
 
@@ -1550,6 +1557,8 @@ public final class Tools {
             break;
         case 'J':
             long[] l = (long[]) data;
+            minmax[0] = minmax[1] = l[0];
+
             if (hasFillValue)
                 fill = ((long[]) fillValue)[0];
             for (int i = 0; i < n; i++) {
@@ -1565,6 +1574,8 @@ public final class Tools {
             break;
         case 'F':
             float[] f = (float[]) data;
+            minmax[0] = minmax[1] = f[0];
+
             if (hasFillValue)
                 fill = ((float[]) fillValue)[0];
             for (int i = 0; i < n; i++) {
@@ -1581,6 +1592,8 @@ public final class Tools {
             break;
         case 'D':
             double[] d = (double[]) data;
+            minmax[0] = minmax[1] = d[0];
+
             if (hasFillValue)
                 fill = ((double[]) fillValue)[0];
             for (int i = 0; i < n; i++) {
@@ -1786,8 +1799,14 @@ public final class Tools {
             break;
         } // switch (dname)
 
-        avgstd[0] = avg;
-        avgstd[1] = Math.sqrt(var / (npoints - 1));
+        if (npoints <=1) {
+        	if (npoints <1)
+        		avgstd[0] = fill;
+            avgstd[1] = 0;
+        } else {
+            avgstd[0] = avg;
+            avgstd[1] = Math.sqrt(var / (npoints - 1));
+        }
 
         return retval;
     }
