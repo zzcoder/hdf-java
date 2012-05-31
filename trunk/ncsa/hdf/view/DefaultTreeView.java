@@ -2098,6 +2098,7 @@ public class DefaultTreeView extends JPanel
         ((JFrame)viewer).setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         try {
             theView = Tools.newInstance(theClass, initargs);
+            
             viewer.addDataView((DataView)theView);
         }finally {
             ((JFrame)viewer).setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));

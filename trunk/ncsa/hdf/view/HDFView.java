@@ -1677,12 +1677,12 @@ ChangeListener, DropTargetListener
                     getTitle(), JOptionPane.ERROR_MESSAGE);
         }
         if (dataObject == null) {
-            toolkit.beep();
-            JOptionPane
-                    .showMessageDialog(
-                            this,
-                            "Unsupported DataObject: the data object is not supported.",
-                            getTitle(), JOptionPane.ERROR_MESSAGE);
+//            toolkit.beep();
+//            JOptionPane
+//                    .showMessageDialog(
+//                            this,
+//                            "Unsupported DataObject: the data object is not supported.",
+//                            getTitle(), JOptionPane.ERROR_MESSAGE);
             return;
 
         }

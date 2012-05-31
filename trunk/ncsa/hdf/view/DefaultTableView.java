@@ -364,6 +364,7 @@ implements TableView, ActionListener, MouseListener
         {
             viewer.showStatus("Creating table failed - "+dataset.getName());
             dataset = null;
+            super.dispose();
             return;
         }
         table.setName("data");
@@ -1571,6 +1572,7 @@ implements TableView, ActionListener, MouseListener
                     "No data read",
                     "ScalarDS createTable:"+getTitle(),
                     JOptionPane.WARNING_MESSAGE);
+                return null;
             }
             
             if (Tools.applyBitmask(dataValue, bitmask, bitmaskOP) ) {
@@ -1597,7 +1599,7 @@ implements TableView, ActionListener, MouseListener
             if (Array.getLength(dataValue)<=rows)
                 cols = 1;
         }
-        catch (Exception ex) {
+        catch (Throwable ex) {
             JOptionPane.showMessageDialog(
                 this,
                 ex,
@@ -1902,7 +1904,7 @@ implements TableView, ActionListener, MouseListener
         try { 
             dataValue = d.getData(); 
         }
-        catch (Exception ex) {
+        catch (Throwable ex) {
             toolkit.beep();
             JOptionPane.showMessageDialog(
                 this,
@@ -2481,8 +2483,6 @@ implements TableView, ActionListener, MouseListener
             int datasetSize = Array.getLength(data);
             String cname = data.getClass().getName();
             char dname = cname.charAt(cname.lastIndexOf("[")+1);
-            
-  
 
           if (dname == 'B') { 
                 long datasetByteSize = datasetSize;
