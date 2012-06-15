@@ -122,9 +122,9 @@ public class HDFView extends JFrame implements ViewManager, ActionListener, Chan
     private static List           helpViews;
 
     private static final String   aboutHDFView     = "HDF Viewer, " + "Version " + ViewProperties.VERSION + "\n"
-                                                           + "For " + System.getProperty("os.name") + "\n\n"
-                                                           + "Copyright " + '\u00a9' + " 2006-2011 The HDF Group.\n"
-                                                           + "All rights reserved.";
+            + "For " + System.getProperty("os.name") + "\n\n"
+            + "Copyright " + '\u00a9' + " 2006-2011 The HDF Group.\n"
+            + "All rights reserved.";
 
     private static final String   JAVA_COMPILER    = "jdk 1.6";
 
@@ -1612,13 +1612,13 @@ public class HDFView extends JFrame implements ViewManager, ActionListener, Chan
         }
         String fullPath = dataObject.getPath() + dataObject.getName();
         String cmd = "SHOW WINDOW" + dataObject.getFID() + fullPath; // make the
-                                                                     // window
-                                                                     // to be
-                                                                     // uniquie:
-                                                                     // fid+path
+        // window
+        // to be
+        // uniquie:
+        // fid+path
 
         frame.setName(cmd); // data windows are identified by full path the file
-                            // id
+        // id
         frame.setMaximizable(true);
         frame.setClosable(true);
         frame.setResizable(true);
@@ -2106,7 +2106,7 @@ public class HDFView extends JFrame implements ViewManager, ActionListener, Chan
             if (!moduleListTreeView.contains(extTreeViews[i])) {
                 try {
                     extClassLoader.loadClass(extTreeViews[i]); // make sure the
-                                                               // class exists
+                    // class exists
                     moduleListTreeView.add(extTreeViews[i]);
                 }
                 catch (Exception ex) {
@@ -2119,7 +2119,7 @@ public class HDFView extends JFrame implements ViewManager, ActionListener, Chan
             if (!moduleListImageView.contains(extImageViews[i])) {
                 try {
                     extClassLoader.loadClass(extImageViews[i]); // make sure the
-                                                                // class exists
+                    // class exists
                     moduleListImageView.add(extImageViews[i]);
                 }
                 catch (Exception ex) {

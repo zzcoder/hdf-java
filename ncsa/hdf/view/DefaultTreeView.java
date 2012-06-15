@@ -420,30 +420,30 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
             boolean state = !(((Group) selectedObject).isRoot());
             popupMenu.getComponent(5).setEnabled(state); // "Copy" menuitem
             popupMenu.getComponent(6).setEnabled(isWritable); // "Paste"
-                                                              // menuitem
+            // menuitem
             popupMenu.getComponent(7).setEnabled(state && isWritable); // "Delete"
-                                                                       // menuitem
+            // menuitem
             popupMenu.getComponent(10).setEnabled(state); // "save to" menuitem
             popupMenu.getComponent(11).setEnabled(state && isWritable); // "rename"
-                                                                        // menuitem
+            // menuitem
             popupMenu.getComponent(8).setEnabled(
                     (selectedObject.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5)))
-                            && state && isWritable); // "cut" menuitem
+                    && state && isWritable); // "cut" menuitem
         }
         else {
             popupMenu.getComponent(0).setEnabled(true);
             popupMenu.getComponent(1).setEnabled(true);
             popupMenu.getComponent(5).setEnabled(true); // "Copy" menuitem
             popupMenu.getComponent(6).setEnabled(isWritable); // "Paste"
-                                                              // menuitem
+            // menuitem
             popupMenu.getComponent(7).setEnabled(isWritable); // "Delete"
-                                                              // menuitem
+            // menuitem
             popupMenu.getComponent(10).setEnabled(true); // "save to" menuitem
             popupMenu.getComponent(11).setEnabled(isWritable); // "rename"
-                                                               // menuitem
+            // menuitem
             popupMenu.getComponent(8).setEnabled(
                     (selectedObject.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5)))
-                            && isWritable); // "cut" menuitem
+                    && isWritable); // "cut" menuitem
         }
 
         // adding table is only supported by HDF5
@@ -456,11 +456,11 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
                 boolean state = (((Group) selectedObject).isRoot());
                 separator.setVisible(isWritable && state);
                 setLibVerBoundsItem.setVisible(isWritable && state); // added
-                                                                     // only if
-                                                                     // it is
-                                                                     // HDF5format,
-                                                                     // iswritable
-                                                                     // & isroot
+                // only if
+                // it is
+                // HDF5format,
+                // iswritable
+                // & isroot
             }
             else {
                 separator.setVisible(false);
@@ -524,7 +524,7 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
         catch (Exception ex) {
             toolkit.beep();
             JOptionPane
-                    .showMessageDialog(this, ex.getMessage() + "\n" + filename, "HDFView", JOptionPane.ERROR_MESSAGE);
+            .showMessageDialog(this, ex.getMessage() + "\n" + filename, "HDFView", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -581,7 +581,7 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
         catch (Exception ex) {
             toolkit.beep();
             JOptionPane
-                    .showMessageDialog(this, ex.getMessage() + "\n" + filename, "HDFView", JOptionPane.ERROR_MESSAGE);
+            .showMessageDialog(this, ex.getMessage() + "\n" + filename, "HDFView", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -630,7 +630,7 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
         catch (Exception ex) {
             toolkit.beep();
             JOptionPane
-                    .showMessageDialog(this, ex.getMessage() + "\n" + filename, "HDFView", JOptionPane.ERROR_MESSAGE);
+            .showMessageDialog(this, ex.getMessage() + "\n" + filename, "HDFView", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -2101,8 +2101,8 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
     private class HTreeCellRenderer extends DefaultTreeCellRenderer {
         private static final long serialVersionUID = -9030708781106435297L;
         private Icon              h4Icon, h5Icon, datasetIcon, imageIcon, tableIcon, textIcon, openFolder, closeFolder,
-                datasetIconA, imageIconA, tableIconA, textIconA, openFolderA, closeFolderA, datatypeIcon,
-                datatypeIconA, questionIcon;
+        datasetIconA, imageIconA, tableIconA, textIconA, openFolderA, closeFolderA, datatypeIcon,
+        datatypeIconA, questionIcon;
 
         private HTreeCellRenderer() {
             super();
