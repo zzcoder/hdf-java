@@ -1725,12 +1725,12 @@ public class H5File extends FileFormat {
                 }
 
                 if (attr.getType().getDatatypeClass() == Datatype.CLASS_REFERENCE && attrValue instanceof String) { // reference
-                                                                                                                    // is
-                                                                                                                    // a
-                                                                                                                    // path+name
-                                                                                                                    // to
-                                                                                                                    // the
-                                                                                                                    // object
+                    // is
+                    // a
+                    // path+name
+                    // to
+                    // the
+                    // object
                     attrValue = H5.H5Rcreate(getFID(), (String) attrValue, HDF5Constants.H5R_OBJECT, -1);
                 }
                 else if (Array.get(attrValue, 0) instanceof String) {
@@ -1937,7 +1937,7 @@ public class H5File extends FileFormat {
 
         long[] rootOID = { 0 };
         H5Group rootGroup = new H5Group(this, "/", null, // root node does not
-                                                         // have a parent path
+                // have a parent path
                 null); // root node does not have a parent node
 
         root = new DefaultMutableTreeNode(rootGroup) {
