@@ -1736,7 +1736,7 @@ implements TableView, ActionListener, MouseListener
                     if (isUINT64) {
                         Long l = (Long)theValue;
                         if ( l< 0) {
-                            l = (l << 1)>>1;
+                            l = (l << 1)>>>1;
                             BigInteger big1 = new BigInteger("9223372036854775808"); // 2^65
                             BigInteger big2 = new BigInteger(l.toString()); 
                             BigInteger big = big1.add(big2);
