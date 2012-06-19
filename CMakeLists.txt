@@ -166,6 +166,7 @@ SET (CMAKE_MODULE_PATH ${HDFJAVA_RESOURCES_DIR})
 INCLUDE (${HDFJAVA_RESOURCES_DIR}/UseJava.cmake)
 INCLUDE (${HDFJAVA_RESOURCES_DIR}/HDFMacros.cmake)
 INCLUDE (${HDFJAVA_RESOURCES_DIR}/HDF45Macros.cmake)
+INCLUDE (${HDFJAVA_RESOURCES_DIR}/HDFJavaMacros.cmake)
 
 #-----------------------------------------------------------------------------
 # Setup output Directories
