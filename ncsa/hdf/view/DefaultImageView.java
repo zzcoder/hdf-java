@@ -92,6 +92,7 @@ import javax.swing.text.NumberFormatter;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 
+import ncsa.hdf.object.CompoundDS;
 import ncsa.hdf.object.Datatype;
 import ncsa.hdf.object.Group;
 import ncsa.hdf.object.HObject;
@@ -1702,8 +1703,16 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
                 try {
                     double[] minmax = new double[2];
                     double[] stat = new double[2];
-                    Tools.findMinMax(data, minmax, dataset.getFillValue());
-                    if (Tools.computeStatistics(data, stat, dataset
+                    
+            		Object theData = null;
+        			theData = getSelectedData();
+
+            		if (theData == null) {
+            			theData = data;
+            		}
+                    
+                    Tools.findMinMax(theData, minmax, dataset.getFillValue());
+                    if (Tools.computeStatistics(theData, stat, dataset
                             .getFillValue()) > 0) {
                         String statistics = "Min                      = "
                                 + minmax[0] + "\nMax                      = "
