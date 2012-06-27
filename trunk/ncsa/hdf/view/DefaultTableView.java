@@ -856,54 +856,45 @@ implements TableView, ActionListener, MouseListener
                 lastPage();
             }
             else if (cmd.equals("Show statistics")) {
-                try {
-                    Object theData = null;
+            	try {
+            		Object theData = null;
+        			theData = getSelectedData();
 
-                    if (dataset instanceof CompoundDS)
-                    {
-                        theData = getSelectedData();
-                        int cols = table.getSelectedColumnCount();
-                        //if (!(dataset instanceof ScalarDS))  return;
-                        if ((dataset instanceof CompoundDS) && (cols>1))
-                        {
-                            JOptionPane.showMessageDialog(this,
-                                    "Please select one colunm a time for compound dataset.",
-                                    getTitle(),
-                                    JOptionPane.ERROR_MESSAGE);
-                            return;
-                        }
-                        else if (theData == null)
-                        {
-                            JOptionPane.showMessageDialog(this,
-                                    "Select a column to show statistics.",
-                                    getTitle(),
-                                    JOptionPane.ERROR_MESSAGE);
-                            return;
-                        }
-                    } else {
-                        theData = dataValue;
-                    }
+            		if (dataset instanceof CompoundDS)
+            		{
+            			int cols = table.getSelectedColumnCount();
+            			if (cols !=1)
+            			{
+            				JOptionPane.showMessageDialog(this,
+            						"Please select one colunm a time for compound dataset.",
+            						getTitle(),
+            						JOptionPane.ERROR_MESSAGE);
+            				return;
+            			}
+            		} else if (theData == null) {
+            			theData = dataValue;
+            		}
 
-                    double[] minmax = new double[2];
-                    double[] stat = new double[2];
-                    Tools.findMinMax(theData, minmax, fillValue);
-                    if (Tools.computeStatistics(theData, stat, fillValue) > 0) {
-                        String statistics = "Min                      = "+minmax[0] +
-                        "\nMax                      = "+minmax[1] +
-                        "\nMean                     = "+stat[0] +
-                        "\nStandard deviation = "+stat[1];
-                        JOptionPane.showMessageDialog(this, statistics, "Statistics", JOptionPane.INFORMATION_MESSAGE);
-                    }
+            		double[] minmax = new double[2];
+            		double[] stat = new double[2];
+            		Tools.findMinMax(theData, minmax, fillValue);
+            		if (Tools.computeStatistics(theData, stat, fillValue) > 0) {
+            			String statistics = "Min                      = "+minmax[0] +
+            					"\nMax                      = "+minmax[1] +
+            					"\nMean                     = "+stat[0] +
+            					"\nStandard deviation = "+stat[1];
+            			JOptionPane.showMessageDialog(this, statistics, "Statistics", JOptionPane.INFORMATION_MESSAGE);
+            		}
 
-                    theData = null;
-                    System.gc();
-                } catch (Exception ex) {
-                    toolkit.beep();
-                    JOptionPane.showMessageDialog((JFrame)viewer,
-                            ex,
-                            getTitle(),
-                            JOptionPane.ERROR_MESSAGE);
-                }
+            		theData = null;
+            		System.gc();
+            	} catch (Exception ex) {
+            		toolkit.beep();
+            		JOptionPane.showMessageDialog((JFrame)viewer,
+            				ex,
+            				getTitle(),
+            				JOptionPane.ERROR_MESSAGE);
+            	}
             }
             else if (cmd.equals("Math conversion")) {
                 try { mathConversion(); }
