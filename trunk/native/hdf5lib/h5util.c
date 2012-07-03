@@ -164,12 +164,12 @@ int h5str_sprintf(h5str_t *str, hid_t container, hid_t tid, void *ptr) {
     else if (H5Tequal(tid, H5T_NATIVE_LONG)) {
         this_str = (char*) malloc(23);
         memcpy(&tmp_long, ptr, sizeof(long));
-        sprintf(this_str, "%d", tmp_long);
+        sprintf(this_str, "%ld", tmp_long);
     }
     else if (H5Tequal(tid, H5T_NATIVE_ULONG)) {
         this_str = (char*) malloc(23);
         memcpy(&tmp_ulong, ptr, sizeof(unsigned long));
-        sprintf(this_str, "%u", tmp_ulong);
+        sprintf(this_str, "%lu", tmp_ulong);
     }
     else if (H5Tequal(tid, H5T_STD_REF_OBJ)) {
         this_str = (char*) malloc(23);
@@ -184,7 +184,7 @@ int h5str_sprintf(h5str_t *str, hid_t container, hid_t tid, void *ptr) {
     else if (H5Tequal(tid, H5T_NATIVE_DOUBLE)) {
         this_str = (char*) malloc(25);
         memcpy(&tmp_double, ptr, sizeof(double));
-        sprintf(this_str, "%f", tmp_double);
+        sprintf(this_str, "%Lf", tmp_double);
     }
     else if (tclass == H5T_ENUM) {
         char enum_name[1024];

@@ -30,6 +30,7 @@ import java.io.FileReader;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.math.BigInteger;
 import java.util.BitSet;
 import java.util.StringTokenizer;
 
@@ -40,7 +41,6 @@ import ncsa.hdf.object.Datatype;
 import ncsa.hdf.object.FileFormat;
 import ncsa.hdf.object.Group;
 import ncsa.hdf.object.ScalarDS;
-import ncsa.hdf.view.ViewProperties;
 import ncsa.hdf.view.ViewProperties.BITMASK_OP;
 
 /**
@@ -51,31 +51,32 @@ import ncsa.hdf.view.ViewProperties.BITMASK_OP;
  * @version 2.4 9/6/2007
  */
 public final class Tools {
-    public static final long   MAX_INT8        = 127;
-    public static final long   MAX_UINT8       = 255;
-    public static final long   MAX_INT16       = 32767;
-    public static final long   MAX_UINT16      = 65535;
-    public static final long   MAX_INT32       = 2147483647;
-    public static final long   MAX_UINT32      = 4294967295L;
-    public static final long   MAX_INT64       = 9223372036854775807L;
+    public static final long       MAX_INT8        = 127;
+    public static final long       MAX_UINT8       = 255;
+    public static final long       MAX_INT16       = 32767;
+    public static final long       MAX_UINT16      = 65535;
+    public static final long       MAX_INT32       = 2147483647;
+    public static final long       MAX_UINT32      = 4294967295L;
+    public static final long       MAX_INT64       = 9223372036854775807L;
+    public static final BigInteger MAX_UINT64      = new BigInteger("18446744073709551615");
 
     /** Key for JPEG image file type. */
-    public static final String FILE_TYPE_JPEG  = "JPEG";
+    public static final String     FILE_TYPE_JPEG  = "JPEG";
 
     /** Key for TIFF image file type. */
-    public static final String FILE_TYPE_TIFF  = "TIFF";
+    public static final String     FILE_TYPE_TIFF  = "TIFF";
 
     /** Key for PNG image file type. */
-    public static final String FILE_TYPE_PNG   = "PNG";
+    public static final String     FILE_TYPE_PNG   = "PNG";
 
     /** Key for GIF image file type. */
-    public static final String FILE_TYPE_GIF   = "GIF";
+    public static final String     FILE_TYPE_GIF   = "GIF";
 
     /** Key for BMP image file type. */
-    public static final String FILE_TYPE_BMP   = "BMP";
+    public static final String     FILE_TYPE_BMP   = "BMP";
 
     /** Key for all image file type. */
-    public static final String FILE_TYPE_IMAGE = "IMG";
+    public static final String     FILE_TYPE_IMAGE = "IMG";
 
     /** Print out debug information */
     public static final void debug(Object caller, Object msg) {

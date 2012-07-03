@@ -24,6 +24,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
+import java.math.BigInteger;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Enumeration;
@@ -486,6 +487,26 @@ public class NewAttributeDialog extends JDialog implements ActionListener, ItemL
             tclass = Datatype.CLASS_INTEGER;
             tsize = 8;
             torder = Datatype.NATIVE;
+        }
+        else if (dt.startsWith("unsigned long")) {
+            long[] i = new long[arraySize];
+            BigInteger lv = BigInteger.valueOf(0);
+            for (int j = 0; j < count; j++) {
+                theToken = st.nextToken().trim();
+                try {
+                    lv = new BigInteger(theToken);
+                }
+                catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(), JOptionPane.ERROR_MESSAGE);
+                    return false;
+                }
+                i[j] = (long) lv.longValue();
+            }
+            value = i;
+            tclass = Datatype.CLASS_INTEGER;
+            tsize = 8;
+            torder = Datatype.NATIVE;
+            tsign = Datatype.SIGN_NONE;
         }
         else if (dt.startsWith("float")) {
             float[] f = new float[arraySize];

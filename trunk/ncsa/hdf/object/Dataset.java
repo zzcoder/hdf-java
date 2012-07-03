@@ -1298,4 +1298,13 @@ public abstract class Dataset extends HObject {
 
         enumConverted = b;
     }
+
+    /**
+     * Get Class of the original data buffer if converted.
+     * 
+     * @return the Class of originalBuf
+     */
+    public final Class getOriginalClass() {
+        return originalBuf.getClass();
+    }
 }

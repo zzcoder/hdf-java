@@ -24,6 +24,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.lang.reflect.Array;
+import java.math.BigInteger;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -149,6 +150,7 @@ public class DefaultMetaDataView extends JDialog implements ActionListener, Meta
         }
         JPanel bPanel = new JPanel();
         JButton b = new JButton("  Close  ");
+        b.setName("Close");
         b.setMnemonic(KeyEvent.VK_C);
         b.setActionCommand("Close");
         b.addActionListener(this);
@@ -936,6 +938,7 @@ public class DefaultMetaDataView extends JDialog implements ActionListener, Meta
             }
         };
 
+        attrTable.setName("attributes");
         attrTable.setRowSelectionAllowed(false);
         attrTable.setCellSelectionEnabled(true);
         attrTable.getTableHeader().setReorderingAllowed(false);
@@ -1149,7 +1152,7 @@ public class DefaultMetaDataView extends JDialog implements ActionListener, Meta
                 }
 
                 if (isUnsigned && (d < 0)) {
-                    JOptionPane.showMessageDialog(getOwner(), "Negative value for unsigned integer: " + newValue,
+                    JOptionPane.showMessageDialog(getOwner(), "Negative value for unsigned integer: " + theToken,
                             getTitle(), JOptionPane.ERROR_MESSAGE);
                     return;
                 }
@@ -1167,7 +1170,7 @@ public class DefaultMetaDataView extends JDialog implements ActionListener, Meta
 
                         if ((d > max) || (d < min)) {
                             JOptionPane.showMessageDialog(getOwner(), "Data is out of range[" + min + ", " + max
-                                    + "]: " + newValue, getTitle(), JOptionPane.ERROR_MESSAGE);
+                                    + "]: " + theToken, getTitle(), JOptionPane.ERROR_MESSAGE);
                         }
                         else {
                             Array.setByte(data, i, (byte) d);
@@ -1186,7 +1189,7 @@ public class DefaultMetaDataView extends JDialog implements ActionListener, Meta
 
                         if ((d > max) || (d < min)) {
                             JOptionPane.showMessageDialog(getOwner(), "Data is out of range[" + min + ", " + max
-                                    + "]: " + newValue, getTitle(), JOptionPane.ERROR_MESSAGE);
+                                    + "]: " + theToken, getTitle(), JOptionPane.ERROR_MESSAGE);
                         }
                         else {
                             Array.setShort(data, i, (short) d);
@@ -1205,7 +1208,7 @@ public class DefaultMetaDataView extends JDialog implements ActionListener, Meta
 
                         if ((d > max) || (d < min)) {
                             JOptionPane.showMessageDialog(getOwner(), "Data is out of range[" + min + ", " + max
-                                    + "]: " + newValue, getTitle(), JOptionPane.ERROR_MESSAGE);
+                                    + "]: " + theToken, getTitle(), JOptionPane.ERROR_MESSAGE);
                         }
                         else {
                             Array.setInt(data, i, (int) d);
@@ -1213,7 +1216,30 @@ public class DefaultMetaDataView extends JDialog implements ActionListener, Meta
                         break;
                     }
                     case 'J':
-                        Array.setLong(data, i, (long) d);
+                        if (isUnsigned) {
+                            if (theToken != null) {
+                                String theValue = theToken;
+                                BigInteger Jmax = new BigInteger("18446744073709551615");
+                                BigInteger big = new BigInteger(theValue); 
+                                if ((big.compareTo(Jmax)>0) || (big.compareTo(BigInteger.ZERO)<0)) {
+                                    JOptionPane.showMessageDialog(getOwner(), "Data is out of range[" + min + ", " + max
+                                            + "]: " + theToken, getTitle(), JOptionPane.ERROR_MESSAGE);
+                                }
+                                Array.setLong(data, i, big.longValue());
+                            }
+                            else
+                                Array.set(data, i, (Object)theToken);
+                        }
+                        else {
+                            min = Long.MIN_VALUE;
+                            max = Long.MAX_VALUE;
+                            if ((d > max) || (d < min)) {
+                                JOptionPane.showMessageDialog(getOwner(), "Data is out of range[" + min + ", " + max
+                                        + "]: " + theToken, getTitle(), JOptionPane.ERROR_MESSAGE);
+                            }
+                
+                            Array.setLong(data, i, (long) d);
+                        }
                         break;
                     case 'F':
                         Array.setFloat(data, i, (float) d);
@@ -1222,7 +1248,7 @@ public class DefaultMetaDataView extends JDialog implements ActionListener, Meta
                         Array.setDouble(data, i, d);
                         break;
                     default:
-                        Array.set(data, i, theToken);
+                        Array.set(data, i, (Object)theToken);
                         break;
                 }
             }

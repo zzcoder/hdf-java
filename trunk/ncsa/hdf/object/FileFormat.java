@@ -62,6 +62,13 @@ public abstract class FileFormat extends File {
     private static final long                    serialVersionUID   = -4700692313888420796L;
 
     /**
+     * File first time access flag for open file. With this access flag, added
+     * to the regular value, indicates this file has no existing state.
+     * 
+     */
+    public static final int                      OPEN_NEW           = 64;
+
+    /**
      * File access flag for read-only permission. With this access flag,
      * modifications to the file will not be allowed.
      * 
@@ -1872,6 +1879,30 @@ public abstract class FileFormat extends File {
      * @throws Exception
      */
     public int[] getLibBounds() throws Exception {
+        throw new UnsupportedOperationException("Unsupported operation. Subclasses must implement it.");
+    }
+
+    public static int getIndexTypeValue(String strtype) {
+        throw new UnsupportedOperationException("Unsupported operation. Subclasses must implement it.");
+    }
+
+    public int getIndexType(String strtype) {
+        throw new UnsupportedOperationException("Unsupported operation. Subclasses must implement it.");
+    }
+
+    public void setIndexType(int indexType) {
+        throw new UnsupportedOperationException("Unsupported operation. Subclasses must implement it.");
+    }
+
+    public static int getIndexOrderValue(String strorder) {
+        throw new UnsupportedOperationException("Unsupported operation. Subclasses must implement it.");
+    }
+
+    public int getIndexOrder(String strorder) {
+        throw new UnsupportedOperationException("Unsupported operation. Subclasses must implement it.");
+    }
+
+    public void setIndexOrder(int indexOrder) {
         throw new UnsupportedOperationException("Unsupported operation. Subclasses must implement it.");
     }
 

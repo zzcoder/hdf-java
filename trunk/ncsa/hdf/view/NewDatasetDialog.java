@@ -527,12 +527,6 @@ public class NewDatasetDialog extends JDialog implements ActionListener, ItemLis
                     sizeChoice.addItem("32");
                     sizeChoice.addItem("64");
                 }
-
-                if (sizeChoice.getSelectedItem().equals("64")) {
-                    // unsigned 64 bit integer is not allowed in Java
-                    checkUnsigned.setSelected(false);
-                    checkUnsigned.setEnabled(false);
-                }
             }
             else if (idx == 1) { // FLOAT
                 sizeChoice.setEnabled(true);
@@ -571,14 +565,7 @@ public class NewDatasetDialog extends JDialog implements ActionListener, ItemLis
         }
         else if (source.equals(sizeChoice)) {
             if (classChoice.getSelectedIndex() == 0) {
-                if (sizeChoice.getSelectedItem().equals("64")) {
-                    // unsigned 64 bit integer is not allowed in Java
-                    checkUnsigned.setSelected(false);
-                    checkUnsigned.setEnabled(false);
-                }
-                else {
-                    checkUnsigned.setEnabled(true);
-                }
+                checkUnsigned.setEnabled(true);
             }
         }
         else if (source.equals(rankChoice)) {
@@ -1166,7 +1153,7 @@ public class NewDatasetDialog extends JDialog implements ActionListener, ItemLis
         if (dataset instanceof ScalarDS) {
             ScalarDS sd = (ScalarDS) dataset;
             if (sd.isUnsigned()) {
-                theData = Dataset.convertToUnsignedC(theData);
+                theData = Dataset.convertToUnsignedC(theData, null);
             }
         }
 
@@ -1221,7 +1208,7 @@ public class NewDatasetDialog extends JDialog implements ActionListener, ItemLis
         // in version 2.4, unsigned image data is converted to signed data
         // to write data, the data needs to converted back to unsigned.
         if (dataset.isUnsigned()) {
-            theData = Dataset.convertToUnsignedC(theData);
+            theData = Dataset.convertToUnsignedC(theData, null);
         }
 
         int w = imageView.getSelectedArea().width;

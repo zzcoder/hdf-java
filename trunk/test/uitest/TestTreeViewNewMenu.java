@@ -1,15 +1,15 @@
 package test.uitest;
 
+import static org.fest.swing.data.TableCell.row;
 import static org.fest.swing.finder.WindowFinder.findFrame;
 import static org.fest.swing.launcher.ApplicationLauncher.application;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 
 import javax.swing.JFrame;
 
-import static org.fest.swing.data.TableCell.row;
 import org.fest.swing.core.BasicRobot;
 import org.fest.swing.core.GenericTypeMatcher;
 import org.fest.swing.core.Robot;
@@ -34,35 +34,76 @@ public class TestTreeViewNewMenu {
         if(hdf_file.exists())
             hdf_file.delete();
 
-        JMenuItemFixture fileMenuItem = mainFrameFixture.menuItemWithPath("File","New","HDF5");
-        fileMenuItem.robot.waitForIdle();
-        fileMenuItem.requireVisible();
-        fileMenuItem.click();
-
-        JFileChooserFixture fileChooser = JFileChooserFinder.findFileChooser().using(mainFrameFixture.robot);
-        fileChooser.fileNameTextBox().setText(name+".h5");
-        fileChooser.approve();
-
-        assertTrue("File-HDF5 file created", hdf_file.exists());
+        try {
+            JMenuItemFixture fileMenuItem = mainFrameFixture.menuItemWithPath("File","New","HDF5");
+            fileMenuItem.robot.waitForIdle();
+            fileMenuItem.requireVisible();
+            fileMenuItem.click();
+            mainFrameFixture.robot.waitForIdle();
+    
+            JFileChooserFixture fileChooser = JFileChooserFinder.findFileChooser().using(mainFrameFixture.robot);
+            fileChooser.fileNameTextBox().setText(name+".h5");
+            fileChooser.approve();
+            mainFrameFixture.robot.waitForIdle();
+    
+            assertTrue("File-HDF5 file created", hdf_file.exists());
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        catch (AssertionError ae) {
+            ae.printStackTrace();
+        }
 
         return hdf_file;
     }
     
     private void closeFile(File hdf_file, boolean delete_file) {
-        JMenuItemFixture fileMenuItem = mainFrameFixture.menuItemWithPath("File","Close All");
-        fileMenuItem.robot.waitForIdle();
-        fileMenuItem.requireVisible();
-        fileMenuItem.click();
-        mainFrameFixture.robot.waitForIdle();
+        try {
+            JMenuItemFixture fileMenuItem = mainFrameFixture.menuItemWithPath("File","Close All");
+            fileMenuItem.robot.waitForIdle();
+            fileMenuItem.requireVisible();
+            fileMenuItem.click();
+            mainFrameFixture.robot.waitForIdle();
+    
+            if(delete_file) {
+                assertTrue("File file deleted", hdf_file.delete());
+                assertFalse("File file gone", hdf_file.exists());
+            }
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        catch (AssertionError ae) {
+            ae.printStackTrace();
+        }
+    }
+    
+    private static void clearRemovePropertyFile() {
+        // the version of the HDFViewer
+        final String VERSION = "2.8";
 
-        if(delete_file) {
-            assertTrue("File file deleted", hdf_file.delete());
-            assertFalse("File file gone", hdf_file.exists());
+        // the local property file name
+        // look for the property file at the use home directory
+        String fn = ".hdfview" + VERSION.substring(0, 3);
+        String uh = System.getProperty("user.home") + File.separator + fn;
+        String ud = System.getProperty("user.dir") + File.separator + fn;
+
+        File prop_file = new File(uh);
+        if (prop_file.exists()) {
+            prop_file.delete();
+        }
+        else {
+            prop_file = new File(ud);
+            if (prop_file.exists()) {
+                prop_file.delete();
+            }
         }
     }
 
-    @BeforeClass 
+    @BeforeClass
     public static void setUpOnce() {
+        clearRemovePropertyFile();
         FailOnThreadViolationRepaintManager.install();
         Robot robot = BasicRobot.robotWithNewAwtHierarchy(); 
         String envvalue = System.getProperty("hdfview.root");
@@ -73,11 +114,19 @@ public class TestTreeViewNewMenu {
             }
         }).withTimeout(10000).using(robot);
         mainFrameFixture.robot.waitForIdle();
+        
         mainFrameFixture.requireVisible();     
     }
 
     @AfterClass
     public static void finishApplication() {
+        File hdf_file = new File("testgrp.h5");
+        if (hdf_file.exists())
+            hdf_file.delete();
+        hdf_file = new File("testds.h5");
+        if (hdf_file.exists())
+            hdf_file.delete();
+
         mainFrameFixture.robot.waitForIdle();
         //mainFrameFixture.requireNotVisible();
         mainFrameFixture.cleanUp();
@@ -85,9 +134,9 @@ public class TestTreeViewNewMenu {
 
     @Test 
     public void createNewHDF5Group() {
-        try {
-            File hdf_file = createHDF5File("testgrp");
+        File hdf_file = createHDF5File("testgrp");
 
+        try {
             JTreeFixture filetree = mainFrameFixture.tree().focus();
             filetree.requireVisible();
             assertTrue("File-Dataset-HDF5 filetree shows:", filetree.target.getRowCount()==1);
@@ -95,8 +144,10 @@ public class TestTreeViewNewMenu {
 
             JMenuItemFixture groupMenuItem = filetree.showPopupMenuAt(0).menuItemWithPath("New","Group");
             groupMenuItem.robot.waitForIdle();
+            
             groupMenuItem.requireVisible();
             groupMenuItem.click();
+            mainFrameFixture.robot.waitForIdle();
 
             mainFrameFixture.dialog().textBox("groupname").setText("testgroupname");
             mainFrameFixture.dialog().button("OK").click();
@@ -105,8 +156,6 @@ public class TestTreeViewNewMenu {
             assertTrue("File-Dataset-HDF5 filetree shows:", filetree.target.getRowCount()==2);
             assertTrue("File-Dataset-HDF5 filetree has file", (filetree.valueAt(0)).compareTo("testgrp.h5")==0);
             assertTrue("File-Dataset-HDF5 filetree has group", (filetree.valueAt(1)).compareTo("testgroupname")==0);
-            
-            closeFile(hdf_file, true);
         }
         catch (Exception ex) {
             ex.printStackTrace();
@@ -114,13 +163,19 @@ public class TestTreeViewNewMenu {
         catch (AssertionError ae) {
             ae.printStackTrace();
         }
+        finally {
+            try {
+                closeFile(hdf_file, true);
+            }
+            catch (Exception ex) {}
+        }
     }
 
     @Test 
     public void createNewHDF5Dataset() {
-        try {
-            File hdf_file = createHDF5File("testds");
+        File hdf_file = createHDF5File("testds");
 
+        try {
             JTreeFixture filetree = mainFrameFixture.tree().focus();
             filetree.requireVisible();
             assertTrue("File-Dataset-HDF5 filetree shows:", filetree.target.getRowCount()==1);
@@ -128,11 +183,14 @@ public class TestTreeViewNewMenu {
 
             JMenuItemFixture groupMenuItem = filetree.showPopupMenuAt(0).menuItemWithPath("New","Group");
             groupMenuItem.robot.waitForIdle();
+            
             groupMenuItem.requireVisible();
             groupMenuItem.click();
+            mainFrameFixture.robot.waitForIdle();
 
             mainFrameFixture.dialog().textBox("groupname").setText("testgroupname");
             mainFrameFixture.dialog().button("OK").click();
+            mainFrameFixture.robot.waitForIdle();
 
             filetree = mainFrameFixture.tree().focus();
             assertTrue("File-Dataset-HDF5 filetree shows:", filetree.target.getRowCount()==2);
@@ -141,20 +199,25 @@ public class TestTreeViewNewMenu {
 
             JMenuItemFixture datasetMenuItem = filetree.showPopupMenuAt(1).menuItemWithPath("New","Dataset");
             datasetMenuItem.robot.waitForIdle();
+            
             datasetMenuItem.requireVisible();
             datasetMenuItem.click();
+            mainFrameFixture.robot.waitForIdle();
 
             mainFrameFixture.dialog().textBox("datasetname").setText("testdatasetname");
             mainFrameFixture.dialog().textBox("currentsize").setText("4 x 4");
             mainFrameFixture.dialog().button("OK").click();
+            mainFrameFixture.robot.waitForIdle();
 
             filetree = mainFrameFixture.tree().focus();
             assertTrue("File-Dataset-HDF5 filetree shows:"+filetree.target.getRowCount(), filetree.target.getRowCount()==2);
 
             JMenuItemFixture expandMenuItem = filetree.showPopupMenuAt(1).menuItemWithPath("Expand All");
             expandMenuItem.robot.waitForIdle();
+            
             expandMenuItem.requireVisible();
             expandMenuItem.click();
+            mainFrameFixture.robot.waitForIdle();
 
             filetree = mainFrameFixture.tree().focus();
             assertTrue("File-Dataset-HDF5 filetree shows:"+filetree.target.getRowCount(), filetree.target.getRowCount()==3);
@@ -164,8 +227,10 @@ public class TestTreeViewNewMenu {
 
             JMenuItemFixture dataset2MenuItem = filetree.showPopupMenuAt(2).menuItemWithPath("Open");
             dataset2MenuItem.robot.waitForIdle();
+            
             dataset2MenuItem.requireVisible();
             dataset2MenuItem.click();
+            mainFrameFixture.robot.waitForIdle();
             
             JTableFixture dataset2table = mainFrameFixture.table("data");
             JTableCellFixture cell = dataset2table.cell(row(0).column(0));
@@ -187,16 +252,22 @@ public class TestTreeViewNewMenu {
 
             JMenuItemFixture fileMenuItem = mainFrameFixture.menuItemWithPath("File", "Save");
             fileMenuItem.robot.waitForIdle();
+            
             fileMenuItem.requireVisible();
             fileMenuItem.click();
-            
-            closeFile(hdf_file, true);
+            mainFrameFixture.robot.waitForIdle();
         }
         catch (Exception ex) {
             ex.printStackTrace();
         }
         catch (AssertionError ae) {
             ae.printStackTrace();
+        }
+        finally {
+            try {
+                closeFile(hdf_file, true);
+            }
+            catch (Exception ex) {}
         }
     }
 }

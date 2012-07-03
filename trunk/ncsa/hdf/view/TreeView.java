@@ -68,6 +68,8 @@ public abstract interface TreeView {
      *         null.
      */
     public abstract FileFormat openFile(String filename, int accessID) throws Exception;
+    public abstract FileFormat reopenFile(FileFormat theFile)
+            throws Exception;
 
     /**
      * close a file

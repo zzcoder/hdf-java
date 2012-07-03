@@ -19,8 +19,6 @@ import org.junit.Test;
 
 public class TestH5Lbasic {
     private static final String H5_FILE = "test/hdf5lib/h5ex_g_iterate.hdf";
-    private static long H5la_ds1 = -1;
-    private static long H5la_l1 = -1;
     int H5fid = -1;
 
     @Before
@@ -91,7 +89,6 @@ public class TestH5Lbasic {
         }
         assertFalse("H5Lget_info ",link_info==null);
         assertTrue("H5Lget_info link type",link_info.type==HDF5Constants.H5L_TYPE_HARD);
-        H5la_ds1 = link_info.address_val_size;
     }
 
     @Test
@@ -107,7 +104,6 @@ public class TestH5Lbasic {
         assertFalse("H5Lget_info ",link_info==null);
         assertTrue("H5Lget_info link type",link_info.type==HDF5Constants.H5L_TYPE_HARD);
         assertTrue("Link Address ",link_info.address_val_size>0);
-        H5la_l1 = link_info.address_val_size;
     }
 
     @Test(expected = HDF5LibraryException.class)
@@ -133,6 +129,7 @@ public class TestH5Lbasic {
     @Test
     public void testH5Lget_info_by_idx_n0() {
         H5L_info_t link_info = null;
+        H5L_info_t link_info2 = null;
         try {
             link_info = H5.H5Lget_info_by_idx(H5fid, "/", HDF5Constants.H5_INDEX_NAME, HDF5Constants.H5_ITER_INC, 0, HDF5Constants.H5P_DEFAULT);
         }
@@ -142,12 +139,20 @@ public class TestH5Lbasic {
         }
         assertFalse("H5Lget_info_by_idx ",link_info==null);
         assertTrue("H5Lget_info_by_idx link type",link_info.type==HDF5Constants.H5L_TYPE_HARD);
-        assertTrue("Link Address ",link_info.address_val_size==H5la_ds1);
+        try {
+            link_info2 = H5.H5Lget_info(H5fid, "DS1", HDF5Constants.H5P_DEFAULT);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Lget_info: " + err);
+        }
+        assertTrue("Link Address ",link_info.address_val_size==link_info2.address_val_size);
     }
 
     @Test
     public void testH5Lget_info_by_idx_n3() {
         H5L_info_t link_info = null;
+        H5L_info_t link_info2 = null;
         try {
             link_info = H5.H5Lget_info_by_idx(H5fid, "/", HDF5Constants.H5_INDEX_NAME, HDF5Constants.H5_ITER_INC, 3, HDF5Constants.H5P_DEFAULT);
         }
@@ -157,7 +162,14 @@ public class TestH5Lbasic {
         }
         assertFalse("H5Lget_info_by_idx ",link_info==null);
         assertTrue("H5Lget_info_by_idx link type",link_info.type==HDF5Constants.H5L_TYPE_HARD);
-        assertTrue("Link Address ",link_info.address_val_size==H5la_l1);
+        try {
+            link_info2 = H5.H5Lget_info(H5fid, "L1", HDF5Constants.H5P_DEFAULT);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Lget_info: " + err);
+        }
+        assertTrue("Link Address ",link_info.address_val_size==link_info2.address_val_size);
     }
 
     @Test(expected = HDF5LibraryException.class)

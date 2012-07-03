@@ -109,9 +109,11 @@ public class ViewProperties extends Properties {
     /** image origin */
     private static String           origin                 = ORIGIN_UL;
 
-    // ------For the feature:To display groups/attributes in creation order
-    // /** Display index */
-    // private static String indexType = "alphabetical";
+    /** default index type */
+    private static String           indexType              = "H5_INDEX_NAME";
+
+    /** default index order */
+    private static String           indexOrder             = "H5_ITER_INC";
 
     /** a list of most recent files */
     private static Vector<String>   mrf;
@@ -1037,11 +1039,15 @@ public class ViewProperties extends Properties {
             origin = propVal;
         }
 
-        // ------For the feature:To display groups/attributes in creation order
-        // propVal = (String) get("data.indexType");
-        // if ((propVal != null) && (propVal.length() > 0)) {
-        // indexType = propVal;
-        // }
+        propVal = (String) get("h5file.indexType");
+        if ((propVal != null) && (propVal.length() > 0)) {
+            indexType = propVal;
+        }
+
+        propVal = (String) get("h5file.indexOrder");
+        if ((propVal != null) && (propVal.length() > 0)) {
+            indexOrder = propVal;
+        }
 
         propVal = (String) get("h4toh5.converter");
         if ((propVal != null) && (propVal.length() > 0)) {
@@ -1175,10 +1181,13 @@ public class ViewProperties extends Properties {
             put("image.origin", origin);
         }
 
-        // --For the feature:To display groups/attributes in creation order
-        // if (indexType == null) {
-        // put("data.indexType", indexType);
-        // }
+        if (indexType != null) {
+            put("h5file.indexType", indexType);
+        }
+
+        if (indexOrder != null) {
+            put("h5file.indexOrder", indexOrder);
+        }
 
         if (usersGuide != null) {
             put("users.guide", usersGuide);
@@ -1350,11 +1359,15 @@ public class ViewProperties extends Properties {
         return origin;
     }
 
-    // --For the feature:To display groups/attributes in creation order
-    // /** returns the Index type for Display */
-    // public static String getIndexType() {
-    // return indexType;
-    // }
+    /** returns the default index type for display */
+    public static String getIndexType() {
+        return indexType;
+    }
+
+    /** returns the default index order for display */
+    public static String getIndexOrder() {
+        return indexOrder;
+    }
 
     /** returns the font size */
     public static int getFontSize() {
@@ -1474,11 +1487,15 @@ public class ViewProperties extends Properties {
         origin = o;
     }
 
-    // ---For the feature:To display groups/attributes in creation order
-    // /** set the Index Type */
-    // public static void setIndexType(String idxType) {
-    // indexType = idxType;
-    // }
+    /** set the index type */
+    public static void setIndexType(String idxType) {
+        indexType = idxType;
+    }
+
+    /** set the index order */
+    public static void setIndexOrder(String idxOrder) {
+        indexOrder = idxOrder;
+    }
 
     /**
      * Current Java application such as HDFView cannot handle files with large

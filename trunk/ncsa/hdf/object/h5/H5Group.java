@@ -170,7 +170,7 @@ public class H5Group extends Group {
      * @see ncsa.hdf.object.DataFormat#getMetadata()
      */
     public List getMetadata() throws HDF5Exception {
-        return this.getMetadata(HDF5Constants.H5_INDEX_NAME, HDF5Constants.H5_ITER_INC);
+        return this.getMetadata(fileFormat.getIndexType(null), fileFormat.getIndexOrder(null));
     }
 
     /*
@@ -181,8 +181,8 @@ public class H5Group extends Group {
     public List getMetadata(int... attrPropList) throws HDF5Exception {
         if (attributeList == null) {
             int gid = open();
-            int indxType = HDF5Constants.H5_INDEX_NAME;
-            int order = HDF5Constants.H5_ITER_INC;
+            int indxType = fileFormat.getIndexType(null);
+            int order = fileFormat.getIndexOrder(null);
 
             if (attrPropList.length > 0) {
                 indxType = attrPropList[0];

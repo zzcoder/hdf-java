@@ -78,7 +78,8 @@ public class NewTableDataDialog extends JDialog implements ActionListener, ItemL
         "float", // 7
         "double", // 8
         "string", // 9
-        "enum" // 10
+        "enum", // 10
+        "unsigned long (64-bit)" // 11
     };
 
     private FileFormat            fileformat;
@@ -581,6 +582,9 @@ public class NewTableDataDialog extends JDialog implements ActionListener, ItemL
                         else if (tsize == 4) {
                             typeIdx = 5;
                         }
+                        else {
+                            typeIdx = 11;
+                        }
                     }
                     else {
                         if (tsize == 1) {
@@ -729,6 +733,9 @@ public class NewTableDataDialog extends JDialog implements ActionListener, ItemL
                 else {
                     type.setEnumMembers(orderStr);
                 }
+            }
+            else if (DATATYPE_NAMES[11].equals(typeName)) {
+                type = fileformat.createDatatype(Datatype.CLASS_INTEGER, 8, Datatype.NATIVE, Datatype.SIGN_NONE);
             }
             else {
                 throw new IllegalArgumentException("Invalid data type.");
