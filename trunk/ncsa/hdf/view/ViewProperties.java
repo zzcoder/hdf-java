@@ -39,168 +39,167 @@ import ncsa.hdf.object.FileFormat;
  * @version 2.4 9/6/2007
  */
 public class ViewProperties extends Properties {
-    private static final long serialVersionUID = -6411465283887959066L;
+    private static final long   serialVersionUID     = -6411465283887959066L;
 
     /** the version of the HDFViewer */
-    public static final String VERSION = "2.8";
+    public static final String  VERSION              = "2.8";
 
     /** the local property file name */
-    private static final String USER_PROPERTY_FILE = ".hdfview"
-            + VERSION.substring(0, 3);
+    private static final String USER_PROPERTY_FILE   = ".hdfview" + VERSION.substring(0, 3);
 
     /** the maximum number of most recent files */
-    public static final int MAX_RECENT_FILES = 15;
+    public static final int     MAX_RECENT_FILES     = 15;
 
     /** name of the tab delimiter */
-    public static final String DELIMITER_TAB = "Tab";
+    public static final String  DELIMITER_TAB        = "Tab";
 
     /** name of the tab delimiter */
-    public static final String DELIMITER_COMMA = "Comma";
+    public static final String  DELIMITER_COMMA      = "Comma";
 
     /** name of the tab delimiter */
-    public static final String DELIMITER_SPACE = "Space";
+    public static final String  DELIMITER_SPACE      = "Space";
 
     /** name of the tab delimiter */
-    public static final String DELIMITER_COLON = "Colon";
-    
+    public static final String  DELIMITER_COLON      = "Colon";
+
     /** image origin: UpperLeft */
-    public static final String ORIGIN_UL = "UpperLeft";
+    public static final String  ORIGIN_UL            = "UpperLeft";
 
     /** image origin: LowerLeft */
-    public static final String ORIGIN_LL = "LowerLeft";
+    public static final String  ORIGIN_LL            = "LowerLeft";
 
     /** image origin: UpperRight */
-    public static final String ORIGIN_UR = "UpperRight";
+    public static final String  ORIGIN_UR            = "UpperRight";
 
     /** image origin: LowerRight */
-    public static final String ORIGIN_LR = "LowerRight";
+    public static final String  ORIGIN_LR            = "LowerRight";
 
     /** name of the tab delimiter */
-    public static final String DELIMITER_SEMI_COLON = "Semi-Colon";
+    public static final String  DELIMITER_SEMI_COLON = "Semi-Colon";
 
     /**
      * Property keys how how the data is displayed.
      */
-    public static enum DATA_VIEW_KEY 
-    {
+    public static enum DATA_VIEW_KEY {
         CHAR, CONVERTBYTE, TRANSPOSED, READONLY, OBJECT, BITMASK, BITMASKOP, BORDER, INFO, INDEXBASE1
     }
 
     /**
      * Property keys how how the data is displayed.
      */
-    public static enum BITMASK_OP {AND, EXTRACT}
+    public static enum BITMASK_OP {
+        AND, EXTRACT
+    }
 
     /** user's guide */
-    private static String usersGuide = System.getProperty("user.dir")
-            + "/UsersGuide/index.html";
+    private static String           usersGuide             = System.getProperty("user.dir") + "/UsersGuide/index.html";
 
     /** the font size */
-    private static int fontSize = 12;
+    private static int              fontSize               = 12;
 
     /** the font type */
-    private static String fontType = null;
+    private static String           fontType               = null;
 
     /** the full path of H4toH5 converter */
-    private static String h4toh5 = "";
+    private static String           h4toh5                 = "";
 
     /** data delimiter */
-    private static String delimiter = DELIMITER_TAB;
-    
+    private static String           delimiter              = DELIMITER_TAB;
+
     /** image origin */
-    private static String origin = ORIGIN_UL;
-    
-    
-    //------For the feature:To display groups/attributes in creation order
-    //    /** Display index */
-    //    private static String indexType = "alphabetical";
+    private static String           origin                 = ORIGIN_UL;
+
+    // ------For the feature:To display groups/attributes in creation order
+    // /** Display index */
+    // private static String indexType = "alphabetical";
 
     /** a list of most recent files */
-    private static Vector<String> mrf;
+    private static Vector<String>   mrf;
 
     /** the root directory of the HDFView */
-    private static String rootDir;
+    private static String           rootDir;
 
     /** default starting file directory */
-    private static String workDir = "user.dir";
+    private static String           workDir                = "user.dir";
 
     /** default HDF4 file extension */
-    private static String fileExt = "hdf, h4, hdf4, h5, hdf5, he4, he5";
+    private static String           fileExt                = "hdf, h4, hdf4, h5, hdf5, he4, he5";
 
-    private static ClassLoader extClassLoader = null;
+    private static ClassLoader      extClassLoader         = null;
 
     /** a list of srb accounts */
-    private static Vector<String[]> srbAccountList = new Vector<String[]>(5);
+    private static Vector<String[]> srbAccountList         = new Vector<String[]>(5);
 
     /**
      * flag to indicate if auto contrast is used in image process. Do not use
      * autocontrast by default (2.6 change).
      */
-    private static boolean isAutoContrast = false;
-    
-    private static boolean showImageValues = false;
+    private static boolean          isAutoContrast         = false;
+
+    private static boolean          showImageValues        = false;
 
     /**
      * flag to indicate if default open file is read only. By default, use
      * read/write.
      */
-    private static boolean isReadOnly = false;
+    private static boolean          isReadOnly             = false;
 
     /** a list of palette files */
-    private static Vector<String> paletteList = new Vector<String>(5);
+    private static Vector<String>   paletteList            = new Vector<String>(5);
 
     /** flag to indicate if enum data is converted to strings */
-    private static boolean convertEnum = true;
+    private static boolean          convertEnum            = true;
 
     /** flag to indicate if data is 1-based index */
-    private static boolean isIndexBase1 = false;
+    private static boolean          isIndexBase1           = false;
 
     /**
      * Current Java application such as HDFView cannot handle files with large
      * number of objects such 1,000,000 objects. max_members defines the maximum
      * number of objects will be loaded into memory.
      */
-    private static int max_members = 10000; // 1,000 by default
+    private static int              max_members            = 10000;                                                    // 1,000
+    // by
+    // default
 
     /**
      * Current Java application such as HDFView cannot handle files with large
      * number of objects such 1,000,000 objects. start_members defines the
      * starting index of objects will be loaded into memory.
      */
-    private static int start_members = 0; // 0 by default
+    private static int              start_members          = 0;                                                        // 0
+    // by
+    // default
 
-    private static ImageIcon hdfIcon, h4Icon, h5Icon, largeHdfIcon, blankIcon,
-            helpIcon, fileopenIcon, filesaveIcon, filenewIcon, filecloseIcon,
-            foldercloseIcon, folderopenIcon, foldercloseIconA, folderopenIconA,
-            datasetIcon, imageIcon, tableIcon, textIcon, datasetIconA,
-            imageIconA, tableIconA, textIconA, zoominIcon, zoomoutIcon,
-            paletteIcon, chartIcon, brightIcon, autocontrastIcon, copyIcon,
-            cutIcon, pasteIcon, previousIcon, nextIcon, firstIcon, lastIcon,
-            animationIcon, datatypeIcon, datatypeIconA, linkIcon, iconAPPS,
-            iconURL, iconVIDEO, iconXLS, iconPDF, iconAUDIO, questionIcon;
+    private static ImageIcon        hdfIcon, h4Icon, h5Icon, largeHdfIcon, blankIcon, helpIcon, fileopenIcon,
+    filesaveIcon, filenewIcon, filecloseIcon, foldercloseIcon, folderopenIcon, foldercloseIconA,
+    folderopenIconA, datasetIcon, imageIcon, tableIcon, textIcon, datasetIconA, imageIconA, tableIconA,
+    textIconA, zoominIcon, zoomoutIcon, paletteIcon, chartIcon, brightIcon, autocontrastIcon, copyIcon,
+    cutIcon, pasteIcon, previousIcon, nextIcon, firstIcon, lastIcon, animationIcon, datatypeIcon,
+    datatypeIconA, linkIcon, iconAPPS, iconURL, iconVIDEO, iconXLS, iconPDF, iconAUDIO, questionIcon;
 
-    private static String propertyFile;
+    private static String           propertyFile;
 
     /** a list of treeview module */
-    private static Vector<String> moduleListTreeView = new Vector<String>(5);
+    private static Vector<String>   moduleListTreeView     = new Vector<String>(5);
 
     /** a list of metaview module */
-    private static Vector<String> moduleListMetaDataView = new Vector<String>(5);
+    private static Vector<String>   moduleListMetaDataView = new Vector<String>(5);
 
     /** a list of textview module */
-    private static Vector<String> moduleListTextView = new Vector<String>(5);
+    private static Vector<String>   moduleListTextView     = new Vector<String>(5);
 
     /** a list of tableview module */
-    private static Vector<String> moduleListTableView = new Vector<String>(5);
+    private static Vector<String>   moduleListTableView    = new Vector<String>(5);
 
     /** a list of imageview module */
-    private static Vector<String> moduleListImageView = new Vector<String>(5);
+    private static Vector<String>   moduleListImageView    = new Vector<String>(5);
 
     /** a list of paletteview module */
-    private static Vector<String> moduleListPaletteView = new Vector<String>(5);
+    private static Vector<String>   moduleListPaletteView  = new Vector<String>(5);
 
     /** a list of helpview module */
-    private static Vector<String> moduleListHelpView = new Vector<String>(5);
+    private static Vector<String>   moduleListHelpView     = new Vector<String>(5);
 
     /**
      * Creates a property list with given root directory of the HDFView.
@@ -240,8 +239,10 @@ public class ViewProperties extends Properties {
     }
 
     /* the properties are sorted by keys */
-    public synchronized Enumeration keys() {
-        Enumeration keysEnum = super.keys();
+    @SuppressWarnings("unchecked")
+    public synchronized Enumeration<Object> keys() {
+        Enumeration<?> keysEnum = super.keys();
+        @SuppressWarnings("rawtypes")
         Vector keyList = new Vector(50);
         while (keysEnum.hasMoreElements()) {
             keyList.add(keysEnum.nextElement());
@@ -261,11 +262,9 @@ public class ViewProperties extends Properties {
         }
 
         String rootPath = System.getProperty("hdfview.root");
-        if (rootPath == null)
-            rootPath = System.getProperty("user.dir");
+        if (rootPath == null) rootPath = System.getProperty("user.dir");
 
-        String dirname = rootPath + File.separator + "lib" + File.separator
-                + "ext" + File.separator;
+        String dirname = rootPath + File.separator + "lib" + File.separator + "ext" + File.separator;
         File extdir = new File(dirname);
         String[] jars = extdir.list();
 
@@ -281,9 +280,8 @@ public class ViewProperties extends Properties {
                 // add class names to the list of classes
                 File tmpFile = new File(extdir, jars[i]);
                 try {
-                    JarFile jarFile = new JarFile(tmpFile, false,
-                            JarFile.OPEN_READ);
-                    Enumeration emu = jarFile.entries();
+                    JarFile jarFile = new JarFile(tmpFile, false, JarFile.OPEN_READ);
+                    Enumeration<?> emu = jarFile.entries();
                     while (emu.hasMoreElements()) {
                         JarEntry jarEntry = (JarEntry) emu.nextElement();
                         String entryName = jarEntry.getName();
@@ -307,8 +305,7 @@ public class ViewProperties extends Properties {
         URL[] urls = new URL[n];
         for (int i = 0; i < n; i++) {
             try {
-                urls[i] = new URL("file:///" + rootPath + "/lib/ext/"
-                        + jarList.get(i));
+                urls[i] = new URL("file:///" + rootPath + "/lib/ext/" + jarList.get(i));
             }
             catch (MalformedURLException mfu) {
                 ;
@@ -343,13 +340,11 @@ public class ViewProperties extends Properties {
                     for (int j = 0; j < interfaces.length; j++) {
                         String interfaceName = interfaces[j].getName();
 
-                        if ("ncsa.hdf.view.TreeView".equals(interfaceName)
-                                && !moduleListTreeView.contains(theName)) {
+                        if ("ncsa.hdf.view.TreeView".equals(interfaceName) && !moduleListTreeView.contains(theName)) {
                             moduleListTreeView.add(theName);
                             break;
                         }
-                        else if ("ncsa.hdf.view.MetaDataView"
-                                .equals(interfaceName)
+                        else if ("ncsa.hdf.view.MetaDataView".equals(interfaceName)
                                 && !moduleListMetaDataView.contains(theName)) {
                             moduleListMetaDataView.add(theName);
                             break;
@@ -359,20 +354,17 @@ public class ViewProperties extends Properties {
                             moduleListTextView.add(theName);
                             break;
                         }
-                        else if ("ncsa.hdf.view.TableView"
-                                .equals(interfaceName)
+                        else if ("ncsa.hdf.view.TableView".equals(interfaceName)
                                 && !moduleListTableView.contains(theName)) {
                             moduleListTableView.add(theName);
                             break;
                         }
-                        else if ("ncsa.hdf.view.ImageView"
-                                .equals(interfaceName)
+                        else if ("ncsa.hdf.view.ImageView".equals(interfaceName)
                                 && !moduleListImageView.contains(theName)) {
                             moduleListImageView.add(theName);
                             break;
                         }
-                        else if ("ncsa.hdf.view.PaletteView"
-                                .equals(interfaceName)
+                        else if ("ncsa.hdf.view.PaletteView".equals(interfaceName)
                                 && !moduleListPaletteView.contains(theName)) {
                             moduleListPaletteView.add(theName);
                             break;
@@ -577,7 +569,7 @@ public class ViewProperties extends Properties {
     public static ImageIcon getAudioIcon() {
         return iconAUDIO;
     }
-    
+
     public static Icon getQuestionIcon() {
         return questionIcon;
     }
@@ -859,7 +851,7 @@ public class ViewProperties extends Properties {
                 animationIcon = new ImageIcon(u);
             }
         }
-        
+
         if (questionIcon == null) {
             u = classLoader.getResource("ncsa/hdf/view/icons/question.gif");
             if (u != null) {
@@ -917,6 +909,7 @@ public class ViewProperties extends Properties {
     }
 
     /** Load user properties from property file */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public void load() throws Exception {
         String propVal = null;
 
@@ -925,18 +918,13 @@ public class ViewProperties extends Properties {
         }
 
         // add default module.
-        String[] moduleKeys = { "module.treeview", "module.metadataview",
-                "module.textview", "module.tableview", "module.imageview",
-                "module.paletteview" };
-        Vector[] moduleList = { moduleListTreeView, moduleListMetaDataView,
-                moduleListTextView, moduleListTableView, moduleListImageView,
-                moduleListPaletteView };
-        String[] moduleNames = { "ncsa.hdf.view.DefaultTreeView",
-                "ncsa.hdf.view.DefaultMetaDataView",
-                "ncsa.hdf.view.DefaultTextView",
-                "ncsa.hdf.view.DefaultTableView",
-                "ncsa.hdf.view.DefaultImageView",
-                "ncsa.hdf.view.DefaultPaletteView" };
+        String[] moduleKeys = { "module.treeview", "module.metadataview", "module.textview", "module.tableview",
+                "module.imageview", "module.paletteview" };
+        Vector[] moduleList = { moduleListTreeView, moduleListMetaDataView, moduleListTextView, moduleListTableView,
+                moduleListImageView, moduleListPaletteView };
+        String[] moduleNames = { "ncsa.hdf.view.DefaultTreeView", "ncsa.hdf.view.DefaultMetaDataView",
+                "ncsa.hdf.view.DefaultTextView", "ncsa.hdf.view.DefaultTableView", "ncsa.hdf.view.DefaultImageView",
+        "ncsa.hdf.view.DefaultPaletteView" };
 
         // add default implementation of modules
         for (int i = 0; i < 6; i++) {
@@ -944,8 +932,7 @@ public class ViewProperties extends Properties {
                 moduleList[i].addElement(moduleNames[i]);
             }
         }
-        if (extClassLoader == null)
-            loadExtClass();
+        if (extClassLoader == null) loadExtClass();
 
         // set default selection of data views
         for (int i = 0; i < 6; i++) {
@@ -1019,7 +1006,7 @@ public class ViewProperties extends Properties {
         if (propVal != null) {
             isAutoContrast = ("auto".equalsIgnoreCase(propVal));
         }
-        
+
         propVal = (String) get("image.showvalues");
         if (propVal != null) {
             showImageValues = ("true".equalsIgnoreCase(propVal));
@@ -1034,27 +1021,27 @@ public class ViewProperties extends Properties {
         if (propVal != null) {
             convertEnum = ("true".equalsIgnoreCase(propVal));
         }
-        
+
         propVal = (String) get("index.base1");
         if (propVal != null) {
             isIndexBase1 = ("true".equalsIgnoreCase(propVal));
-        }        
+        }
 
         propVal = (String) get("data.delimiter");
         if ((propVal != null) && (propVal.length() > 0)) {
             delimiter = propVal;
         }
-        
+
         propVal = (String) get("image.origin");
         if ((propVal != null) && (propVal.length() > 0)) {
             origin = propVal;
-        }        
-        
-        //------For the feature:To display groups/attributes in creation order
-        //        propVal = (String) get("data.indexType");
-        //        if ((propVal != null) && (propVal.length() > 0)) {
-        //            indexType = propVal;
-        //        }
+        }
+
+        // ------For the feature:To display groups/attributes in creation order
+        // propVal = (String) get("data.indexType");
+        // if ((propVal != null) && (propVal.length() > 0)) {
+        // indexType = propVal;
+        // }
 
         propVal = (String) get("h4toh5.converter");
         if ((propVal != null) && (propVal.length() > 0)) {
@@ -1100,9 +1087,7 @@ public class ViewProperties extends Properties {
         for (int i = 0; i < MAX_RECENT_FILES; i++) {
             theFile = getProperty("recent.file" + i);
             if ((theFile != null) && !mrf.contains(theFile)) {
-                if (theFile.startsWith("http://")
-                        || theFile.startsWith("ftp://")
-                        || (new File(theFile)).exists()) {
+                if (theFile.startsWith("http://") || theFile.startsWith("ftp://") || (new File(theFile)).exists()) {
                     mrf.addElement(theFile);
                 }
             }
@@ -1115,10 +1100,9 @@ public class ViewProperties extends Properties {
         theFile = null;
         for (int i = 0; i < MAX_RECENT_FILES; i++) {
             theFile = getProperty("palette.file" + i);
-            if (theFile!=null)
-                theFile = theFile.trim();
-            
-            if ((theFile != null && theFile.length()>0) && !paletteList.contains(theFile)) {
+            if (theFile != null) theFile = theFile.trim();
+
+            if ((theFile != null && theFile.length() > 0) && !paletteList.contains(theFile)) {
                 if ((new File(theFile)).exists()) {
                     paletteList.addElement(theFile);
                 }
@@ -1141,34 +1125,30 @@ public class ViewProperties extends Properties {
             if (null == (srbaccount[2] = getProperty("srbaccount" + i + ".user"))) {
                 continue;
             }
-            if (null == (srbaccount[3] = getProperty("srbaccount" + i
-                    + ".password"))) {
+            if (null == (srbaccount[3] = getProperty("srbaccount" + i + ".password"))) {
                 continue;
             }
             if (null == (srbaccount[4] = getProperty("srbaccount" + i + ".home"))) {
                 continue;
             }
-            if (null == (srbaccount[5] = getProperty("srbaccount" + i
-                    + ".domain"))) {
+            if (null == (srbaccount[5] = getProperty("srbaccount" + i + ".domain"))) {
                 continue;
             }
-            if (null == (srbaccount[6] = getProperty("srbaccount" + i
-                    + ".resource"))) {
+            if (null == (srbaccount[6] = getProperty("srbaccount" + i + ".resource"))) {
                 continue;
             }
             srbAccountList.add(srbaccount);
             srbaccount = new String[7];
         }
-        
+
         // set default modules from user property files
-        for (int i=0; i<6; i++) {
-            String moduleName = (String)get(moduleKeys[i]);
-            if ((moduleName !=null) && (moduleName.length()>0)) {
-                if (moduleList[i].contains(moduleName))
-                    moduleList[i].remove(moduleName);
+        for (int i = 0; i < 6; i++) {
+            String moduleName = (String) get(moduleKeys[i]);
+            if ((moduleName != null) && (moduleName.length() > 0)) {
+                if (moduleList[i].contains(moduleName)) moduleList[i].remove(moduleName);
                 moduleList[i].add(0, moduleName);
             }
-        }         
+        }
     }
 
     /** Save user properties into property file */
@@ -1187,19 +1167,19 @@ public class ViewProperties extends Properties {
         else {
             put("data.delimiter", delimiter);
         }
-        
+
         if (origin == null) {
             put("image.origin", ORIGIN_UL);
         }
         else {
             put("image.origin", origin);
-        }        
-        
-        //--For the feature:To display groups/attributes in creation order
-        //        if (indexType == null) {
-        //            put("data.indexType", indexType);
-        //        }
-        
+        }
+
+        // --For the feature:To display groups/attributes in creation order
+        // if (indexType == null) {
+        // put("data.indexType", indexType);
+        // }
+
         if (usersGuide != null) {
             put("users.guide", usersGuide);
         }
@@ -1230,12 +1210,11 @@ public class ViewProperties extends Properties {
         else {
             put("image.contrast", "general");
         }
-        
+
         if (showImageValues)
-        	put("image.showvalues", "true");
+            put("image.showvalues", "true");
         else
-        	put("image.showvalues", "false");
-       	
+            put("image.showvalues", "false");
 
         if (isReadOnly) {
             put("file.mode", "r");
@@ -1246,7 +1225,7 @@ public class ViewProperties extends Properties {
 
         put("enum.conversion", String.valueOf(convertEnum));
         put("index.base1", String.valueOf(isIndexBase1));
- 
+
         // save the list of most recent files
         String theFile;
         int size = mrf.size();
@@ -1274,9 +1253,8 @@ public class ViewProperties extends Properties {
         minSize = Math.min(size, MAX_RECENT_FILES);
         for (int i = 0; i < minSize; i++) {
             srbaccount = srbAccountList.get(i);
-            if ((srbaccount[0] != null) && (srbaccount[1] != null)
-                    && (srbaccount[2] != null) && (srbaccount[3] != null)
-                    && (srbaccount[4] != null) && (srbaccount[5] != null)
+            if ((srbaccount[0] != null) && (srbaccount[1] != null) && (srbaccount[2] != null)
+                    && (srbaccount[3] != null) && (srbaccount[4] != null) && (srbaccount[5] != null)
                     && (srbaccount[6] != null)) {
                 put("srbaccount" + i + ".host", srbaccount[0]);
                 put("srbaccount" + i + ".port", srbaccount[1]);
@@ -1319,8 +1297,8 @@ public class ViewProperties extends Properties {
             put("module.paletteview", moduleName);
         }
 
-        // save the currenent supported fileformat
-        Enumeration keys = FileFormat.getFileFormatKeys();
+        // save the current supported fileformat
+        Enumeration<?> keys = FileFormat.getFileFormatKeys();
         String theKey = null;
         while (keys.hasMoreElements()) {
             theKey = (String) keys.nextElement();
@@ -1366,18 +1344,18 @@ public class ViewProperties extends Properties {
     public static String getDataDelimiter() {
         return delimiter;
     }
-    
+
     /** returns the image origin */
     public static String getImageOrigin() {
         return origin;
-    }    
+    }
 
-    //--For the feature:To display groups/attributes in creation order
-    //    /** returns the Index type for Display */
-    //    public static String getIndexType() {
-    //        return indexType;
-    //    }
-    
+    // --For the feature:To display groups/attributes in creation order
+    // /** returns the Index type for Display */
+    // public static String getIndexType() {
+    // return indexType;
+    // }
+
     /** returns the font size */
     public static int getFontSize() {
         return fontSize;
@@ -1490,17 +1468,17 @@ public class ViewProperties extends Properties {
     public static void setDataDelimiter(String delim) {
         delimiter = delim;
     }
-    
+
     /** set the image origin */
     public static void setImageOrigin(String o) {
         origin = o;
     }
-        
-    //---For the feature:To display groups/attributes in creation order
-    //    /** set the Index Type */
-    //    public static void setIndexType(String idxType) {
-    //        indexType  = idxType;
-    //    }
+
+    // ---For the feature:To display groups/attributes in creation order
+    // /** set the Index Type */
+    // public static void setIndexType(String idxType) {
+    // indexType = idxType;
+    // }
 
     /**
      * Current Java application such as HDFView cannot handle files with large
@@ -1557,17 +1535,15 @@ public class ViewProperties extends Properties {
     public static boolean isAutoContrast() {
         return isAutoContrast;
     }
-    
+
     /**
      * Returns true if "show image values" is set.
      * 
-     * @return true if "show image values" is set; otherwise,
-     *         returns false.
+     * @return true if "show image values" is set; otherwise, returns false.
      */
     public static boolean showImageValues() {
         return showImageValues;
     }
-    
 
     /**
      * Set the flag to indicate if auto contrast is used in image process.
@@ -1579,7 +1555,7 @@ public class ViewProperties extends Properties {
     public static void setAutoContrast(boolean b) {
         isAutoContrast = b;
     }
-    
+
     /**
      * Set the flag to indicate if "show image values" is set.
      * 
@@ -1588,7 +1564,7 @@ public class ViewProperties extends Properties {
      */
     public static void setShowImageValue(boolean b) {
         showImageValues = b;
-    }    
+    }
 
     /**
      * Returns true if default file access is read only.
@@ -1616,7 +1592,7 @@ public class ViewProperties extends Properties {
     public static boolean isConvertEnum() {
         return convertEnum;
     }
-    
+
     /**
      * @return the convertEnum
      */
@@ -1631,13 +1607,13 @@ public class ViewProperties extends Properties {
     public static void setConvertEnum(boolean convertEnum) {
         ViewProperties.convertEnum = convertEnum;
     }
-    
+
     /**
      * @param convertEnum
      *            the convertEnum to set
      */
     public static void setIndexBase1(boolean b) {
         ViewProperties.isIndexBase1 = b;
-    }    
+    }
 
 }

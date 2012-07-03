@@ -59,7 +59,7 @@ public abstract class FileFormat extends File {
     /**
      * 
      */
-    private static final long serialVersionUID = -4700692313888420796L;
+    private static final long                    serialVersionUID   = -4700692313888420796L;
 
     /**
      * File access flag for read-only permission. With this access flag,
@@ -67,7 +67,7 @@ public abstract class FileFormat extends File {
      * 
      * @see #createInstance(String, int )
      */
-    public static final int READ = 0;
+    public static final int                      READ               = 0;
 
     /**
      * File access flag for read/write permission. With this access flag,
@@ -77,7 +77,7 @@ public abstract class FileFormat extends File {
      * 
      * @see #createInstance(String, int )
      */
-    public static final int WRITE = 1;
+    public static final int                      WRITE              = 1;
 
     /**
      * File access flag for creating/truncating with read-write permission. If
@@ -88,7 +88,7 @@ public abstract class FileFormat extends File {
      * 
      * @see #createInstance(String, int )
      */
-    public static final int CREATE = 2;
+    public static final int                      CREATE             = 2;
 
     /***************************************************************************
      * File creation flags used in calls to createFile( String, flag );
@@ -101,7 +101,7 @@ public abstract class FileFormat extends File {
      * 
      * @see #createFile(String, int )
      */
-    public static final int FILE_CREATE_DELETE = 10;
+    public static final int                      FILE_CREATE_DELETE = 10;
 
     /**
      * Flag for creating/opening a file. If the file already exists, it will be
@@ -110,24 +110,24 @@ public abstract class FileFormat extends File {
      * 
      * @see #createFile(String, int )
      */
-    public static final int FILE_CREATE_OPEN = 11;
+    public static final int                      FILE_CREATE_OPEN   = 11;
 
     /***************************************************************************
      * Keys and fields related to supported file formats.
      **************************************************************************/
 
     /** Key for HDF4 file format. */
-    public static final String FILE_TYPE_HDF4 = "HDF4";
+    public static final String                   FILE_TYPE_HDF4     = "HDF4";
 
     /** Key for HDF5 file format. */
-    public static final String FILE_TYPE_HDF5 = "HDF5";
+    public static final String                   FILE_TYPE_HDF5     = "HDF5";
 
     /**
      * A separator that separates file name and object name.
      * 
      * @see ncsa.hdf.object.FileFormat#getHObject(String)
      */
-    public static final String FILE_OBJ_SEP = "://";
+    public static final String                   FILE_OBJ_SEP       = "://";
 
     /**
      * FileList keeps a list of supported FileFormats. This list can be updated
@@ -139,8 +139,7 @@ public abstract class FileFormat extends File {
      * @see #getFileFormats()
      * @see #removeFileFormat(String)
      */
-    private static final Map<String, FileFormat> FileList = new Hashtable<String, FileFormat>(
-            10);
+    private static final Map<String, FileFormat> FileList           = new Hashtable<String, FileFormat>(10);
 
     /**
      * A list of file extensions for the supported file formats. This list of
@@ -148,7 +147,7 @@ public abstract class FileFormat extends File {
      * FileList, but is provided as a convenience for applications who may
      * choose to process only those files with recognized extensions.
      */
-    private static String extensions = "hdf, h4, hdf5, h5";
+    private static String                        extensions         = "hdf, h4, hdf5, h5";
 
     /***************************************************************************
      * Sizing information and class metadata
@@ -162,23 +161,27 @@ public abstract class FileFormat extends File {
      * starting with the <i>start_members</i> -th object. The implementing class
      * has freedom in its interpretation of how to "count" objects in the file.
      */
-    private int max_members = 10000; // 10,000 by default
-    private int start_members = 0; // 0 by default
+    private int                                  max_members        = 10000;                                // 10,000
+    // by
+    // default
+    private int                                  start_members      = 0;                                    // 0
+    // by
+    // default
 
     /**
      * File identifier. -1 indicates the file is not open.
      */
-    protected int fid = -1;
+    protected int                                fid                = -1;
 
     /**
      * The absolute pathname (path+name) of the file.
      */
-    protected String fullFileName = null;
+    protected String                             fullFileName       = null;
 
     /**
      * Flag indicating if the file access is read-only.
      */
-    protected boolean isReadOnly = false;
+    protected boolean                            isReadOnly         = false;
 
     /***************************************************************************
      * Class initialization method
@@ -495,15 +498,13 @@ public abstract class FileFormat extends File {
      * @see #createInstance(String, int)
      * @see #getFileFormats()
      */
-    public static final FileFormat getInstance(String filename)
-            throws Exception {
+    public static final FileFormat getInstance(String filename) throws Exception {
         if ((filename == null) || (filename.length() <= 0)) {
             throw new IllegalArgumentException("Invalid file name: " + filename);
         }
 
         if (!(new File(filename)).exists()) {
-            throw new IllegalArgumentException("File " + filename
-                    + " does not exist.");
+            throw new IllegalArgumentException("File " + filename + " does not exist.");
         }
 
         FileFormat fileFormat = null;
@@ -564,9 +565,11 @@ public abstract class FileFormat extends File {
      * 
      * <pre>
      * FileFormat h5F = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
-     * HObject hObject = viewer.getTreeView().getCurrentObject();
-     * FileFormat thisF = hObject.getFileFormat();
-     * boolean isH5 = h5F.isThisType(thisF);
+     *                                                                       HObject hObject = viewer.getTreeView()
+     *                                                                                               .getCurrentObject();
+     *                                                                                                                    FileFormat thisF = hObject
+     *                                                                                                                                             .getFileFormat();
+     *                                                                                                                                                               boolean isH5 = h5F.isThisType(thisF);
      * </pre>
      * 
      * @param fileFormat
@@ -587,9 +590,10 @@ public abstract class FileFormat extends File {
      * 
      * <pre>
      * FileFormat h4F = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF4);
-     * FileFormat h5F = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
-     * boolean isH4 = h4F.isThisType(&quot;test.h5&quot;); // false
-     * boolean isH5 = h5F.isThisType(&quot;test.h5&quot;); // true
+     *                                                                       FileFormat h5F = FileFormat
+     *                                                                                              .getFileFormat(FileFormat.FILE_TYPE_HDF5);
+     *                                                                                                                                         boolean isH4 = h4F.isThisType(&quot;test.h5&quot;); // false
+     *                                                                                                                                                                                   boolean isH5 = h5F.isThisType(&quot;test.h5&quot;); // true
      * </pre>
      * 
      * @param filename
@@ -648,12 +652,10 @@ public abstract class FileFormat extends File {
      * @see #getInstance(String)
      * @see #open()
      */
-    public FileFormat createFile(String filename, int createFlag)
-            throws Exception {
+    public FileFormat createFile(String filename, int createFlag) throws Exception {
         // If the implementing subclass doesn't have this method then that
         // format doesn't support File Creation and we throw an exception.
-        throw new UnsupportedOperationException(
-                "FileFormat FileFormat.createFile(...) is not implemented.");
+        throw new UnsupportedOperationException("FileFormat FileFormat.createFile(...) is not implemented.");
     }
 
     /**
@@ -691,10 +693,31 @@ public abstract class FileFormat extends File {
      * // Request the implementing class of FileFormat: H5File
      * FileFormat h5file = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
      * 
-     * // Create an instance of H5File object with read/write access
-     * H5File test1 = (H5File) h5file.createInstance(&quot;test_hdf5.h5&quot;, FileFormat.WRITE);
-     * // Open the file and load the file structure; file id is returned.
-     * int fid = test1.open();
+     *                                                                          // Create
+     *                                                                          // an
+     *                                                                          // instance
+     *                                                                          // of
+     *                                                                          // H5File
+     *                                                                          // object
+     *                                                                          // with
+     *                                                                          // read/write
+     *                                                                          // access
+     *                                                                          H5File test1 = (H5File) h5file.createInstance(
+     *                                                                                               &quot;test_hdf5.h5&quot;,
+     *                                                                                               FileFormat.WRITE);
+     *                                                                                                                  // Open
+     *                                                                                                                  // the
+     *                                                                                                                  // file
+     *                                                                                                                  // and
+     *                                                                                                                  // load
+     *                                                                                                                  // the
+     *                                                                                                                  // file
+     *                                                                                                                  // structure;
+     *                                                                                                                  // file
+     *                                                                                                                  // id
+     *                                                                                                                  // is
+     *                                                                                                                  // returned.
+     *                                                                                                                  int fid = test1.open();
      * </pre>
      * 
      * @param filename
@@ -713,8 +736,7 @@ public abstract class FileFormat extends File {
      * @see #getInstance(String)
      * @see #open()
      */
-    public abstract FileFormat createInstance(String filename, int access)
-            throws Exception;
+    public abstract FileFormat createInstance(String filename, int access) throws Exception;
 
     // REVIEW DOCS for createInstance()
     // What if READ ONLY in implementation? What if file already open?
@@ -867,8 +889,7 @@ public abstract class FileFormat extends File {
         TreeNode rootNode = getRootNode();
 
         if (rootNode != null) {
-            Enumeration local_enum = ((DefaultMutableTreeNode) rootNode)
-                    .depthFirstEnumeration();
+            Enumeration local_enum = ((DefaultMutableTreeNode) rootNode).depthFirstEnumeration();
 
             while (local_enum.hasMoreElements()) {
                 local_enum.nextElement();
@@ -911,7 +932,6 @@ public abstract class FileFormat extends File {
      */
     public abstract int open() throws Exception;
 
-    
     /**
      * Closes file associated with this instance.
      * <p>
@@ -1025,8 +1045,12 @@ public abstract class FileFormat extends File {
      * 
      * <pre>
      * H5File file = (H5File) h5file.createInstance(&quot;test_hdf5.h5&quot;, FileFormat.WRITE);
-     * H5Datatype dtype = file.createDatatype(Datatype.CLASS_INTEGER, 4,
-     *         Datatype.NATIVE, Datatype.NATIVE, &quot;Native Integer&quot;);
+     *                                                                                 H5Datatype dtype = file.createDatatype(
+     *                                                                                                          Datatype.CLASS_INTEGER,
+     *                                                                                                          4,
+     *                                                                                                          Datatype.NATIVE,
+     *                                                                                                          Datatype.NATIVE,
+     *                                                                                                          &quot;Native Integer&quot;);
      * </pre>
      * 
      * @param tclass
@@ -1044,8 +1068,7 @@ public abstract class FileFormat extends File {
      *             The exceptions thrown vary depending on the implementing
      *             class.
      */
-    public abstract Datatype createDatatype(int tclass, int tsize, int torder,
-            int tsign, String name) throws Exception;
+    public abstract Datatype createDatatype(int tclass, int tsize, int torder, int tsign, String name) throws Exception;
 
     // REVIEW DOCS for createDatatype(). Check and document exceptions.
 
@@ -1074,8 +1097,11 @@ public abstract class FileFormat extends File {
      * 
      * <pre>
      * H5File file = (H5File) h5file.createInstance(&quot;test_hdf5.h5&quot;, FileFormat.WRITE);
-     * H5Datatype dtype = file.createDatatype(Datatype.CLASS_INTEGER, 4,
-     *         Datatype.NATIVE, Datatype.NATIVE);
+     *                                                                                 H5Datatype dtype = file.createDatatype(
+     *                                                                                                          Datatype.CLASS_INTEGER,
+     *                                                                                                          4,
+     *                                                                                                          Datatype.NATIVE,
+     *                                                                                                          Datatype.NATIVE);
      * </pre>
      * 
      * @param tclass
@@ -1091,8 +1117,7 @@ public abstract class FileFormat extends File {
      *             The exceptions thrown vary depending on the implementing
      *             class.
      */
-    public abstract Datatype createDatatype(int tclass, int tsize, int torder,
-            int tsign) throws Exception;
+    public abstract Datatype createDatatype(int tclass, int tsize, int torder, int tsign) throws Exception;
 
     // REVIEW DOCS for createDatatype(). Check and document exceptions.
 
@@ -1104,18 +1129,38 @@ public abstract class FileFormat extends File {
      * 
      * <pre>
      * String name = &quot;2D integer&quot;;
-     * Group pgroup = (Group) ((DefaultMutableTreeNode) getRootNode).getUserObject();
-     * Datatype dtype = new H5Datatype(Datatype.CLASS_INTEGER, // class
-     *         4, // size in bytes
-     *         Datatype.ORDER_LE, // byte order
-     *         Datatype.SIGN_NONE); // signed or unsigned
-     * long[] dims = { 100, 50 };
-     * long[] maxdims = dims;
-     * long[] chunks = null; // no chunking
-     * int gzip = 0; // no compression
-     * Object data = null; // no initial data values
-     * Dataset d = (H5File) file.createScalarDS(name, pgroup, dtype, dims, maxdims,
-     *         chunks, gzip, data);
+     *                             Group pgroup = (Group) ((DefaultMutableTreeNode) getRootNode).getUserObject();
+     *                                                                                                            Datatype dtype = new H5Datatype(
+     *                                                                                                                                   Datatype.CLASS_INTEGER, // class
+     *                                                                                                                                   4, // size
+     *                                                                                                                                      // in
+     *                                                                                                                                      // bytes
+     *                                                                                                                                   Datatype.ORDER_LE, // byte
+     *                                                                                                                                                      // order
+     *                                                                                                                                   Datatype.SIGN_NONE); // signed
+     *                                                                                                                                                        // or
+     *                                                                                                                                                        // unsigned
+     *                                                                                                                                                        long[] dims = {
+     *         100, 50                                                                                                                                                   };
+     *                                                                                                                                                                       long[] maxdims = dims;
+     *                                                                                                                                                                                              long[] chunks = null; // no
+     *                                                                                                                                                                                                                    // chunking
+     *                                                                                                                                                                                                                    int gzip = 0; // no
+     *                                                                                                                                                                                                                                  // compression
+     *                                                                                                                                                                                                                                  Object data = null; // no
+     *                                                                                                                                                                                                                                                      // initial
+     *                                                                                                                                                                                                                                                      // data
+     *                                                                                                                                                                                                                                                      // values
+     *                                                                                                                                                                                                                                                      Dataset d = (H5File) file
+     *                                                                                                                                                                                                                                                                        .createScalarDS(
+     *                                                                                                                                                                                                                                                                                name,
+     *                                                                                                                                                                                                                                                                                pgroup,
+     *                                                                                                                                                                                                                                                                                dtype,
+     *                                                                                                                                                                                                                                                                                dims,
+     *                                                                                                                                                                                                                                                                                maxdims,
+     *                                                                                                                                                                                                                                                                                chunks,
+     *                                                                                                                                                                                                                                                                                gzip,
+     *                                                                                                                                                                                                                                                                                data);
      * </pre>
      * 
      * @param name
@@ -1144,15 +1189,12 @@ public abstract class FileFormat extends File {
      *             The exceptions thrown vary depending on the implementing
      *             class.
      */
-    public abstract Dataset createScalarDS(String name, Group pgroup,
-            Datatype type, long[] dims, long[] maxdims, long[] chunks,
-            int gzip, Object fillValue, Object data) throws Exception;
-    public Dataset createScalarDS(String name, Group pgroup,
-            Datatype type, long[] dims, long[] maxdims, long[] chunks,
-            int gzip, Object data) throws Exception 
-    {
-        return createScalarDS(name, pgroup,type, dims,maxdims, chunks,
-                gzip,null, data);
+    public abstract Dataset createScalarDS(String name, Group pgroup, Datatype type, long[] dims, long[] maxdims,
+            long[] chunks, int gzip, Object fillValue, Object data) throws Exception;
+
+    public Dataset createScalarDS(String name, Group pgroup, Datatype type, long[] dims, long[] maxdims, long[] chunks,
+            int gzip, Object data) throws Exception {
+        return createScalarDS(name, pgroup, type, dims, maxdims, chunks, gzip, null, data);
     }
 
     // REVIEW DOCS for createScalarDS(). Check and document exceptions.
@@ -1217,18 +1259,15 @@ public abstract class FileFormat extends File {
      *             The exceptions thrown vary depending on the implementing
      *             class.
      */
-    public Dataset createCompoundDS(String name, Group pgroup, long[] dims,
-            long[] maxdims, long[] chunks, int gzip, String[] memberNames,
-            Datatype[] memberDatatypes, int[] memberSizes, Object data)
-            throws Exception
-    // REVIEW DOCS for createCompoundDS(). Check and document exceptions.
-    {
+    public Dataset createCompoundDS(String name, Group pgroup, long[] dims, long[] maxdims, long[] chunks, int gzip,
+            String[] memberNames, Datatype[] memberDatatypes, int[] memberSizes, Object data) throws Exception
+            // REVIEW DOCS for createCompoundDS(). Check and document exceptions.
+            {
         // If the implementing subclass doesn't have this method then that
         // format doesn't support Compound DataSets and we throw an
         // exception.
-        throw new UnsupportedOperationException(
-                "Dataset FileFormat.createCompoundDS(...) is not implemented.");
-    }
+        throw new UnsupportedOperationException("Dataset FileFormat.createCompoundDS(...) is not implemented.");
+            }
 
     /**
      * Creates a new image in a file.
@@ -1237,18 +1276,40 @@ public abstract class FileFormat extends File {
      * 
      * <pre>
      * String name = &quot;2D image&quot;;
-     * Group pgroup = (Group) ((DefaultMutableTreeNode) getRootNode).getUserObject();
-     * Datatype dtype = new H5Datatype(Datatype.CLASS_INTEGER, 1, Datatype.NATIVE,
-     *         Datatype.SIGN_NONE);
-     * long[] dims = { 100, 50 };
-     * long[] maxdims = dims;
-     * long[] chunks = null; // no chunking
-     * int gzip = 0; // no compression
-     * int ncomp = 3; // RGB true color image
-     * int interlace = ScalarDS.INTERLACE_PIXEL;
-     * Object data = null; // no initial data values
-     * Dataset d = (H5File) file.createScalarDS(name, pgroup, dtype, dims, maxdims,
-     *         chunks, gzip, ncomp, interlace, data);
+     *                           Group pgroup = (Group) ((DefaultMutableTreeNode) getRootNode).getUserObject();
+     *                                                                                                          Datatype dtype = new H5Datatype(
+     *                                                                                                                                 Datatype.CLASS_INTEGER,
+     *                                                                                                                                 1,
+     *                                                                                                                                 Datatype.NATIVE,
+     *                                                                                                                                 Datatype.SIGN_NONE);
+     *                                                                                                                                                      long[] dims = {
+     *         100, 50                                                                                                                                                 };
+     *                                                                                                                                                                     long[] maxdims = dims;
+     *                                                                                                                                                                                            long[] chunks = null; // no
+     *                                                                                                                                                                                                                  // chunking
+     *                                                                                                                                                                                                                  int gzip = 0; // no
+     *                                                                                                                                                                                                                                // compression
+     *                                                                                                                                                                                                                                int ncomp = 3; // RGB
+     *                                                                                                                                                                                                                                               // true
+     *                                                                                                                                                                                                                                               // color
+     *                                                                                                                                                                                                                                               // image
+     *                                                                                                                                                                                                                                               int interlace = ScalarDS.INTERLACE_PIXEL;
+     *                                                                                                                                                                                                                                                                                         Object data = null; // no
+     *                                                                                                                                                                                                                                                                                                             // initial
+     *                                                                                                                                                                                                                                                                                                             // data
+     *                                                                                                                                                                                                                                                                                                             // values
+     *                                                                                                                                                                                                                                                                                                             Dataset d = (H5File) file
+     *                                                                                                                                                                                                                                                                                                                               .createScalarDS(
+     *                                                                                                                                                                                                                                                                                                                                       name,
+     *                                                                                                                                                                                                                                                                                                                                       pgroup,
+     *                                                                                                                                                                                                                                                                                                                                       dtype,
+     *                                                                                                                                                                                                                                                                                                                                       dims,
+     *                                                                                                                                                                                                                                                                                                                                       maxdims,
+     *                                                                                                                                                                                                                                                                                                                                       chunks,
+     *                                                                                                                                                                                                                                                                                                                                       gzip,
+     *                                                                                                                                                                                                                                                                                                                                       ncomp,
+     *                                                                                                                                                                                                                                                                                                                                       interlace,
+     *                                                                                                                                                                                                                                                                                                                                       data);
      * </pre>
      * 
      * @param name
@@ -1284,9 +1345,8 @@ public abstract class FileFormat extends File {
      */
     public abstract Dataset createImage(
 
-    String name, Group pgroup, Datatype type, long[] dims, long[] maxdims,
-            long[] chunks, int gzip, int ncomp, int interlace, Object data)
-            throws Exception;
+            String name, Group pgroup, Datatype type, long[] dims, long[] maxdims, long[] chunks, int gzip, int ncomp,
+            int interlace, Object data) throws Exception;
 
     // REVIEW DOCS for createImage(). Check and document exceptions.
 
@@ -1305,9 +1365,7 @@ public abstract class FileFormat extends File {
      *             The exceptions thrown vary depending on the implementing
      *             class.
      */
-    public abstract Group createGroup(String name, Group parentGroup)
-            throws Exception;
-    
+    public abstract Group createGroup(String name, Group parentGroup) throws Exception;
 
     // REVIEW DOCS for createLink().
     // Verify Implementing classes document these and also
@@ -1335,11 +1393,10 @@ public abstract class FileFormat extends File {
      *             The exceptions thrown vary depending on the implementing
      *             class.
      */
-    public HObject createLink(Group parentGroup, String name, HObject currentObj, int type)
-    throws Exception {
-        return createLink(parentGroup,name, currentObj);
+    public HObject createLink(Group parentGroup, String name, HObject currentObj, int type) throws Exception {
+        return createLink(parentGroup, name, currentObj);
     }
-  
+
     /**
      * Creates a soft or external links to objects in a file that do not exist
      * at the time the link is created.
@@ -1359,11 +1416,10 @@ public abstract class FileFormat extends File {
      *             The exceptions thrown vary depending on the implementing
      *             class.
      */
-    public HObject createLink(Group parentGroup, String name, String currentObj, int type)
-    throws Exception {
-        return createLink(parentGroup,name, currentObj);
+    public HObject createLink(Group parentGroup, String name, String currentObj, int type) throws Exception {
+        return createLink(parentGroup, name, currentObj);
     }
-    
+
     /**
      * Copies the source object to a new destination.
      * <p>
@@ -1387,7 +1443,7 @@ public abstract class FileFormat extends File {
      * // Open the exisiting file with the source object.
      * H5File existingFile = new H5File(&quot;existingFile.h5&quot;, FileFormat.READ);
      * existingFile.open();
-     * // Our source object will be the root group. 
+     * // Our source object will be the root group.
      * HObject srcObj = existingFile.get(&quot;/&quot;);
      * // Create a new file.
      * H5File newFile = new H5File(&quot;newFile.h5&quot;, FileFormat.CREATE);
@@ -1418,8 +1474,7 @@ public abstract class FileFormat extends File {
      *             SRC.copy not DEST.copy. Also what is returned on failure.
      *             ALSO exceptions. ALSO, does it copy data or just structure?
      */
-    public abstract TreeNode copy(HObject srcObj, Group dstGroup, String dstName)
-            throws Exception;
+    public abstract TreeNode copy(HObject srcObj, Group dstGroup, String dstName) throws Exception;
 
     // REVIEW DOCS for copy().
     // CONFIRM USE SRC.copy not DEST.copy. Also what is returned on
@@ -1441,14 +1496,13 @@ public abstract class FileFormat extends File {
     /**
      * Attaches a given attribute to an object.
      * <p>
-     * If an HDF(4&5) attribute exists in file, the method updates its value. 
-     * If the attribute does not exists in file, it creates the attribute in 
-     * file and attaches it to the object.
-     * It will fail to write a new attribute to the object where an attribute 
-     * with the same name already exists.  
-     * To update the value of an existing attribute in file, one needs to get 
-     * the instance of the attribute by getMetadata(), change its values, 
-     * and use writeAttribute() to write the value. 
+     * If an HDF(4&5) attribute exists in file, the method updates its value. If
+     * the attribute does not exists in file, it creates the attribute in file
+     * and attaches it to the object. It will fail to write a new attribute to
+     * the object where an attribute with the same name already exists. To
+     * update the value of an existing attribute in file, one needs to get the
+     * instance of the attribute by getMetadata(), change its values, and use
+     * writeAttribute() to write the value.
      * 
      * @param obj
      *            The object to which the attribute is attached to.
@@ -1460,8 +1514,7 @@ public abstract class FileFormat extends File {
      *             The exceptions thrown vary depending on the implementing
      *             class.
      */
-    public abstract void writeAttribute(HObject obj, Attribute attr,
-            boolean attrExisted) throws Exception;
+    public abstract void writeAttribute(HObject obj, Attribute attr, boolean attrExisted) throws Exception;
 
     // REVIEW DOCS for writeAttribute(). Check and document exceptions.
 
@@ -1507,11 +1560,9 @@ public abstract class FileFormat extends File {
      * memberNames, memberDatatypes, memberSizes, data );
      */
     @Deprecated
-    public final Dataset createCompoundDS(String name, Group pgroup,
-            long[] dims, String[] memberNames, Datatype[] memberDatatypes,
-            int[] memberSizes, Object data) throws Exception {
-        return createCompoundDS(name, pgroup, dims, null, null, -1,
-                memberNames, memberDatatypes, memberSizes, data);
+    public final Dataset createCompoundDS(String name, Group pgroup, long[] dims, String[] memberNames,
+            Datatype[] memberDatatypes, int[] memberSizes, Object data) throws Exception {
+        return createCompoundDS(name, pgroup, dims, null, null, -1, memberNames, memberDatatypes, memberSizes, data);
     }
 
     /**
@@ -1588,8 +1639,7 @@ public abstract class FileFormat extends File {
      *             </li>
      */
     @Deprecated
-    public static final HObject getHObject(String filename, String path)
-            throws Exception {
+    public static final HObject getHObject(String filename, String path) throws Exception {
         if ((filename == null) || (filename.length() <= 0)) {
             throw new IllegalArgumentException("Invalid file name. " + filename);
         }
@@ -1633,8 +1683,7 @@ public abstract class FileFormat extends File {
             return null;
         }
 
-        Enumeration local_enum = ((DefaultMutableTreeNode) theRoot)
-                .breadthFirstEnumeration();
+        Enumeration local_enum = ((DefaultMutableTreeNode) theRoot).breadthFirstEnumeration();
         while (local_enum.hasMoreElements()) {
             theNode = (DefaultMutableTreeNode) local_enum.nextElement();
             theObj = (HObject) theNode.getUserObject();
@@ -1681,7 +1730,7 @@ public abstract class FileFormat extends File {
             theObj = (HObject) theNode.getUserObject();
             String fullPath = theObj.getFullName() + "/";
 
-            if (path.equals(fullPath) &&  theObj.getPath() != null ) {
+            if (path.equals(fullPath) && theObj.getPath() != null) {
                 break;
             }
             else {
@@ -1692,10 +1741,9 @@ public abstract class FileFormat extends File {
         return theObj;
     }
 
-    //////////////////////////////////////////////////////////////////////////////////////
-    //                    Added to support HDF5 1.8 features                            //
-    //////////////////////////////////////////////////////////////////////////////////////
-
+    // ////////////////////////////////////////////////////////////////////////////////////
+    // Added to support HDF5 1.8 features //
+    // ////////////////////////////////////////////////////////////////////////////////////
 
     // REVIEW DOCS for open()
     // What if this is a new file? Is the root group created by default?
@@ -1713,11 +1761,10 @@ public abstract class FileFormat extends File {
      * @throws Exception
      * 
      */
-    public int open(int ...propList) throws Exception
-    {
+    public int open(int... propList) throws Exception {
         throw new UnsupportedOperationException("Unsupported operation. Subclasses must implement it.");
     }
-    
+
     /**
      * Creates a new group with specified name in existing group.
      * <p>
@@ -1732,20 +1779,19 @@ public abstract class FileFormat extends File {
      *            The group creation properties, in which the order of the
      *            properties conforms the HDF5 library API, H5Gcreate(), i.e.
      *            lcpl, gcpl and gapl, where
-     *           <ul>
+     *            <ul>
      *            <li>lcpl : Property list for link creation <li>gcpl : Property
      *            list for group creation <li>gapl : Property list for group
      *            access
-     *           </ul>
+     *            </ul>
      * 
      * @return The new group if successful; otherwise returns null.
      * @throws Exception
      */
-    public Group createGroup(String name, Group pgroup, int ... gplist) throws Exception 
-    {
+    public Group createGroup(String name, Group pgroup, int... gplist) throws Exception {
         throw new UnsupportedOperationException("Unsupported operation. Subclasses must implement it.");
     }
-    
+
     /***
      * Creates the group creation property list identifier, gcpl. This
      * identifier is used when creating Groups.
@@ -1764,8 +1810,7 @@ public abstract class FileFormat extends File {
      * @return The gcpl identifier.
      * @throws Exception
      */
-    public int createGcpl(int creationorder, int maxcompact, int mindense) throws Exception
-    {
+    public int createGcpl(int creationorder, int maxcompact, int mindense) throws Exception {
         throw new UnsupportedOperationException("Unsupported operation. Subclasses must implement it.");
     }
 
@@ -1788,8 +1833,7 @@ public abstract class FileFormat extends File {
      *             The exceptions thrown vary depending on the implementing
      *             class.
      */
-    public  HObject createLink(Group linkGroup, String name, Object currentObj) throws Exception
-    {
+    public HObject createLink(Group linkGroup, String name, Object currentObj) throws Exception {
         throw new UnsupportedOperationException("Unsupported operation. Subclasses must implement it.");
     }
 
@@ -1804,34 +1848,31 @@ public abstract class FileFormat extends File {
      *            The new name of the attribute.
      * @throws Exception
      */
-    public void renameAttribute(HObject obj, String oldAttrName, String newAttrName) throws Exception
-    {
+    public void renameAttribute(HObject obj, String oldAttrName, String newAttrName) throws Exception {
         throw new UnsupportedOperationException("Unsupported operation. Subclasses must implement it.");
     }
 
     /**
      * Sets the bounds of library versions.
+     * 
      * @param low
-     *                 The earliest version of the library.
+     *            The earliest version of the library.
      * @param high
-     *                 The latest version of the library.
+     *            The latest version of the library.
      * @throws Exception
      */
-    public void setLibBounds(int low, int high) throws Exception 
-    {
+    public void setLibBounds(int low, int high) throws Exception {
         throw new UnsupportedOperationException("Unsupported operation. Subclasses must implement it.");
     }
-    
+
     /**
      * Gets the bounds of library versions
      * 
      * @return The earliest and latest library versions in an int array.
      * @throws Exception
      */
-    public int[] getLibBounds() throws Exception
-    {
+    public int[] getLibBounds() throws Exception {
         throw new UnsupportedOperationException("Unsupported operation. Subclasses must implement it.");
     }
 
-     
 }

@@ -107,19 +107,19 @@ public class HDFView extends JFrame implements ViewManager, ActionListener, Chan
     private static List<String>   imageViews;
 
     /** a list of tree table implementation. */
-    private static List           tableViews;
+    private static List<?>           tableViews;
 
     /** a list of Text view implementation. */
-    private static List           textViews;
+    private static List<?>           textViews;
 
     /** a list of metadata view implementation. */
-    private static List           metaDataViews;
+    private static List<?>           metaDataViews;
 
     /** a list of palette view implementation. */
-    private static List           paletteViews;
+    private static List<?>           paletteViews;
 
     /** a list of help view implementation. */
-    private static List           helpViews;
+    private static List<?>           helpViews;
 
     private static final String   aboutHDFView     = "HDF Viewer, " + "Version " + ViewProperties.VERSION + "\n"
             + "For " + System.getProperty("os.name") + "\n\n"
@@ -179,7 +179,7 @@ public class HDFView extends JFrame implements ViewManager, ActionListener, Chan
     private final Toolkit         toolkit;
 
     /** The list of GUI components related to editing */
-    private final List            editGUIs;
+    private final List<?>            editGUIs;
 
     /** The list of GUI components related to HDF5 */
     private final List<JMenuItem> h5GUIs;
@@ -192,7 +192,7 @@ public class HDFView extends JFrame implements ViewManager, ActionListener, Chan
 
     private UserOptionsDialog     userOptionDialog;
 
-    private Constructor           ctrSrbFileDialog = null;
+    private Constructor<?>           ctrSrbFileDialog = null;
 
     private JDialog               srbFileDialog    = null;
 
@@ -223,7 +223,7 @@ public class HDFView extends JFrame implements ViewManager, ActionListener, Chan
         ViewProperties.loadIcons(rootDir);
         ViewProperties.loadExtClass();
 
-        editGUIs = new Vector();
+        editGUIs = new Vector<Object>();
         h4GUIs = new Vector<JMenuItem>();
         h5GUIs = new Vector<JMenuItem>();
 
@@ -280,7 +280,7 @@ public class HDFView extends JFrame implements ViewManager, ActionListener, Chan
         fileMenu.setName("filemenu");
 
         int n = treeViews.size();
-        Class theClass = null;
+        Class<?> theClass = null;
         for (int i = 0; i < n; i++) {
             // use the first available treeview
             String className = treeViews.get(i);
@@ -304,7 +304,7 @@ public class HDFView extends JFrame implements ViewManager, ActionListener, Chan
         if (theClass != null) {
             try {
                 Class[] paramClass = { Class.forName("ncsa.hdf.view.ViewManager") };
-                Constructor constructor = theClass.getConstructor(paramClass);
+                Constructor<?> constructor = theClass.getConstructor(paramClass);
                 Object[] paramObj = { this };
                 treeView = (TreeView) constructor.newInstance(paramObj);
             }
@@ -392,7 +392,7 @@ public class HDFView extends JFrame implements ViewManager, ActionListener, Chan
 
         UIDefaults defaults = UIManager.getLookAndFeelDefaults();
 
-        for (Iterator i = defaults.keySet().iterator(); i.hasNext();) {
+        for (Iterator<?> i = defaults.keySet().iterator(); i.hasNext();) {
             Object key = i.next();
             if (defaults.getFont(key) != null) {
                 UIManager.put(key, new javax.swing.plaf.FontUIResource(font));
@@ -1251,7 +1251,7 @@ public class HDFView extends JFrame implements ViewManager, ActionListener, Chan
 
             // enables use of JHDF5 in JNLP (Web Start) applications, the system
             // class loader with reflection first.
-            Class theClass = null;
+            Class<?> theClass = null;
             try {
                 theClass = Class.forName(className);
             }
@@ -1287,11 +1287,11 @@ public class HDFView extends JFrame implements ViewManager, ActionListener, Chan
             }
         }
         else if (cmd.equals("Unregister file format")) {
-            Enumeration keys = FileFormat.getFileFormatKeys();
-            ArrayList keylist = new ArrayList();
+            Enumeration<Object> keys = FileFormat.getFileFormatKeys();
+            ArrayList<Object> keylist = new ArrayList<Object>();
 
             while (keys.hasMoreElements()) {
-                keylist.add(keys.nextElement());
+                keylist.add((Object)keys.nextElement());
             }
 
             String theKey = (String) JOptionPane.showInputDialog(this, "Unregister a file format",
@@ -1456,7 +1456,7 @@ public class HDFView extends JFrame implements ViewManager, ActionListener, Chan
             if (tr.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
                 evt.acceptDrop(DnDConstants.ACTION_COPY);
 
-                final List fileList = (List) tr.getTransferData(DataFlavor.javaFileListFlavor);
+                final List<?> fileList = (List<?>) tr.getTransferData(DataFlavor.javaFileListFlavor);
                 int n = fileList.size();
                 for (int i = 0; i < n; i++) {
                     File file = (File) fileList.get(i);
@@ -1759,24 +1759,7 @@ public class HDFView extends JFrame implements ViewManager, ActionListener, Chan
             }
         } // else if (obj instanceof Dataset)
 
-        List attrList = null;
-        // -----------For the feature:To display attributes in creation order
-        // String idxType = ViewProperties.getIndexType();
-        // int indxType = 0;
-        // if(idxType.equals("alphabetical"))
-        // indxType = 0;
-        // else if(idxType.equals("creation"))
-        // indxType = 1;
-        // try {
-        // if(obj.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5))){
-        // attrList = obj.getMetadata(indxType);
-        // }
-        // else
-        // attrList = obj.getMetadata();
-        // }
-        // catch (Exception ex){
-        // ex.printStackTrace();
-        // }
+        List<?> attrList = null;
         try {
             attrList = obj.getMetadata();
         }
@@ -1890,28 +1873,28 @@ public class HDFView extends JFrame implements ViewManager, ActionListener, Chan
     /**
      * @return a list of tableview implementations.
      */
-    public static final List getListOfTableView() {
+    public static final List<?> getListOfTableView() {
         return tableViews;
     }
 
     /**
      * @return a list of textview implementations.
      */
-    public static final List getListOfTextView() {
+    public static final List<?> getListOfTextView() {
         return textViews;
     }
 
     /**
      * @return a list of metaDataview implementations.
      */
-    public static final List getListOfMetaDataView() {
+    public static final List<?> getListOfMetaDataView() {
         return metaDataViews;
     }
 
     /**
      * @return a list of paletteview implementations.
      */
-    public static final List getListOfPaletteView() {
+    public static final List<?> getListOfPaletteView() {
         return paletteViews;
     }
 
@@ -2052,7 +2035,7 @@ public class HDFView extends JFrame implements ViewManager, ActionListener, Chan
     /** open file from SRB server */
     private void openFromSRB() throws Exception {
         if (ctrSrbFileDialog == null) {
-            Class theClass = null;
+            Class<?> theClass = null;
 
             try {
                 theClass = Class.forName("ncsa.hdf.srb.SRBFileDialog");

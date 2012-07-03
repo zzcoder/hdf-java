@@ -60,10 +60,9 @@ import java.io.Serializable;
  * retrieve an object ID from a file.
  * 
  * <pre>
- * // retrieve the object ID 
+ * // retrieve the object ID
  * try {
- *     byte[] ref_buf = H5.H5Rcreate(h5file.getFID(), this.getFullName(),
- *             HDF5Constants.H5R_OBJECT, -1);
+ *     byte[] ref_buf = H5.H5Rcreate(h5file.getFID(), this.getFullName(), HDF5Constants.H5R_OBJECT, -1);
  *     long[] oid = new long[1];
  *     oid[0] = HDFNativeData.byteToLong(ref_buf, 0);
  * }
@@ -82,38 +81,38 @@ public abstract class HObject implements Serializable, DataFormat {
      * corresponds exactly to a serialized object. For details, see
      * http://java.sun.com/j2se/1.5.0/docs/api/java/io/Serializable.html
      */
-    private static final long serialVersionUID = -1723666708199882519L;
+    private static final long  serialVersionUID = -1723666708199882519L;
 
     /**
      * The separator of object path, i.e. "/".
      */
-    public final static String separator = "/";
+    public final static String separator        = "/";
 
     /**
      * The full path of the file that contains the object.
      */
-    private String filename;
+    private String             filename;
 
     /**
      * The file which contains the object
      */
-    private final FileFormat fileFormat;
+    private final FileFormat   fileFormat;
 
     /**
      * The name of the data object. The root group has its default name, a
      * slash. The name can be changed except the root group.
      */
-    private String name;
+    private String             name;
 
     /**
      * The full path of the data object. The full path always starts with the
      * root, a slash. The path cannot be changed. Also, a path must ended with a
      * slash. For example, /arrays/ints/
      */
-    private String path;
+    private String             path;
 
     /** The full name of the data object, i.e. "path + name" */
-    private String fullName;
+    private String             fullName;
 
     /**
      * Array of long integer storing unique identifier for the object.
@@ -122,12 +121,12 @@ public abstract class HObject implements Serializable, DataFormat {
      * oid[0]=tag, oid[1]=ref.<br>
      * HDF5 objects are uniquely identified by an object reference.
      */
-    protected long[] oid;
-    
+    protected long[]           oid;
+
     /**
-     * The name of the Target Object that is being linked to. 
+     * The name of the Target Object that is being linked to.
      */
-    protected String linkTargetObjName;
+    protected String           linkTargetObjName;
 
     /**
      * Number of attributes attached to the object.
@@ -163,8 +162,7 @@ public abstract class HObject implements Serializable, DataFormat {
      *             Using {@link #HObject(FileFormat, String, String)}
      */
     @Deprecated
-    public HObject(FileFormat theFile, String theName, String thePath,
-            long[] oid) {
+    public HObject(FileFormat theFile, String theName, String thePath, long[] oid) {
         this.fileFormat = theFile;
         this.oid = oid;
 
@@ -197,8 +195,7 @@ public abstract class HObject implements Serializable, DataFormat {
                 thePath = thePath.substring(0, thePath.lastIndexOf(separator));
             }
         }
-        else if ((theName != null) && (thePath == null)
-                && (theName.indexOf(separator) >= 0)) {
+        else if ((theName != null) && (thePath == null) && (theName.indexOf(separator) >= 0)) {
             if (theName.equals(separator)) {
                 theName = separator;
                 thePath = null;
@@ -285,24 +282,22 @@ public abstract class HObject implements Serializable, DataFormat {
     public final String getName() {
         return name;
     }
-   
-    
-   
+
     /**
      * Returns the name of the target object that is linked to.
      * 
      * @return The name of the object that is linked to.
      */
-    public final String getLinkTargetObjName() {  
+    public final String getLinkTargetObjName() {
         return linkTargetObjName;
-      }
-    
+    }
+
     /**
      * Sets the name of the target object that is linked to.
      */
-    public final void setLinkTargetObjName(String targetObjName) {  
+    public final void setLinkTargetObjName(String targetObjName) {
         linkTargetObjName = targetObjName;
-      }
+    }
 
     /**
      * Returns the full name (group path + object name) of the object. For
@@ -334,8 +329,7 @@ public abstract class HObject implements Serializable, DataFormat {
     public void setName(String newName) throws Exception {
         if (newName != null) {
             if (newName.equals(HObject.separator)) {
-                throw new IllegalArgumentException(
-                        "The new name cannot be the root");
+                throw new IllegalArgumentException("The new name cannot be the root");
             }
 
             if (newName.startsWith(HObject.separator)) {
@@ -347,9 +341,8 @@ public abstract class HObject implements Serializable, DataFormat {
             }
 
             if (newName.contains(HObject.separator)) {
-                throw new IllegalArgumentException(
-                        "The new name contains the separator character: "
-                                + HObject.separator);
+                throw new IllegalArgumentException("The new name contains the separator character: "
+                        + HObject.separator);
             }
         }
 
@@ -443,13 +436,13 @@ public abstract class HObject implements Serializable, DataFormat {
         int n1 = theID.length;
         int n2 = oid.length;
 
-        if (n1 == 0 || n2==0) {
+        if (n1 == 0 || n2 == 0) {
             return false;
         }
 
         int n = Math.min(n1, n2);
         boolean isMatched = (theID[0] == oid[0]);
-        
+
         for (int i = 1; isMatched && (i < n); i++) {
             isMatched = (theID[i] == oid[i]);
         }
@@ -497,13 +490,11 @@ public abstract class HObject implements Serializable, DataFormat {
      */
     @Override
     public String toString() {
-    	if (this instanceof Group) {
-    		if (((Group)this).isRoot() && this.getFileFormat()!= null)
-    			return this.getFileFormat().getName();
-    	}
-    	
-        if (name != null)
-            return name;
+        if (this instanceof Group) {
+            if (((Group) this).isRoot() && this.getFileFormat() != null) return this.getFileFormat().getName();
+        }
+
+        if (name != null) return name;
 
         return super.toString();
     }

@@ -54,26 +54,26 @@ import ncsa.hdf.object.HObject;
  * @author Peter X. Cao
  * @version 2.4 9/6/2007
  */
-public class NewDatatypeDialog extends JDialog implements ActionListener,
-        ItemListener {
+public class NewDatatypeDialog extends JDialog 
+implements ActionListener, ItemListener {
     private static final long serialVersionUID = -1930736056916611522L;
 
-    private JTextField nameField, stringLengthField;
+    private JTextField        nameField, stringLengthField;
 
-    private JComboBox parentChoice, classChoice, sizeChoice, endianChoice;
+    private JComboBox         parentChoice, classChoice, sizeChoice, endianChoice;
 
-    private JCheckBox checkUnsigned;
+    private JCheckBox         checkUnsigned;
 
-    private boolean isH5;
+    private boolean           isH5;
 
     /** a list of current groups */
-    private List groupList;
+    private List              groupList;
 
-    private HObject newObject;
+    private HObject           newObject;
 
-    private FileFormat fileFormat;
+    private FileFormat        fileFormat;
 
-    private final Toolkit toolkit;
+    private final Toolkit     toolkit;
 
     /**
      * Constructs NewDatatypeDialog with specified list of possible parent
@@ -93,8 +93,7 @@ public class NewDatatypeDialog extends JDialog implements ActionListener,
 
         fileFormat = pGroup.getFileFormat();
         toolkit = Toolkit.getDefaultToolkit();
-        isH5 = pGroup.getFileFormat().isThisType(
-                FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5));
+        isH5 = pGroup.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5));
 
         parentChoice = new JComboBox();
         groupList = new Vector(objs.size());
@@ -109,8 +108,7 @@ public class NewDatatypeDialog extends JDialog implements ActionListener,
                     parentChoice.addItem(HObject.separator);
                 }
                 else {
-                    parentChoice.addItem(g.getPath() + g.getName()
-                            + HObject.separator);
+                    parentChoice.addItem(g.getPath() + g.getName() + HObject.separator);
                 }
             }
         }
@@ -119,8 +117,7 @@ public class NewDatatypeDialog extends JDialog implements ActionListener,
             parentChoice.setSelectedItem(HObject.separator);
         }
         else {
-            parentChoice.setSelectedItem(pGroup.getPath() + pGroup.getName()
-                    + HObject.separator);
+            parentChoice.setSelectedItem(pGroup.getPath() + pGroup.getName() + HObject.separator);
         }
 
         JPanel contentPane = (JPanel) getContentPane();
@@ -319,7 +316,8 @@ public class NewDatatypeDialog extends JDialog implements ActionListener,
         if ((name == null) || (name.length() < 1)) {
             toolkit.beep();
             JOptionPane.showMessageDialog(this,
-                    "Datatype name is not specified.", getTitle(),
+                    "Datatype name is not specified.", 
+                    getTitle(),
                     JOptionPane.ERROR_MESSAGE);
             return null;
         }
@@ -327,7 +325,8 @@ public class NewDatatypeDialog extends JDialog implements ActionListener,
         if (name.indexOf(HObject.separator) >= 0) {
             toolkit.beep();
             JOptionPane.showMessageDialog(this,
-                    "Datatype name cannot contain path.", getTitle(),
+                    "Datatype name cannot contain path.", 
+                    getTitle(),
                     JOptionPane.ERROR_MESSAGE);
             return null;
         }
@@ -336,8 +335,10 @@ public class NewDatatypeDialog extends JDialog implements ActionListener,
 
         if (pgroup == null) {
             toolkit.beep();
-            JOptionPane.showMessageDialog(this, "Parent group is null.",
-                    getTitle(), JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, 
+                    "Parent group is null.",
+                    getTitle(), 
+                    JOptionPane.ERROR_MESSAGE);
             return null;
         }
 
@@ -378,8 +379,9 @@ public class NewDatatypeDialog extends JDialog implements ActionListener,
 
             if (stringLength <= 0) {
                 toolkit.beep();
-                JOptionPane.showMessageDialog(this, "Invalid string length: "
-                        + stringLengthField.getText(), getTitle(),
+                JOptionPane.showMessageDialog(this, 
+                        "Invalid string length: " + stringLengthField.getText(), 
+                        getTitle(),
                         JOptionPane.ERROR_MESSAGE);
                 return null;
             }
@@ -402,7 +404,8 @@ public class NewDatatypeDialog extends JDialog implements ActionListener,
         if ((tsize == 8) && !isH5 && (tclass == Datatype.CLASS_INTEGER)) {
             toolkit.beep();
             JOptionPane.showMessageDialog(this,
-                    "HDF4 does not support 64-bit integer.", getTitle(),
+                    "HDF4 does not support 64-bit integer.", 
+                    getTitle(),
                     JOptionPane.ERROR_MESSAGE);
             return null;
         }
@@ -426,16 +429,16 @@ public class NewDatatypeDialog extends JDialog implements ActionListener,
                 fullPath += name;
             }
             else {
-                fullPath = pgroup.getPath() + HObject.separator
-                        + pgroup.getName() + HObject.separator + name;
+                fullPath = pgroup.getPath() + HObject.separator + pgroup.getName() + HObject.separator + name;
             }
-            Datatype datatype = fileFormat.createDatatype(tclass, tsize,
-                    torder, tsign, fullPath);
+            Datatype datatype = fileFormat.createDatatype(tclass, tsize, torder, tsign, fullPath);
             obj = datatype;
         }
         catch (Exception ex) {
             toolkit.beep();
-            JOptionPane.showMessageDialog(this, ex, getTitle(),
+            JOptionPane.showMessageDialog(this, 
+                    ex,
+                    getTitle(),
                     JOptionPane.ERROR_MESSAGE);
             return null;
         }

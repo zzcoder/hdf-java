@@ -67,34 +67,32 @@ import ncsa.hdf.object.ScalarDS;
  * @author Peter X. Cao
  * @version 2.4 9/6/2007
  */
-public class NewDatasetDialog extends JDialog implements ActionListener,
-        ItemListener, HyperlinkListener {
+public class NewDatasetDialog extends JDialog implements ActionListener, ItemListener, HyperlinkListener {
     private static final long serialVersionUID = 5381164938654184532L;
 
-    private JTextField nameField, currentSizeField, maxSizeField,
-            chunkSizeField, stringLengthField, fillValueField;
+    private JTextField        nameField, currentSizeField, maxSizeField, chunkSizeField, stringLengthField,
+    fillValueField;
 
-    private JComboBox parentChoice, classChoice, sizeChoice, endianChoice,
-            rankChoice, compressionLevel;
+    private JComboBox         parentChoice, classChoice, sizeChoice, endianChoice, rankChoice, compressionLevel;
 
-    private JCheckBox checkUnsigned, checkCompression, checkFillValue;
+    private JCheckBox         checkUnsigned, checkCompression, checkFillValue;
 
-    private JRadioButton checkContinguous, checkChunked;
+    private JRadioButton      checkContinguous, checkChunked;
 
-    private JDialog helpDialog;
+    private JDialog           helpDialog;
 
-    private boolean isH5;
+    private boolean           isH5;
 
     /** a list of current groups */
-    private List groupList;
+    private List<Object>      groupList;
 
-    private HObject newObject;
+    private HObject           newObject;
 
-    private FileFormat fileFormat;
+    private FileFormat        fileFormat;
 
-    private final Toolkit toolkit;
+    private final Toolkit     toolkit;
 
-    private final DataView dataView;
+    private final DataView    dataView;
 
     /**
      * Constructs NewDatasetDialog with specified list of possible parent
@@ -107,7 +105,7 @@ public class NewDatasetDialog extends JDialog implements ActionListener,
      * @param objs
      *            the list of all objects.
      */
-    public NewDatasetDialog(JFrame owner, Group pGroup, List objs) {
+    public NewDatasetDialog(JFrame owner, Group pGroup, List<?> objs) {
         super(owner, "New Dataset...", true);
 
         helpDialog = null;
@@ -116,13 +114,12 @@ public class NewDatasetDialog extends JDialog implements ActionListener,
 
         fileFormat = pGroup.getFileFormat();
         toolkit = Toolkit.getDefaultToolkit();
-        isH5 = pGroup.getFileFormat().isThisType(
-                FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5));
+        isH5 = pGroup.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5));
 
         parentChoice = new JComboBox();
-        groupList = new Vector();
+        groupList = new Vector<Object>();
         Object obj = null;
-        Iterator iterator = objs.iterator();
+        Iterator<?> iterator = objs.iterator();
         while (iterator.hasNext()) {
             obj = iterator.next();
             if (obj instanceof Group) {
@@ -132,8 +129,7 @@ public class NewDatasetDialog extends JDialog implements ActionListener,
                     parentChoice.addItem(HObject.separator);
                 }
                 else {
-                    parentChoice.addItem(g.getPath() + g.getName()
-                            + HObject.separator);
+                    parentChoice.addItem(g.getPath() + g.getName() + HObject.separator);
                 }
             }
         }
@@ -142,8 +138,7 @@ public class NewDatasetDialog extends JDialog implements ActionListener,
             parentChoice.setSelectedItem(HObject.separator);
         }
         else {
-            parentChoice.setSelectedItem(pGroup.getPath() + pGroup.getName()
-                    + HObject.separator);
+            parentChoice.setSelectedItem(pGroup.getPath() + pGroup.getName() + HObject.separator);
         }
 
         JPanel contentPane = (JPanel) getContentPane();
@@ -303,7 +298,7 @@ public class NewDatasetDialog extends JDialog implements ActionListener,
 
         // storage layout
         JPanel tmpP0 = new JPanel();
-        tmpP0.setLayout(new GridLayout(1,3, 0, 5));
+        tmpP0.setLayout(new GridLayout(1, 3, 0, 5));
         tmpP0.add(checkContinguous);
         JPanel tmpP00 = new JPanel();
         tmpP00.setLayout(new BorderLayout());
@@ -314,8 +309,8 @@ public class NewDatasetDialog extends JDialog implements ActionListener,
         tmpP.add(tmpP0);
 
         tmpP0 = new JPanel();
-        tmpP0.setLayout(new GridLayout(1,2, 30, 5));
-        
+        tmpP0.setLayout(new GridLayout(1, 2, 30, 5));
+
         // compression
         tmpP00 = new JPanel();
         tmpP00.setLayout(new BorderLayout());
@@ -323,7 +318,6 @@ public class NewDatasetDialog extends JDialog implements ActionListener,
         tmpP00.add(compressionLevel, BorderLayout.CENTER);
         tmpP0.add(tmpP00);
 
-        
         // fill values
         checkFillValue = new JCheckBox("Fill Value ");
         fillValueField = new JTextField("0");
@@ -333,12 +327,12 @@ public class NewDatasetDialog extends JDialog implements ActionListener,
         tmpP00.setLayout(new BorderLayout());
         tmpP00.add(checkFillValue, BorderLayout.WEST);
         tmpP00.add(fillValueField, BorderLayout.CENTER);
-        
+
         if (isH5)
-        	tmpP0.add(tmpP00);
+            tmpP0.add(tmpP00);
         else
-        	tmpP0.add(new JLabel(""));
-         
+            tmpP0.add(new JLabel(""));
+
         tmpP.add(tmpP0);
 
         layoutPanel.add(tmpP, BorderLayout.CENTER);
@@ -378,8 +372,7 @@ public class NewDatasetDialog extends JDialog implements ActionListener,
      * @param objs
      *            the list of all objects.
      */
-    public NewDatasetDialog(JFrame owner, Group pGroup, List objs,
-            DataView observer) {
+    public NewDatasetDialog(JFrame owner, Group pGroup, List<?> objs, DataView observer) {
         super(owner, "New Dataset...", true);
 
         helpDialog = null;
@@ -388,13 +381,12 @@ public class NewDatasetDialog extends JDialog implements ActionListener,
 
         fileFormat = pGroup.getFileFormat();
         toolkit = Toolkit.getDefaultToolkit();
-        isH5 = pGroup.getFileFormat().isThisType(
-                FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5));
+        isH5 = pGroup.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5));
 
         parentChoice = new JComboBox();
-        groupList = new Vector();
+        groupList = new Vector<Object>();
         Object obj = null;
-        Iterator iterator = objs.iterator();
+        Iterator<?> iterator = objs.iterator();
         while (iterator.hasNext()) {
             obj = iterator.next();
             if (obj instanceof Group) {
@@ -404,8 +396,7 @@ public class NewDatasetDialog extends JDialog implements ActionListener,
                     parentChoice.addItem(HObject.separator);
                 }
                 else {
-                    parentChoice.addItem(g.getPath() + g.getName()
-                            + HObject.separator);
+                    parentChoice.addItem(g.getPath() + g.getName() + HObject.separator);
                 }
             }
         }
@@ -414,8 +405,7 @@ public class NewDatasetDialog extends JDialog implements ActionListener,
             parentChoice.setSelectedItem(HObject.separator);
         }
         else {
-            parentChoice.setSelectedItem(pGroup.getPath() + pGroup.getName()
-                    + HObject.separator);
+            parentChoice.setSelectedItem(pGroup.getPath() + pGroup.getName() + HObject.separator);
         }
 
         JPanel contentPane = (JPanel) getContentPane();
@@ -451,8 +441,7 @@ public class NewDatasetDialog extends JDialog implements ActionListener,
         namePanel.add(tmpP, BorderLayout.WEST);
         tmpP = new JPanel();
         tmpP.setLayout(new GridLayout(2, 1));
-        tmpP.add(nameField = new JTextField(
-                ((HObject) observer.getDataObject()).getName() + "~copy", 40));
+        tmpP.add(nameField = new JTextField(((HObject) observer.getDataObject()).getName() + "~copy", 40));
         tmpP.add(parentChoice);
         namePanel.add(tmpP, BorderLayout.CENTER);
         contentPane.add(namePanel, BorderLayout.CENTER);
@@ -466,7 +455,6 @@ public class NewDatasetDialog extends JDialog implements ActionListener,
     }
 
     public void actionPerformed(ActionEvent e) {
-        Object source = e.getSource();
         String cmd = e.getActionCommand();
 
         if (cmd.equals("Ok")) {
@@ -487,7 +475,7 @@ public class NewDatasetDialog extends JDialog implements ActionListener,
         if (cmd.equals("Cancel")) {
             newObject = null;
             dispose();
-            ((Vector) groupList).setSize(0);
+            ((Vector<Object>) groupList).setSize(0);
         }
         else if (cmd.equals("Show help")) {
             if (helpDialog == null) {
@@ -502,23 +490,17 @@ public class NewDatasetDialog extends JDialog implements ActionListener,
         }
         else if (cmd.equals("Set max size")) {
             String strMax = maxSizeField.getText();
-            if (strMax == null || strMax.length() < 1)
-                strMax = currentSizeField.getText();
-            
-            String msg = JOptionPane
-                    .showInputDialog(
-                            this,
-                            "Enter max dimension sizes. \n"
-                                    + "Use \"unlimited\" for unlimited dimension size.\n\n"
-                                    + "For example,\n" + "    200 x 100\n"
-                                    + "    100 x unlimited\n\n",
-                            strMax);
-            
+            if (strMax == null || strMax.length() < 1) strMax = currentSizeField.getText();
+
+            String msg = JOptionPane.showInputDialog(this, "Enter max dimension sizes. \n"
+                    + "Use \"unlimited\" for unlimited dimension size.\n\n" + "For example,\n" + "    200 x 100\n"
+                    + "    100 x unlimited\n\n", strMax);
+
             if (msg == null || msg.length() < 1)
                 maxSizeField.setText(currentSizeField.getText());
             else
                 maxSizeField.setText(msg);
-            
+
             checkMaxSize();
         }
     }
@@ -532,8 +514,7 @@ public class NewDatasetDialog extends JDialog implements ActionListener,
             endianChoice.setSelectedIndex(0);
             stringLengthField.setEnabled(false);
 
-            if (idx == 0) // INTEGER
-            {
+            if (idx == 0) { // INTEGER
                 sizeChoice.setEnabled(true);
                 endianChoice.setEnabled(isH5);
                 checkUnsigned.setEnabled(true);
@@ -553,8 +534,7 @@ public class NewDatasetDialog extends JDialog implements ActionListener,
                     checkUnsigned.setEnabled(false);
                 }
             }
-            else if (idx == 1) // FLOAT
-            {
+            else if (idx == 1) { // FLOAT
                 sizeChoice.setEnabled(true);
                 endianChoice.setEnabled(isH5);
                 checkUnsigned.setEnabled(false);
@@ -564,29 +544,25 @@ public class NewDatasetDialog extends JDialog implements ActionListener,
                     sizeChoice.removeItem("8");
                 }
             }
-            else if (idx == 2) // CHAR
-            {
+            else if (idx == 2) { // CHAR
                 sizeChoice.setEnabled(false);
                 endianChoice.setEnabled(isH5);
                 checkUnsigned.setEnabled(true);
             }
-            else if (idx == 3) // STRING
-            {
+            else if (idx == 3) { // STRING
                 sizeChoice.setEnabled(false);
                 endianChoice.setEnabled(false);
                 checkUnsigned.setEnabled(false);
                 stringLengthField.setEnabled(true);
                 stringLengthField.setText("String length");
             }
-            else if (idx == 4) // REFERENCE
-            {
+            else if (idx == 4) { // REFERENCE
                 sizeChoice.setEnabled(false);
                 endianChoice.setEnabled(false);
                 checkUnsigned.setEnabled(false);
                 stringLengthField.setEnabled(false);
             }
-            else if (idx == 5) // ENUM
-            {
+            else if (idx == 5) { // ENUM
                 sizeChoice.setEnabled(true);
                 checkUnsigned.setEnabled(true);
                 stringLengthField.setEnabled(true);
@@ -642,12 +618,10 @@ public class NewDatasetDialog extends JDialog implements ActionListener,
         else if (source.equals(checkChunked)) {
             chunkSizeField.setEnabled(true);
             String chunkStr = "";
-            StringTokenizer st = new StringTokenizer(
-                    currentSizeField.getText(), "x");
+            StringTokenizer st = new StringTokenizer(currentSizeField.getText(), "x");
             int rank = rankChoice.getSelectedIndex() + 1;
             while (st.hasMoreTokens()) {
-                long l = Math.max(1, Long.valueOf(st.nextToken().trim())
-                        / (2 * rank));
+                long l = Math.max(1, Long.valueOf(st.nextToken().trim()) / (2 * rank));
                 chunkStr += String.valueOf(l) + "x";
             }
             chunkStr = chunkStr.substring(0, chunkStr.lastIndexOf('x'));
@@ -688,10 +662,10 @@ public class NewDatasetDialog extends JDialog implements ActionListener,
             }
         }
         else if (source.equals(checkFillValue)) {
-        	fillValueField.setEnabled(checkFillValue.isSelected());
-        }        
+            fillValueField.setEnabled(checkFillValue.isSelected());
+        }
     }
-    
+
     /** check is the max size is valid */
     private void checkMaxSize() {
         boolean isChunkNeeded = false;
@@ -702,15 +676,14 @@ public class NewDatasetDialog extends JDialog implements ActionListener,
 
         if (stMax.countTokens() != stDim.countTokens()) {
             toolkit.beep();
-            JOptionPane.showMessageDialog(this,
-                    "Wrong number of values in the max dimension size "+maxStr,
+            JOptionPane.showMessageDialog(this, "Wrong number of values in the max dimension size " + maxStr,
                     getTitle(), JOptionPane.ERROR_MESSAGE);
             maxSizeField.setText(null);
             return;
         }
 
         int rank = stDim.countTokens();
-        long max=0, dim=0;
+        long max = 0, dim = 0;
         long[] maxdims = new long[rank];
         for (int i = 0; i < rank; i++) {
             String token = stMax.nextToken().trim();
@@ -719,68 +692,60 @@ public class NewDatasetDialog extends JDialog implements ActionListener,
             if (token.startsWith("u")) {
                 max = -1;
                 isChunkNeeded = true;
-            } else {
+            }
+            else {
                 try {
                     max = Long.parseLong(token);
                 }
                 catch (NumberFormatException ex) {
                     toolkit.beep();
-                    JOptionPane.showMessageDialog(this,
-                            "Invalid max dimension size: "
-                            + maxStr, getTitle(),
+                    JOptionPane.showMessageDialog(this, "Invalid max dimension size: " + maxStr, getTitle(),
                             JOptionPane.ERROR_MESSAGE);
-                    maxSizeField.setText(null);;
+                    maxSizeField.setText(null);
                     return;
                 }
             }
-            
+
             token = stDim.nextToken().trim();
             try {
                 dim = Long.parseLong(token);
             }
             catch (NumberFormatException ex) {
                 toolkit.beep();
-                JOptionPane.showMessageDialog(this,
-                        "Invalid dimension size: "
-                        + dimStr, getTitle(),
+                JOptionPane.showMessageDialog(this, "Invalid dimension size: " + dimStr, getTitle(),
                         JOptionPane.ERROR_MESSAGE);
-                 return;
+                return;
             }
 
-            if (max != -1 && max<dim) {
+            if (max != -1 && max < dim) {
                 toolkit.beep();
-                JOptionPane.showMessageDialog(this,
-                        "Invalid max dimension size: "
-                        + maxStr, getTitle(),
+                JOptionPane.showMessageDialog(this, "Invalid max dimension size: " + maxStr, getTitle(),
                         JOptionPane.ERROR_MESSAGE);
                 maxSizeField.setText(null);
                 return;
-            } else if (max>dim) {
+            }
+            else if (max > dim) {
                 isChunkNeeded = true;
             }
-            
+
             maxdims[i] = max;
         } // for (int i = 0; i < rank; i++)
-        
+
         if (isH5) {
             if (isChunkNeeded && !checkChunked.isSelected()) {
                 toolkit.beep();
-                JOptionPane.showMessageDialog(this,
-                        "Chunking is required for the max dimensions of "
-                        + maxStr, getTitle(),
-                        JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Chunking is required for the max dimensions of " + maxStr,
+                        getTitle(), JOptionPane.ERROR_MESSAGE);
                 checkChunked.setSelected(true);
             }
-        } else {
-            for (int i=1; i<rank; i++) {
-                if (maxdims[i] <=0) {
+        }
+        else {
+            for (int i = 1; i < rank; i++) {
+                if (maxdims[i] <= 0) {
                     maxSizeField.setText(currentSizeField.getText());
                     toolkit.beep();
-                    JOptionPane.showMessageDialog(this,
-                            "Only dim[0] can be unlimited."
-                            + maxStr, getTitle(),
+                    JOptionPane.showMessageDialog(this, "Only dim[0] can be unlimited." + maxStr, getTitle(),
                             JOptionPane.ERROR_MESSAGE);
-
                     return;
                 }
             }
@@ -818,21 +783,18 @@ public class NewDatasetDialog extends JDialog implements ActionListener,
                 url = new URL("file:" + rootPath + "/lib/jhdfview.jar");
             }
             catch (java.net.MalformedURLException mfu) {
-                ;
             }
 
             try {
                 url2 = new URL("file:" + rootPath + "/");
             }
             catch (java.net.MalformedURLException mfu) {
-                ;
             }
 
             try {
                 url3 = new URL("file:" + rootPath + "/src/");
             }
             catch (java.net.MalformedURLException mfu) {
-                ;
             }
 
             URL uu[] = { url, url2, url3 };
@@ -884,21 +846,19 @@ public class NewDatasetDialog extends JDialog implements ActionListener,
         String name = null;
         Group pgroup = null;
         int rank = -1, gzip = -1, tclass = -1, tsize = -1, torder = -1, tsign = -1;
-        long dims[], maxdims[]=null, chunks[]=null;
+        long dims[], maxdims[] = null, chunks[] = null;
 
         name = nameField.getText().trim();
         if ((name == null) || (name.length() < 1)) {
             toolkit.beep();
-            JOptionPane.showMessageDialog(this,
-                    "Dataset name is not specified.", getTitle(),
-                    JOptionPane.ERROR_MESSAGE);
+            JOptionPane
+            .showMessageDialog(this, "Dataset name is not specified.", getTitle(), JOptionPane.ERROR_MESSAGE);
             return null;
         }
 
         if (name.indexOf(HObject.separator) >= 0) {
             toolkit.beep();
-            JOptionPane.showMessageDialog(this,
-                    "Dataset name cannot contain path.", getTitle(),
+            JOptionPane.showMessageDialog(this, "Dataset name cannot contain path.", getTitle(),
                     JOptionPane.ERROR_MESSAGE);
             return null;
         }
@@ -907,8 +867,7 @@ public class NewDatasetDialog extends JDialog implements ActionListener,
 
         if (pgroup == null) {
             toolkit.beep();
-            JOptionPane.showMessageDialog(this, "Parent group is null.",
-                    getTitle(), JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Parent group is null.", getTitle(), JOptionPane.ERROR_MESSAGE);
             return null;
         }
 
@@ -952,21 +911,18 @@ public class NewDatasetDialog extends JDialog implements ActionListener,
 
             if (stringLength <= 0) {
                 toolkit.beep();
-                JOptionPane.showMessageDialog(this, "Invalid string length: "
-                        + stringLengthField.getText(), getTitle(),
-                        JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Invalid string length: " + stringLengthField.getText(),
+                        getTitle(), JOptionPane.ERROR_MESSAGE);
                 return null;
             }
             tsize = stringLength;
         }
         else if (tclass == Datatype.CLASS_ENUM) {
             String enumStr = stringLengthField.getText();
-            if ((enumStr == null) || (enumStr.length() < 1)
-                    || enumStr.endsWith("...")) {
+            if ((enumStr == null) || (enumStr.length() < 1) || enumStr.endsWith("...")) {
                 toolkit.beep();
-                JOptionPane.showMessageDialog(this, "Invalid member values: "
-                        + stringLengthField.getText(), getTitle(),
-                        JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Invalid member values: " + stringLengthField.getText(),
+                        getTitle(), JOptionPane.ERROR_MESSAGE);
                 return null;
             }
         }
@@ -985,8 +941,7 @@ public class NewDatasetDialog extends JDialog implements ActionListener,
 
         if ((tsize == 8) && !isH5 && (tclass == Datatype.CLASS_INTEGER)) {
             toolkit.beep();
-            JOptionPane.showMessageDialog(this,
-                    "HDF4 does not support 64-bit integer.", getTitle(),
+            JOptionPane.showMessageDialog(this, "HDF4 does not support 64-bit integer.", getTitle(),
                     JOptionPane.ERROR_MESSAGE);
             return null;
         }
@@ -1004,13 +959,11 @@ public class NewDatasetDialog extends JDialog implements ActionListener,
         }
 
         rank = rankChoice.getSelectedIndex() + 1;
-        StringTokenizer st = new StringTokenizer(currentSizeField.getText(),
-                "x");
+        StringTokenizer st = new StringTokenizer(currentSizeField.getText(), "x");
         if (st.countTokens() < rank) {
             toolkit.beep();
-            JOptionPane.showMessageDialog(this,
-                    "Number of values in the current dimension size is less than "
-                            + rank, getTitle(), JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Number of values in the current dimension size is less than " + rank,
+                    getTitle(), JOptionPane.ERROR_MESSAGE);
             return null;
         }
 
@@ -1024,17 +977,15 @@ public class NewDatasetDialog extends JDialog implements ActionListener,
             }
             catch (NumberFormatException ex) {
                 toolkit.beep();
-                JOptionPane.showMessageDialog(this, "Invalid dimension size: "
-                        + currentSizeField.getText(), getTitle(),
-                        JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Invalid dimension size: " + currentSizeField.getText(),
+                        getTitle(), JOptionPane.ERROR_MESSAGE);
                 return null;
             }
 
             if (l <= 0) {
                 toolkit.beep();
-                JOptionPane.showMessageDialog(this,
-                        "Dimension size must be greater than zero.",
-                        getTitle(), JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Dimension size must be greater than zero.", getTitle(),
+                        JOptionPane.ERROR_MESSAGE);
                 return null;
             }
 
@@ -1042,13 +993,12 @@ public class NewDatasetDialog extends JDialog implements ActionListener,
         }
 
         String maxFieldStr = maxSizeField.getText();
-        if (maxFieldStr!=null && maxFieldStr.length()>1) {
+        if (maxFieldStr != null && maxFieldStr.length() > 1) {
             st = new StringTokenizer(maxFieldStr, "x");
             if (st.countTokens() < rank) {
                 toolkit.beep();
-                JOptionPane.showMessageDialog(this,
-                        "Number of values in the max dimension size is less than "
-                        + rank, getTitle(), JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Number of values in the max dimension size is less than " + rank,
+                        getTitle(), JOptionPane.ERROR_MESSAGE);
                 return null;
             }
 
@@ -1066,18 +1016,15 @@ public class NewDatasetDialog extends JDialog implements ActionListener,
                     }
                     catch (NumberFormatException ex) {
                         toolkit.beep();
-                        JOptionPane.showMessageDialog(this,
-                                "Invalid max dimension size: "
-                                + maxSizeField.getText(), getTitle(),
-                                JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(this, "Invalid max dimension size: " + maxSizeField.getText(),
+                                getTitle(), JOptionPane.ERROR_MESSAGE);
                         return null;
                     }
                 }
 
                 if (l < -1) {
                     toolkit.beep();
-                    JOptionPane.showMessageDialog(this,
-                            "Dimension size cannot be less than -1.", getTitle(),
+                    JOptionPane.showMessageDialog(this, "Dimension size cannot be less than -1.", getTitle(),
                             JOptionPane.ERROR_MESSAGE);
                     return null;
                 }
@@ -1094,9 +1041,8 @@ public class NewDatasetDialog extends JDialog implements ActionListener,
             st = new StringTokenizer(chunkSizeField.getText(), "x");
             if (st.countTokens() < rank) {
                 toolkit.beep();
-                JOptionPane.showMessageDialog(this,
-                        "Number of values in the chunk size is less than "
-                                + rank, getTitle(), JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Number of values in the chunk size is less than " + rank,
+                        getTitle(), JOptionPane.ERROR_MESSAGE);
                 return null;
             }
 
@@ -1109,17 +1055,14 @@ public class NewDatasetDialog extends JDialog implements ActionListener,
                 }
                 catch (NumberFormatException ex) {
                     toolkit.beep();
-                    JOptionPane.showMessageDialog(this,
-                            "Invalid chunk dimension size: "
-                                    + chunkSizeField.getText(), getTitle(),
-                            JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Invalid chunk dimension size: " + chunkSizeField.getText(),
+                            getTitle(), JOptionPane.ERROR_MESSAGE);
                     return null;
                 }
 
                 if (l < 1) {
                     toolkit.beep();
-                    JOptionPane.showMessageDialog(this,
-                            "Chunk size cannot be less than 1.", getTitle(),
+                    JOptionPane.showMessageDialog(this, "Chunk size cannot be less than 1.", getTitle(),
                             JOptionPane.ERROR_MESSAGE);
                     return null;
                 }
@@ -1135,13 +1078,9 @@ public class NewDatasetDialog extends JDialog implements ActionListener,
 
             if (tchunksize >= tdimsize) {
                 toolkit.beep();
-                int status = JOptionPane
-                        .showConfirmDialog(
-                                this,
-                                "Chunk size is equal/greater than the current size. "
-                                        + "\nAre you sure you want to set chunk size to "
-                                        + chunkSizeField.getText() + "?",
-                                getTitle(), JOptionPane.YES_NO_OPTION);
+                int status = JOptionPane.showConfirmDialog(this, "Chunk size is equal/greater than the current size. "
+                        + "\nAre you sure you want to set chunk size to " + chunkSizeField.getText() + "?", getTitle(),
+                        JOptionPane.YES_NO_OPTION);
                 if (status == JOptionPane.NO_OPTION) {
                     return null;
                 }
@@ -1149,12 +1088,9 @@ public class NewDatasetDialog extends JDialog implements ActionListener,
 
             if (tchunksize == 1) {
                 toolkit.beep();
-                int status = JOptionPane
-                        .showConfirmDialog(
-                                this,
-                                "Chunk size is one, which may cause large memory overhead for large dataset."
-                                        + "\nAre you sure you want to set chunk size to "
-                                        + chunkSizeField.getText() + "?",
+                int status = JOptionPane.showConfirmDialog(this,
+                        "Chunk size is one, which may cause large memory overhead for large dataset."
+                                + "\nAre you sure you want to set chunk size to " + chunkSizeField.getText() + "?",
                                 getTitle(), JOptionPane.YES_NO_OPTION);
                 if (status == JOptionPane.NO_OPTION) {
                     return null;
@@ -1172,22 +1108,18 @@ public class NewDatasetDialog extends JDialog implements ActionListener,
 
         HObject obj = null;
         try {
-            Datatype datatype = fileFormat.createDatatype(tclass, tsize,
-                    torder, tsign);
+            Datatype datatype = fileFormat.createDatatype(tclass, tsize, torder, tsign);
             if (tclass == Datatype.CLASS_ENUM) {
                 datatype.setEnumMembers(stringLengthField.getText());
             }
             String fillValue = null;
-            if (fillValueField.isEnabled())
-            	fillValue = fillValueField.getText();
-            
-            obj = fileFormat.createScalarDS(name, pgroup, datatype, dims,
-                    maxdims, chunks, gzip, fillValue, null);
+            if (fillValueField.isEnabled()) fillValue = fillValueField.getText();
+
+            obj = fileFormat.createScalarDS(name, pgroup, datatype, dims, maxdims, chunks, gzip, fillValue, null);
         }
         catch (Exception ex) {
             toolkit.beep();
-            JOptionPane.showMessageDialog(this, ex, getTitle(),
-                    JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, ex, getTitle(), JOptionPane.ERROR_MESSAGE);
             return null;
         }
 
@@ -1203,16 +1135,14 @@ public class NewDatasetDialog extends JDialog implements ActionListener,
         name = nameField.getText();
         if (name == null) {
             toolkit.beep();
-            JOptionPane.showMessageDialog(this,
-                    "Dataset name is not specified.", getTitle(),
-                    JOptionPane.ERROR_MESSAGE);
+            JOptionPane
+            .showMessageDialog(this, "Dataset name is not specified.", getTitle(), JOptionPane.ERROR_MESSAGE);
             return null;
         }
 
         if (name.indexOf(HObject.separator) >= 0) {
             toolkit.beep();
-            JOptionPane.showMessageDialog(this,
-                    "Dataset name cannot contain path.", getTitle(),
+            JOptionPane.showMessageDialog(this, "Dataset name cannot contain path.", getTitle(),
                     JOptionPane.ERROR_MESSAGE);
             return null;
         }
@@ -1220,8 +1150,7 @@ public class NewDatasetDialog extends JDialog implements ActionListener,
         pgroup = (Group) groupList.get(parentChoice.getSelectedIndex());
         if (pgroup == null) {
             toolkit.beep();
-            JOptionPane.showMessageDialog(this, "Parent group is null.",
-                    getTitle(), JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Parent group is null.", getTitle(), JOptionPane.ERROR_MESSAGE);
             return null;
         }
 
@@ -1247,8 +1176,7 @@ public class NewDatasetDialog extends JDialog implements ActionListener,
         }
         catch (Exception ex) {
             toolkit.beep();
-            JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(),
-                    JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(), JOptionPane.ERROR_MESSAGE);
             return null;
         }
 
@@ -1257,23 +1185,20 @@ public class NewDatasetDialog extends JDialog implements ActionListener,
 
     private HObject createFromImage() {
         HObject obj = null;
-
         String name = null;
         Group pgroup = null;
 
         name = nameField.getText();
         if (name == null) {
             toolkit.beep();
-            JOptionPane.showMessageDialog(this,
-                    "Dataset name is not specified.", getTitle(),
-                    JOptionPane.ERROR_MESSAGE);
+            JOptionPane
+            .showMessageDialog(this, "Dataset name is not specified.", getTitle(), JOptionPane.ERROR_MESSAGE);
             return null;
         }
 
         if (name.indexOf(HObject.separator) >= 0) {
             toolkit.beep();
-            JOptionPane.showMessageDialog(this,
-                    "Dataset name cannot contain path.", getTitle(),
+            JOptionPane.showMessageDialog(this, "Dataset name cannot contain path.", getTitle(),
                     JOptionPane.ERROR_MESSAGE);
             return null;
         }
@@ -1281,8 +1206,7 @@ public class NewDatasetDialog extends JDialog implements ActionListener,
         pgroup = (Group) groupList.get(parentChoice.getSelectedIndex());
         if (pgroup == null) {
             toolkit.beep();
-            JOptionPane.showMessageDialog(this, "Parent group is null.",
-                    getTitle(), JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Parent group is null.", getTitle(), JOptionPane.ERROR_MESSAGE);
             return null;
         }
 
@@ -1335,8 +1259,7 @@ public class NewDatasetDialog extends JDialog implements ActionListener,
         }
         catch (Exception ex) {
             toolkit.beep();
-            JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(),
-                    JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(), JOptionPane.ERROR_MESSAGE);
             return null;
         }
 

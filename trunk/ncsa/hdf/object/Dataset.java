@@ -36,27 +36,27 @@ public abstract class Dataset extends HObject {
     /**
      * 
      */
-    private static final long serialVersionUID = -3360885430038261178L;
+    private static final long serialVersionUID    = -3360885430038261178L;
 
     /**
      * The memory buffer that holds the raw data of the dataset.
      */
-    protected Object data;
+    protected Object          data;
 
     /**
      * The number of dimensions of the dataset.
      */
-    protected int rank;
+    protected int             rank;
 
     /**
      * The current dimension sizes of the dataset
      */
-    protected long[] dims;
+    protected long[]          dims;
 
     /**
      * The max dimension sizes of the dataset
      */
-    protected long[] maxDims;
+    protected long[]          maxDims;
 
     /**
      * Array that contains the number of data points selected (for read/write)
@@ -81,14 +81,14 @@ public abstract class Dataset extends HObject {
      *     22, 23, 24
      * 32, 33, 34
      */
-    protected long[] selectedDims;
+    protected long[]          selectedDims;
 
     /**
      * The starting position of each dimension of a selected subset. With both
      * the starting position and selected sizes, the subset of a rectangle
      * selection is fully defined.
      */
-    protected long[] startDims;
+    protected long[]          startDims;
 
     /**
      * Array that contains the indices of the dimensions selected for display.
@@ -114,48 +114,48 @@ public abstract class Dataset extends HObject {
      * location is fixed at 0 by default.
      * </OL>
      */
-    protected final int[] selectedIndex;
+    protected final int[]     selectedIndex;
 
     /**
      * The number of elements to move from the start location in each dimension.
      * For example, if selectedStride[0] = 2, every other data point is selected
      * along dim[0].
      */
-    protected long[] selectedStride;
+    protected long[]          selectedStride;
 
     /**
      * The array of dimension sizes for a chunk.
      */
-    protected long[] chunkSize;
+    protected long[]          chunkSize;
 
     /**
      * The GZIP compression level.
      */
-    protected String compression;
+    protected String          compression;
 
     /** The datatype object of the dataset. */
-    protected Datatype datatype;
+    protected Datatype        datatype;
 
     /**
      * Array of strings that represent the dimension names. It is null if
      * dimension names do not exist.
      */
-    protected String[] dimNames;
+    protected String[]        dimNames;
 
     /** Flag to indicate if the byte[] array is converted to strings */
-    protected boolean convertByteToString = true;
+    protected boolean         convertByteToString = true;
 
     /** Flag to indicate if data values are loaded into memory. */
-    protected boolean isDataLoaded = false;
+    protected boolean         isDataLoaded        = false;
 
     /** The number of data points in the memory buffer. */
-    protected long nPoints = 1;
+    protected long            nPoints             = 1;
 
     /**
      * The data buffer that contains the raw data directly reading from file
      * (before any data conversion).
      */
-    protected Object originalBuf = null;
+    protected Object          originalBuf         = null;
 
     /**
      * The array that holds the converted data of unsigned C-type integers.
@@ -165,12 +165,12 @@ public abstract class Dataset extends HObject {
      * data is converted to an array of 32-bit singed integer. In that case, the
      * converted buffer is the array of 32-bit singed integer.
      */
-    protected Object convertedBuf = null;
+    protected Object          convertedBuf        = null;
 
     /**
      * Flag to indicate if the enum data is converted to strings.
      */
-    protected boolean enumConverted = false;
+    protected boolean         enumConverted       = false;
 
     /**
      * Constructs a Dataset object with a given file, name and path.
@@ -260,10 +260,10 @@ public abstract class Dataset extends HObject {
      *     count[i] = 1;
      * }
      * 
-     * // 3)  read one data point
+     * // 3) read one data point
      * data = dset.getData();
      * 
-     * // 4)  reset to select the whole dataset
+     * // 4) reset to select the whole dataset
      * dset.init();
      * 
      * // 5) clean the memory data buffer
@@ -281,8 +281,7 @@ public abstract class Dataset extends HObject {
      * @return the number of dimensions of the dataset.
      */
     public final int getRank() {
-        if (rank < 0)
-            init();
+        if (rank < 0) init();
 
         return rank;
     }
@@ -293,9 +292,8 @@ public abstract class Dataset extends HObject {
      * @return the dimension sizes of the dataset.
      */
     public final long[] getDims() {
-        if (rank < 0)
-            init();
-        
+        if (rank < 0) init();
+
         return dims;
     }
 
@@ -305,11 +303,9 @@ public abstract class Dataset extends HObject {
      * @return the max dimension sizes of the dataset.
      */
     public final long[] getMaxDims() {
-        if (rank < 0)
-            init();
-        
-        if (maxDims == null)
-            return dims;
+        if (rank < 0) init();
+
+        if (maxDims == null) return dims;
 
         return maxDims;
     }
@@ -344,9 +340,8 @@ public abstract class Dataset extends HObject {
      * @return the dimension sizes of the selected subset.
      */
     public final long[] getSelectedDims() {
-        if (rank < 0)
-            init();
-        
+        if (rank < 0) init();
+
         return selectedDims;
     }
 
@@ -377,9 +372,8 @@ public abstract class Dataset extends HObject {
      * @return the starting position of a selected subset.
      */
     public final long[] getStartDims() {
-        if (rank < 0)
-            init();
-        
+        if (rank < 0) init();
+
         return startDims;
     }
 
@@ -409,9 +403,8 @@ public abstract class Dataset extends HObject {
      * </pre>
      */
     public final long[] getStride() {
-        if (rank < 0)
-            init();
-        
+        if (rank < 0) init();
+
         if (rank <= 0) {
             return null;
         }
@@ -495,7 +488,8 @@ public abstract class Dataset extends HObject {
      * long[] selected = dataset.getSelectedDims(); // the selected size of the dataet
      * long[] start = dataset.getStartDims(); // the off set of the selection
      * long[] stride = dataset.getStride(); // the stride of the dataset
-     * int[] selectedIndex = dataset.getSelectedIndex(); // the selected dimensions for display
+     * int[] selectedIndex = dataset.getSelectedIndex(); // the selected dimensions for
+     *                                                   // display
      * 
      * // select dim1 and dim2 as 2D data for display,and slice through dim0
      * selectedIndex[0] = 1;
@@ -509,7 +503,8 @@ public abstract class Dataset extends HObject {
      *     stride[i] = 1;
      * }
      * 
-     * // set stride to 2 on dim1 and dim2 so that every other data points are selected.
+     * // set stride to 2 on dim1 and dim2 so that every other data points are
+     * // selected.
      * stride[1] = 2;
      * stride[2] = 2;
      * 
@@ -605,8 +600,7 @@ public abstract class Dataset extends HObject {
      * 
      * @return the new dataset.
      */
-    public abstract Dataset copy(Group pgroup, String name, long[] dims,
-            Object data) throws Exception;
+    public abstract Dataset copy(Group pgroup, String name, long[] dims, Object data) throws Exception;
 
     /**
      * Returns the datatype object of the dataset.
@@ -649,7 +643,8 @@ public abstract class Dataset extends HObject {
      * long[] selected = dataset.getSelectedDims(); // the selected size of the dataet
      * long[] start = dataset.getStartDims(); // the off set of the selection
      * long[] stride = dataset.getStride(); // the stride of the dataset
-     * int[] selectedIndex = dataset.getSelectedIndex(); // the selected dimensions for display
+     * int[] selectedIndex = dataset.getSelectedIndex(); // the selected dimensions for
+     *                                                   // display
      * 
      * // select dim1 and dim2 as 2D data for display,and slice through dim0
      * selectedIndex[0] = 1;
@@ -663,7 +658,8 @@ public abstract class Dataset extends HObject {
      *     stride[i] = 1;
      * }
      * 
-     * // set stride to 2 on dim1 and dim2 so that every other data points are selected.
+     * // set stride to 2 on dim1 and dim2 so that every other data points are
+     * // selected.
      * stride[1] = 2;
      * stride[2] = 2;
      * 
@@ -777,9 +773,8 @@ public abstract class Dataset extends HObject {
      * @return the size of dimension of the vertical axis.
      */
     public final int getHeight() {
-        if (rank < 0)
-            init();
-        
+        if (rank < 0) init();
+
         if ((selectedDims == null) || (selectedIndex == null)) {
             return 0;
         }
@@ -818,9 +813,8 @@ public abstract class Dataset extends HObject {
      * @return the size of dimension of the horizontal axis.
      */
     public final int getWidth() {
-        if (rank < 0)
-            init();
-        
+        if (rank < 0) init();
+
         if ((selectedDims == null) || (selectedIndex == null)) {
             return 0;
         }
@@ -863,9 +857,8 @@ public abstract class Dataset extends HObject {
      * @return the array of the indices of display order.
      */
     public final int[] getSelectedIndex() {
-        if (rank < 0)
-            init();
-        
+        if (rank < 0) init();
+
         return selectedIndex;
     }
 
@@ -878,9 +871,8 @@ public abstract class Dataset extends HObject {
      * @return the string representation of compression information.
      */
     public final String getCompression() {
-        if (rank < 0)
-            init();
-        
+        if (rank < 0) init();
+
         return compression;
     }
 
@@ -892,9 +884,8 @@ public abstract class Dataset extends HObject {
      *         chunked.
      */
     public final long[] getChunkSize() {
-        if (rank < 0)
-            init();
-        
+        if (rank < 0) init();
+
         return chunkSize;
     }
 
@@ -971,8 +962,7 @@ public abstract class Dataset extends HObject {
 
         if (data_out != null) {
             Class data_class_out = data_out.getClass();
-            if (!data_class_out.isArray()
-                    || (Array.getLength(data_in) != Array.getLength(data_out))) {
+            if (!data_class_out.isArray() || (Array.getLength(data_in) != Array.getLength(data_out))) {
                 data_out = null;
             }
         }
@@ -1075,8 +1065,7 @@ public abstract class Dataset extends HObject {
 
         if (data_out != null) {
             Class data_class_out = data_out.getClass();
-            if (!data_class_out.isArray()
-                    || (Array.getLength(data_in) != Array.getLength(data_out))) {
+            if (!data_class_out.isArray() || (Array.getLength(data_in) != Array.getLength(data_out))) {
                 data_out = null;
             }
         }
@@ -1238,8 +1227,7 @@ public abstract class Dataset extends HObject {
             }
 
             strBuff.setLength(length);
-            System.arraycopy(strBuff.toString().getBytes(), 0, bytes, length
-                    * i, length);
+            System.arraycopy(strBuff.toString().getBytes(), 0, bytes, length * i, length);
         }
 
         return bytes;
@@ -1256,9 +1244,8 @@ public abstract class Dataset extends HObject {
      * @return the names of dimensions, or null if there is no dimension name.
      */
     public final String[] getDimNames() {
-        if (rank < 0)
-            init();
-        
+        if (rank < 0) init();
+
         return dimNames;
     }
 
