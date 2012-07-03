@@ -258,12 +258,6 @@ implements ActionListener, ItemListener {
                     sizeChoice.addItem("32");
                     sizeChoice.addItem("64");
                 }
-
-                if (sizeChoice.getSelectedItem().equals("64")) {
-                    // unsigned 64 bit integer is not allowed
-                    checkUnsigned.setSelected(false);
-                    checkUnsigned.setEnabled(false);
-                }
             }
             else if (idx == 1) {
                 sizeChoice.setEnabled(true);
@@ -296,14 +290,7 @@ implements ActionListener, ItemListener {
         }
         else if (source.equals(sizeChoice)) {
             if (classChoice.getSelectedIndex() == 0) {
-                if (sizeChoice.getSelectedItem().equals("64")) {
-                    // unsigned 64 bit integer is not allowed
-                    checkUnsigned.setSelected(false);
-                    checkUnsigned.setEnabled(false);
-                }
-                else {
-                    checkUnsigned.setEnabled(true);
-                }
+                checkUnsigned.setEnabled(true);
             }
         }
     }

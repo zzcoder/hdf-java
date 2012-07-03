@@ -96,7 +96,13 @@ public class H5File extends FileFormat {
      * The index type. Valid values are HDF5Constants.H5_INDEX_NAME,
      * HDF5Constants.H5_INDEX_CRT_ORDER.
      */
-    private int                    indexType;
+    private int                    indexType        = HDF5Constants.H5_INDEX_NAME;
+
+    /**
+     * The index order. Valid values are HDF5Constants.H5_ITER_INC,
+     * HDF5Constants.H5_ITER_DEC.
+     */
+    private int                    indexOrder       = HDF5Constants.H5_ITER_INC;
 
     /**
      * The root node of the file hierarchy.
@@ -931,7 +937,7 @@ public class H5File extends FileFormat {
      */
     @Override
     public int open(int... propList) throws Exception {
-        indexType = propList[0];
+        setIndexType(propList[0]);
         return open(true);
     }
 
@@ -1996,7 +2002,7 @@ public class H5File extends FileFormat {
         String[] objNames = new String[nelems];
 
         try {
-            H5.H5Gget_obj_info_all(fid, fullPath, objNames, objTypes, null, fNos, objRefs, -1);
+            H5.H5Gget_obj_info_full(fid, fullPath, objNames, objTypes, null, fNos, objRefs, indexType, indexOrder);
         }
         catch (HDF5Exception ex) {
             ex.printStackTrace();
@@ -2437,10 +2443,10 @@ public class H5File extends FileFormat {
         // subgroups
         for (int i = 0; i < group_info.nlinks; i++) {
             try {
-                link_name = H5.H5Lget_name_by_idx(gid, thisFullName, HDF5Constants.H5_INDEX_NAME,
-                        HDF5Constants.H5_ITER_INC, i, HDF5Constants.H5P_DEFAULT);
-                obj_info = H5.H5Oget_info_by_idx(oid, thisFullName, HDF5Constants.H5_INDEX_NAME,
-                        HDF5Constants.H5_ITER_INC, i, HDF5Constants.H5P_DEFAULT);
+                link_name = H5.H5Lget_name_by_idx(gid, thisFullName, indexType, indexOrder, i,
+                        HDF5Constants.H5P_DEFAULT);
+                obj_info = H5
+                        .H5Oget_info_by_idx(oid, thisFullName, indexType, indexOrder, i, HDF5Constants.H5P_DEFAULT);
             }
             catch (HDF5Exception ex) {
                 ex.printStackTrace();
@@ -2575,5 +2581,69 @@ public class H5File extends FileFormat {
         // Call the library to move things in the file
         H5.H5Lmove(obj.getFID(), currentFullPath, obj.getFID(), newFullPath, HDF5Constants.H5P_DEFAULT,
                 HDF5Constants.H5P_DEFAULT);
+    }
+
+    public static int getIndexTypeValue(String strtype) {
+            if(strtype.compareTo("H5_INDEX_NAME")==0)
+                return HDF5Constants.H5_INDEX_NAME;
+            if(strtype.compareTo("H5_INDEX_CRT_ORDER")==0)
+                return HDF5Constants.H5_INDEX_CRT_ORDER;
+            if(strtype.compareTo("H5_INDEX_N")==0)
+                return HDF5Constants.H5_INDEX_N;
+            return HDF5Constants.H5_INDEX_UNKNOWN;
+    }
+
+    public static int getIndexOrderValue(String strorder) {
+            if(strorder.compareTo("H5_ITER_INC")==0)
+                return HDF5Constants.H5_ITER_INC;
+            if(strorder.compareTo("H5_ITER_DEC")==0)
+                return HDF5Constants.H5_ITER_DEC;
+            if(strorder.compareTo("H5_ITER_NATIVE")==0)
+                return HDF5Constants.H5_ITER_NATIVE;
+            if(strorder.compareTo("H5_ITER_N")==0)
+                return HDF5Constants.H5_ITER_N;
+            return HDF5Constants.H5_ITER_UNKNOWN;
+    }
+
+    public int getIndexType(String strtype) {
+        if(strtype!=null) {
+            if(strtype.compareTo("H5_INDEX_NAME")==0)
+                return HDF5Constants.H5_INDEX_NAME;
+            if(strtype.compareTo("H5_INDEX_CRT_ORDER")==0)
+                return HDF5Constants.H5_INDEX_CRT_ORDER;
+            return HDF5Constants.H5_INDEX_UNKNOWN;
+        }
+        return getIndexType();
+    }
+
+    public int getIndexType() {
+        return indexType;
+    }
+
+    public void setIndexType(int indexType) {
+        this.indexType = indexType;
+    }
+
+    public int getIndexOrder(String strorder) {
+        if(strorder!=null) {
+            if(strorder.compareTo("H5_ITER_INC")==0)
+                return HDF5Constants.H5_ITER_INC;
+            if(strorder.compareTo("H5_ITER_DEC")==0)
+                return HDF5Constants.H5_ITER_DEC;
+            if(strorder.compareTo("H5_ITER_NATIVE")==0)
+                return HDF5Constants.H5_ITER_NATIVE;
+            if(strorder.compareTo("H5_ITER_N")==0)
+                return HDF5Constants.H5_ITER_N;
+            return HDF5Constants.H5_ITER_UNKNOWN;
+        }
+        return getIndexOrder();
+    }
+
+    public int getIndexOrder() {
+        return indexOrder;
+    }
+
+    public void setIndexOrder(int indexOrder) {
+        this.indexOrder = indexOrder;
     }
 }

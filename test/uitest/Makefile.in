@@ -36,4 +36,9 @@ AllTests.java
 include $(TOP)/config/Rules.mk
 
 check: all
+	cp tordergr.h5 $(TOP)/lib/$(DIR)
+	cp tintsize.h5 $(TOP)/lib/$(DIR)
+	cp tattrintsize.h5 $(TOP)/lib/$(DIR)
+	cp tcmpdintsize.h5 $(TOP)/lib/$(DIR)
+	cp tcmpdattrintsize.h5 $(TOP)/lib/$(DIR)
 	chmod u+x junit.sh; ./junit.sh

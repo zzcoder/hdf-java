@@ -62,6 +62,7 @@ ADD_DEPENDENCIES (${HDFJAVA_TEST_HDF5_LIB_TARGET} ${HDFJAVA_NCSA_HDF5_LIB_TARGET
 
 SET (HDF_JAVA_TEST_FILES
       h5ex_g_iterate.hdf
+      JUnit-interface.txt
 )
 
 FOREACH (h5_file ${HDF_JAVA_TEST_FILES})
@@ -92,8 +93,8 @@ ADD_TEST (
     COMMAND "${CMAKE_COMMAND}"
         -D "TEST_TESTER=${CMAKE_Java_RUNTIME}"
         -D "TEST_CLASSPATH:STRING=${CMAKE_JAVA_CLASSPATH}"
-        -D "TEST_ARGS:STRING="
-        -D "TEST_PROGRAM=-ea;org.junit.runner.JUnitCore;test.hdf5lib.TestAll"
+        -D "TEST_ARGS:STRING=-ea;org.junit.runner.JUnitCore"
+        -D "TEST_PROGRAM=test.hdf5lib.TestAll"
         -D "TEST_LIBRARY_DIRECTORY=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
         -D "TEST_FOLDER=${HDFJAVA_BINARY_DIR}"
         -D "TEST_OUTPUT=${HDFJAVA_TEST_HDF5LIB_BINARY_DIR}/JUnit-interface.out"

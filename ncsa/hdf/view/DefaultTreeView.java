@@ -15,14 +15,16 @@
 package ncsa.hdf.view;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
+import java.awt.GridLayout;
+import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.BufferedInputStream;
@@ -40,7 +42,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
+import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
 import javax.swing.Icon;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
@@ -51,8 +56,12 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.JRadioButton;
 import javax.swing.JSeparator;
 import javax.swing.JTree;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.SoftBevelBorder;
+import javax.swing.border.TitledBorder;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
@@ -152,6 +161,8 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
 
     private JMenuItem                    setLibVerBoundsItem;
 
+    private JMenuItem                    changeIndexItem;
+
     private String                       currentSearchPhrase = null;
 
     private boolean                      moveFlag;
@@ -159,6 +170,10 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
     private TreePath[]                   currentSelectionsForMove;
 
     private boolean                      isApplyBitmaskOnly  = false;
+
+    private int                          currentIndexType;
+
+    private int                          currentIndexOrder;
 
     public DefaultTreeView(ViewManager theView) {
         viewer = theView;
@@ -200,6 +215,10 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
         setLibVerBoundsItem = new JMenuItem("Set Lib version bounds");
         setLibVerBoundsItem.addActionListener(this);
         setLibVerBoundsItem.setActionCommand("Set Lib version bounds");
+
+        changeIndexItem = new JMenuItem("Change file indexing");
+        changeIndexItem.addActionListener(this);
+        changeIndexItem.setActionCommand("Change file indexing");
 
         // initialize the tree and root
         treeModel = new DefaultTreeModel(root);
@@ -357,6 +376,8 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
         item.setActionCommand("Show object properties as");
         menu.add(item);
 
+        menu.add(changeIndexItem);
+
         menu.addSeparator();
 
         item = new JMenuItem("Find");
@@ -452,8 +473,9 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
             addTableMenuItem.setVisible(true);
             addDatatypeMenuItem.setVisible(true);
             addLinkMenuItem.setVisible(true);
+            boolean state = false;
             if ((selectedObject instanceof Group)) {
-                boolean state = (((Group) selectedObject).isRoot());
+                state = (((Group) selectedObject).isRoot());
                 separator.setVisible(isWritable && state);
                 setLibVerBoundsItem.setVisible(isWritable && state); // added
                 // only if
@@ -466,6 +488,7 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
                 separator.setVisible(false);
                 setLibVerBoundsItem.setVisible(false);
             }
+            changeIndexItem.setVisible(state);
         }
         else {
             addDatasetMenuItem.setText("SDS");
@@ -474,6 +497,7 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
             addLinkMenuItem.setVisible(false);
             separator.setVisible(false);
             setLibVerBoundsItem.setVisible(false);
+            changeIndexItem.setVisible(false);
         }
 
         popupMenu.show((JComponent) e.getSource(), x, y);
@@ -840,7 +864,7 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
             }
 
             try {
-                newNode = dstFile.copy(theObj, pgroup);
+                newNode = dstFile.copy(theObj, pgroup, null);
             }
             catch (Exception ex) {
                 toolkit.beep();
@@ -1534,8 +1558,28 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
         else if (cmd.startsWith("Set Lib version bounds")) {
             setLibVersionBounds();
         }
+        else if (cmd.startsWith("Change file indexing")) {
+            ChangeIndexingDialog dialog = new ChangeIndexingDialog((JFrame) viewer, selectedFile);
+            dialog.setVisible(true);
+            if (dialog.isreloadFile()) {
+                selectedFile.setIndexType(dialog.getIndexType());
+                selectedFile.setIndexOrder(dialog.getIndexOrder());
+                ((HDFView) viewer).reloadFile();
+            }
+        }
     }
 
+    public FileFormat reopenFile(FileFormat fileFormat) throws Exception {
+        if (fileFormat.isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5))) {
+            this.currentIndexType = fileFormat.getIndexType(null);
+            this.currentIndexOrder = fileFormat.getIndexOrder(null);
+        }
+        if (fileFormat.isReadOnly())
+            return openFile(fileFormat.getAbsolutePath(), FileFormat.READ);
+        else
+            return openFile(fileFormat.getAbsolutePath(), FileFormat.WRITE);
+    }
+    
     /**
      * Opens a file and retrieves the file structure of the file. It also can be
      * used to create a new file by setting the accessID to FileFormat.CREATE.
@@ -1561,7 +1605,10 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
     public FileFormat openFile(String filename, int accessID) throws Exception {
         FileFormat fileFormat = null;
         MutableTreeNode fileRoot = null;
-
+        boolean bNewFile = (FileFormat.OPEN_NEW == (accessID & FileFormat.OPEN_NEW));
+        if(bNewFile)
+            accessID = accessID - FileFormat.OPEN_NEW;
+        
         if (isFileOpen(filename)) {
             viewer.showStatus("File is in use");
             return null;
@@ -1586,7 +1633,7 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
                 try {
                     FileFormat h4format = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF4);
                     if ((h4format != null) && h4format.isThisType(filename)) {
-                        fileFormat = h4format.open(filename, accessID);
+                        fileFormat = h4format.createInstance(filename, accessID);
                         break;
                     }
                 }
@@ -1598,7 +1645,7 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
                 try {
                     FileFormat h5format = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
                     if ((h5format != null) && h5format.isThisType(filename)) {
-                        fileFormat = h5format.open(filename, accessID);
+                        fileFormat = h5format.createInstance(filename, accessID);
                         break;
                     }
                 }
@@ -1611,7 +1658,7 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
 
                     FileFormat theformat = FileFormat.getFileFormat(theKey);
                     if (theformat.isThisType(filename)) {
-                        fileFormat = theformat.open(filename, accessID);
+                        fileFormat = theformat.createInstance(filename, accessID);
                         break;
                     }
                 }
@@ -1628,19 +1675,14 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
         try {
             fileFormat.setMaxMembers(ViewProperties.getMaxMembers());
             fileFormat.setStartMembers(ViewProperties.getStartMembers());
-
-            // --------For the feature:To display groups in creation order
-            // if(fileFormat.isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5))){
-            // String idxType = ViewProperties.getIndexType();
-            // int indxType = 0;
-            // if(idxType.equals("alphabetical"))
-            // indxType = 0;
-            // else if(idxType.equals("creation"))
-            // indxType = 1;
-            //
-            // fileFormat.open(indxType);
-            // }
-            // else
+            if (fileFormat.isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5))) {
+                if(bNewFile) {
+                    currentIndexType = fileFormat.getIndexType(ViewProperties.getIndexType());
+                    currentIndexOrder = fileFormat.getIndexOrder(ViewProperties.getIndexOrder());                  
+                }
+                fileFormat.setIndexType(currentIndexType);
+                fileFormat.setIndexOrder(currentIndexOrder);
+            }
 
             fileFormat.open();
         }
@@ -2382,6 +2424,156 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
                     ((HDFView) viewer).showMetaData(selectedObject);
                 }
             }
+        }
+    }
+
+    /**
+     * ChangeIndexingDialog displays file index options.
+     */
+    private class ChangeIndexingDialog extends JDialog implements ActionListener {
+        private static final long serialVersionUID = 1048114401768228742L;
+    
+        private JRadioButton checkIndexType;
+        private JRadioButton checkIndexOrder;
+        private JRadioButton checkIndexNative;
+    
+        private boolean reloadFile;
+        
+        private FileFormat selectedFile;
+        private int indexType;
+        private int indexOrder;
+    
+        /**
+         * constructs an UserOptionsDialog.
+         * 
+         * @param view
+         *            The HDFView.
+         */
+        private ChangeIndexingDialog(JFrame view, FileFormat viewSelectedFile) {
+            super(view, "Index Options", true);
+    
+            selectedFile = viewSelectedFile;
+            indexType = selectedFile.getIndexType(null);
+            indexOrder = selectedFile.getIndexOrder(null);
+            reloadFile = false;
+    
+            JPanel contentPane = (JPanel) getContentPane();
+            contentPane.setLayout(new BorderLayout(8, 8));
+            contentPane.setBorder(BorderFactory.createEmptyBorder(15, 5, 5, 5));
+    
+            JPanel indexP = new JPanel();
+            TitledBorder tborder = new TitledBorder("Index Options");
+            tborder.setTitleColor(Color.darkGray);
+            indexP.setBorder(tborder);
+            indexP.setLayout(new GridLayout(2, 1, 10, 10));
+            indexP.setBorder(new SoftBevelBorder(BevelBorder.LOWERED));
+            contentPane.add(indexP);
+    
+            JPanel pType = new JPanel();
+            tborder = new TitledBorder("Indexing Type");
+            tborder.setTitleColor(Color.darkGray);
+            pType.setBorder(tborder);
+            pType.setLayout(new GridLayout(1, 2, 8, 8));
+            checkIndexType = new JRadioButton("By Name", (indexType) == selectedFile.getIndexType("H5_INDEX_NAME"));
+            checkIndexType.setName("Index by Name");
+            pType.add(checkIndexType);
+            JRadioButton checkIndexCreateOrder = new JRadioButton("By Creation Order", (indexType) == selectedFile.getIndexType("H5_INDEX_CRT_ORDER"));
+            checkIndexCreateOrder.setName("Index by Creation Order");
+            pType.add(checkIndexCreateOrder);
+            ButtonGroup bTypegrp = new ButtonGroup();
+            bTypegrp.add(checkIndexType);
+            bTypegrp.add(checkIndexCreateOrder);
+            indexP.add(pType);
+    
+            JPanel pOrder = new JPanel();
+            tborder = new TitledBorder("Indexing Order");
+            tborder.setTitleColor(Color.darkGray);
+            pOrder.setBorder(tborder);
+            pOrder.setLayout(new GridLayout(1, 3, 8, 8));
+            checkIndexOrder = new JRadioButton("Increments", (indexOrder) == selectedFile.getIndexOrder("H5_ITER_INC"));
+            checkIndexOrder.setName("Index Increments");
+            pOrder.add(checkIndexOrder);
+            JRadioButton checkIndexDecrement = new JRadioButton("Decrements", (indexOrder) == selectedFile.getIndexOrder("H5_ITER_DEC"));
+            checkIndexDecrement.setName("Index Decrements");
+            pOrder.add(checkIndexDecrement);
+            checkIndexNative = new JRadioButton("Native", (indexOrder) == selectedFile.getIndexOrder("H5_ITER_NATIVE"));
+            checkIndexNative.setName("Index Native");
+            pOrder.add(checkIndexNative);
+            ButtonGroup bOrdergrp = new ButtonGroup();
+            bOrdergrp.add(checkIndexOrder);
+            bOrdergrp.add(checkIndexDecrement);
+            bOrdergrp.add(checkIndexNative);
+            indexP.add(pOrder);
+    
+            JPanel buttonP = new JPanel();
+            JButton b = new JButton("Reload File");
+            b.setName("Reload File");
+            b.setActionCommand("Reload File");
+            b.addActionListener(this);
+            buttonP.add(b);
+            b = new JButton("Cancel");
+            b.setName("Cancel");
+            b.setActionCommand("Cancel");
+            b.addActionListener(this);
+            buttonP.add(b);
+    
+            contentPane.add("Center", indexP);
+            contentPane.add("South", buttonP);
+    
+            // locate the parent dialog
+            Point l = getParent().getLocation();
+            l.x += 250;
+            l.y += 80;
+            setLocation(l);
+            validate();
+            pack();
+        }
+    
+        public void setVisible(boolean b) {
+            super.setVisible(b);
+        }
+    
+        public void actionPerformed(ActionEvent e) {
+            String cmd = e.getActionCommand();
+    
+            if (cmd.equals("Reload File")) {
+                setIndexOptions();
+                setVisible(false);
+            }
+            else if (cmd.equals("Cancel")) {
+                reloadFile = false;
+                setVisible(false);
+            }
+        }
+    
+        private void setIndexOptions() {
+            if (checkIndexType.isSelected())
+                selectedFile.setIndexType(selectedFile.getIndexType("H5_INDEX_NAME"));
+            else
+                selectedFile.setIndexType(selectedFile.getIndexType("H5_INDEX_CRT_ORDER"));
+            indexType = selectedFile.getIndexType(null);
+            
+            if (checkIndexOrder.isSelected())
+                selectedFile.setIndexOrder(selectedFile.getIndexOrder("H5_ITER_INC"));
+            else if (checkIndexNative.isSelected())
+                selectedFile.setIndexOrder(selectedFile.getIndexOrder("H5_ITER_NATIVE"));
+            else
+                selectedFile.setIndexOrder(selectedFile.getIndexOrder("H5_ITER_DEC"));
+            indexOrder = selectedFile.getIndexOrder(null);
+            
+            reloadFile = true;
+        }
+    
+        public int getIndexType() {
+            return indexType;
+        }
+    
+        public int getIndexOrder() {
+            return indexOrder;
+        }
+    
+        public boolean isreloadFile() {
+            return reloadFile;
         }
     }
 }

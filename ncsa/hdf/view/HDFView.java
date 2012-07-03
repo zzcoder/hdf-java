@@ -123,7 +123,7 @@ public class HDFView extends JFrame implements ViewManager, ActionListener, Chan
 
     private static final String   aboutHDFView     = "HDF Viewer, " + "Version " + ViewProperties.VERSION + "\n"
             + "For " + System.getProperty("os.name") + "\n\n"
-            + "Copyright " + '\u00a9' + " 2006-2011 The HDF Group.\n"
+            + "Copyright " + '\u00a9' + " 2006-2012 The HDF Group.\n"
             + "All rights reserved.";
 
     private static final String   JAVA_COMPILER    = "jdk 1.6";
@@ -973,7 +973,7 @@ public class HDFView extends JFrame implements ViewManager, ActionListener, Chan
             }
 
             try {
-                treeView.openFile(filename, fileAccessID);
+                treeView.openFile(filename, fileAccessID + FileFormat.OPEN_NEW);
             }
             catch (Throwable ex) {
                 try {
@@ -1050,23 +1050,7 @@ public class HDFView extends JFrame implements ViewManager, ActionListener, Chan
         }
 
         else if (cmd.equals("Reload file")) {
-            FileFormat theFile = treeView.getSelectedFile();
-            closeFile(theFile);
-
-            if (theFile == null) {
-                toolkit.beep();
-                JOptionPane.showMessageDialog(this, "Select a file to close", getTitle(), JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            try {
-                if (theFile.isReadOnly())
-                    treeView.openFile(theFile.getAbsolutePath(), FileFormat.READ);
-                else
-                    treeView.openFile(theFile.getAbsolutePath(), FileFormat.WRITE);
-            }
-            catch (Exception ex) {
-            }
+            reloadFile();
         }
         else if (cmd.equals("Save current file as")) {
             try {
@@ -1836,14 +1820,12 @@ public class HDFView extends JFrame implements ViewManager, ActionListener, Chan
     public List<JInternalFrame> getDataViews() {
         // check if the data content is already displayed
         JInternalFrame[] frames = contentPane.getAllFrames();
-        JInternalFrame theFrame = null;
 
         if ((frames == null) || (frames.length <= 0)) {
             return null;
         }
 
         Vector<JInternalFrame> views = new Vector<JInternalFrame>(frames.length);
-        HObject obj = null;
         for (int i = 0; i < frames.length; i++) {
             if (!(frames[i] instanceof DataView)) {
                 continue;
@@ -1908,6 +1890,28 @@ public class HDFView extends JFrame implements ViewManager, ActionListener, Chan
         message.append(msg);
         message.append("\n");
         statusArea.setText(message.toString());
+    }
+    
+    public void reloadFile() {
+        int temp_index_type = 0;
+        int temp_index_order = 0;
+
+        FileFormat theFile = treeView.getSelectedFile();
+        if (theFile.isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5))) {
+            temp_index_type = theFile.getIndexType(null);
+            temp_index_order = theFile.getIndexOrder(null);
+        }
+        closeFile(theFile);
+
+        if (theFile.isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5))) {
+            theFile.setIndexType(temp_index_type);
+            theFile.setIndexOrder(temp_index_order);
+        }
+        try {
+            treeView.reopenFile(theFile);
+        }
+        catch (Exception ex) {
+        }
     }
 
     /** choose local file */
@@ -1992,11 +1996,6 @@ public class HDFView extends JFrame implements ViewManager, ActionListener, Chan
             in = null;
             toolkit.beep();
             JOptionPane.showMessageDialog(this, ex, getTitle(), JOptionPane.ERROR_MESSAGE);
-            try {
-                in.close();
-            }
-            catch (Exception ex2) {
-            }
             try {
                 out.close();
             }

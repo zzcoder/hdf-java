@@ -6,7 +6,8 @@ import org.junit.runners.Suite;
 @RunWith(Suite.class)
 @Suite.SuiteClasses( { 
     TestHDFViewMenu.class,
-    TestTreeViewNewMenu.class
+    TestTreeViewNewMenu.class,
+    TestTreeViewFiles.class
 })
 
 public class TestAll {

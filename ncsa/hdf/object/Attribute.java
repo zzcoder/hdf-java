@@ -15,6 +15,7 @@
 package ncsa.hdf.object;
 
 import java.lang.reflect.Array;
+import java.math.BigInteger;
 
 /**
  * An attribute is a (name, value) pair of metadata attached to a primary data
@@ -300,7 +301,9 @@ public class Attribute implements Metadata {
         // attribute value is an array
         StringBuffer sb = new StringBuffer();
         int n = Array.getLength(value);
-        if (isUnsigned) {
+
+        boolean is_unsigned = (this.getType().getDatatypeSign() == Datatype.SIGN_NONE);
+        if (is_unsigned) {
             String cname = valClass.getName();
             char dname = cname.charAt(cname.lastIndexOf("[") + 1);
 
@@ -351,6 +354,31 @@ public class Attribute implements Metadata {
                             lValue += 4294967296L;
                         }
                         sb.append(lValue);
+                    }
+                    break;
+                case 'J':
+                    String theValue = "";
+                    long[] larray = (long[]) value;
+                    Long l = (Long) larray[0];
+                    if (l < 0) {
+                        l = (l << 1) >>> 1;
+                        BigInteger big1 = new BigInteger("9223372036854775808"); // 2^65
+                        BigInteger big2 = new BigInteger(l.toString());
+                        BigInteger big = big1.add(big2);
+                        theValue = big.toString();
+                    }
+                    sb.append(theValue);
+                    for (int i = 1; i < n; i++) {
+                        sb.append(delimiter);
+                        l = (Long) larray[i];
+                        if (l < 0) {
+                            l = (l << 1) >>> 1;
+                            BigInteger big1 = new BigInteger("9223372036854775808"); // 2^65
+                            BigInteger big2 = new BigInteger(l.toString());
+                            BigInteger big = big1.add(big2);
+                            theValue = big.toString();
+                        }
+                        sb.append(theValue);
                     }
                     break;
                 default:

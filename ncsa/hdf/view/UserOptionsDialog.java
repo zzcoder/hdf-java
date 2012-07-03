@@ -18,6 +18,8 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GraphicsEnvironment;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.Point;
@@ -66,10 +68,7 @@ public class UserOptionsDialog extends JDialog implements ActionListener {
     private String                rootDir, workDir;
     private JCheckBox             checkCurrentUserDir, checkAutoContrast, checkConvertEnum, checkShowValues;
     private JButton               currentDirButton;
-    private JRadioButton          checkReadOnly;
-
-    // For the feature:To display groups/attributes in creation order
-    // private JComboBox displayIndexChoice;
+    private JRadioButton          checkReadOnly, checkIndexType, checkIndexOrder, checkIndexNative;
 
     private int                   fontSize;
 
@@ -78,6 +77,12 @@ public class UserOptionsDialog extends JDialog implements ActionListener {
     private boolean               isUserGuideChanged;
 
     private boolean               isWorkDirChanged;
+
+    /** default index type for files */
+    private static String         indexType;
+
+    /** default index ordering for files */
+    private static String         indexOrder;
 
     /** a list of tree view implementation. */
     private static Vector<String> treeViews;
@@ -128,13 +133,15 @@ public class UserOptionsDialog extends JDialog implements ActionListener {
         imageViews = ViewProperties.getImageViewList();
         paletteViews = ViewProperties.getPaletteViewList();
         // srbVector = ViewProperties.getSrbAccount();
+        indexType = ViewProperties.getIndexType();
+        indexOrder = ViewProperties.getIndexOrder();
 
         JPanel contentPane = (JPanel) getContentPane();
         contentPane.setLayout(new BorderLayout(8, 8));
         contentPane.setBorder(BorderFactory.createEmptyBorder(15, 5, 5, 5));
 
         int w = 700 + (ViewProperties.getFontSize() - 12) * 15;
-        int h = 650 + (ViewProperties.getFontSize() - 12) * 15;
+        int h = 550 + (ViewProperties.getFontSize() - 12) * 15;
         contentPane.setPreferredSize(new Dimension(w, h));
 
         JTabbedPane tabbedPane = new JTabbedPane();
@@ -219,13 +226,13 @@ public class UserOptionsDialog extends JDialog implements ActionListener {
         imageOriginChoice = new JComboBox(imageOriginChoices);
         imageOriginChoice.setSelectedItem(ViewProperties.getImageOrigin());
 
-        // -----For the feature:To display groups/attributes in creation order
-        // String[] displayIndexChoices = {"alphabetical", "creation" };
-        // displayIndexChoice = new JComboBox(displayIndexChoices);
-        // displayIndexChoice.setSelectedItem(ViewProperties.getIndexType());
-
         JPanel centerP = new JPanel();
-        centerP.setLayout(new GridLayout(8, 1, 10, 10));
+        GridBagConstraints c = new GridBagConstraints();
+        // natural height, maximum width
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.weightx = 0.5;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        centerP.setLayout(new GridBagLayout());
         centerP.setBorder(new SoftBevelBorder(BevelBorder.LOWERED));
 
         JPanel p0 = new JPanel();
@@ -242,7 +249,9 @@ public class UserOptionsDialog extends JDialog implements ActionListener {
         TitledBorder tborder = new TitledBorder("Default Working Directory");
         tborder.setTitleColor(Color.darkGray);
         p0.setBorder(tborder);
-        centerP.add(p0);
+        c.gridx = 0;
+        c.gridy = 0;
+        centerP.add(p0, c);
 
         p0 = new JPanel();
         p0.setLayout(new BorderLayout());
@@ -255,7 +264,9 @@ public class UserOptionsDialog extends JDialog implements ActionListener {
         tborder = new TitledBorder("Help Document");
         tborder.setTitleColor(Color.darkGray);
         p0.setBorder(tborder);
-        centerP.add(p0);
+        c.gridx = 0;
+        c.gridy = 1;
+        centerP.add(p0, c);
 
         p0 = new JPanel();
         p0.setLayout(new GridLayout(1, 2, 8, 8));
@@ -282,7 +293,9 @@ public class UserOptionsDialog extends JDialog implements ActionListener {
 
         p0.add(p01);
         p0.add(p00);
-        centerP.add(p0);
+        c.gridx = 0;
+        c.gridy = 2;
+        centerP.add(p0, c);
 
         p0 = new JPanel();
         p0.setLayout(new GridLayout(1, 2, 8, 8));
@@ -299,7 +312,9 @@ public class UserOptionsDialog extends JDialog implements ActionListener {
         tborder = new TitledBorder("Text Font");
         tborder.setTitleColor(Color.darkGray);
         p0.setBorder(tborder);
-        centerP.add(p0);
+        c.gridx = 0;
+        c.gridy = 3;
+        centerP.add(p0, c);
 
         p0 = new JPanel();
         p0.setLayout(new GridLayout(1, 4, 8, 8));
@@ -329,7 +344,9 @@ public class UserOptionsDialog extends JDialog implements ActionListener {
         tborder = new TitledBorder("Image");
         tborder.setTitleColor(Color.darkGray);
         p0.setBorder(tborder);
-        centerP.add(p0);
+        c.gridx = 0;
+        c.gridy = 4;
+        centerP.add(p0, c);
 
         p0 = new JPanel();
         p0.setLayout(new GridLayout(1, 3, 20, 8));
@@ -370,7 +387,9 @@ public class UserOptionsDialog extends JDialog implements ActionListener {
         tborder = new TitledBorder("Data");
         tborder.setTitleColor(Color.darkGray);
         p0.setBorder(tborder);
-        centerP.add(p0);
+        c.gridx = 0;
+        c.gridy = 5;
+        centerP.add(p0, c);
 
         p0 = new JPanel();
         p0.setLayout(new GridLayout(1, 2, 8, 8));
@@ -389,17 +408,51 @@ public class UserOptionsDialog extends JDialog implements ActionListener {
         tborder = new TitledBorder("Max Number of Members to Load in Each Group");
         tborder.setTitleColor(Color.darkGray);
         p0.setBorder(tborder);
-        centerP.add(p0);
+        c.gridx = 0;
+        c.gridy = 6;
+        centerP.add(p0, c);
 
-        // -----For the feature:To display groups/attributes in creation order
-        // p0 = new JPanel();
-        // p0.setLayout(new BorderLayout());
-        // p0.add(new JLabel("Display Index order:  "), BorderLayout.WEST);
-        // p0.add(displayIndexChoice, BorderLayout.CENTER);
-        // tborder = new TitledBorder("Display order of members");
-        // tborder.setTitleColor(Color.darkGray);
-        // p0.setBorder(tborder);
-        // centerP.add(p0);
+        p0 = new JPanel();
+        p0.setLayout(new GridLayout(2, 1, 8, 8));
+
+        JPanel pType = new JPanel();
+        pType.setLayout(new GridLayout(1, 2, 8, 8));
+        checkIndexType = new JRadioButton("By Name", indexType.compareTo("H5_INDEX_NAME") == 0);
+        pType.add(checkIndexType);
+        JRadioButton checkIndexCreateOrder = new JRadioButton("By Creation Order",
+                indexType.compareTo("H5_INDEX_CRT_ORDER") == 0);
+        pType.add(checkIndexCreateOrder);
+        ButtonGroup bTypegrp = new ButtonGroup();
+        bTypegrp.add(checkIndexType);
+        bTypegrp.add(checkIndexCreateOrder);
+        tborder = new TitledBorder("Indexing Type");
+        tborder.setTitleColor(Color.darkGray);
+        pType.setBorder(tborder);
+        p0.add(pType);
+
+        JPanel pOrder = new JPanel();
+        pOrder.setLayout(new GridLayout(1, 3, 8, 8));
+        checkIndexOrder = new JRadioButton("Increments", indexOrder.compareTo("H5_ITER_INC") == 0);
+        pOrder.add(checkIndexOrder);
+        JRadioButton checkIndexDecrement = new JRadioButton("Decrements", indexOrder.compareTo("H5_ITER_DEC") == 0);
+        pOrder.add(checkIndexDecrement);
+        checkIndexNative = new JRadioButton("Native", indexOrder.compareTo("H5_ITER_NATIVE") == 0);
+        pOrder.add(checkIndexNative);
+        ButtonGroup bOrdergrp = new ButtonGroup();
+        bOrdergrp.add(checkIndexOrder);
+        bOrdergrp.add(checkIndexDecrement);
+        bOrdergrp.add(checkIndexNative);
+        tborder = new TitledBorder("Indexing Order");
+        tborder.setTitleColor(Color.darkGray);
+        pOrder.setBorder(tborder);
+        p0.add(pOrder);
+
+        tborder = new TitledBorder("Display Indexing Options");
+        tborder.setTitleColor(Color.darkGray);
+        p0.setBorder(tborder);
+        c.gridx = 0;
+        c.gridy = 7;
+        centerP.add(p0, c);
 
         if (workDir.equals(System.getProperty("user.dir"))) {
             checkCurrentUserDir.setSelected(true);
@@ -821,10 +874,20 @@ public class UserOptionsDialog extends JDialog implements ActionListener {
         ViewProperties.setDataDelimiter((String) delimiterChoice.getSelectedItem());
         ViewProperties.setImageOrigin((String) imageOriginChoice.getSelectedItem());
 
-        // ------For the feature:To display groups/attributes in creation order
-        // // set index type
-        // ViewProperties.setIndexType((String) displayIndexChoice
-        // .getSelectedItem());
+        // set index type
+        if (checkIndexType.isSelected())
+            ViewProperties.setIndexType("H5_INDEX_NAME");
+        else
+            ViewProperties.setIndexType("H5_INDEX_CRT_ORDER");
+
+        // set index order
+        if (checkIndexOrder.isSelected())
+            ViewProperties.setIndexOrder("H5_ITER_INC");
+        else if (checkIndexNative.isSelected())
+            ViewProperties.setIndexOrder("H5_ITER_NATIVE");
+        else
+            ViewProperties.setIndexOrder("H5_ITER_DEC");
+
         try {
             int maxsize = Integer.parseInt(maxMemberField.getText());
             ViewProperties.setMaxMembers(maxsize);

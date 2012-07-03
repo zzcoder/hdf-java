@@ -49,6 +49,7 @@ ADD_DEPENDENCIES (${HDFJAVA_TEST_OBJECT_LIB_TARGET} ${HDFJAVA_NCSA_HDF5_LIB_TARG
 SET (HDF_JAVA_TEST_FILES
       h5ex_d_extern.data
       h5ex_d_extern.hdf5
+      JUnit-object-interface.txt
 )
 
 FOREACH (h5_file ${HDF_JAVA_TEST_FILES})

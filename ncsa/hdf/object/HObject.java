@@ -96,7 +96,7 @@ public abstract class HObject implements Serializable, DataFormat {
     /**
      * The file which contains the object
      */
-    private final FileFormat   fileFormat;
+    protected final FileFormat fileFormat;
 
     /**
      * The name of the data object. The root group has its default name, a

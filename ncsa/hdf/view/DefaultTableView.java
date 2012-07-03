@@ -1897,6 +1897,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
                 else {
                     // numerical values
                     Datatype dtype = types[fieldIdx];
+                    if (dtype.getDatatypeClass() == Datatype.CLASS_ARRAY) dtype = types[fieldIdx].getBasetype();
                     boolean isUINT64 = false;
 
                     if (dtype.isUnsigned()) {
@@ -1912,7 +1913,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
                         if (isUINT64) {
                             Long l = (Long) theValue;
                             if (l < 0) {
-                                l = (l << 1) >> 1;
+                                l = (l << 1) >>> 1;
                                 BigInteger big1 = new BigInteger("9223372036854775808"); // 2^65
                                 BigInteger big2 = new BigInteger(l.toString());
                                 BigInteger big = big1.add(big2);
@@ -3068,30 +3069,58 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
 
         ScalarDS sds = (ScalarDS) dataset;
         boolean isUnsigned = sds.isUnsigned();
+        String cname = dataset.getOriginalClass().getName();
+        char dname = cname.charAt(cname.lastIndexOf("[") + 1);
 
-        // check data range for unsigned datatype
+        // check data range for unsigned datatype converted sizes!
         if (isUnsigned) {
             long lvalue = -1;
             long maxValue = Long.MAX_VALUE;
-
-            lvalue = Long.parseLong(cellValue);
-
-            if (lvalue < 0) {
-                throw new NumberFormatException("Negative value for unsigned integer: " + lvalue);
-            }
-
-            if (NT == 'S') {
+            if (dname == 'B') {
                 maxValue = 255;
-            }
-            else if (NT == 'I') {
-                maxValue = 65535;
-            }
-            else if (NT == 'J') {
-                maxValue = 4294967295L;
-            }
+                lvalue = Long.parseLong(cellValue);
 
-            if ((lvalue < 0) || (lvalue > maxValue)) {
-                throw new NumberFormatException("Data value is out of range: " + lvalue);
+                if (lvalue < 0) {
+                    throw new NumberFormatException("Negative value for unsigned integer: " + lvalue);
+                }
+
+                if (lvalue > maxValue) {
+                    throw new NumberFormatException("Data value is out of range: " + lvalue);
+                }
+            }
+            else if (dname == 'S') {
+                maxValue = 65535;
+                lvalue = Long.parseLong(cellValue);
+
+                if (lvalue < 0) {
+                    throw new NumberFormatException("Negative value for unsigned integer: " + lvalue);
+                }
+
+                if (lvalue > maxValue) {
+                    throw new NumberFormatException("Data value is out of range: " + lvalue);
+                }
+            }
+            else if (dname == 'I') {
+                maxValue = 4294967295L;
+                lvalue = Long.parseLong(cellValue);
+
+                if (lvalue < 0) {
+                    throw new NumberFormatException("Negative value for unsigned integer: " + lvalue);
+                }
+
+                if (lvalue > maxValue) {
+                    throw new NumberFormatException("Data value is out of range: " + lvalue);
+                }
+            }
+            else if (dname == 'J') {
+                BigInteger Jmax = new BigInteger("18446744073709551615");
+                BigInteger big = new BigInteger(cellValue);
+                if (big.compareTo(Jmax) > 0) {
+                    throw new NumberFormatException("Negative value for unsigned integer: " + cellValue);
+                }
+                if (big.compareTo(BigInteger.ZERO) < 0) {
+                    throw new NumberFormatException("Data value is out of range: " + cellValue);
+                }
             }
         }
 
@@ -3113,7 +3142,12 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
                 break;
             case 'J':
                 long lvalue = 0;
-                lvalue = Long.parseLong(cellValue);
+                if (dname == 'J') {
+                    BigInteger big = new BigInteger(cellValue);
+                    lvalue = big.longValue();
+                }
+                else
+                    lvalue = Long.parseLong(cellValue);
                 Array.setLong(dataValue, i, lvalue);
                 break;
             case 'F':
@@ -3236,7 +3270,9 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
                 long lvalue = 0;
                 for (int i = 0; i < morder; i++) {
                     token = st.nextToken().trim();
-                    lvalue = Long.parseLong(token);
+                    BigInteger big = new BigInteger(token);
+                    lvalue = big.longValue();
+                    // lvalue = Long.parseLong(token);
                     Array.setLong(mdata, offset + i, lvalue);
                 }
                 break;
