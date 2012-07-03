@@ -25,7 +25,7 @@ import java.lang.reflect.Array;
  * <p>
  * For more details on attibutes, see {@link <a
  * href="http://hdfgroup.org/HDF5/doc/UG/index.html">HDF5 User's Guide</a>}
- *<p>
+ * <p>
  * 
  * The following code is an example of an attribute with 1D integer array of two
  * elements.
@@ -60,25 +60,25 @@ public class Attribute implements Metadata {
     private static final long serialVersionUID = 2072473407027648309L;
 
     /** The name of the attribute. */
-    private final String name;
+    private final String      name;
 
     /** The datatype of the attribute. */
-    private final Datatype type;
+    private final Datatype    type;
 
     /** The rank of the data value of the attribute. */
-    private int rank;
+    private int               rank;
 
     /** The dimension sizes of the attribute. */
-    private long[] dims;
+    private long[]            dims;
 
     /** The value of the attribute. */
-    private Object value;
+    private Object            value;
 
     /** Flag to indicate if the datatype is an unsigned integer. */
-    private boolean isUnsigned;
-    
+    private boolean           isUnsigned;
+
     /** flag to indicate if the dataset is a single scalar point */
-    protected boolean isScalar = false;    
+    protected boolean         isScalar         = false;
 
     /**
      * Create an attribute with specified name, data type and dimension sizes.
@@ -95,8 +95,7 @@ public class Attribute implements Metadata {
      * long[] attrDims = { 1 };
      * String attrName = &quot;CLASS&quot;;
      * String[] classValue = { &quot;IMAGE&quot; };
-     * Datatype attrType = new H5Datatype(Datatype.CLASS_STRING, classValue[0]
-     *         .length() + 1, -1, -1);
+     * Datatype attrType = new H5Datatype(Datatype.CLASS_STRING, classValue[0].length() + 1, -1, -1);
      * Attribute attr = new Attribute(attrName, attrType, attrDims);
      * attr.setValue(classValue);
      * </pre>
@@ -128,11 +127,18 @@ public class Attribute implements Metadata {
      * 
      * <pre>
      * long[] attrDims = { 1 };
-     * String attrName = &quot;CLASS&quot;;
-     * String[] classValue = { &quot;IMAGE&quot; };
-     * Datatype attrType = new H5Datatype(Datatype.CLASS_STRING, classValue[0]
-     *         .length() + 1, -1, -1);
-     * Attribute attr = new Attribute(attrName, attrType, attrDims, classValue);
+     *                          String attrName = &quot;CLASS&quot;;
+     *                                                     String[] classValue = { &quot;IMAGE&quot; };
+     *                                                                                        Datatype attrType = new H5Datatype(
+     *                                                                                                                  Datatype.CLASS_STRING,
+     *                                                                                                                  classValue[0]
+     *                                                                                                                          .length() + 1,
+     *                                                                                                                  -1, -1);
+     *                                                                                                                           Attribute attr = new Attribute(
+     *                                                                                                                                                  attrName,
+     *                                                                                                                                                  attrType,
+     *                                                                                                                                                  attrDims,
+     *                                                                                                                                                  classValue);
      * </pre>
      * 
      * @param attrName
@@ -147,8 +153,7 @@ public class Attribute implements Metadata {
      * 
      * @see ncsa.hdf.object.Datatype
      */
-    public Attribute(String attrName, Datatype attrType, long[] attrDims,
-            Object attrValue) {
+    public Attribute(String attrName, Datatype attrType, long[] attrDims, Object attrValue) {
         name = attrName;
         type = attrType;
         dims = attrDims;
@@ -157,12 +162,13 @@ public class Attribute implements Metadata {
 
         if (dims != null) {
             rank = dims.length;
-        } else {
-        	isScalar = true;
-        	rank = 1;
-        	dims = new long[] {1};
         }
-        	
+        else {
+            isScalar = true;
+            rank = 1;
+            dims = new long[] { 1 };
+        }
+
         if (attrValue != null) {
             value = attrValue;
         }
@@ -234,12 +240,13 @@ public class Attribute implements Metadata {
     public Datatype getType() {
         return type;
     }
-    
+
     /**
-     * @return true if the data is a single scalar point; otherwise, returns false.
+     * @return true if the data is a single scalar point; otherwise, returns
+     *         false.
      */
     public boolean isScalar() {
-    	return isScalar;
+        return isScalar;
     }
 
     /**
@@ -268,7 +275,7 @@ public class Attribute implements Metadata {
      * <p>
      * For compound datatype, it will be an 1D array of strings with field
      * members separated by comma. For example,
-     * "{0, 10.5}, {255, 20.0}, {512, 30.0}" is a cmpound attribute of {int,
+     * "{0, 10.5}, {255, 20.0}, {512, 30.0}" is a compound attribute of {int,
      * float} of three data points.
      * <p>
      * 
@@ -284,7 +291,7 @@ public class Attribute implements Metadata {
             return null;
         }
 
-        Class valClass = value.getClass();
+        Class<? extends Object> valClass = value.getClass();
 
         if (!valClass.isArray()) {
             return value.toString();
@@ -298,61 +305,61 @@ public class Attribute implements Metadata {
             char dname = cname.charAt(cname.lastIndexOf("[") + 1);
 
             switch (dname) {
-            case 'B':
-                byte[] barray = (byte[]) value;
-                short sValue = barray[0];
-                if (sValue < 0) {
-                    sValue += 256;
-                }
-                sb.append(sValue);
-                for (int i = 1; i < n; i++) {
-                    sb.append(delimiter);
-                    sValue = barray[i];
+                case 'B':
+                    byte[] barray = (byte[]) value;
+                    short sValue = barray[0];
                     if (sValue < 0) {
                         sValue += 256;
                     }
                     sb.append(sValue);
-                }
-                break;
-            case 'S':
-                short[] sarray = (short[]) value;
-                int iValue = sarray[0];
-                if (iValue < 0) {
-                    iValue += 65536;
-                }
-                sb.append(iValue);
-                for (int i = 1; i < n; i++) {
-                    sb.append(delimiter);
-                    iValue = sarray[i];
+                    for (int i = 1; i < n; i++) {
+                        sb.append(delimiter);
+                        sValue = barray[i];
+                        if (sValue < 0) {
+                            sValue += 256;
+                        }
+                        sb.append(sValue);
+                    }
+                    break;
+                case 'S':
+                    short[] sarray = (short[]) value;
+                    int iValue = sarray[0];
                     if (iValue < 0) {
                         iValue += 65536;
                     }
                     sb.append(iValue);
-                }
-                break;
-            case 'I':
-                int[] iarray = (int[]) value;
-                long lValue = iarray[0];
-                if (lValue < 0) {
-                    lValue += 4294967296L;
-                }
-                sb.append(lValue);
-                for (int i = 1; i < n; i++) {
-                    sb.append(delimiter);
-                    lValue = iarray[i];
+                    for (int i = 1; i < n; i++) {
+                        sb.append(delimiter);
+                        iValue = sarray[i];
+                        if (iValue < 0) {
+                            iValue += 65536;
+                        }
+                        sb.append(iValue);
+                    }
+                    break;
+                case 'I':
+                    int[] iarray = (int[]) value;
+                    long lValue = iarray[0];
                     if (lValue < 0) {
                         lValue += 4294967296L;
                     }
                     sb.append(lValue);
-                }
-                break;
-            default:
-                sb.append(Array.get(value, 0));
-                for (int i = 1; i < n; i++) {
-                    sb.append(delimiter);
-                    sb.append(Array.get(value, i));
-                }
-                break;
+                    for (int i = 1; i < n; i++) {
+                        sb.append(delimiter);
+                        lValue = iarray[i];
+                        if (lValue < 0) {
+                            lValue += 4294967296L;
+                        }
+                        sb.append(lValue);
+                    }
+                    break;
+                default:
+                    sb.append(Array.get(value, 0));
+                    for (int i = 1; i < n; i++) {
+                        sb.append(delimiter);
+                        sb.append(Array.get(value, i));
+                    }
+                    break;
             }
         }
         else {

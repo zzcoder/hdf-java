@@ -243,7 +243,7 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
     }
 
     /**
-     * Checks if a file is already opoen.
+     * Checks if a file is already open.
      */
     private boolean isFileOpen(String filename) {
         boolean isOpen = false;
@@ -1118,8 +1118,8 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
             pGroup = (Group) ((DefaultMutableTreeNode) selectedNode.getParent()).getUserObject();
         }
 
-        NewGroupDialog dialog = new NewGroupDialog((JFrame) viewer, pGroup, breadthFirstUserObjects(selectedObject
-                .getFileFormat().getRootNode()));
+        NewGroupDialog dialog = new NewGroupDialog((JFrame) viewer, pGroup, 
+                breadthFirstUserObjects(selectedObject.getFileFormat().getRootNode()));
         dialog.setVisible(true);
 
         HObject obj = (HObject) dialog.getObject();
@@ -1151,8 +1151,8 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
             pGroup = (Group) ((DefaultMutableTreeNode) selectedNode.getParent()).getUserObject();
         }
 
-        NewDatasetDialog dialog = new NewDatasetDialog((JFrame) viewer, pGroup, breadthFirstUserObjects(selectedObject
-                .getFileFormat().getRootNode()));
+        NewDatasetDialog dialog = new NewDatasetDialog((JFrame) viewer, pGroup, 
+                breadthFirstUserObjects(selectedObject.getFileFormat().getRootNode()));
         dialog.setVisible(true);
 
         HObject obj = (HObject) dialog.getObject();
@@ -1531,7 +1531,6 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
                 row--;
             }
         }
-
         else if (cmd.startsWith("Set Lib version bounds")) {
             setLibVersionBounds();
         }
@@ -1976,7 +1975,7 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
      * Displays the meta data of a data object.
      * 
      * @param dataObject
-     *            teh data object
+     *            the data object
      * @return the MetaDataView that displays the MetaData of the data object
      * @throws Exception
      */
@@ -2347,8 +2346,6 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
 
         @Override
         public void keyTyped(KeyEvent e) {
-            // TODO Auto-generated method stub
-
         }
 
         @Override
@@ -2357,9 +2354,6 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
 
         @Override
         public void keyReleased(KeyEvent e) {
-            // TODO Auto-generated method stub
-
-            // TODO Auto-generated method stub
             int key = e.getKeyCode();
             if (key == KeyEvent.VK_KP_LEFT || key == KeyEvent.VK_KP_RIGHT || key == KeyEvent.VK_KP_UP
                     || key == KeyEvent.VK_KP_DOWN || key == KeyEvent.VK_LEFT || key == KeyEvent.VK_RIGHT

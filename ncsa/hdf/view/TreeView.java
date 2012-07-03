@@ -38,7 +38,7 @@ import ncsa.hdf.object.HObject;
  * 
  * <p>
  * From the TreeView, you can open data content or metadata of selected object.
- * You can selet object(s) to delete or add new object to the file.
+ * You can select object(s) to delete or add new object to the file.
  * </p>
  * 
  * @author Peter X. Cao
@@ -67,8 +67,7 @@ public abstract interface TreeView {
      * @return the FileFormat of this file if successful; otherwise returns
      *         null.
      */
-    public abstract FileFormat openFile(String filename, int accessID)
-            throws Exception;
+    public abstract FileFormat openFile(String filename, int accessID) throws Exception;
 
     /**
      * close a file
@@ -108,7 +107,7 @@ public abstract interface TreeView {
     public abstract HObject getCurrentObject();
 
     /**
-     * Dispaly the content of a data object.
+     * Display the content of a data object.
      * 
      * @param dataObject
      *            the data object

@@ -59,48 +59,41 @@ import ncsa.hdf.object.HObject;
  * @author Peter X. Cao
  * @version 2.4 9/6/2007
  */
-public class NewAttributeDialog extends JDialog implements ActionListener,
-        ItemListener, HyperlinkListener {
-    private static final long serialVersionUID = 4883237570834215275L;
+public class NewAttributeDialog extends JDialog implements ActionListener, ItemListener, HyperlinkListener {
+    private static final long serialVersionUID                = 4883237570834215275L;
 
     /** the default length of a string attribute */
-    public static final int DEFAULT_STRING_ATTRIBUTE_LENGTH = 256;
+    public static final int   DEFAULT_STRING_ATTRIBUTE_LENGTH = 256;
 
     /** the object which the attribute to be attached to */
-    private HObject hObject;
+    private HObject           hObject;
 
-    private Attribute newAttribute;
+    private Attribute         newAttribute;
 
     /** TextField for entering the name of the dataset */
-    private JTextField nameField;
+    private JTextField        nameField;
 
     /** The Choice of the datatypes */
-    private JComboBox typeChoice;
+    private JComboBox         typeChoice;
 
     /** TextField for entering the attribute value. */
-    private JTextField valueField;
+    private JTextField        valueField;
 
     /** The Choice of the boject list */
-    private JComboBox objChoice;
+    private JComboBox         objChoice;
 
-    private FileFormat fileFormat;
+    private FileFormat        fileFormat;
 
     /** TextField for entering the length of the data array or string. */
-    private JTextField lengthField;
+    private JTextField        lengthField;
 
-    private JLabel arrayLengthLabel;
+    private JLabel            arrayLengthLabel;
 
-    /** flag to indicate if the dataset is created */
-    private boolean isAttributeCreated;
+    private final boolean     isH5;
 
-    private JScrollPane objListScroller;
+    private JDialog           helpDialog;
 
-    private final boolean isH5;
-
-    private JDialog helpDialog;
-
-    private JRadioButton h4SdAttrRadioButton;
-    private JRadioButton h4GrAttrRadioButton;
+    private JRadioButton      h4GrAttrRadioButton;
 
     /**
      * Constructs NewAttributeDialog with specified object (dataset, group, or
@@ -111,13 +104,12 @@ public class NewAttributeDialog extends JDialog implements ActionListener,
      * @param obj
      *            the object which the attribute to be attached to.
      */
-    public NewAttributeDialog(Dialog owner, HObject obj, Enumeration objList) {
+    public NewAttributeDialog(Dialog owner, HObject obj, Enumeration<?> objList) {
         super(owner, "New Attribute...", true);
 
         hObject = obj;
         newAttribute = null;
-        isH5 = obj.getFileFormat().isThisType(
-                FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5));
+        isH5 = obj.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5));
         helpDialog = null;
         fileFormat = obj.getFileFormat();
 
@@ -181,7 +173,6 @@ public class NewAttributeDialog extends JDialog implements ActionListener,
         typePane.add(typeChoice, BorderLayout.CENTER);
         typePane.add(h4GattrPane, BorderLayout.EAST);
         h4GrAttrRadioButton = grAttr;
-        h4SdAttrRadioButton = sdAttr;
 
         p2 = new JPanel();
         p2.setLayout(new GridLayout(5, 1, 3, 3));
@@ -219,8 +210,7 @@ public class NewAttributeDialog extends JDialog implements ActionListener,
             theNode = (DefaultMutableTreeNode) objList.nextElement();
             hobj = (HObject) theNode.getUserObject();
             if (hobj instanceof Group) {
-                if (((Group) hobj).isRoot())
-                    continue;
+                if (((Group) hobj).isRoot()) continue;
             }
             str = hobj.getFullName();
             objChoice.addItem(str);
@@ -234,7 +224,6 @@ public class NewAttributeDialog extends JDialog implements ActionListener,
     }
 
     public void actionPerformed(ActionEvent e) {
-        Object source = e.getSource();
         String cmd = e.getActionCommand();
 
         if (cmd.equals("Ok")) {
@@ -283,19 +272,19 @@ public class NewAttributeDialog extends JDialog implements ActionListener,
         }
         else if (source.equals(objChoice)) {
             String objName = (String) objChoice.getSelectedItem();
-             
-            if (e.getStateChange()!=ItemEvent.SELECTED)
-                return;
-            
+
+            if (e.getStateChange() != ItemEvent.SELECTED) return;
+
             long ref = -1;
             try {
                 HObject obj = fileFormat.get(objName);
                 ref = obj.getOID()[0];
-            } catch (Exception ex) {}
-            
+            }
+            catch (Exception ex) {}
+
             if (ref > 0) {
-                if (valueField.getText().length()>1) {
-                    valueField.setText(valueField.getText()+","+ref);
+                if (valueField.getText().length() > 1) {
+                    valueField.setText(valueField.getText() + "," + ref);
                     StringTokenizer st = new StringTokenizer(valueField.getText(), ",");
                     lengthField.setText(String.valueOf(st.countTokens()));
                 }
@@ -321,8 +310,7 @@ public class NewAttributeDialog extends JDialog implements ActionListener,
         }
 
         if ((attrName == null) || (attrName.length() < 1)) {
-            JOptionPane.showMessageDialog(this, "No attribute name.",
-                    getTitle(), JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "No attribute name.", getTitle(), JOptionPane.ERROR_MESSAGE);
             return false;
         }
 
@@ -342,8 +330,7 @@ public class NewAttributeDialog extends JDialog implements ActionListener,
         }
 
         if (arraySize <= 0) {
-            JOptionPane.showMessageDialog(this, "Invalid attribute length.",
-                    getTitle(), JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Invalid attribute length.", getTitle(), JOptionPane.ERROR_MESSAGE);
             return false;
         }
 
@@ -359,8 +346,7 @@ public class NewAttributeDialog extends JDialog implements ActionListener,
                     b[j] = Byte.parseByte(theToken);
                 }
                 catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(this, ex.getMessage(),
-                            getTitle(), JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(), JOptionPane.ERROR_MESSAGE);
                     return false;
                 }
             }
@@ -378,8 +364,7 @@ public class NewAttributeDialog extends JDialog implements ActionListener,
                     s[j] = Short.parseShort(theToken);
                 }
                 catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(this, ex.getMessage(),
-                            getTitle(), JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(), JOptionPane.ERROR_MESSAGE);
                     return false;
                 }
             }
@@ -397,8 +382,7 @@ public class NewAttributeDialog extends JDialog implements ActionListener,
                     i[j] = Integer.parseInt(theToken);
                 }
                 catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(this, ex.getMessage(),
-                            getTitle(), JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(), JOptionPane.ERROR_MESSAGE);
                     return false;
                 }
             }
@@ -416,8 +400,7 @@ public class NewAttributeDialog extends JDialog implements ActionListener,
                     sv = Short.parseShort(theToken);
                 }
                 catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(this, ex.getMessage(),
-                            getTitle(), JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(), JOptionPane.ERROR_MESSAGE);
                     return false;
                 }
                 if (sv < 0) {
@@ -444,8 +427,7 @@ public class NewAttributeDialog extends JDialog implements ActionListener,
                     iv = Integer.parseInt(theToken);
                 }
                 catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(this, ex.getMessage(),
-                            getTitle(), JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(), JOptionPane.ERROR_MESSAGE);
                     return false;
                 }
                 if (iv < 0) {
@@ -471,8 +453,7 @@ public class NewAttributeDialog extends JDialog implements ActionListener,
                     lv = Long.parseLong(theToken);
                 }
                 catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(this, ex.getMessage(),
-                            getTitle(), JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(), JOptionPane.ERROR_MESSAGE);
                     return false;
                 }
                 if (lv < 0) {
@@ -497,8 +478,7 @@ public class NewAttributeDialog extends JDialog implements ActionListener,
                     l[j] = Long.parseLong(theToken);
                 }
                 catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(this, ex.getMessage(),
-                            getTitle(), JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(), JOptionPane.ERROR_MESSAGE);
                     return false;
                 }
             }
@@ -515,8 +495,7 @@ public class NewAttributeDialog extends JDialog implements ActionListener,
                     f[j] = Float.parseFloat(theToken);
                 }
                 catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(this, ex.getMessage(),
-                            getTitle(), JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(), JOptionPane.ERROR_MESSAGE);
                     return false;
                 }
                 if (Float.isInfinite(f[j]) || Float.isNaN(f[j])) {
@@ -536,8 +515,7 @@ public class NewAttributeDialog extends JDialog implements ActionListener,
                     d[j] = Double.parseDouble(theToken);
                 }
                 catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(this, ex.getMessage(),
-                            getTitle(), JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(), JOptionPane.ERROR_MESSAGE);
                     return false;
                 }
                 if (Double.isInfinite(d[j]) || Double.isNaN(d[j])) {
@@ -551,15 +529,16 @@ public class NewAttributeDialog extends JDialog implements ActionListener,
         }
         else if (dt.startsWith("object reference")) {
             arraySize = st.countTokens();
-            long[] ref = new long[arraySize]; 
-            for (int j=0; j<arraySize; j++) {
-                theToken = st.nextToken().trim(); 
-                try { ref[j] = Long.parseLong(theToken); } 
+            long[] ref = new long[arraySize];
+            for (int j = 0; j < arraySize; j++) {
+                theToken = st.nextToken().trim();
+                try {
+                    ref[j] = Long.parseLong(theToken);
+                }
                 catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(),
-                                JOptionPane.ERROR_MESSAGE); 
-                    return false; 
-                } 
+                    JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(), JOptionPane.ERROR_MESSAGE);
+                    return false;
+                }
             }
 
             value = ref;
@@ -604,8 +583,7 @@ public class NewAttributeDialog extends JDialog implements ActionListener,
             datatype = fileFormat.createDatatype(tclass, tsize, torder, tsign);
         }
         catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(),
-                    JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(), JOptionPane.ERROR_MESSAGE);
             return false;
         }
 
@@ -614,9 +592,7 @@ public class NewAttributeDialog extends JDialog implements ActionListener,
         attr.setValue(value);
 
         try {
-            if (!isH5 && (hObject instanceof Group)
-                    && ((Group) hObject).isRoot()
-                    && h4GrAttrRadioButton.isSelected()) {
+            if (!isH5 && (hObject instanceof Group) && ((Group) hObject).isRoot() && h4GrAttrRadioButton.isSelected()) {
                 // don't find a good way to write HDF4 global
                 // attribute. Use the isExisted to separate the
                 // global attribute is GR or SD
@@ -630,8 +606,7 @@ public class NewAttributeDialog extends JDialog implements ActionListener,
             }
         }
         catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(),
-                    JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(), JOptionPane.ERROR_MESSAGE);
             return false;
         }
 
@@ -670,23 +645,17 @@ public class NewAttributeDialog extends JDialog implements ActionListener,
             try {
                 url = new URL("file:" + rootPath + "/lib/jhdfview.jar");
             }
-            catch (java.net.MalformedURLException mfu) {
-                ;
-            }
+            catch (java.net.MalformedURLException mfu) {}
 
             try {
                 url2 = new URL("file:" + rootPath + "/");
             }
-            catch (java.net.MalformedURLException mfu) {
-                ;
-            }
+            catch (java.net.MalformedURLException mfu) {}
 
             try {
                 url3 = new URL("file:" + rootPath + "/src/");
             }
-            catch (java.net.MalformedURLException mfu) {
-                ;
-            }
+            catch (java.net.MalformedURLException mfu) {}
 
             URL uu[] = { url, url2, url3 };
             URLClassLoader cl = new URLClassLoader(uu);
@@ -727,8 +696,7 @@ public class NewAttributeDialog extends JDialog implements ActionListener,
                 try {
                     pane.setPage(e.getURL());
                 }
-                catch (Throwable t) {
-                }
+                catch (Throwable t) {}
             }
         }
     }

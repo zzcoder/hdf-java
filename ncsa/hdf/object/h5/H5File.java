@@ -391,8 +391,7 @@ public class H5File extends FileFormat {
         try {
             obj_info = H5.H5Oget_info(objID);
         }
-        catch (Exception ex) {
-        }
+        catch (Exception ex) {}
         if (obj_info.num_attrs <= 0) {
             return (attributeList = new Vector<Attribute>());
         }
@@ -431,10 +430,8 @@ public class H5File extends FileFormat {
                     try {
                         H5.H5Tclose(tmptid);
                     }
-                    catch (Exception ex) {
-                    }
+                    catch (Exception ex) {}
                 }
-
                 Datatype attrType = new H5Datatype(tid);
                 Attribute attr = new Attribute(nameA[0], attrType, dims);
                 attributeList.add(attr);
@@ -445,18 +442,15 @@ public class H5File extends FileFormat {
                 try {
                     is_variable_str = H5.H5Tis_variable_str(tid);
                 }
-                catch (Exception ex) {
-                }
+                catch (Exception ex) {}
                 try {
                     isVLEN = (H5.H5Tget_class(tid) == HDF5Constants.H5T_VLEN);
                 }
-                catch (Exception ex) {
-                }
+                catch (Exception ex) {}
                 try {
                     isCompound = (H5.H5Tget_class(tid) == HDF5Constants.H5T_COMPOUND);
                 }
-                catch (Exception ex) {
-                }
+                catch (Exception ex) {}
 
                 // retrieve the attribute value
                 if (lsize <= 0) {
@@ -486,19 +480,16 @@ public class H5File extends FileFormat {
                             tmptid2 = H5.H5Tget_native_type(tmptid1);
                             H5.H5Aread(aid, tmptid2, value);
                         }
-                        catch (Exception ex) {
-                        }
+                        catch (Exception ex) {}
                         finally {
                             try {
                                 H5.H5Tclose(tmptid1);
                             }
-                            catch (Exception ex) {
-                            }
+                            catch (Exception ex) {}
                             try {
                                 H5.H5Tclose(tmptid2);
                             }
-                            catch (Exception ex) {
-                            }
+                            catch (Exception ex) {}
                         }
                     }
                     else {
@@ -517,24 +508,20 @@ public class H5File extends FileFormat {
                 attr.setValue(value);
 
             }
-            catch (HDF5Exception ex) {
-            }
+            catch (HDF5Exception ex) {}
             finally {
                 try {
                     H5.H5Tclose(tid);
                 }
-                catch (HDF5Exception ex) {
-                }
+                catch (HDF5Exception ex) {}
                 try {
                     H5.H5Sclose(sid);
                 }
-                catch (HDF5Exception ex) {
-                }
+                catch (HDF5Exception ex) {}
                 try {
                     H5.H5Aclose(aid);
                 }
-                catch (HDF5Exception ex) {
-                }
+                catch (HDF5Exception ex) {}
             }
         } // for (int i=0; i<obj_info.num_attrs; i++)
 
