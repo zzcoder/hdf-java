@@ -28,12 +28,13 @@ import java.util.List;
  * different ways to describe a datatype. We here define the <strong> native
  * datatype</strong> to the datatype used by the sub-class. For example,
  * H5Datatype uses a datatype identifier (hid_t) to specify a datatype.
- * NC2Datatype uses ucar.nc2.DataType object to describe its dataype. "Native"
+ * NC2Datatype uses ucar.nc2.DataType object to describe its datatype. "Native"
  * here is different from the "native" definition in the HDF5 library.
  * <p>
  * Two functions, toNative() and fromNative(), are defined to convert the
  * general charactertics to/form the native datatype. Sub-classes must implement
  * these functions so that the conversion will be done correctly.
+ * The values of the CLASS member are not identical to HDF5 values for a datatype class
  * <p>
  * 
  * @version 1.1 9/4/2007
@@ -121,6 +122,12 @@ public abstract class Datatype extends HObject {
      * User's Guide</a>}
      */
     public static final int CLASS_ARRAY = 10;
+
+    /**
+     * See {@link <a href="http://hdfgroup.org/HDF5/doc/UG/index.html">HDF5
+     * User's Guide</a>}
+     */
+    public static final int CLASS_TIME = 11;
 
     /**
      * See {@link <a href="http://hdfgroup.org/HDF5/doc/UG/index.html">HDF5

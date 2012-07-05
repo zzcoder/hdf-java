@@ -370,6 +370,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
         table.setName("data");
 
         ColumnHeader columnHeaders = new ColumnHeader(table);
+        columnHeaders.setName("columnHeaders");
         table.setTableHeader(columnHeaders);
         table.setCellSelectionEnabled(true);
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
@@ -382,6 +383,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
 
         // create row headers and add it to the scroller
         RowHeader rowHeaders = new RowHeader(table, dataset);
+        rowHeaders.setName("rowHeaders");
 
         JViewport viewp = new JViewport();
         viewp.add(rowHeaders);

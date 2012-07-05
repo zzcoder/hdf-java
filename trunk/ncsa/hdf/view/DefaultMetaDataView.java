@@ -778,6 +778,7 @@ public class DefaultMetaDataView extends JDialog implements ActionListener, Meta
                         return false;
                     }
                 };
+                table.setName("CompoundMetaData");
                 table.setCellSelectionEnabled(false);
                 table.getTableHeader().setReorderingAllowed(false);
                 panel.add(new JScrollPane(table), BorderLayout.CENTER);
