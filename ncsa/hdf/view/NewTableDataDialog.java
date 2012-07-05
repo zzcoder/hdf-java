@@ -162,6 +162,7 @@ public class NewTableDataDialog extends JDialog implements ActionListener, ItemL
         }
 
         nFieldBox = new JComboBox(memberSizes);
+        nFieldBox.setName("numbermembers");
         nFieldBox.setEditable(true);
         nFieldBox.addActionListener(this);
         nFieldBox.setActionCommand("Change number of members");
@@ -191,6 +192,7 @@ public class NewTableDataDialog extends JDialog implements ActionListener, ItemL
         }
 
         templateChoice = new JComboBox(compoundDSList);
+        templateChoice.setName("templateChoice");
         templateChoice.setSelectedIndex(-1);
         templateChoice.addItemListener(this);
 
@@ -209,11 +211,13 @@ public class NewTableDataDialog extends JDialog implements ActionListener, ItemL
         contentPane.setPreferredSize(new Dimension(w, h));
 
         JButton okButton = new JButton("   Ok   ");
+        okButton.setName("OK");
         okButton.setActionCommand("Ok");
         okButton.setMnemonic(KeyEvent.VK_O);
         okButton.addActionListener(this);
 
         JButton cancelButton = new JButton("Cancel");
+        cancelButton.setName("Cancel");
         cancelButton.setMnemonic(KeyEvent.VK_C);
         cancelButton.setActionCommand("Cancel");
         cancelButton.addActionListener(this);
@@ -230,6 +234,7 @@ public class NewTableDataDialog extends JDialog implements ActionListener, ItemL
         tmpP = new JPanel();
         tmpP.setLayout(new GridLayout(3, 1));
         tmpP.add(nameField = new JTextField());
+        nameField.setName("datasetname");
         tmpP.add(parentChoice);
         tmpP.add(templateChoice);
         namePanel.add(tmpP, BorderLayout.CENTER);
@@ -570,8 +575,25 @@ public class NewTableDataDialog extends JDialog implements ActionListener, ItemL
                 int typeIdx = -1;
                 int tclass = mTypes[i].getDatatypeClass();
                 int tsize = mTypes[i].getDatatypeSize();
+                int tsigned = mTypes[i].getDatatypeSign();
+                if (tclass == Datatype.CLASS_ARRAY) {
+                    tclass = mTypes[i].getBasetype().getDatatypeClass();
+                    tsize = mTypes[i].getBasetype().getDatatypeSize();
+                    tsigned = mTypes[i].getBasetype().getDatatypeSign();
+                }
+                if (tclass == Datatype.CLASS_CHAR) {
+                    if (tsigned == Datatype.SIGN_NONE) {
+                        if (tsize == 1) {
+                            typeIdx = 3;
+                        }
+                    }
+                    else {
+                        if (tsize == 1) {
+                            typeIdx = 0;
+                        }
+                    }
+                }
                 if (tclass == Datatype.CLASS_INTEGER) {
-                    int tsigned = mTypes[i].getDatatypeSign();
                     if (tsigned == Datatype.SIGN_NONE) {
                         if (tsize == 1) {
                             typeIdx = 3;
@@ -615,7 +637,6 @@ public class NewTableDataDialog extends JDialog implements ActionListener, ItemL
                 else if (tclass == Datatype.CLASS_ENUM) {
                     typeIdx = 10;
                 }
-
                 if (typeIdx < 0) {
                     continue;
                 }

@@ -846,4 +846,105 @@ public class TestTreeViewFiles {
             catch (Exception ex) {}
         }
     }
+    
+    @Test 
+    public void openHDF5CompoundArrayImport() {
+        File hdf_file = openHDF5File("temp_tcmpdintsize", 2);
+
+        try {
+            JTreeFixture filetree = mainFrameFixture.tree().focus();
+            filetree.requireVisible();
+            assertTrue("openHDF5Attribute filetree shows:", filetree.target.getRowCount()==2);
+            assertTrue("openHDF5Attribute filetree has file", (filetree.valueAt(0)).compareTo("temp_tcmpdintsize.h5")==0);
+            assertTrue("openHDF5Group filetree has group", (filetree.valueAt(1)).compareTo("CompoundIntSize")==0);
+
+            JMenuItemFixture compondDSMenuItem = filetree.showPopupMenuAt(0).menuItemWithPath("New","Compound DS");
+            mainFrameFixture.robot.waitForIdle();
+            
+            compondDSMenuItem.requireVisible();
+            compondDSMenuItem.click();
+            mainFrameFixture.robot.waitForIdle();
+
+            mainFrameFixture.dialog().textBox("datasetname").setText("testcmpdname");
+            mainFrameFixture.dialog().comboBox("templateChoice").selectItem(0);
+            mainFrameFixture.robot.waitForIdle();
+            
+            mainFrameFixture.dialog().comboBox("numbermembers").requireSelection("9");
+            mainFrameFixture.dialog().button("OK").click();
+            mainFrameFixture.robot.waitForIdle();
+
+            mainFrameFixture.tree().focus();
+            filetree.requireVisible();
+            assertTrue("openHDF5Group filetree shows:", filetree.target.getRowCount()==3);
+            assertTrue("openHDF5Attribute filetree has file", (filetree.valueAt(0)).compareTo("temp_tcmpdintsize.h5")==0);
+            assertTrue("openHDF5Group filetree has group", (filetree.valueAt(1)).compareTo("CompoundIntSize")==0);
+            assertTrue("openHDF5Group filetree has group", (filetree.valueAt(2)).compareTo("testcmpdname")==0);
+
+            JMenuItemFixture propMenuItem = filetree.showPopupMenuAt(2).menuItemWithPath("Show Properties");
+            mainFrameFixture.robot.waitForIdle();
+            
+            propMenuItem.requireVisible();
+            propMenuItem.click();
+            mainFrameFixture.robot.waitForIdle();
+            
+            DialogFixture propDialog = mainFrameFixture.dialog();
+            propDialog.requireVisible();
+            
+            JTabbedPaneFixture tabPane = propDialog.tabbedPane();
+            tabPane.requireVisible();
+            tabPane.requireTabTitles("General","Attributes");
+            
+            JTableFixture dsproptable = mainFrameFixture.table("CompoundMetaData");
+            JTableCellFixture cell = dsproptable.cell(row(0).column(0));
+            cell.requireValue("DU08BITS");
+            cell = dsproptable.cell(row(1).column(0));
+            cell.requireValue("DU16BITS");
+            cell = dsproptable.cell(row(2).column(0));
+            cell.requireValue("DU32BITS");
+            cell = dsproptable.cell(row(3).column(0));
+            cell.requireValue("DU64BITS");
+            cell = dsproptable.cell(row(4).column(0));
+            cell.requireValue("DS08BITS");
+            cell = dsproptable.cell(row(5).column(0));
+            cell.requireValue("DS16BITS");
+            cell = dsproptable.cell(row(6).column(0));
+            cell.requireValue("DS32BITS");
+            cell = dsproptable.cell(row(7).column(0));
+            cell.requireValue("DS64BITS");
+            propDialog.button("Close").click();
+            mainFrameFixture.robot.waitForIdle();
+
+            JMenuItemFixture dataset2MenuItem = filetree.showPopupMenuAt(2).menuItemWithPath("Open");
+            dataset2MenuItem.robot.waitForIdle();
+            
+            dataset2MenuItem.requireVisible();
+            dataset2MenuItem.click();
+            mainFrameFixture.robot.waitForIdle();
+            
+            JTableFixture datasettable = mainFrameFixture.table("data");
+            datasettable.requireColumnCount(9);
+            assertTrue("dataset column index", datasettable.columnIndexFor("DU08BITS")==0);
+            assertTrue("dataset column index", datasettable.columnIndexFor("DU16BITS")==1);
+            assertTrue("dataset column index", datasettable.columnIndexFor("DU32BITS")==2);
+            assertTrue("dataset column index", datasettable.columnIndexFor("DU64BITS")==3);
+            assertTrue("dataset column index", datasettable.columnIndexFor("DS08BITS")==4);
+            assertTrue("dataset column index", datasettable.columnIndexFor("DS16BITS")==5);
+            assertTrue("dataset column index", datasettable.columnIndexFor("DS32BITS")==6);
+            assertTrue("dataset column index", datasettable.columnIndexFor("DS64BITS")==7);
+            mainFrameFixture.menuItemWithPath("Table", "Close").click();
+            mainFrameFixture.robot.waitForIdle();
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        catch (AssertionError ae) {
+            ae.printStackTrace();
+        }
+        finally {
+            try {
+                closeFile(hdf_file, false);
+            }
+            catch (Exception ex) {}
+        }
+    }
 }

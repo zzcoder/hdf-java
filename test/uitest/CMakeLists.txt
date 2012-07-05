@@ -52,6 +52,10 @@ SET (HDF_JAVA_TEST_REFERENCE
       JUnit-gui-treeview-newmenu.txt
 )
 
+SET (HDF_JAVA_COPY_FILES
+      tcmpdintsize.h5
+)
+
 FOREACH (h5_file ${HDF_JAVA_TEST_FILES})
   SET (dest "${PROJECT_BINARY_DIR}/${h5_file}")
   #MESSAGE (STATUS " Copying ${h5_file}")
@@ -73,6 +77,19 @@ FOREACH (ref_file ${HDF_JAVA_TEST_REFERENCE})
       ARGS       -E copy_if_different ${PROJECT_SOURCE_DIR}/${ref_file} ${dest}
   )
 ENDFOREACH (ref_file ${HDF_JAVA_TEST_REFERENCE})
+
+#duplicate test file for alteration
+
+FOREACH (h5_file ${HDF_JAVA_COPY_FILES})
+  SET (dest "${PROJECT_BINARY_DIR}/temp_${h5_file}")
+  #MESSAGE (STATUS " Copying ${h5_file}")
+  ADD_CUSTOM_COMMAND (
+      TARGET     ${HDFJAVA_TEST_UITEST_TARGET}
+      POST_BUILD
+      COMMAND    ${CMAKE_COMMAND}
+      ARGS       -E copy_if_different ${PROJECT_SOURCE_DIR}/${h5_file} ${dest}
+  )
+ENDFOREACH (h5_file ${HDF_JAVA_COPY_FILES})
 
 IF (WIN32 AND NOT CYGWIN)
   SET(CMAKE_JAVA_INCLUDE_FLAG_SEP ";")
