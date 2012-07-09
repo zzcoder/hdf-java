@@ -37,7 +37,7 @@ public class TestTreeViewFiles {
 
         try {
             JMenuItemFixture fileMenuItem = mainFrameFixture.menuItemWithPath("File","Open");
-            fileMenuItem.robot.waitForIdle();
+            mainFrameFixture.robot.waitForIdle();
             
             fileMenuItem.requireVisible();
             fileMenuItem.click();
@@ -67,7 +67,7 @@ public class TestTreeViewFiles {
     private void closeFile(File hdf_file, boolean delete_file) {
         try {
             JMenuItemFixture fileMenuItem = mainFrameFixture.menuItemWithPath("File","Close All");
-            fileMenuItem.robot.waitForIdle();
+            mainFrameFixture.robot.waitForIdle();
             
             fileMenuItem.requireVisible();
             fileMenuItem.click();
@@ -143,7 +143,7 @@ public class TestTreeViewFiles {
             assertTrue("openHDF5Group filetree has group", (filetree.valueAt(1)).compareTo("DS08BITS")==0);
 
             JMenuItemFixture dataset4MenuItem = filetree.showPopupMenuAt(4).menuItemWithPath("Open");
-            dataset4MenuItem.robot.waitForIdle();
+            mainFrameFixture.robot.waitForIdle();
             
             dataset4MenuItem.requireVisible();
             dataset4MenuItem.click();
@@ -160,7 +160,7 @@ public class TestTreeViewFiles {
             mainFrameFixture.robot.waitForIdle();
 
             JMenuItemFixture dataset8MenuItem = filetree.showPopupMenuAt(8).menuItemWithPath("Open");
-            dataset8MenuItem.robot.waitForIdle();
+            mainFrameFixture.robot.waitForIdle();
             
             dataset8MenuItem.requireVisible();
             dataset8MenuItem.click();
@@ -202,7 +202,7 @@ public class TestTreeViewFiles {
             assertTrue("openHDF5Group filetree has group", (filetree.valueAt(1)).compareTo("DS08BITS")==0);
 
             JMenuItemFixture dataset1MenuItem = filetree.showPopupMenuAt(1).menuItemWithPath("Open");
-            dataset1MenuItem.robot.waitForIdle();
+            mainFrameFixture.robot.waitForIdle();
             
             dataset1MenuItem.requireVisible();
             dataset1MenuItem.click();
@@ -251,7 +251,7 @@ public class TestTreeViewFiles {
             assertTrue("openHDF5Group filetree has group", (filetree.valueAt(5)).compareTo("DU08BITS")==0);
 
             JMenuItemFixture dataset5MenuItem = filetree.showPopupMenuAt(5).menuItemWithPath("Open");
-            dataset5MenuItem.robot.waitForIdle();
+            mainFrameFixture.robot.waitForIdle();
             
             dataset5MenuItem.requireVisible();
             dataset5MenuItem.click();
@@ -300,7 +300,7 @@ public class TestTreeViewFiles {
             assertTrue("openHDF5Group filetree has group", (filetree.valueAt(2)).compareTo("DS16BITS")==0);
 
             JMenuItemFixture dataset2MenuItem = filetree.showPopupMenuAt(2).menuItemWithPath("Open");
-            dataset2MenuItem.robot.waitForIdle();
+            mainFrameFixture.robot.waitForIdle();
             
             dataset2MenuItem.requireVisible();
             dataset2MenuItem.click();
@@ -349,7 +349,7 @@ public class TestTreeViewFiles {
             assertTrue("openHDF5Group filetree has group", (filetree.valueAt(6)).compareTo("DU16BITS")==0);
 
             JMenuItemFixture dataset6MenuItem = filetree.showPopupMenuAt(6).menuItemWithPath("Open");
-            dataset6MenuItem.robot.waitForIdle();
+            mainFrameFixture.robot.waitForIdle();
             
             dataset6MenuItem.requireVisible();
             dataset6MenuItem.click();
@@ -398,7 +398,7 @@ public class TestTreeViewFiles {
             assertTrue("openHDF5Group filetree has group", (filetree.valueAt(3)).compareTo("DS32BITS")==0);
 
             JMenuItemFixture dataset3MenuItem = filetree.showPopupMenuAt(3).menuItemWithPath("Open");
-            dataset3MenuItem.robot.waitForIdle();
+            mainFrameFixture.robot.waitForIdle();
             
             dataset3MenuItem.requireVisible();
             dataset3MenuItem.click();
@@ -447,7 +447,7 @@ public class TestTreeViewFiles {
             assertTrue("openHDF5Group filetree has group", (filetree.valueAt(7)).compareTo("DU32BITS")==0);
 
             JMenuItemFixture dataset7MenuItem = filetree.showPopupMenuAt(7).menuItemWithPath("Open");
-            dataset7MenuItem.robot.waitForIdle();
+            mainFrameFixture.robot.waitForIdle();
             
             dataset7MenuItem.requireVisible();
             dataset7MenuItem.click();
@@ -496,7 +496,7 @@ public class TestTreeViewFiles {
             assertTrue("openHDF5Group filetree has group", (filetree.valueAt(4)).compareTo("DS64BITS")==0);
 
             JMenuItemFixture dataset4MenuItem = filetree.showPopupMenuAt(4).menuItemWithPath("Open");
-            dataset4MenuItem.robot.waitForIdle();
+            mainFrameFixture.robot.waitForIdle();
             
             dataset4MenuItem.requireVisible();
             dataset4MenuItem.click();
@@ -545,7 +545,7 @@ public class TestTreeViewFiles {
             assertTrue("openHDF5Group filetree has group", (filetree.valueAt(8)).compareTo("DU64BITS")==0);
 
             JMenuItemFixture dataset8MenuItem = filetree.showPopupMenuAt(8).menuItemWithPath("Open");
-            dataset8MenuItem.robot.waitForIdle();
+            mainFrameFixture.robot.waitForIdle();
             
             dataset8MenuItem.requireVisible();
             dataset8MenuItem.click();
@@ -595,7 +595,7 @@ public class TestTreeViewFiles {
             assertTrue("CreateOrderHDF5Groups filetree has group", (filetree.valueAt(2)).compareTo("2")==0);
 
             JMenuItemFixture groupMenuItem = filetree.showPopupMenuAt(0).menuItemWithPath("Change file indexing");
-            groupMenuItem.robot.waitForIdle();
+            mainFrameFixture.robot.waitForIdle();
             
             groupMenuItem.requireVisible();
             groupMenuItem.click();
@@ -614,14 +614,14 @@ public class TestTreeViewFiles {
             assertTrue("CreateOrderHDF5Groups filetree has group", (filetree.valueAt(2)).compareTo("1")==0);
 
             JMenuItemFixture expandMenuItem = filetree.showPopupMenuAt(1).menuItemWithPath("Expand All");
-            expandMenuItem.robot.waitForIdle();
+            mainFrameFixture.robot.waitForIdle();
             
             expandMenuItem.requireVisible();
             expandMenuItem.click();
             mainFrameFixture.robot.waitForIdle();
 
             groupMenuItem = filetree.showPopupMenuAt(0).menuItemWithPath("Change file indexing");
-            groupMenuItem.robot.waitForIdle();
+            mainFrameFixture.robot.waitForIdle();
             
             groupMenuItem.requireVisible();
             groupMenuItem.click();
@@ -634,7 +634,7 @@ public class TestTreeViewFiles {
             mainFrameFixture.robot.waitForIdle();
 
             expandMenuItem = filetree.showPopupMenuAt(1).menuItemWithPath("Expand All");
-            expandMenuItem.robot.waitForIdle();
+            mainFrameFixture.robot.waitForIdle();
             
             expandMenuItem.requireVisible();
             expandMenuItem.click();
@@ -755,7 +755,7 @@ public class TestTreeViewFiles {
             assertTrue("openHDF5Group filetree has group", (filetree.valueAt(1)).compareTo("CompoundIntSize")==0);
 
             JMenuItemFixture dataset1MenuItem = filetree.showPopupMenuAt(1).menuItemWithPath("Open");
-            dataset1MenuItem.robot.waitForIdle();
+            mainFrameFixture.robot.waitForIdle();
             
             dataset1MenuItem.requireVisible();
             dataset1MenuItem.click();
@@ -849,13 +849,13 @@ public class TestTreeViewFiles {
     
     @Test 
     public void openHDF5CompoundArrayImport() {
-        File hdf_file = openHDF5File("temp_tcmpdintsize", 2);
+        File hdf_file = openHDF5File("temp_cmpdimport", 2);
 
         try {
             JTreeFixture filetree = mainFrameFixture.tree().focus();
             filetree.requireVisible();
             assertTrue("openHDF5Attribute filetree shows:", filetree.target.getRowCount()==2);
-            assertTrue("openHDF5Attribute filetree has file", (filetree.valueAt(0)).compareTo("temp_tcmpdintsize.h5")==0);
+            assertTrue("openHDF5Attribute filetree has file", (filetree.valueAt(0)).compareTo("temp_cmpdimport.h5")==0);
             assertTrue("openHDF5Group filetree has group", (filetree.valueAt(1)).compareTo("CompoundIntSize")==0);
 
             JMenuItemFixture compondDSMenuItem = filetree.showPopupMenuAt(0).menuItemWithPath("New","Compound DS");
@@ -876,7 +876,7 @@ public class TestTreeViewFiles {
             mainFrameFixture.tree().focus();
             filetree.requireVisible();
             assertTrue("openHDF5Group filetree shows:", filetree.target.getRowCount()==3);
-            assertTrue("openHDF5Attribute filetree has file", (filetree.valueAt(0)).compareTo("temp_tcmpdintsize.h5")==0);
+            assertTrue("openHDF5Attribute filetree has file", (filetree.valueAt(0)).compareTo("temp_cmpdimport.h5")==0);
             assertTrue("openHDF5Group filetree has group", (filetree.valueAt(1)).compareTo("CompoundIntSize")==0);
             assertTrue("openHDF5Group filetree has group", (filetree.valueAt(2)).compareTo("testcmpdname")==0);
 
@@ -915,7 +915,7 @@ public class TestTreeViewFiles {
             mainFrameFixture.robot.waitForIdle();
 
             JMenuItemFixture dataset2MenuItem = filetree.showPopupMenuAt(2).menuItemWithPath("Open");
-            dataset2MenuItem.robot.waitForIdle();
+            mainFrameFixture.robot.waitForIdle();
             
             dataset2MenuItem.requireVisible();
             dataset2MenuItem.click();
