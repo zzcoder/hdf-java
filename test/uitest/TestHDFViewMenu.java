@@ -45,7 +45,7 @@ public class TestHDFViewMenu {
 
         try {
             JMenuItemFixture fileMenuItem = mainFrameFixture.menuItemWithPath("File", "New", file_type);
-            fileMenuItem.robot.waitForIdle();
+            mainFrameFixture.robot.waitForIdle();
             fileMenuItem.requireVisible();
             fileMenuItem.click();
             mainFrameFixture.robot.waitForIdle();
@@ -78,7 +78,7 @@ public class TestHDFViewMenu {
     private void closeFile(File hdf_file, boolean delete_file) {
         try {
             JMenuItemFixture fileMenuItem = mainFrameFixture.menuItemWithPath("File", "Close All");
-            fileMenuItem.robot.waitForIdle();
+            mainFrameFixture.robot.waitForIdle();
             
             fileMenuItem.requireVisible();
             fileMenuItem.click();
@@ -340,7 +340,7 @@ public class TestHDFViewMenu {
             closeFile(hdf_file, false);
 
             JMenuItemFixture fileMenuItem = mainFrameFixture.menuItemWithPath("File", "Open");
-            fileMenuItem.robot.waitForIdle();
+            mainFrameFixture.robot.waitForIdle();
             
             fileMenuItem.requireVisible();
             fileMenuItem.click();
@@ -377,7 +377,7 @@ public class TestHDFViewMenu {
             closeFile(hdf_file, false);
 
             JMenuItemFixture fileMenuItem = mainFrameFixture.menuItemWithPath("File", "Open Read-Only");
-            fileMenuItem.robot.waitForIdle();
+            mainFrameFixture.robot.waitForIdle();
             
             fileMenuItem.requireVisible();
             fileMenuItem.click();
@@ -393,7 +393,7 @@ public class TestHDFViewMenu {
             assertTrue("File-OpenRO-HDF5 filetree has file", (filetree.valueAt(0)).compareTo("testopenrofile.h5") == 0);
 
             JMenuItemFixture deleteMenuItem = filetree.showPopupMenuAt(0).menuItemWithPath("Delete");
-            deleteMenuItem.robot.waitForIdle();
+            mainFrameFixture.robot.waitForIdle();
             deleteMenuItem.requireDisabled();
         }
         catch (Exception ex) {
@@ -415,7 +415,7 @@ public class TestHDFViewMenu {
         File hdf_file = null;
         try {
             JMenuItemFixture fileMenuItem = mainFrameFixture.menuItemWithPath("File", "New", "HDF4");
-            fileMenuItem.robot.waitForIdle();
+            mainFrameFixture.robot.waitForIdle();
             
             fileMenuItem.requireVisible();
             fileMenuItem.click();
@@ -451,7 +451,7 @@ public class TestHDFViewMenu {
         File hdf_file = null;
         try {
             JMenuItemFixture fileMenuItem = mainFrameFixture.menuItemWithPath("File", "New", "HDF5");
-            fileMenuItem.robot.waitForIdle();
+            mainFrameFixture.robot.waitForIdle();
             
             fileMenuItem.requireVisible();
             fileMenuItem.click();
@@ -493,7 +493,7 @@ public class TestHDFViewMenu {
 
             filetree.clickRow(0);
             JMenuItemFixture fileMenuItem = mainFrameFixture.menuItemWithPath("File", "Close");
-            fileMenuItem.robot.waitForIdle();
+            mainFrameFixture.robot.waitForIdle();
             
             fileMenuItem.requireVisible();
             fileMenuItem.click();
@@ -526,7 +526,7 @@ public class TestHDFViewMenu {
             assertTrue("File-Close All-HDF4 filetree has file", (filetree.valueAt(1)).compareTo("closeallfile.h5") == 0);
 
             JMenuItemFixture fileMenuItem = mainFrameFixture.menuItemWithPath("File", "Close All");
-            fileMenuItem.robot.waitForIdle();
+            mainFrameFixture.robot.waitForIdle();
             
             fileMenuItem.requireVisible();
             fileMenuItem.click();
@@ -553,7 +553,7 @@ public class TestHDFViewMenu {
         try {
             JTreeFixture filetree = mainFrameFixture.tree().focus();
             JMenuItemFixture groupMenuItem = filetree.showPopupMenuAt(0).menuItemWithPath("New", "Group");
-            groupMenuItem.robot.waitForIdle();
+            mainFrameFixture.robot.waitForIdle();
             
             groupMenuItem.requireVisible();
             groupMenuItem.click();
@@ -563,7 +563,7 @@ public class TestHDFViewMenu {
             mainFrameFixture.dialog().button("OK").click();
 
             JMenuItemFixture fileMenuItem = mainFrameFixture.menuItemWithPath("File", "Save");
-            fileMenuItem.robot.waitForIdle();
+            mainFrameFixture.robot.waitForIdle();
             
             fileMenuItem.requireVisible();
             fileMenuItem.click();
@@ -572,7 +572,7 @@ public class TestHDFViewMenu {
             closeFile(hdf_file, false);
 
             fileMenuItem = mainFrameFixture.menuItemWithPath("File", "Open");
-            fileMenuItem.robot.waitForIdle();
+            mainFrameFixture.robot.waitForIdle();
             
             fileMenuItem.requireVisible();
             fileMenuItem.click();
@@ -611,7 +611,7 @@ public class TestHDFViewMenu {
         try {
             JTreeFixture filetree = mainFrameFixture.tree().focus();
             JMenuItemFixture groupMenuItem = filetree.showPopupMenuAt(0).menuItemWithPath("New", "Group");
-            groupMenuItem.robot.waitForIdle();
+            mainFrameFixture.robot.waitForIdle();
             
             groupMenuItem.requireVisible();
             groupMenuItem.click();
@@ -622,7 +622,7 @@ public class TestHDFViewMenu {
             mainFrameFixture.robot.waitForIdle();
 
             JMenuItemFixture fileMenuItem = mainFrameFixture.menuItemWithPath("File", "Save As");
-            fileMenuItem.robot.waitForIdle();
+            mainFrameFixture.robot.waitForIdle();
             
             fileMenuItem.requireVisible();
             fileMenuItem.click();
@@ -636,7 +636,7 @@ public class TestHDFViewMenu {
             closeFile(hdf_file, true);
 
             JMenuItemFixture fileOpenMenuItem = mainFrameFixture.menuItemWithPath("File", "Open");
-            fileOpenMenuItem.robot.waitForIdle();
+            mainFrameFixture.robot.waitForIdle();
             
             fileOpenMenuItem.requireVisible();
             fileOpenMenuItem.click();
@@ -670,7 +670,7 @@ public class TestHDFViewMenu {
     public void verifyTextInLabelWhenClickingHDF4Help() {
         try {
             JMenuItemFixture fileMenuItem = mainFrameFixture.menuItemWithPath("Help", "HDF4 Library Version");
-            fileMenuItem.robot.waitForIdle();
+            mainFrameFixture.robot.waitForIdle();
             
             fileMenuItem.requireVisible();
             fileMenuItem.click();
@@ -692,7 +692,7 @@ public class TestHDFViewMenu {
     public void verifyTextInLabelWhenClickingHDF5Help() {
         try {
             JMenuItemFixture fileMenuItem = mainFrameFixture.menuItemWithPath("Help", "HDF5 Library Version");
-            fileMenuItem.robot.waitForIdle();
+            mainFrameFixture.robot.waitForIdle();
             
             fileMenuItem.requireVisible();
             fileMenuItem.click();
@@ -714,7 +714,7 @@ public class TestHDFViewMenu {
     public void verifyTextInLabelWhenClickingJavaHelp() {
         try {
             JMenuItemFixture fileMenuItem = mainFrameFixture.menuItemWithPath("Help", "Java Version");
-            fileMenuItem.robot.waitForIdle();
+            mainFrameFixture.robot.waitForIdle();
             
             fileMenuItem.requireVisible();
             fileMenuItem.click();
@@ -736,7 +736,7 @@ public class TestHDFViewMenu {
     public void verifyTextInLabelWhenClickingAboutHelp() {
         try {
             JMenuItemFixture fileMenuItem = mainFrameFixture.menuItemWithPath("Help", "About...");
-            fileMenuItem.robot.waitForIdle();
+            mainFrameFixture.robot.waitForIdle();
             
             fileMenuItem.requireVisible();
             fileMenuItem.click();
@@ -758,7 +758,7 @@ public class TestHDFViewMenu {
     public void verifyTextInLabelWhenClickingSupportedFileFormatsHelp() {
         try {
             JMenuItemFixture fileMenuItem = mainFrameFixture.menuItemWithPath("Help", "Supported File Formats");
-            fileMenuItem.robot.waitForIdle();
+            mainFrameFixture.robot.waitForIdle();
             
             fileMenuItem.requireVisible();
             fileMenuItem.click();
@@ -780,7 +780,7 @@ public class TestHDFViewMenu {
     public void verifyRegisterFileFormatTools() {
         try {
             JMenuItemFixture fileMenuItem = mainFrameFixture.menuItemWithPath("Tools", "Register File Format");
-            fileMenuItem.robot.waitForIdle();
+            mainFrameFixture.robot.waitForIdle();
             
             fileMenuItem.requireVisible();
             fileMenuItem.click();
@@ -791,7 +791,7 @@ public class TestHDFViewMenu {
             mainFrameFixture.robot.waitForIdle();
             
             fileMenuItem = mainFrameFixture.menuItemWithPath("Help", "Supported File Formats");
-            fileMenuItem.robot.waitForIdle();
+            mainFrameFixture.robot.waitForIdle();
             
             fileMenuItem.requireVisible();
             fileMenuItem.click();
@@ -813,7 +813,7 @@ public class TestHDFViewMenu {
     public void verifyUnregisterFileFormatTools() {
         try {
             JMenuItemFixture fileMenuItem = mainFrameFixture.menuItemWithPath("Tools", "Unregister File Format");
-            fileMenuItem.robot.waitForIdle();
+            mainFrameFixture.robot.waitForIdle();
             
             fileMenuItem.requireVisible();
             fileMenuItem.click();
@@ -824,7 +824,7 @@ public class TestHDFViewMenu {
             mainFrameFixture.robot.waitForIdle();
             
             fileMenuItem = mainFrameFixture.menuItemWithPath("Help", "Supported File Formats");
-            fileMenuItem.robot.waitForIdle();
+            mainFrameFixture.robot.waitForIdle();
             
             fileMenuItem.requireVisible();
             fileMenuItem.click();
