@@ -19,6 +19,7 @@ import java.util.Vector;
 
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
+import ncsa.hdf.hdf5lib.HDFArray;
 import ncsa.hdf.hdf5lib.HDFNativeData;
 import ncsa.hdf.hdf5lib.exceptions.HDF5Exception;
 import ncsa.hdf.hdf5lib.structs.H5O_info_t;
@@ -29,6 +30,7 @@ import ncsa.hdf.object.Datatype;
 import ncsa.hdf.object.FileFormat;
 import ncsa.hdf.object.Group;
 import ncsa.hdf.object.HObject;
+import ncsa.hdf.object.h4.H4File;
 import ncsa.hdf.object.h5.H5CompoundDS;
 import ncsa.hdf.object.h5.H5Datatype;
 import ncsa.hdf.object.h5.H5File;
@@ -150,15 +152,18 @@ public class DebugHDF {
         //try { testObjReadData("g:\\temp\\dset.h5", "dset"); } catch (Exception ex) {ex.printStackTrace();}
         //try { testH5FileGet("g:\\temp\\dset.h5", "/dset/"); } catch (Exception ex) {ex.printStackTrace();}
         
-        try {
-        	String fname = "g:\\temp\\dset.h5";
-        	new File(fname).delete(); // clean up existing file
-        	
-        	for (int i=0; i<10; i++)
-        	    testCreateDS(fname, "dset"+i);
-        	
-        } catch (Exception ex) {ex.printStackTrace();}
+//        try {
+//        	String fname = "g:\\temp\\dset.h5";
+//        	new File(fname).delete(); // clean up existing file
+//        	
+//        	for (int i=0; i<10; i++)
+//        	    testCreateDS(fname, "dset"+i);
+//        	
+//        } catch (Exception ex) {ex.printStackTrace();}
         
+//      try { testH5Write2D("g:\\temp\\dset.h5"); } catch (Exception ex) {ex.printStackTrace();}
+
+        try { testHDF4("g:\\temp\\test_hdf4.hdf"); } catch (Exception ex) {ex.printStackTrace();}
 
     }
     
@@ -1914,6 +1919,31 @@ public class DebugHDF {
         Dataset dataset = file.createScalarDS("dset", null, dtype, dims, null, null, 0, null);
         dataset.init();
         dataset.write(data);
+
+        file.close();
+    }
+    
+    private static void testH5Write2D(final String filename) throws Exception 
+    {
+    	long[] dims = {10, 5};
+    	int[][] data = new int[(int)dims[0]][(int)dims[1]];
+        H5File file = new H5File(filename, H5File.CREATE);
+        file.open();
+        
+        for (int i=0; i<data.length; i++)
+            for (int j=0; j<data[0].length; j++)
+            		data[i][j] =(int) ((i+1)*j);
+        
+        Datatype dtype = file.createDatatype(Datatype.CLASS_INTEGER, 2, Datatype.NATIVE, Datatype.SIGN_NONE);
+        Dataset dataset = file.createScalarDS("dset", null, dtype, dims, null, null, 0, null);
+        dataset.init();
+
+        short[][] tmp = new short[(int)dims[0]][(int)dims[1]];
+        for (int i=0; i<data.length; i++)
+            for (int j=0; j<data[0].length; j++)
+            		tmp[i][j] = (short) data[i][j];
+        
+        dataset.write(tmp);
 
         file.close();
     }
@@ -3856,5 +3886,32 @@ public class DebugHDF {
 
         file.close();
     }
+    
+    private static void testHDF4(String filename){
+    	System.out.println("filename"+filename);
+    	// "E:\work\data\1\1\test.hdf"
+    	FileFormat h4file=FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF4);
+    	if (h4file==null){
+    		System.err.println("Cannot find HDF4 FileFormat");
+    		return;
+    	}
+
+    	// Create an instance obj H4File with read access
+    	try {
+    		H4File myfile = (H4File) h4file.createInstance(filename,FileFormat.READ);
+    		int fid = myfile.open();
+    		Group g=(Group)((javax.swing.tree.DefaultMutableTreeNode)myfile.getRootNode()).getUserObject();
+    		List list=g.getMemberList();
+    		int n=list.size();
+    		System.out.println("--->"+n);
+    		myfile.close();
+    	}
+    	catch (Exception e) {
+    		// TODO Auto-generated catch block
+    		e.printStackTrace();
+    	}
+    }
+
+        
  
 }
