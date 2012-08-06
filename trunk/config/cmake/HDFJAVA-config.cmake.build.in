@@ -29,6 +29,6 @@ SET (HDFJAVA_VERSION_MINOR  @HDFJAVA_VERSION_MINOR@)
 # Don't include targets if this file is being picked up by another
 # project which has already build HDFJAVA as a subproject
 #-----------------------------------------------------------------------------
-IF (NOT TARGET "HDFJAVA")
-  INCLUDE (${SELF_DIR}/HDFJAVA-targets.cmake)
-ENDIF (NOT TARGET "HDFJAVA")
+IF (NOT TARGET "@HDFJAVA_PACKAGE@")
+  INCLUDE (${SELF_DIR}/@HDFJAVA_PACKAGE@@HDF_PACKAGE_EXT@-targets.cmake)
+ENDIF (NOT TARGET "@HDFJAVA_PACKAGE@")

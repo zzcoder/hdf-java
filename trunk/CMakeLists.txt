@@ -107,7 +107,13 @@ IF (NOT HJAVA_INSTALL_INCLUDE_DIR)
   SET (HJAVA_INSTALL_INCLUDE_DIR include)
 ENDIF (NOT HJAVA_INSTALL_INCLUDE_DIR)
 IF (NOT HJAVA_INSTALL_DATA_DIR)
-  SET (HJAVA_INSTALL_DATA_DIR share)
+  IF (NOT WIN32)
+    SET (HJAVA_INSTALL_DATA_DIR share)
+    SET (HJAVA_INSTALL_CMAKE_DIR share/cmake)
+  ELSE (NOT WIN32)
+    SET (HJAVA_INSTALL_DATA_DIR ".")
+    SET (HJAVA_INSTALL_CMAKE_DIR cmake)
+  ENDIF (NOT WIN32)
 ENDIF (NOT HJAVA_INSTALL_DATA_DIR)
 
 #-----------------------------------------------------------------------------
@@ -309,11 +315,6 @@ INSTALL (
     COMPONENT docs
     PATTERN ".svn" EXCLUDE
 )
-INSTALL (
-    FILES ${HDFJAVA_RESOURCES_DIR}/FindHDFJAVA.cmake
-    DESTINATION ${HJAVA_INSTALL_DATA_DIR}
-    COMPONENT docs
-)
 
 #-----------------------------------------------------------------------------
 # Add Target(s) to CMake Install for import into other projects
@@ -321,8 +322,8 @@ INSTALL (
 IF (NOT HDFJAVA_EXTERNALLY_CONFIGURED)
   INSTALL (
       EXPORT ${HDFJAVA_EXPORTED_TARGETS}
-      DESTINATION ${HJAVA_INSTALL_DATA_DIR}/cmake/HDFJAVA
-      FILE HDFJAVA-targets.cmake
+      DESTINATION ${HJAVA_INSTALL_CMAKE_DIR}/${HDFJAVA_PACKAGE}
+      FILE ${HDFJAVA_PACKAGE}${HDF_PACKAGE_EXT}-targets.cmake
   )
 ENDIF (NOT HDFJAVA_EXTERNALLY_CONFIGURED)
 
@@ -332,7 +333,7 @@ ENDIF (NOT HDFJAVA_EXTERNALLY_CONFIGURED)
 IF (NOT HDFJAVA_EXTERNALLY_CONFIGURED)
   EXPORT (
       TARGETS ${HDFJAVA_LIBRARIES_TO_EXPORT} ${HDFJAVA_LIB_DEPENDENCIES}
-      FILE HDFJAVA-targets.cmake
+      FILE ${HDFJAVA_PACKAGE}${HDF_PACKAGE_EXT}-targets.cmake
   )
 ENDIF (NOT HDFJAVA_EXTERNALLY_CONFIGURED)
 
@@ -350,8 +351,23 @@ SET (HDFJAVA_VERSION_MINOR  @HDFJAVA_PACKAGE_VERSION_MINOR@)
 
 CONFIGURE_FILE (
     ${HDFJAVA_RESOURCES_DIR}/HDFJAVA-config.cmake.build.in 
-    ${HDFJAVA_BINARY_DIR}/HDFJAVA-config.cmake @ONLY
+    ${HDFJAVA_BINARY_DIR}/${HDFJAVA_PACKAGE}${HDF_PACKAGE_EXT}-config.cmake @ONLY
 )
+
+#-----------------------------------------------------------------------------
+# Configure the FindJAVA.cmake file for the install directory
+#-----------------------------------------------------------------------------
+IF (NOT H4H5_EXTERNALLY_CONFIGURED)
+  CONFIGURE_FILE (
+      ${HDFJAVA_RESOURCES_DIR}/FindJAVA.cmake.in 
+      ${HDFJAVA_BINARY_DIR}/CMakeFiles/FindJAVA${HDF_PACKAGE_EXT}.cmake @ONLY
+  )
+  INSTALL (
+      FILES ${HDFJAVA_BINARY_DIR}/CMakeFiles/FindJAVA${HDF_PACKAGE_EXT}.cmake
+      DESTINATION ${HDFJAVA_INSTALL_CMAKE_DIR}/${HDFJAVA_PACKAGE}
+      COMPONENT configinstall
+  )
+ENDIF (NOT H4H5_EXTERNALLY_CONFIGURED)
 
 #-----------------------------------------------------------------------------
 # Configure the HDFJAVA-config.cmake file for the install directory
@@ -359,11 +375,11 @@ CONFIGURE_FILE (
 IF (NOT HDFJAVA_EXTERNALLY_CONFIGURED)
   CONFIGURE_FILE (
       ${HDFJAVA_RESOURCES_DIR}/HDFJAVA-config.cmake.install.in
-      ${HDFJAVA_BINARY_DIR}/CMakeFiles/HDFJAVA-config.cmake @ONLY
+      ${HDFJAVA_BINARY_DIR}/CMakeFiles/${HDFJAVA_PACKAGE}${HDF_PACKAGE_EXT}-config.cmake @ONLY
   )
   INSTALL (
-      FILES ${HDFJAVA_BINARY_DIR}/CMakeFiles/HDFJAVA-config.cmake
-      DESTINATION ${HJAVA_INSTALL_DATA_DIR}/cmake/HDFJAVA
+      FILES ${HDFJAVA_BINARY_DIR}/CMakeFiles/${HDFJAVA_PACKAGE}${HDF_PACKAGE_EXT}-config.cmake
+      DESTINATION ${HJAVA_INSTALL_CMAKE_DIR}/${HDFJAVA_PACKAGE}
   )
 ENDIF (NOT HDFJAVA_EXTERNALLY_CONFIGURED)
 
@@ -373,11 +389,11 @@ ENDIF (NOT HDFJAVA_EXTERNALLY_CONFIGURED)
 IF (NOT HDFJAVA_EXTERNALLY_CONFIGURED)
   CONFIGURE_FILE (
       ${HDFJAVA_RESOURCES_DIR}/HDFJAVA-config-version.cmake.in
-      ${HDFJAVA_BINARY_DIR}/CMakeFiles/HDFJAVA-config-version.cmake @ONLY
+      ${HDFJAVA_BINARY_DIR}/CMakeFiles/${HDFJAVA_PACKAGE}${HDF_PACKAGE_EXT}-config-version.cmake @ONLY
   )
   INSTALL (
-      FILES ${HDFJAVA_BINARY_DIR}/CMakeFiles/HDFJAVA-config-version.cmake
-      DESTINATION ${HJAVA_INSTALL_DATA_DIR}/cmake/HDFJAVA
+      FILES ${HDFJAVA_BINARY_DIR}/CMakeFiles/${HDFJAVA_PACKAGE}${HDF_PACKAGE_EXT}-config-version.cmake
+      DESTINATION ${HJAVA_INSTALL_CMAKE_DIR}/${HDFJAVA_PACKAGE}
   )
 ENDIF (NOT HDFJAVA_EXTERNALLY_CONFIGURED)
 
