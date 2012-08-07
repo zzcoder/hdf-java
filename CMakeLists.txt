@@ -359,11 +359,11 @@ CONFIGURE_FILE (
 #-----------------------------------------------------------------------------
 IF (NOT H4H5_EXTERNALLY_CONFIGURED)
   CONFIGURE_FILE (
-      ${HDFJAVA_RESOURCES_DIR}/FindJAVA.cmake.in 
-      ${HDFJAVA_BINARY_DIR}/CMakeFiles/FindJAVA${HDF_PACKAGE_EXT}.cmake @ONLY
+      ${HDFJAVA_RESOURCES_DIR}/FindHDFJAVA.cmake.in 
+      ${HDFJAVA_BINARY_DIR}/CMakeFiles/FindHDFJAVA${HDF_PACKAGE_EXT}.cmake @ONLY
   )
   INSTALL (
-      FILES ${HDFJAVA_BINARY_DIR}/CMakeFiles/FindJAVA${HDF_PACKAGE_EXT}.cmake
+      FILES ${HDFJAVA_BINARY_DIR}/CMakeFiles/FindHDFJAVA${HDF_PACKAGE_EXT}.cmake
       DESTINATION ${HDFJAVA_INSTALL_CMAKE_DIR}/${HDFJAVA_PACKAGE}
       COMPONENT configinstall
   )
