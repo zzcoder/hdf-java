@@ -27,6 +27,12 @@ SET (HDFJAVA_VERSION_MAJOR  @HDFJAVA_VERSION_MAJOR@)
 SET (HDFJAVA_VERSION_MINOR  @HDFJAVA_VERSION_MINOR@)
 
 #-----------------------------------------------------------------------------
+# Directories
+#-----------------------------------------------------------------------------
+SET (HDFJAVA_LIBRARY "${_IMPORT_PREFIX}/lib")
+SET (HDFJAVA_LIBRARIES "${HDFJAVA_LIBRARY}")
+
+#-----------------------------------------------------------------------------
 # Don't include targets if this file is being picked up by another
 # project which has already build HDFJAVA as a subproject
 #-----------------------------------------------------------------------------
@@ -34,8 +40,6 @@ IF (NOT TARGET "@HDFJAVA_PACKAGE@")
   INCLUDE (${SELF_DIR}/@HDFJAVA_PACKAGE@@HDF_PACKAGE_EXT@-targets.cmake)
 ENDIF (NOT TARGET "@HDFJAVA_PACKAGE@")
 
-SET (HDFJAVA_LIBRARY "${_IMPORT_PREFIX}/lib")
-SET (HDFJAVA_LIBRARIES "${HDFJAVA_LIBRARY}")
 SET (HDFJAVA_INCLUDE_DIRS 
     ${HDFJAVA_LIBRARY}/jarhdf-@HDFJAVA_PACKAGE_VERSION@.jar
     ${HDFJAVA_LIBRARY}/jarhdf5-@HDFJAVA_PACKAGE_VERSION@.jar
