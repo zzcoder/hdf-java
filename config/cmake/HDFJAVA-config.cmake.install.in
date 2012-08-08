@@ -20,11 +20,6 @@ SET (BUILD_SHARED_LIBS    @BUILD_SHARED_LIBS@)
 SET (HDF_PACKAGE_EXTLIBS @HDF_PACKAGE_EXTLIBS@)
 
 #-----------------------------------------------------------------------------
-# Directories
-#-----------------------------------------------------------------------------
-SET (HDFJAVA_INCLUDE_DIRS "${_IMPORT_PREFIX}")
-
-#-----------------------------------------------------------------------------
 # Version Strings
 #-----------------------------------------------------------------------------
 SET (HDFJAVA_VERSION_STRING @HDFJAVA_VERSION_STRING@)
@@ -38,3 +33,15 @@ SET (HDFJAVA_VERSION_MINOR  @HDFJAVA_VERSION_MINOR@)
 IF (NOT TARGET "@HDFJAVA_PACKAGE@")
   INCLUDE (${SELF_DIR}/@HDFJAVA_PACKAGE@@HDF_PACKAGE_EXT@-targets.cmake)
 ENDIF (NOT TARGET "@HDFJAVA_PACKAGE@")
+
+SET (HDFJAVA_LIBRARY "${_IMPORT_PREFIX}/lib")
+SET (HDFJAVA_LIBRARIES "${HDFJAVA_LIBRARY}")
+SET (HDFJAVA_INCLUDE_DIRS 
+    ${HDFJAVA_LIBRARY}/jarhdf-@HDFJAVA_PACKAGE_VERSION@.jar
+    ${HDFJAVA_LIBRARY}/jarhdf5-@HDFJAVA_PACKAGE_VERSION@.jar
+    ${HDFJAVA_LIBRARY}/jarhdfobj.jar
+    ${HDFJAVA_LIBRARY}/jarfitsobj.jar
+    ${HDFJAVA_LIBRARY}/jarh4obj.jar
+    ${HDFJAVA_LIBRARY}/jarh5obj.jar
+    ${HDFJAVA_LIBRARY}/jarnc2obj.jar
+)
