@@ -34,12 +34,7 @@ public class TestH5A {
         File file = new File(filename);
 
         if (file.exists()) {
-            try {
-                file.delete();
-            } 
-            catch (SecurityException e) {
-                ;// e.printStackTrace();
-            }
+            try {file.delete();} catch (SecurityException e) {}
         }
     }
 
@@ -91,20 +86,20 @@ public class TestH5A {
     @After
     public void deleteH5file() throws HDF5LibraryException {
         if (H5dsid > 0)
-            H5.H5Sclose(H5dsid);
+            try {H5.H5Sclose(H5dsid);} catch (Exception ex) {}
         if (H5did > 0)
-            H5.H5Dclose(H5did);
+            try {H5.H5Dclose(H5did);} catch (Exception ex) {}
         if (H5fid > 0)
-            H5.H5Fclose(H5fid);
+            try {H5.H5Fclose(H5fid);} catch (Exception ex) {}
 
         _deleteFile(H5_FILE);
 
         if (type_id > 0)
-            H5.H5Tclose(type_id);
+            try {H5.H5Tclose(type_id);} catch (Exception ex) {}
         if (space_id > 0)
-            H5.H5Sclose(space_id);
+            try {H5.H5Sclose(space_id);} catch (Exception ex) {}
         if (lapl_id > 0)
-            H5.H5Pclose(lapl_id);
+            try {H5.H5Pclose(lapl_id);} catch (Exception ex) {}
     }
     
     @Test

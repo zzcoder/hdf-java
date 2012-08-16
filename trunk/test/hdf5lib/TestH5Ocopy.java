@@ -100,17 +100,17 @@ public class TestH5Ocopy {
     @After
     public void deleteH5file() throws HDF5LibraryException {
         if (H5gid > 0) 
-            H5.H5Gclose(H5gid);
+            try {H5.H5Gclose(H5gid);} catch (Exception ex) {}
         if (H5did2 > 0) 
-            H5.H5Dclose(H5did2);
+            try {H5.H5Dclose(H5did2);} catch (Exception ex) {}
         if (H5dsid > 0) 
-            H5.H5Sclose(H5dsid);
+            try {H5.H5Sclose(H5dsid);} catch (Exception ex) {}
         if (H5dsid2 > 0) 
-            H5.H5Sclose(H5dsid2);
+            try {H5.H5Sclose(H5dsid2);} catch (Exception ex) {}
         if (H5did1 > 0) 
-            H5.H5Dclose(H5did1);
+            try {H5.H5Dclose(H5did1);} catch (Exception ex) {}
         if (H5fid > 0) 
-            H5.H5Fclose(H5fid);
+            try {H5.H5Fclose(H5fid);} catch (Exception ex) {}
 
         _deleteFile(FILENAME);
     }

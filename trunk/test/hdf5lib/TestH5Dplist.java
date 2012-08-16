@@ -38,12 +38,7 @@ public class TestH5Dplist {
         File file = new File(filename);
 
         if (file.exists()) {
-            try {
-                file.delete();
-            }
-            catch (SecurityException e) {
-                ;// e.printStackTrace();
-            }
+            try {file.delete();} catch (SecurityException e) {}
         }
     }
 
@@ -121,13 +116,13 @@ public class TestH5Dplist {
     @After
     public void deleteH5file() throws HDF5LibraryException {
         if (H5dcpl_id >= 0)
-            H5.H5Pclose(H5dcpl_id);
+            try {H5.H5Pclose(H5dcpl_id);} catch (Exception ex) {}
         if (H5did > 0) 
-            H5.H5Dclose(H5did);
+            try {H5.H5Dclose(H5did);} catch (Exception ex) {}
         if (H5dsid > 0) 
-            H5.H5Sclose(H5dsid);
+            try {H5.H5Sclose(H5dsid);} catch (Exception ex) {}
         if (H5fid > 0) 
-            H5.H5Fclose(H5fid);
+            try {H5.H5Fclose(H5fid);} catch (Exception ex) {}
 
         _deleteFile(H5_FILE);
     }

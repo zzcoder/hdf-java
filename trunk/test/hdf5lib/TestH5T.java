@@ -28,12 +28,7 @@ public class TestH5T {
         catch (Throwable err) {}
 
         if (file.exists()) {
-            try {
-                file.delete();
-            }
-            catch (SecurityException e) {
-                ;// e.printStackTrace();
-            }
+            try {file.delete();} catch (SecurityException e) {}
         }
     }
 
@@ -53,9 +48,9 @@ public class TestH5T {
     @After
     public void deleteH5file() throws HDF5LibraryException {
         if (H5strdid >= 0)
-            H5.H5Tclose(H5strdid);
+            try {H5.H5Tclose(H5strdid);} catch (Exception ex) {}
         if (H5fid > 0) 
-            H5.H5Fclose(H5fid);
+            try {H5.H5Fclose(H5fid);} catch (Exception ex) {}
 
         _deleteFile(H5_FILE);
     }

@@ -41,12 +41,7 @@ public class TestH5P {
         File file = new File(filename);
 
         if (file.exists()) {
-            try {
-                file.delete();
-            }
-            catch (SecurityException e) {
-                ;// e.printStackTrace();
-            }
+            try {file.delete();} catch (SecurityException e) {}
         }
     }
 
@@ -55,7 +50,8 @@ public class TestH5P {
         try {
             did = H5.H5Dcreate(fid, name, HDF5Constants.H5T_STD_I32BE, dsid,
                     HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, dapl);
-        } catch (Throwable err) {
+        } 
+        catch (Throwable err) {
             err.printStackTrace();
             fail("H5.H5Dcreate: " + err);
         }
@@ -129,33 +125,33 @@ public class TestH5P {
     @After
     public void deleteH5fileProperties() throws HDF5LibraryException {
         if (lapl_id >0)
-            H5.H5Pclose(lapl_id);
+            try {H5.H5Pclose(lapl_id);} catch (Exception ex) {}
         if (fapl_id >0)
-            H5.H5Pclose(fapl_id);
+            try {H5.H5Pclose(fapl_id);} catch (Exception ex) {}
         if (fcpl_id >0)
-            H5.H5Pclose(fcpl_id);
+            try {H5.H5Pclose(fcpl_id);} catch (Exception ex) {}
         if (ocpl_id >0)
-            H5.H5Pclose(ocpl_id);
+            try {H5.H5Pclose(ocpl_id);} catch (Exception ex) {}
         if (ocp_plist_id >0)
-            H5.H5Pclose(ocp_plist_id);
+            try {H5.H5Pclose(ocp_plist_id);} catch (Exception ex) {}
         if (lcpl_id >0)
-            H5.H5Pclose(lcpl_id);
+            try {H5.H5Pclose(lcpl_id);} catch (Exception ex) {}
         if (plapl_id >0)
-            H5.H5Pclose(plapl_id);
+            try {H5.H5Pclose(plapl_id);} catch (Exception ex) {}
         if (plist_id >0)
-            H5.H5Pclose(plist_id);
+            try {H5.H5Pclose(plist_id);} catch (Exception ex) {}
         if (gapl_id >0)
-            H5.H5Pclose(gapl_id);
+            try {H5.H5Pclose(gapl_id);} catch (Exception ex) {}
         if (gcpl_id >0)
-            H5.H5Pclose(gcpl_id);
+            try {H5.H5Pclose(gcpl_id);} catch (Exception ex) {}
         if (acpl_id >0)
-            H5.H5Pclose(acpl_id);
+            try {H5.H5Pclose(acpl_id);} catch (Exception ex) {}
         if (H5dsid > 0) 
-            H5.H5Sclose(H5dsid);
+            try {H5.H5Sclose(H5dsid);} catch (Exception ex) {}
         if (H5did > 0) 
-            H5.H5Dclose(H5did);         
+            try {H5.H5Dclose(H5did);} catch (Exception ex) {}       
         if (H5fid > 0) 
-            H5.H5Fclose(H5fid);
+            try {H5.H5Fclose(H5fid);} catch (Exception ex) {}
     }
 
     @Test

@@ -49,7 +49,8 @@ public class TestH5G {
     					HDF5Constants.H5P_CRT_ORDER_TRACKED
     					+ HDF5Constants.H5P_CRT_ORDER_INDEXED);//Set link creation order
     		}
-    	} catch (final Exception ex) {
+    	} 
+    	catch (final Exception ex) {
     		fail("H5.H5Pcreate() failed. " + ex);
     	}
     	try {
@@ -60,10 +61,7 @@ public class TestH5G {
     		err.printStackTrace();
     		fail("H5.H5Gcreate: " + err);
     	}
-    	try {
-    		H5.H5Pclose(gcpl);
-    	} catch (final Exception ex) {
-    	}
+    	try {H5.H5Pclose(gcpl);} catch (final Exception ex) {}
     	
     	return gid;
     }
@@ -86,12 +84,7 @@ public class TestH5G {
         File file = new File(filename);
 
         if (file.exists()) {
-            try {
-                file.delete();
-            }
-            catch (SecurityException e) {
-                ;// e.printStackTrace();
-            }
+            try {file.delete();} catch (SecurityException e) {}
         }
     }
 
@@ -111,21 +104,13 @@ public class TestH5G {
         for (int i = 0; i < GROUPS.length; i++) {
             gid = _createGroup(H5fid, GROUPS[i]);
             assertTrue(gid > 0);
-            try {
-                H5.H5Gclose(gid);
-            }
-            catch (Exception ex) {
-            }
+            try {H5.H5Gclose(gid);} catch (Exception ex) {}
         }
         
         for (int i = 0; i < GROUPS2.length; i++) {
             gid = _createGroup2(H5fid2, GROUPS2[i]);
             assertTrue(gid > 0);
-            try {
-                H5.H5Gclose(gid);
-            }
-            catch (Exception ex) {
-            }
+            try {H5.H5Gclose(gid);} catch (Exception ex) {}
         }
 
         H5.H5Fflush(H5fid, HDF5Constants.H5F_SCOPE_LOCAL);
@@ -135,10 +120,10 @@ public class TestH5G {
     @After
     public void deleteH5file() throws HDF5LibraryException {
         if (H5fid > 0) {
-            H5.H5Fclose(H5fid);
+            try {H5.H5Fclose(H5fid);} catch (Exception ex) {}
         }
         if (H5fid2 > 0) {
-            H5.H5Fclose(H5fid2);
+            try {H5.H5Fclose(H5fid2);} catch (Exception ex) {}
         }
        _deleteFile(H5_FILE);
        _deleteFile(H5_FILE2);
