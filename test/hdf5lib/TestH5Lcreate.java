@@ -148,19 +148,19 @@ public class TestH5Lcreate {
     @After
     public void deleteH5file() throws HDF5LibraryException {
         if (H5gid > 0) 
-            H5.H5Gclose(H5gid);
+            try {H5.H5Gclose(H5gid);} catch (Exception ex) {}
         if (H5gcpl > 0) 
-            H5.H5Pclose(H5gcpl);
+            try {H5.H5Pclose(H5gcpl);} catch (Exception ex) {}
         if (H5did2 > 0) 
-            H5.H5Dclose(H5did2);
+            try {H5.H5Dclose(H5did2);} catch (Exception ex) {}
         if (H5dsid > 0) 
-            H5.H5Sclose(H5dsid);
+            try {H5.H5Sclose(H5dsid);} catch (Exception ex) {}
         if (H5did1 > 0) 
-            H5.H5Dclose(H5did1);
+            try {H5.H5Dclose(H5did1);} catch (Exception ex) {}
         if (H5fid > 0) 
-            H5.H5Fclose(H5fid);
+            try {H5.H5Fclose(H5fid);} catch (Exception ex) {}
         if (H5fcpl > 0) 
-            H5.H5Pclose(H5fcpl);
+            try {H5.H5Pclose(H5fcpl);} catch (Exception ex) {}
 
         _deleteFile(H5_FILE);
     }

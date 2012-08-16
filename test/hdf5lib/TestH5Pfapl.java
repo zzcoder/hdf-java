@@ -65,12 +65,7 @@ public class TestH5Pfapl {
         catch (Throwable err) {}
 
         if (file.exists()) {
-            try {
-                file.delete();
-            }
-            catch (SecurityException e) {
-                ;// e.printStackTrace();
-            }
+            try {file.delete();} catch (SecurityException e) {}
         }
     }
     
@@ -82,12 +77,7 @@ public class TestH5Pfapl {
         catch (Throwable err) {}
 
         if (file.exists()) {
-            try {
-                file.delete();
-            }
-            catch (SecurityException e) {
-                ;// e.printStackTrace();
-            }
+            try {file.delete();} catch (SecurityException e) {}
         }
     }
 
@@ -101,12 +91,7 @@ public class TestH5Pfapl {
             catch (Throwable err) {}
 
             if (file.exists()) {
-                try {
-                    file.delete();
-                }
-                catch (SecurityException e) {
-                    ;// e.printStackTrace();
-                }
+                try {file.delete();} catch (SecurityException e) {}
             }
             else
                 return;
@@ -122,12 +107,7 @@ public class TestH5Pfapl {
             catch (Throwable err) {}
 
             if (file.exists()) {
-                try {
-                    file.delete();
-                }
-                catch (SecurityException e) {
-                    ;// e.printStackTrace();
-                }
+                try {file.delete();} catch (SecurityException e) {}
             }
         }
     }
@@ -296,33 +276,34 @@ public class TestH5Pfapl {
         assertTrue(multi_dxplid > 0);
         assertTrue(plist_id > 0);
         assertTrue(btplist_id > 0);
+        assertTrue(dapl_id > 0);
     }
 
     @After
     public void deleteFileAccess() throws HDF5LibraryException {
         if (fapl_id > 0)
-            H5.H5Pclose(fapl_id);
+            try {H5.H5Pclose(fapl_id);} catch (Exception ex) {}
         if (plapl_id > 0)
-            H5.H5Pclose(plapl_id);
+            try {H5.H5Pclose(plapl_id);} catch (Exception ex) {}
         if (dapl_id > 0)
-            H5.H5Pclose(dapl_id);
+            try {H5.H5Pclose(dapl_id);} catch (Exception ex) {}
         if (plist_id > 0)
-            H5.H5Pclose(plist_id);
+            try {H5.H5Pclose(plist_id);} catch (Exception ex) {}
         if (btplist_id > 0)
-            H5.H5Pclose(btplist_id);
+            try {H5.H5Pclose(btplist_id);} catch (Exception ex) {}
         if (multi_dxplid > 0)
-            H5.H5Pclose(multi_dxplid);
+            try {H5.H5Pclose(multi_dxplid);} catch (Exception ex) {}
         
         if (H5Fdsid > 0) 
-            H5.H5Sclose(H5Fdsid);
+            try {H5.H5Sclose(H5Fdsid);} catch (Exception ex) {}
         if (H5Fdid > 0) 
-            H5.H5Dclose(H5Fdid);         
+            try {H5.H5Dclose(H5Fdid);} catch (Exception ex) {}
         if (H5dsid > 0) 
-            H5.H5Sclose(H5dsid);
+            try {H5.H5Sclose(H5dsid);} catch (Exception ex) {}
         if (H5did > 0) 
-            H5.H5Dclose(H5did);         
+            try {H5.H5Dclose(H5did);} catch (Exception ex) {}
         if (H5fid > 0) 
-            H5.H5Fclose(H5fid);
+            try {H5.H5Fclose(H5fid);} catch (Exception ex) {}
     }
     
     @Test

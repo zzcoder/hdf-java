@@ -45,12 +45,7 @@ public class TestH5PData {
         File file = new File(filename);
 
         if (file.exists()) {
-            try {
-                file.delete();
-            }
-            catch (SecurityException e) {
-                ;// e.printStackTrace();
-            }
+            try {file.delete();} catch (SecurityException e) {}
         }
     }
 
@@ -59,7 +54,8 @@ public class TestH5PData {
         try {
             did = H5.H5Dcreate(fid, name, HDF5Constants.H5T_NATIVE_FLOAT, dsid,
                     HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, dapl);
-        } catch (Throwable err) {
+        } 
+        catch (Throwable err) {
             err.printStackTrace();
             fail("H5.H5Dcreate: " + err);
         }
@@ -95,16 +91,16 @@ public class TestH5PData {
     @After
     public void deleteH5file() throws HDF5LibraryException {
         if (H5dsid > 0) 
-            H5.H5Sclose(H5dsid);
+            try {H5.H5Sclose(H5dsid);} catch (Exception ex) {}
         if (H5did > 0) 
-            H5.H5Dclose(H5did);         
+            try {H5.H5Dclose(H5did);} catch (Exception ex) {}       
         if (H5fid > 0) 
-            H5.H5Fclose(H5fid);
+            try {H5.H5Fclose(H5fid);} catch (Exception ex) {}
  
         _deleteFile(H5_FILE);
         
         if (plist_id > 0)
-            H5.H5Pclose(plist_id);
+            try {H5.H5Pclose(plist_id);} catch (Exception ex) {}
     }
     
     @Test

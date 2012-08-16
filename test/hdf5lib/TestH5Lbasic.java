@@ -39,7 +39,7 @@ public class TestH5Lbasic {
     @After
     public void closeH5file() throws HDF5LibraryException {
         if (H5fid > 0) {
-            H5.H5Fclose(H5fid);
+            try {H5.H5Fclose(H5fid);} catch (Exception ex) {}
         }
     }
 

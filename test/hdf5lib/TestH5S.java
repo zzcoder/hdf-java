@@ -34,7 +34,7 @@ public class TestH5S {
     @After
     public void deleteH5file() throws HDF5LibraryException {
         if (H5sid > 0) {
-            H5.H5Sclose(H5sid);
+            try {H5.H5Sclose(H5sid);} catch (Exception ex) {}
         }
     }
 
