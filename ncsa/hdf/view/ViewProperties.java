@@ -145,6 +145,8 @@ public class ViewProperties extends Properties {
      * read/write.
      */
     private static boolean          isReadOnly             = false;
+    
+    private static boolean 			isEarlyLib 			   = true;
 
     /** a list of palette files */
     private static Vector<String>   paletteList            = new Vector<String>(5);
@@ -1018,6 +1020,11 @@ public class ViewProperties extends Properties {
         if (propVal != null) {
             isReadOnly = ("r".equalsIgnoreCase(propVal));
         }
+        
+        propVal = (String) get("lib.version");
+        if (propVal != null) {
+            isEarlyLib = ("early".equalsIgnoreCase(propVal));
+        }
 
         propVal = (String) get("enum.conversion");
         if (propVal != null) {
@@ -1230,6 +1237,13 @@ public class ViewProperties extends Properties {
         }
         else {
             put("file.mode", "rw");
+        }
+        
+        if (isEarlyLib) {
+            put("lib.version", "early");
+        }
+        else {
+            put("lib.version", "latest");
         }
 
         put("enum.conversion", String.valueOf(convertEnum));
@@ -1592,7 +1606,7 @@ public class ViewProperties extends Properties {
     public static boolean isReadOnly() {
         return isReadOnly;
     }
-
+  
     /**
      * Set the flag to indicate if default file access is read only.
      * 
@@ -1601,6 +1615,26 @@ public class ViewProperties extends Properties {
      */
     public static void setReadOnly(boolean b) {
         isReadOnly = b;
+    }
+    
+    /**
+     * Returns true if default lib version is the earliest.
+     * 
+     * @return true if default lib version is the earliest; otherwise, returns
+     *         false.
+     */
+    public static boolean isEarlyLib() {
+        return isEarlyLib;
+    }
+
+    /**
+     * Set the flag to indicate if default lib version is the earliest.
+     * 
+     * @param b
+     *            the flag to indicate if default lib version is the earliest.
+     */
+    public static void setEarlyLib(boolean b) {
+    	isEarlyLib = b;
     }
 
     /**

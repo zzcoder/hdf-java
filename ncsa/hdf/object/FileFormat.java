@@ -66,7 +66,7 @@ public abstract class FileFormat extends File {
      * to the regular value, indicates this file has no existing state.
      * 
      */
-    public static final int                      OPEN_NEW           = 64;
+    public static final int                      OPEN_NEW           = 1;
 
     /**
      * File access flag for read-only permission. With this access flag,
@@ -74,7 +74,7 @@ public abstract class FileFormat extends File {
      * 
      * @see #createInstance(String, int )
      */
-    public static final int                      READ               = 0;
+    public static final int                      READ               = 2;
 
     /**
      * File access flag for read/write permission. With this access flag,
@@ -84,7 +84,7 @@ public abstract class FileFormat extends File {
      * 
      * @see #createInstance(String, int )
      */
-    public static final int                      WRITE              = 1;
+    public static final int                      WRITE              = 4;
 
     /**
      * File access flag for creating/truncating with read-write permission. If
@@ -95,7 +95,7 @@ public abstract class FileFormat extends File {
      * 
      * @see #createInstance(String, int )
      */
-    public static final int                      CREATE             = 2;
+    public static final int                      CREATE             = 8;
 
     /***************************************************************************
      * File creation flags used in calls to createFile( String, flag );
@@ -117,7 +117,16 @@ public abstract class FileFormat extends File {
      * 
      * @see #createFile(String, int )
      */
-    public static final int                      FILE_CREATE_OPEN   = 11;
+    public static final int                      FILE_CREATE_OPEN   = 20;
+    
+    /**
+     * Flag to indicate if the earliest version of library is used when creating
+     * a new file.
+     * 
+     * @see #createFile(String, int )
+     */
+    public static final int                      FILE_CREATE_EARLY_LIB   = 40;
+    
 
     /***************************************************************************
      * Keys and fields related to supported file formats.
