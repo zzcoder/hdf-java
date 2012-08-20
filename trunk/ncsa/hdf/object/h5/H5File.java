@@ -880,7 +880,7 @@ public class H5File extends FileFormat {
         Boolean doCreateFile = true;
 
         // Won't create or truncate if CREATE_OPEN specified and file exists
-        if (createFlag == FILE_CREATE_OPEN) {
+        if ((createFlag & FILE_CREATE_OPEN)  == FILE_CREATE_OPEN) {
             File f = new File(filename);
             if (f.exists()) {
                 doCreateFile = false;
@@ -888,9 +888,17 @@ public class H5File extends FileFormat {
         }
 
         if (doCreateFile) {
+        	
+            int fapl = H5.H5Pcreate(HDF5Constants.H5P_FILE_ACCESS);;
+  
+            if ((createFlag & FILE_CREATE_EARLY_LIB)  != FILE_CREATE_EARLY_LIB) {
+            	H5.H5Pset_libver_bounds(fapl, HDF5Constants.H5F_LIBVER_LATEST, HDF5Constants.H5F_LIBVER_LATEST);
+            }
+            
             int fileid = H5.H5Fcreate(filename, HDF5Constants.H5F_ACC_TRUNC, HDF5Constants.H5P_DEFAULT,
-                    HDF5Constants.H5P_DEFAULT);
+                    fapl);
             try {
+                H5.H5Pclose(fapl);
                 H5.H5Fclose(fileid);
             }
             catch (HDF5Exception ex) {

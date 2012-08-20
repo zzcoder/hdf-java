@@ -22,6 +22,7 @@ import java.util.List;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 
 import ncsa.hdf.object.FileFormat;
 
@@ -214,7 +215,10 @@ public class NewFileDialog extends JFileChooser // JDialog
 
         currentDir = f.getParent();
         try {
-            FileFormat.getFileFormat(fileType).create(fname);
+        	int aFlag = FileFormat.FILE_CREATE_DELETE;
+        	if (ViewProperties.isEarlyLib())
+        		aFlag = FileFormat.FILE_CREATE_DELETE | FileFormat.FILE_CREATE_EARLY_LIB;
+            FileFormat.getFileFormat(fileType).createFile(fname, aFlag);
         }
         catch (Exception ex) {
             toolkit.beep();

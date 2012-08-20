@@ -68,7 +68,7 @@ public class UserOptionsDialog extends JDialog implements ActionListener {
     private String                rootDir, workDir;
     private JCheckBox             checkCurrentUserDir, checkAutoContrast, checkConvertEnum, checkShowValues;
     private JButton               currentDirButton;
-    private JRadioButton          checkReadOnly, checkIndexType, checkIndexOrder, checkIndexNative;
+    private JRadioButton          checkReadOnly, checkIndexType, checkIndexOrder, checkIndexNative, checkLibVersion;
 
     private int                   fontSize;
 
@@ -269,7 +269,7 @@ public class UserOptionsDialog extends JDialog implements ActionListener {
         centerP.add(p0, c);
 
         p0 = new JPanel();
-        p0.setLayout(new GridLayout(1, 2, 8, 8));
+        p0.setLayout(new GridLayout(1, 3, 8, 8));
 
         JPanel p00 = new JPanel();
         p00.setLayout(new BorderLayout());
@@ -290,9 +290,22 @@ public class UserOptionsDialog extends JDialog implements ActionListener {
         tborder = new TitledBorder("Default File Access Mode");
         tborder.setTitleColor(Color.darkGray);
         p01.setBorder(tborder);
+        
+        JPanel p02 = new JPanel();
+        p02.setLayout(new GridLayout(1, 2, 8, 8));
+        p02.add(checkLibVersion = new JRadioButton("Earliest", ViewProperties.isEarlyLib()));
+        JRadioButton latestLib = new JRadioButton("Latest", !ViewProperties.isReadOnly());
+        p02.add(latestLib);
+        bgrp = new ButtonGroup();
+        bgrp.add(checkLibVersion);
+        bgrp.add(latestLib);
+        tborder = new TitledBorder("Default Lib Version");
+        tborder.setTitleColor(Color.darkGray);
+        p02.setBorder(tborder);
 
         p0.add(p01);
         p0.add(p00);
+        p0.add(p02);
         c.gridx = 0;
         c.gridy = 2;
         centerP.add(p0, c);
@@ -405,7 +418,7 @@ public class UserOptionsDialog extends JDialog implements ActionListener {
         p00.add(startMemberField = new JTextField(String.valueOf(ViewProperties.getStartMembers())),
                 BorderLayout.CENTER);
         p0.add(p00);
-        tborder = new TitledBorder("Max Number of Members to Load in Each Group");
+        tborder = new TitledBorder("Max Number of Objects to Open");
         tborder.setTitleColor(Color.darkGray);
         p0.setBorder(tborder);
         c.gridx = 0;
@@ -413,7 +426,7 @@ public class UserOptionsDialog extends JDialog implements ActionListener {
         centerP.add(p0, c);
 
         p0 = new JPanel();
-        p0.setLayout(new GridLayout(2, 1, 8, 8));
+        p0.setLayout(new GridLayout(1, 2, 8, 8));
 
         JPanel pType = new JPanel();
         pType.setLayout(new GridLayout(1, 2, 8, 8));
@@ -849,6 +862,11 @@ public class UserOptionsDialog extends JDialog implements ActionListener {
             ViewProperties.setReadOnly(true);
         else
             ViewProperties.setReadOnly(false);
+        
+        if (checkLibVersion.isSelected())
+            ViewProperties.setEarlyLib(true);
+        else
+            ViewProperties.setEarlyLib(false);        
 
         // set font size
         int fsize = 12;
