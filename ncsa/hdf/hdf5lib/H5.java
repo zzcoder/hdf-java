@@ -3528,48 +3528,15 @@ public synchronized static int H5Gget_obj_info_all(int loc_id, String name,
         String[] oname, int[] otype, int[] ltype, long[] ref, int indx_type)
         throws HDF5LibraryException, NullPointerException
 {
-    return H5Gget_obj_info_all(loc_id, name, oname, otype, ltype, null, ref, indx_type );
+    return H5Gget_obj_info_full(loc_id, name, oname, otype, ltype, null, ref, indx_type, -1);
 }
 
 public synchronized static int H5Gget_obj_info_all(int loc_id, String name,
         String[] oname, int[] otype, int[] ltype, long[] fno, long[] ref, int indx_type)
         throws HDF5LibraryException, NullPointerException
 {
-    if (oname == null) {
-        throw new NullPointerException(
-                "H5Gget_obj_info_all(): name array is null");
-    }
-
-    if (otype == null) {
-        throw new NullPointerException(
-                "H5Gget_obj_info_all(): object type array is null");
-    }
-
-    if (oname.length == 0) {
-        throw new HDF5LibraryException(
-                "H5Gget_obj_info_all(): array size is zero");
-    }
-
-    if (oname.length != otype.length) {
-        throw new HDF5LibraryException(
-                "H5Gget_obj_info_all(): name and type array sizes are different");
-    }
-    
-    if (ltype == null)
-        ltype = new int[otype.length];
-
-    if (fno == null)
-        fno = new long[ref.length];
-    
-    if (indx_type < 0)
-        indx_type = HDF5Constants.H5_INDEX_NAME;
-    
-    return H5Gget_obj_info_all(loc_id, name, oname, otype, ltype, fno, ref, oname.length, indx_type);
+    return H5Gget_obj_info_full(loc_id, name, oname, otype, ltype, fno, ref, oname.length, indx_type, -1);
 }
-
-private synchronized static native int H5Gget_obj_info_all(int loc_id,
-        String name, String[] oname, int[] otype, int[] ltype, long[] fno, long[] ref, int n, int indx_type)
-        throws HDF5LibraryException, NullPointerException;
 
 public synchronized static int H5Gget_obj_info_full(int loc_id, String name,
         String[] oname, int[] otype, int[] ltype, long[] fno, long[] ref, int indx_type, int indx_order)
