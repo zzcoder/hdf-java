@@ -1629,7 +1629,7 @@ public class H5File extends FileFormat {
         }
 
         theNode.removeAllChildren();
-        depth_first(theNode);
+        depth_first(theNode, Integer.MIN_VALUE);
     }
 
     /*
@@ -1950,7 +1950,7 @@ public class H5File extends FileFormat {
             }
         };
 
-        depth_first(root);
+        depth_first(root, 0); // reload all
 
         return root;
     }
@@ -1967,7 +1967,197 @@ public class H5File extends FileFormat {
      * @param parentNode
      *            the parent node.
      */
-    private void depth_first(MutableTreeNode parentNode) {
+    private int depth_first(MutableTreeNode parentNode, int nTotal) {
+        int nelems;
+        MutableTreeNode node = null;
+        String fullPath = null;
+        String ppath = null;
+        DefaultMutableTreeNode pnode = (DefaultMutableTreeNode) parentNode;
+        int gid = -1;
+
+        H5Group pgroup = (H5Group) (pnode.getUserObject());
+        ppath = pgroup.getPath();
+
+        if (ppath == null) {
+            fullPath = HObject.separator;
+        }
+        else {
+            fullPath = ppath + pgroup.getName() + HObject.separator;
+        }
+
+        nelems = 0;
+        try {
+            gid = pgroup.open();
+            H5G_info_t info = H5.H5Gget_info(gid);
+            nelems = (int) info.nlinks;
+        }
+        catch (HDF5Exception ex) {
+            nelems = -1;
+        }
+
+        if (nelems <= 0) {
+            pgroup.close(gid);
+            return nTotal;
+        }
+
+        // since each call of H5.H5Gget_objname_by_idx() takes about one second.
+        // 1,000,000 calls take 12 days. Instead of calling it in a loop,
+        // we use only one call to get all the information, which takes about
+        // two seconds
+        int[] objTypes = new int[nelems];
+        long[] fNos = new long[nelems];
+        long[] objRefs = new long[nelems];
+        String[] objNames = new String[nelems];
+
+        try {
+            H5.H5Gget_obj_info_full(fid, fullPath, objNames, objTypes, null, fNos, objRefs, indexType, indexOrder);
+        }
+        catch (HDF5Exception ex) {
+            ex.printStackTrace();
+            return nTotal;
+        }
+
+        int nStart = getStartMembers();
+        int nMax = getMaxMembers();
+        
+        String obj_name;
+        int obj_type;
+
+        // Iterate through the file to see members of the group
+        for (int i = 0; i < nelems; i++) {
+            obj_name = objNames[i];
+            obj_type = objTypes[i];
+            long oid[] = { objRefs[i], fNos[i] };
+
+            if (obj_name == null) {
+                continue;
+            }
+            
+            nTotal++;
+            
+            if (nMax > 0) {
+            	if ((nTotal-nStart)>=nMax)
+            		break; // loaded enough objects
+            }
+
+            boolean skipLoad = false;
+            if ( (nTotal> 0) && (nTotal < nStart))
+            	skipLoad = true;
+
+            // create a new group
+            if (obj_type == HDF5Constants.H5O_TYPE_GROUP) {
+                H5Group g = new H5Group(this, obj_name, fullPath, pgroup, oid); // deprecated!
+                node = new DefaultMutableTreeNode(g) {
+                    private static final long serialVersionUID = 5139629211215794015L;
+
+                    @Override
+                    public boolean isLeaf() {
+                        return false;
+                    }
+                };
+                pnode.add(node);
+                pgroup.addToMemberList(g);
+
+                // detect and stop loops
+                // a loop is detected if there exists object with the same
+                // object ID by tracing path back up to the root.
+                boolean hasLoop = false;
+                HObject tmpObj = null;
+                DefaultMutableTreeNode tmpNode = pnode;
+
+                while (tmpNode != null) {
+                    tmpObj = (HObject) tmpNode.getUserObject();
+
+                    if (tmpObj.equalsOID(oid)) {
+                        hasLoop = true;
+                        break;
+                    }
+                    else {
+                        tmpNode = (DefaultMutableTreeNode) tmpNode.getParent();
+                    }
+                }
+
+                // recursively go through the next group
+                // stops if it has loop.
+                if (!hasLoop) {
+                	nTotal = depth_first(node, nTotal);
+                }
+            } else if (skipLoad) {
+            	continue;
+            }
+            else if (obj_type == HDF5Constants.H5O_TYPE_DATASET) {
+                int did = -1, tid = -1, tclass = -1;
+                try {
+                    did = H5.H5Dopen(fid, fullPath + obj_name, HDF5Constants.H5P_DEFAULT);
+                    tid = H5.H5Dget_type(did);
+
+                    tclass = H5.H5Tget_class(tid);
+                    if ((tclass == HDF5Constants.H5T_ARRAY) || (tclass == HDF5Constants.H5T_VLEN)) {
+                        // for ARRAY, the type is determined by the base type
+                        int btid = H5.H5Tget_super(tid);
+                        int tmpclass = H5.H5Tget_class(btid);
+
+                        // cannot deal with ARRAY of COMPOUND in compound table
+                        // viewer
+                        if (tmpclass != HDF5Constants.H5T_COMPOUND) tclass = H5.H5Tget_class(btid);
+
+                        try {
+                            H5.H5Tclose(btid);
+                        }
+                        catch (HDF5Exception ex) {
+                        }
+                    }
+                }
+                catch (HDF5Exception ex) {
+                }
+                finally {
+                    try {
+                        H5.H5Tclose(tid);
+                    }
+                    catch (HDF5Exception ex) {
+                    }
+                    try {
+                        H5.H5Dclose(did);
+                    }
+                    catch (HDF5Exception ex) {
+                    }
+                }
+                Dataset d = null;
+                if (tclass == HDF5Constants.H5T_COMPOUND) {
+                    // create a new compound dataset
+                    d = new H5CompoundDS(this, obj_name, fullPath, oid); // deprecated!
+                }
+                else {
+                    // create a new scalar dataset
+                    d = new H5ScalarDS(this, obj_name, fullPath, oid); // deprecated!
+                }
+
+                node = new DefaultMutableTreeNode(d);
+                pnode.add(node);
+                pgroup.addToMemberList(d);
+            }
+            else if (obj_type == HDF5Constants.H5O_TYPE_NAMED_DATATYPE) {
+                Datatype t = new H5Datatype(this, obj_name, fullPath, oid); // deprecated!
+
+                node = new DefaultMutableTreeNode(t);
+                pnode.add(node);
+                pgroup.addToMemberList(t);
+            } else if (obj_type == HDF5Constants.H5O_TYPE_UNKNOWN) {
+                H5Link link = new H5Link(this, obj_name, fullPath, oid);
+
+                node = new DefaultMutableTreeNode(link);
+                pnode.add(node);
+                pgroup.addToMemberList(link);
+                continue; // do the next one, if the object is not identified.
+            }
+        } // for ( i = 0; i < nelems; i++)
+
+        pgroup.close(gid);
+        
+        return nTotal;
+    } // private depth_first()
+    
+    private void depth_first_old(MutableTreeNode parentNode) {
         int nelems;
         MutableTreeNode node = null;
         String fullPath = null;
@@ -2087,7 +2277,7 @@ public class H5File extends FileFormat {
                 // recursively go through the next group
                 // stops if it has loop.
                 if (!hasLoop) {
-                    depth_first(node);
+                    depth_first_old(node);
                 }
             }
             else if (obj_type == HDF5Constants.H5O_TYPE_DATASET) {
@@ -2372,7 +2562,7 @@ public class H5File extends FileFormat {
                     return false;
                 }
             };
-            depth_first(newNode);
+            depth_first(newNode, Integer.MIN_VALUE); // reload all
             pgroup.addToMemberList(group);
         }
 

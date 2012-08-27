@@ -837,6 +837,9 @@ public abstract class FileFormat extends File {
      * @see #setMaxMembers(int)
      */
     public final int getMaxMembers() {
+    	if (max_members<0)
+    		return Integer.MAX_VALUE; // load the whole file
+    	
         return max_members;
     }
 
