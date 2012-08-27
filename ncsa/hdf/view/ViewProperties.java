@@ -162,7 +162,7 @@ public class ViewProperties extends Properties {
      * number of objects such 1,000,000 objects. max_members defines the maximum
      * number of objects will be loaded into memory.
      */
-    private static int              max_members            = 10000;                                                    // 1,000
+    private static int              max_members            = Integer.MAX_VALUE;   // load all by default                                               // 1,000
     // by
     // default
 
@@ -1545,6 +1545,9 @@ public class ViewProperties extends Properties {
      * maximum number of objects will be loaded into memory.
      */
     public static int getMaxMembers() {
+    	if (max_members < 0)
+    		return Integer.MAX_VALUE; // load the whole file
+    	
         return max_members;
     }
 

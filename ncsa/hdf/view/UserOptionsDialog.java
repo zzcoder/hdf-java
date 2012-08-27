@@ -25,6 +25,8 @@ import java.awt.Insets;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.io.File;
 import java.util.Vector;
 
@@ -52,7 +54,8 @@ import javax.swing.border.TitledBorder;
  * @author Peter X. Cao
  * @version 2.4 9/6/2007
  */
-public class UserOptionsDialog extends JDialog implements ActionListener {
+public class UserOptionsDialog extends JDialog implements ActionListener, ItemListener 
+{
     private static final long     serialVersionUID = -8521813136101442590L;
 
     /**
@@ -68,7 +71,8 @@ public class UserOptionsDialog extends JDialog implements ActionListener {
     private String                rootDir, workDir;
     private JCheckBox             checkCurrentUserDir, checkAutoContrast, checkConvertEnum, checkShowValues;
     private JButton               currentDirButton;
-    private JRadioButton          checkReadOnly, checkIndexType, checkIndexOrder, checkIndexNative, checkLibVersion;
+    private JRadioButton          checkReadOnly, checkIndexType, checkIndexOrder, checkIndexNative, checkLibVersion,
+    							  checkReadAll;
 
     private int                   fontSize;
 
@@ -405,20 +409,30 @@ public class UserOptionsDialog extends JDialog implements ActionListener {
         centerP.add(p0, c);
 
         p0 = new JPanel();
-        p0.setLayout(new GridLayout(1, 2, 8, 8));
-        p00 = new JPanel();
-        p00.setLayout(new BorderLayout());
-        p00.add(new JLabel("Max Members: "), BorderLayout.WEST);
-
-        p00.add(maxMemberField = new JTextField(String.valueOf(ViewProperties.getMaxMembers())), BorderLayout.CENTER);
-        p0.add(p00);
+        p0.setLayout(new GridLayout(1, 3, 8, 8));
+        
+        int nMax = ViewProperties.getMaxMembers();
+        checkReadAll = new JRadioButton("Open All", (nMax<=0) || (nMax==Integer.MAX_VALUE));
+        checkReadAll.addItemListener(this);
+        p0.add(checkReadAll);
+        
         p00 = new JPanel();
         p00.setLayout(new BorderLayout());
         p00.add(new JLabel("Start Member: "), BorderLayout.WEST);
         p00.add(startMemberField = new JTextField(String.valueOf(ViewProperties.getStartMembers())),
                 BorderLayout.CENTER);
         p0.add(p00);
-        tborder = new TitledBorder("Max Number of Objects to Open");
+
+        p00 = new JPanel();
+        p00.setLayout(new BorderLayout());
+        p00.add(new JLabel("Member Count: "), BorderLayout.WEST);
+        p00.add(maxMemberField = new JTextField(String.valueOf(ViewProperties.getMaxMembers())), BorderLayout.CENTER);
+        p0.add(p00);
+
+      	startMemberField.setEnabled(!checkReadAll.isSelected());
+       	maxMemberField.setEnabled(!checkReadAll.isSelected());
+        
+        tborder = new TitledBorder("Objects to Open");
         tborder.setTitleColor(Color.darkGray);
         p0.setBorder(tborder);
         c.gridx = 0;
@@ -906,18 +920,23 @@ public class UserOptionsDialog extends JDialog implements ActionListener {
         else
             ViewProperties.setIndexOrder("H5_ITER_DEC");
 
-        try {
-            int maxsize = Integer.parseInt(maxMemberField.getText());
-            ViewProperties.setMaxMembers(maxsize);
-        }
-        catch (Exception ex) {
-        }
+        if (checkReadAll.isSelected()) {
+        	ViewProperties.setStartMembers(0);
+        	ViewProperties.setMaxMembers(-1);
+        } else {
+            try {
+                int maxsize = Integer.parseInt(maxMemberField.getText());
+                ViewProperties.setMaxMembers(maxsize);
+            }
+            catch (Exception ex) {
+            }
 
-        try {
-            int startsize = Integer.parseInt(startMemberField.getText());
-            ViewProperties.setStartMembers(startsize);
-        }
-        catch (Exception ex) {
+            try {
+                int startsize = Integer.parseInt(startMemberField.getText());
+                ViewProperties.setStartMembers(startsize);
+            }
+            catch (Exception ex) {
+            }
         }
 
         Vector[] moduleList = { treeViews, metaDataViews, textViews, tableViews, imageViews, paletteViews };
@@ -950,4 +969,15 @@ public class UserOptionsDialog extends JDialog implements ActionListener {
     public boolean isWorkDirChanged() {
         return isWorkDirChanged;
     }
+
+	@Override
+	public void itemStateChanged(ItemEvent e) {
+    	Object source = e.getSource();
+
+    	if (source.equals(checkReadAll)) {
+          	startMemberField.setEnabled(!checkReadAll.isSelected());
+           	maxMemberField.setEnabled(!checkReadAll.isSelected());
+
+    	}
+	}
 }
