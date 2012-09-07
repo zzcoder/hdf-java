@@ -220,7 +220,7 @@ int h5str_sprintf(h5str_t *str, hid_t container, hid_t tid, void *ptr) {
             mtid = H5Tget_member_type(tid, i);
             h5str_sprintf(str, container, mtid, cptr + offset);
             if (i < n - 1)
-                strcat(str->s, ", ");
+                h5str_append(str, ", ");
             H5Tclose(mtid);
         }
         h5str_append(str, "} ");
@@ -243,7 +243,7 @@ int h5str_sprintf(h5str_t *str, hid_t container, hid_t tid, void *ptr) {
         for (i = 0; i < total_elmts; i++) {
             h5str_sprintf(str, container, mtid, cptr + i * size);
             if (i < total_elmts - 1)
-                strcat(str->s, ", ");
+                h5str_append(str, ", ");
         }
         H5Tclose(mtid);
         h5str_append(str, "] ");
@@ -259,7 +259,7 @@ int h5str_sprintf(h5str_t *str, hid_t container, hid_t tid, void *ptr) {
             h5str_sprintf(str, container, mtid, ((char *) (vlptr->p)) + i
                     * size);
             if (i < (int)nll - 1)
-                strcat(str->s, ", ");
+                h5str_append(str, ", ");
         }
         H5Tclose(mtid);
     }
