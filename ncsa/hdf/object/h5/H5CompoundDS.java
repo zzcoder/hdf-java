@@ -343,6 +343,7 @@ public class H5CompoundDS extends CompoundDS {
                 }
 
                 member_name = new String(memberNames[i]);
+
                 atom_tid = ((Integer) atomicList.get(i)).intValue();
 
                 try {
@@ -1520,6 +1521,7 @@ public class H5CompoundDS extends CompoundDS {
             }
 
             nested_tid = H5.H5Tcreate(HDF5Constants.H5T_COMPOUND, member_size);
+            
             H5.H5Tinsert(nested_tid, member_name, 0, tmp_tid1);
         }
         finally {

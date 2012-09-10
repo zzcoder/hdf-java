@@ -1392,6 +1392,7 @@ herr_t H5DreadVL_notstr (JNIEnv *env, hid_t did, hid_t tid, hid_t mem_sid,
     size_t  size;
     size_t  max_len = 0;
 
+
     n = ENVPTR->GetArrayLength(ENVPAR buf);
 
     rdata = (hvl_t*)calloc(n, sizeof(hvl_t));

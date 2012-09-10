@@ -1886,7 +1886,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
 
                 stringBuffer.setLength(0); // clear the old string
                 boolean isString = (types[fieldIdx].getDatatypeClass() == Datatype.CLASS_STRING);
-                if (isString && !compound.getConvertByteToString()) {
+                if (isString && (colValue instanceof byte[])) {
                     // strings
                     int strlen = types[fieldIdx].getDatatypeSize();
                     String str = new String(((byte[]) colValue), rowIdx * strlen, strlen);
