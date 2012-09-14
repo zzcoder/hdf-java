@@ -395,6 +395,21 @@ IF (NOT HDFJAVA_EXTERNALLY_CONFIGURED)
 ENDIF (NOT HDFJAVA_EXTERNALLY_CONFIGURED)
 
 #-----------------------------------------------------------------------------
+# Option to include jre
+#-----------------------------------------------------------------------------
+IF (HDFJAVA_PACK_JREFILE)
+  INSTALL (
+      FILES ${HDFJAVA_PACK_JREPATH}/${HDFJAVA_PACK_JREFILE}
+      DESTINATION ${HJAVA_INSTALL_CMAKE_DIR}/${HDFJAVA_PACKAGE}
+  )
+  IF (WIN32)
+    SET (CPACK_NSIS_EXTRA_INSTALL_COMMANDS "
+        ExecWait '\\\"$INSTDIR\\\\${HJAVA_INSTALL_CMAKE_DIR}\\\\${HDFJAVA_PACKAGE}\\\\${HDFJAVA_PACK_JREFILE}\\\"'
+    ")
+  ENDIF (WIN32)
+ENDIF (HDFJAVA_PACK_JREFILE)
+
+#-----------------------------------------------------------------------------
 # Set the cpack variables
 #-----------------------------------------------------------------------------
 SET (CPACK_PACKAGE_VENDOR "HDF_Group")
