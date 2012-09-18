@@ -19,7 +19,7 @@ rem
 setlocal enabledelayedexpansion
 pushd %~dp0
 
-set JAVABIN=@CMAKE_INSTALL_PREFIX@\bin
+set JAVABIN=@CMAKE_INSTALL_PREFIX@\bin\JRE\bin
 echo.Setting environment
 if "!%JAVABIN%!\java.exe"=="\java.exe" (
         echo.%JAVABIN%\java.exe not found,
