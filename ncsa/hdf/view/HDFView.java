@@ -207,7 +207,7 @@ public class HDFView extends JFrame implements ViewManager, ActionListener, Chan
      *            a list of files to open.
      */
     public HDFView(String root, List<File> flist, int width, int height, int x, int y) {
-        super("HDFView");
+        super("HDFView " + ViewProperties.VERSION);
         this.setName("hdfview");
 
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
