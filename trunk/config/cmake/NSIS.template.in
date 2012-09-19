@@ -50,6 +50,12 @@ Var AR_SecFlags
 Var AR_RegFlags
 @CPACK_NSIS_SECTION_SELECTED_VARS@
 
+!include "FileAssociation.nsh"
+!insertmacro RegisterExtension
+${FileAssociation_VERBOSE} 4   # all verbosity
+!insertmacro UnRegisterExtension
+${FileAssociation_VERBOSE} 3   # no script
+
 ; Loads the "selected" flag for the section named SecName into the
 ; variable VarName.
 !macro LoadSectionSelectedIntoVar SecName VarName
@@ -716,6 +722,16 @@ Section "-Core installation"
   Call ConditionalAddToRegisty
 
   !insertmacro MUI_STARTMENU_WRITE_END
+  
+  CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\HDFView.lnk" "$INSTDIR\bin\hdfview.bat"
+
+  ${registerExtension} "$INSTDIR\bin\hdfview.bat" ".h5" "HDF5 File"
+  ${registerExtension} "$INSTDIR\bin\hdfview.bat" ".hdf5" "HDF5 File"
+  ${registerExtension} "$INSTDIR\bin\hdfview.bat" ".he5" "HDF5 File"
+  ${registerExtension} "$INSTDIR\bin\hdfview.bat" ".hdf" "HDF4 File"
+  ${registerExtension} "$INSTDIR\bin\hdfview.bat" ".h4" "HDF4 File"
+  ${registerExtension} "$INSTDIR\bin\hdfview.bat" ".hdf4" "HDF4 File"
+  ${registerExtension} "$INSTDIR\bin\hdfview.bat" ".he4" "HDF4 File"
 
 @CPACK_NSIS_EXTRA_INSTALL_COMMANDS@
 
@@ -818,6 +834,16 @@ Section "Uninstall"
   ;MessageBox MB_OK "Install to desktop: $INSTALL_DESKTOP "
 
 @CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS@
+
+  ${unregisterExtension} ".h5" "HDF5 File"
+  ${unregisterExtension} ".hdf5" "HDF5 File"
+  ${unregisterExtension} ".he5" "HDF5 File"
+  ${unregisterExtension} ".hdf" "HDF4 File"
+  ${unregisterExtension} ".h4" "HDF4 File"
+  ${unregisterExtension} ".hdf4" "HDF4 File"
+  ${unregisterExtension} ".he4" "HDF4 File"
+
+  Delete "$SMPROGRAMS\$STARTMENU_FOLDER\HDFView.lnk"
 
   ;Remove files we installed.
   ;Keep the list of directories here in sync with the File commands above.

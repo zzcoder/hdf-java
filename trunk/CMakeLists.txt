@@ -406,11 +406,8 @@ IF (HDFJAVA_PACK_JREFILE)
     SET (CPACK_NSIS_EXTRA_INSTALL_COMMANDS "
         SetOutPath \\\"$INSTDIR\\\\bin\\\\JRE\\\"
         ExecWait \\\"$INSTDIR\\\\${HJAVA_INSTALL_CMAKE_DIR}\\\\${HDFJAVA_PACKAGE}\\\\JRE\\\\${HDFJAVA_PACK_JREFILE}\\\"
-        SetOutPath \\\"$INSTDIR\\\"
-        CreateShortCut \\\"$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\HDFView.lnk\\\" \\\"$INSTDIR\\\\bin\\\\hdfview.bat\\\"
     ")
     SET (CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS "
-        Delete \\\"$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\HDFView.lnk\\\"
         RMDir \\\"/r\\\" \\\"$INSTDIR\\\\bin\\\\JRE\\\"
     ")
   ENDIF (WIN32)
