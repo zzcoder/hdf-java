@@ -31,6 +31,8 @@ import org.junit.Test;
 
 public class TestTreeViewFiles {
     private static FrameFixture mainFrameFixture;
+    // the version of the HDFViewer
+    private static String VERSION = "2.8";
 
     private File openHDF5File(String name, int initrows) {
         File hdf_file = new File(name+".h5");
@@ -87,9 +89,6 @@ public class TestTreeViewFiles {
     }
     
     private static void clearRemovePropertyFile() {
-        // the version of the HDFViewer
-        final String VERSION = "2.8";
-
         // the local property file name
         // look for the property file at the use home directory
         String fn = ".hdfview" + VERSION.substring(0, 3);
@@ -117,7 +116,8 @@ public class TestTreeViewFiles {
         application("ncsa.hdf.view.HDFView").withArgs("-root", envvalue, envvalue).start();
         mainFrameFixture = findFrame(new GenericTypeMatcher<JFrame>(JFrame.class) {
             protected boolean isMatching(JFrame frame) {
-                return "HDFView".equals(frame.getTitle()) && frame.isShowing();
+                return frame.getTitle().equals("HDFView "+VERSION)
+                        && frame.isShowing();
             }
         }).withTimeout(10000).using(robot);
         mainFrameFixture.robot.waitForIdle();

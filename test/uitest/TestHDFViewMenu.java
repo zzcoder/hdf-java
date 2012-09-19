@@ -26,6 +26,8 @@ public class TestHDFViewMenu {
     private static FrameFixture mainFrameFixture;
     private static String HDF5VERSION = "HDF5 1.8.10";
     private static String HDF4VERSION = "HDF 4.2.8";
+    // the version of the HDFViewer
+    private static String VERSION = "2.8";
 
     private File createFile(String name, boolean hdf4_type) {
         String file_ext;
@@ -98,9 +100,6 @@ public class TestHDFViewMenu {
     }
     
     private static void clearRemovePropertyFile() {
-        // the version of the HDFViewer
-        final String VERSION = "2.8";
-
         // the local property file name
         // look for the property file at the use home directory
         String fn = ".hdfview" + VERSION.substring(0, 3);
@@ -129,7 +128,7 @@ public class TestHDFViewMenu {
         mainFrameFixture = findFrame(
                 new GenericTypeMatcher<JFrame>(JFrame.class) {
                     protected boolean isMatching(JFrame frame) {
-                        return "HDFView".equals(frame.getTitle())
+                        return frame.getTitle().equals("HDFView "+VERSION)
                                 && frame.isShowing();
                     }
                 }).withTimeout(10000).using(robot);
