@@ -1004,7 +1004,7 @@ public class H5Datatype extends Datatype {
      */
     @Override
     public boolean isUnsigned() {
-        return (datatypeSign == SIGN_NONE);
+        return (isUnsigned(toNative()));
     }
 
     /**
