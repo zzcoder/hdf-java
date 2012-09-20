@@ -1517,7 +1517,8 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
 
         fillValue = d.getFillValue();
 
-        String cName = dataValue.getClass().getName();
+        boolean isUnsigned = d.isUnsigned();
+        String cName = dataset.getOriginalClass().getName();
         int cIndex = cName.lastIndexOf("[");
         if (cIndex >= 0) {
             NT = cName.charAt(cIndex + 1);
@@ -1610,9 +1611,26 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
                         }
                     }
                     else {
-                        for (int i = i0; i < i1; i++) {
-                            stringBuffer.append(Array.get(dataValue, i));
-                            if (stringBuffer.length() > 0 && i < (i1 - 1)) stringBuffer.append(", ");
+                        if (isUINT64) {
+                            for (int i = i0; i < i1; i++) {
+                                Long l = (Long) Array.get(dataValue, i);
+                                if (l < 0) {
+                                    l = (l << 1) >>> 1;
+                                    BigInteger big1 = new BigInteger("9223372036854775808"); // 2^65
+                                    BigInteger big2 = new BigInteger(l.toString());
+                                    BigInteger big = big1.add(big2);
+                                    stringBuffer.append(big.toString());
+                                }
+                                else
+                                    stringBuffer.append(Array.get(dataValue, i));
+                                if (stringBuffer.length() > 0 && i < (i1 - 1)) stringBuffer.append(", ");
+                            }
+                        }
+                        else {
+                            for (int i = i0; i < i1; i++) {
+                                stringBuffer.append(Array.get(dataValue, i));
+                                if (stringBuffer.length() > 0 && i < (i1 - 1)) stringBuffer.append(", ");
+                            }
                         }
                     }
                     theValue = stringBuffer;
