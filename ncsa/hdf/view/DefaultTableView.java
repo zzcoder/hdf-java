@@ -1518,7 +1518,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
         fillValue = d.getFillValue();
 
         boolean isUnsigned = d.isUnsigned();
-        String cName = dataset.getOriginalClass().getName();
+        String cName = dataValue.getClass().getName();
         int cIndex = cName.lastIndexOf("[");
         if (cIndex >= 0) {
             NT = cName.charAt(cIndex + 1);
