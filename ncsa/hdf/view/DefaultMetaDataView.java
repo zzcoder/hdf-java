@@ -105,6 +105,7 @@ public class DefaultMetaDataView extends JDialog implements ActionListener, Meta
         super((JFrame) theView, false);
         setDefaultCloseOperation(JInternalFrame.DISPOSE_ON_CLOSE);
 
+        setName("DefaultMetaDataView");
         viewer = theView;
         hObject = viewer.getTreeView().getCurrentObject();
         fileFormat = hObject.getFileFormat();
@@ -149,6 +150,7 @@ public class DefaultMetaDataView extends JDialog implements ActionListener, Meta
             }
         }
         JPanel bPanel = new JPanel();
+        bPanel.setName("MetaDataClose");
         JButton b = new JButton("  Close  ");
         b.setName("Close");
         b.setMnemonic(KeyEvent.VK_C);
@@ -158,6 +160,7 @@ public class DefaultMetaDataView extends JDialog implements ActionListener, Meta
 
         // Add the tabbed pane to this panel.
         JPanel contentPane = (JPanel) getContentPane();
+        contentPane.setName("MetaDataContent");
         contentPane.setLayout(new BorderLayout());
         contentPane.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         contentPane.setPreferredSize(new Dimension(620, 400));
@@ -605,6 +608,7 @@ public class DefaultMetaDataView extends JDialog implements ActionListener, Meta
                 return false;
             }
         };
+        table.setName("GroupInfo");
         table.setCellSelectionEnabled(false);
 
         // set cell height for large fonts

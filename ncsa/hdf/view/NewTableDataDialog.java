@@ -146,6 +146,7 @@ public class NewTableDataDialog extends JDialog implements ActionListener, ItemL
                 return cellEditor;
             }
         };
+        table.setName("CompoundDataset");
         table.setRowSelectionAllowed(false);
         table.setColumnSelectionAllowed(false);
 

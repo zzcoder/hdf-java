@@ -582,6 +582,141 @@ public class TestTreeViewFiles {
         }
     }
 
+    @Test 
+    public void openHDF5ScalarGroup() {
+        File hdf_file = openHDF5File("tscalarintsize", 10);
+
+        try {
+            JTreeFixture filetree = mainFrameFixture.tree().focus();
+            filetree.requireVisible();
+            assertTrue("openHDF5ScalarGroup filetree shows:", filetree.target.getRowCount()==10);
+            assertTrue("openHDF5ScalarGroup filetree has file", (filetree.valueAt(0)).compareTo("tscalarintsize.h5")==0);
+            assertTrue("openHDF5ScalarGroup filetree has group", (filetree.valueAt(1)).compareTo("DS08BITS")==0);
+
+            JMenuItemFixture dataset4MenuItem = filetree.showPopupMenuAt(4).menuItemWithPath("Open");
+            mainFrameFixture.robot.waitForIdle();
+            
+            dataset4MenuItem.requireVisible();
+            dataset4MenuItem.click();
+            mainFrameFixture.robot.waitForIdle();
+            
+            JTableFixture dataset4table = mainFrameFixture.table("data");
+            JTableCellFixture cell4 = dataset4table.cell(row(0).column(0));
+            Pattern pattern = Pattern.compile("^-1, .*");
+            cell4.requireValue(pattern);
+            mainFrameFixture.menuItemWithPath("Table", "Close").click();
+            mainFrameFixture.robot.waitForIdle();
+
+            JMenuItemFixture dataset8MenuItem = filetree.showPopupMenuAt(8).menuItemWithPath("Open");
+            mainFrameFixture.robot.waitForIdle();
+            
+            dataset8MenuItem.requireVisible();
+            dataset8MenuItem.click();
+            mainFrameFixture.robot.waitForIdle();
+            
+            JTableFixture dataset8table = mainFrameFixture.table("data");
+            JTableCellFixture cell8 = dataset8table.cell(row(0).column(0));
+            pattern = Pattern.compile("^18446744073709551615, .*");
+            cell8.requireValue(pattern);
+            mainFrameFixture.menuItemWithPath("Table", "Close").click();
+            mainFrameFixture.robot.waitForIdle();
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        catch (AssertionError ae) {
+            ae.printStackTrace();
+        }
+        finally {
+            try {
+                closeFile(hdf_file, false);
+            }
+            catch (Exception ex) {}
+        }
+    }
+    
+    @Test 
+    public void openHDF5ScalarAttribute() {
+        File hdf_file = openHDF5File("tscalarattrintsize", 1);
+
+        try {
+            JTreeFixture filetree = mainFrameFixture.tree().focus();
+            filetree.requireVisible();
+            assertTrue("openHDF5ScalarAttribute filetree shows:", filetree.target.getRowCount()==1);
+            assertTrue("openHDF5ScalarAttribute filetree has file", (filetree.valueAt(0)).compareTo("tscalarattrintsize.h5")==0);
+
+            JMenuItemFixture propMenuItem = filetree.showPopupMenuAt(0).menuItemWithPath("Show Properties");
+            mainFrameFixture.robot.waitForIdle();
+            
+            propMenuItem.requireVisible();
+            propMenuItem.click();
+            mainFrameFixture.robot.waitForIdle();
+            
+            DialogFixture propDialog = mainFrameFixture.dialog();
+            propDialog.requireVisible();
+            
+            JTabbedPaneFixture tabPane = propDialog.tabbedPane();
+            tabPane.requireVisible();
+            tabPane.requireTabTitles("General","Attributes","User Block");
+            tabPane.selectTab("Attributes");
+            mainFrameFixture.robot.waitForIdle();
+            
+            tabPane.requireVisible();
+            JTableFixture attrTable = propDialog.table("attributes");
+            JTableCellFixture cell = attrTable.cell(row(0).column(0));
+            cell.requireValue("DS08BITS");
+            cell = attrTable.cell(row(1).column(0));
+            cell.requireValue("DS16BITS");
+            cell = attrTable.cell(row(2).column(0));
+            cell.requireValue("DS32BITS");
+            cell = attrTable.cell(row(3).column(0));
+            cell.requireValue("DS64BITS");
+            cell = attrTable.cell(row(4).column(0));
+            cell.requireValue("DU08BITS");
+            cell = attrTable.cell(row(5).column(0));
+            cell.requireValue("DU16BITS");
+            cell = attrTable.cell(row(6).column(0));
+            cell.requireValue("DU32BITS");
+            cell = attrTable.cell(row(7).column(0));
+            cell.requireValue("DU64BITS");
+            JTableCellFixture celldata = attrTable.cell(row(0).column(1));
+            Pattern pattern = Pattern.compile("^. -1, .*");
+            celldata.requireValue(pattern);
+            celldata = attrTable.cell(row(1).column(1));
+            celldata.requireValue(pattern);
+            celldata = attrTable.cell(row(2).column(1));
+            celldata.requireValue(pattern);
+            celldata = attrTable.cell(row(3).column(1));
+            celldata.requireValue(pattern);
+            celldata = attrTable.cell(row(4).column(1));
+            pattern = Pattern.compile("^. 255, .*");
+            celldata.requireValue(pattern);
+            celldata = attrTable.cell(row(5).column(1));
+            pattern = Pattern.compile("^. 65535, .*");
+            celldata.requireValue(pattern);
+            celldata = attrTable.cell(row(6).column(1));
+            pattern = Pattern.compile("^. 4294967295, .*");
+            celldata.requireValue(pattern);
+            celldata = attrTable.cell(row(7).column(1));
+            pattern = Pattern.compile("^. 18446744073709551615, .*");
+            celldata.requireValue(pattern);
+            propDialog.button("Close").click();
+            mainFrameFixture.robot.waitForIdle();
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        catch (AssertionError ae) {
+            ae.printStackTrace();
+        }
+        finally {
+            try {
+                closeFile(hdf_file, false);
+            }
+            catch (Exception ex) {}
+        }
+    }
+
     @Test
     public void openCreateOrderHDF5Groups() {
         File hdf_file = openHDF5File("tordergr", 3);
