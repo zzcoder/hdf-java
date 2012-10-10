@@ -542,6 +542,7 @@ public class DefaultPaletteView extends JDialog implements PaletteView,
                 }
             };
 
+            valueTable.setName("PaletteValue");
             valueTable.getColumn(rgbName).setCellRenderer(
                     new DefaultTableCellRenderer() {
                         private static final long serialVersionUID = 8390954944015521331L;

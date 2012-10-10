@@ -169,7 +169,6 @@ public class Attribute implements Metadata {
             rank = 1;
             dims = new long[] { 1 };
         }
-
         if (attrValue != null) {
             value = attrValue;
         }

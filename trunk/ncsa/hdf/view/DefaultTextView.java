@@ -70,7 +70,6 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
 import ncsa.hdf.object.Dataset;
-import ncsa.hdf.object.Datatype;
 import ncsa.hdf.object.FileFormat;
 import ncsa.hdf.object.HObject;
 import ncsa.hdf.object.ScalarDS;
@@ -311,6 +310,7 @@ public class DefaultTextView extends JInternalFrame implements TextView,
                 } // if (source instanceof CellEditor)
             }
         };
+        theTable.setName("TextView");
 
         return theTable;
     }

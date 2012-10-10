@@ -423,7 +423,6 @@ public class H5File extends FileFormat {
                         lsize *= dims[j];
                     }
                 }
-
                 String[] nameA = { "" };
                 H5.H5Aget_name(aid, H5File.attrNameLen, nameA);
 
@@ -445,6 +444,9 @@ public class H5File extends FileFormat {
                 boolean is_variable_str = false;
                 boolean isVLEN = false;
                 boolean isCompound = false;
+                boolean isScalar = false;
+                if(dims == null)
+                    isScalar = true;
                 try {
                     is_variable_str = H5.H5Tis_variable_str(tid);
                 }
@@ -465,12 +467,15 @@ public class H5File extends FileFormat {
 
                 Object value = null;
 
-                if (isVLEN || is_variable_str || isCompound) {
+                if (isVLEN || is_variable_str || isCompound || isScalar) {
                     String[] strs = new String[(int) lsize];
                     for (int j = 0; j < lsize; j++) {
                         strs[j] = "";
                     }
-                    H5.H5AreadVL(aid, tid, strs);
+                    try {
+                        H5.H5AreadVL(aid, tid, strs);
+                    }
+                    catch (Exception ex) {ex.printStackTrace();}
                     value = strs;
                 }
                 else {
@@ -486,7 +491,7 @@ public class H5File extends FileFormat {
                             tmptid2 = H5.H5Tget_native_type(tmptid1);
                             H5.H5Aread(aid, tmptid2, value);
                         }
-                        catch (Exception ex) {}
+                        catch (Exception ex) {ex.printStackTrace();}
                         finally {
                             try {
                                 H5.H5Tclose(tmptid1);

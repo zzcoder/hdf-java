@@ -1782,6 +1782,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
                 return super.isCellSelected(row, column);
             }
         };
+        theTable.setName("ScalarDS");
 
         return theTable;
     }
@@ -2025,6 +2026,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
                 ((TableColumn) local_enum.nextElement()).setHeaderRenderer(renderer);
             }
         }
+        theTable.setName("CompoundDS");
 
         return theTable;
     } /* createTable */
