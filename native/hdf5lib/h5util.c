@@ -153,11 +153,13 @@ int h5str_sprintf(h5str_t *str, hid_t container, hid_t tid, void *ptr) {
 				this_str = (char*) malloc(25);
 				sprintf(this_str, "%g", tmp_double);
 			}
+#if H5_SIZEOF_LONG_DOUBLE !=0
             else if (H5Tequal(tid, H5T_NATIVE_LDOUBLE)) {
 				memcpy(&tmp_ldouble, ptr, sizeof(long double));
 				this_str = (char*) malloc(27);
 				sprintf(this_str, "%Lf", tmp_ldouble);
 			}
+#endif
 			break;
 		case H5T_STRING:
 			{
@@ -200,7 +202,7 @@ int h5str_sprintf(h5str_t *str, hid_t container, hid_t tid, void *ptr) {
 			else if (H5Tequal(tid, H5T_NATIVE_SCHAR)) {
 				memcpy(&tmp_char, ptr, sizeof(char));
 				this_str = (char*) malloc(7);
-				sprintf(this_str, "%d", tmp_char);
+				sprintf(this_str, "%hhd", tmp_char);
 			}
 			else if (H5Tequal(tid, H5T_NATIVE_UCHAR)) {
 				memcpy(&tmp_uchar, ptr, sizeof(unsigned char));
