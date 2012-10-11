@@ -457,6 +457,7 @@ herr_t H5AreadVL_comp (JNIEnv *env, hid_t aid, hid_t tid, jobjectArray buf)
 
     p_type = H5Tget_native_type(tid, H5T_DIR_DEFAULT);
     size = (((H5Tget_size(tid))>(H5Tget_size(p_type))) ? (H5Tget_size(tid)) : (H5Tget_size(p_type)));
+    H5Tclose(p_type);
     n = ENVPTR->GetArrayLength(ENVPAR buf);
     rdata = (char *)malloc(n * size);
 
