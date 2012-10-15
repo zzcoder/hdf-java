@@ -1,0 +1,4 @@
+cmake_minimum_required (VERSION 2.8.6)
+PROJECT (HDFJAVA_NCSA)
+
+ADD_SUBDIRECTORY(${HDFJAVA_NCSA_SOURCE_DIR}/hdf     hdf)
