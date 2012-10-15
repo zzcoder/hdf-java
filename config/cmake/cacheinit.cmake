@@ -38,9 +38,9 @@ SET (SZIP_SVN_URL "http://svn.hdfgroup.uiuc.edu/szip/trunk" CACHE STRING "Use SZ
 
 SET (JPEG_SVN_URL "http://svn.hdfgroup.uiuc.edu/jpeg/branches/jpeg8b" CACHE STRING "Use JPEG from HDF repository" FORCE)
 
-SET (HDF4_SVN_URL "http://svn.hdfgroup.uiuc.edu/hdf4/trunk" CACHE STRING "Use HDF4 from HDF repository" FORCE)
+SET (HDF4_SVN_URL "http://svn.hdfgroup.uiuc.edu/hdf4/tags/hdf-4_2_8" CACHE STRING "Use HDF4 from HDF repository" FORCE)
 
-SET (HDF5_SVN_URL "http://svn.hdfgroup.uiuc.edu/hdf5/branches/hdf5_1_8" CACHE STRING "Use HDF5 from HDF repository" FORCE)
+SET (HDF5_SVN_URL "http://svn.hdfgroup.uiuc.edu/hdf5/branches/hdf5_1_8_10" CACHE STRING "Use HDF5 from HDF repository" FORCE)
 
 SET (ZLIB_TGZ_NAME "ZLib.tar.gz" CACHE STRING "Use ZLib from compressed file" FORCE)
 
