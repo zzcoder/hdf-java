@@ -155,7 +155,7 @@ install-just-hdf5: install-hdf5lib install-jhdf5
 packages: jhdf-packages jhdf5-packages nc2-packages fits-packages jhdfobj-packages jhdfview-packages
 
 jhdf-packages: 
-	@if test -n "$(H4INC)" ; then $(MAKE) do-jhdf-packages; fi
+	@if test x'$(H4INC)' != x'' ; then $(MAKE) do-jhdf-packages; fi
 
 do-jhdf-packages: $(JHIPACKAGES)  
 	$(JAR) cf $(CLASS_DIR)/jhdf.jar -C $(CLASS_DIR) $(JHICLASSES)
@@ -173,8 +173,8 @@ fits-packages: $(FITSOBJPACKAGES)
 
 jhdfobj-packages: $(HDFOBJPACKAGES)  
 	$(JAR) cf $(CLASS_DIR)/jhdfobj.jar -C $(CLASS_DIR) $(HDFOBJCLASSES)
-	@if test -n "$(H4INC)" ; then $(MAKE) do-jh4obj-packages ; fi
-	@if test -n "$(H5INC)" ; then $(MAKE) do-jh5obj-packages ; fi
+	@if test x'$(H4INC)' != x'' ; then $(MAKE) do-jh4obj-packages ; fi
+	@if test x'$(H5INC)' != x'' ; then $(MAKE) do-jh5obj-packages ; fi
 
 do-jh4obj-packages: $(H4OBJPACKAGES)  
 	$(JAR) cf $(CLASS_DIR)/jhdf4obj.jar -C $(CLASS_DIR) $(H4OBJCLASSES)
@@ -211,7 +211,7 @@ docs: javadocs
 
 javadocs:
 	-mkdir -p docs/javadocs;
-	@if test -n "$(H45INC)" ; then \
+	@if test x'$(H45INC)' != x'' ; then \
 	$(JAVADOC) -sourcepath $(CLASSPATH) -d ./docs/javadocs $(JAVADOC_FLAGS) $(JH45PACKAGES) ncsa.hdf.hdflib $(JHI5PACKAGES) $(HDFOBJPACKAGES) $(H4OBJPACKAGES) $(H5OBJPACKAGES); \
 	else \
 	$(JAVADOC) -sourcepath $(CLASSPATH) -d ./docs/javadocs $(JAVADOC_FLAGS) ncsa.hdf.hdflib $(JHI5PACKAGES) $(HDFOBJPACKAGES) $(H4OBJPACKAGES) $(H5OBJPACKAGES) ; \
@@ -285,18 +285,18 @@ uninstall: uninstall-jhdfview uninstall-jhdfobj uninstall-lib uninstall-jhi unin
 install-lib: natives
 	-mkdir -p $(LIBDIR);
 	-mkdir -p $(LIBDIR)/@JAVATARG@
-	@if test -n "$(H5INC)" ; then \
+	@if test x'$(H5INC)' != x'' ; then \
 	cp $(CLASS_DIR)/@JAVATARG@/libjhdf5.$(JSLEXT) $(LIBDIR)/@JAVATARG@ ;  \
 	cp $(H5INC)/../lib/*.settings $(LIBDIR)/@JAVATARG@ ; fi
-	@if test -n "$(H4INC)" ; then \
+	@if test x'$(H4INC)' != x'' ; then \
 	cp $(CLASS_DIR)/@JAVATARG@/libjhdf.$(JSLEXT) $(LIBDIR)/@JAVATARG@ ;  \
 	cp $(H4INC)/../lib/*.settings $(LIBDIR)/@JAVATARG@ ; fi
-	@if test -n "$(H45INC)" ; then \
+	@if test x'$(H45INC)' != x'' ; then \
 	cp $(CLASS_DIR)/@JAVATARG@/libjh4toh5.$(JSLEXT) $(LIBDIR)/@JAVATARG@ ; fi
 	@echo "Install Natives complete"
 
 install-hdflib: 
-	@if test -n "$(H4INC)" ; then $(MAKE) do-install-hdflib ; fi
+	@if test x'$(H4INC)' != x'' ; then $(MAKE) do-install-hdflib ; fi
 
 do-install-hdflib: hdflib
 	-mkdir -p $(LIBDIR);
@@ -305,7 +305,7 @@ do-install-hdflib: hdflib
 	@echo "Install Native HDF complete"
 
 install-hdf5lib: hdf5lib
-	@if test -n "$(H5INC)" ; then $(MAKE) do-install-hdf5lib ; fi
+	@if test x'$(H5INC)' != x'' ; then $(MAKE) do-install-hdf5lib ; fi
 
 do-install-hdf5lib: hdf5lib
 	-mkdir -p $(LIBDIR);
@@ -320,7 +320,7 @@ uninstall-lib:
 install-jars: install-jhdf install-jhdf5 install-jhdfobject install-jhdfview
 
 install-jhdf: 
-	@if test -n "$(H4INC)" ; then $(MAKE) do-install-jhdf ; fi
+	@if test x'$(H4INC)' != x'' ; then $(MAKE) do-install-jhdf ; fi
 
 do-install-jhdf: jhdf-packages
 	-mkdir -p $(LIBDIR);
@@ -328,7 +328,7 @@ do-install-jhdf: jhdf-packages
 	@echo "Install JHI complete"
 
 install-jhdf5: 
-	@if test -n "$(H5INC)" ; then $(MAKE) do-install-jhdf5 ; fi
+	@if test x'$(H5INC)' != x'' ; then $(MAKE) do-install-jhdf5 ; fi
 
 do-install-jhdf5: jhdf5-packages
 	-mkdir -p $(LIBDIR);
@@ -338,8 +338,8 @@ do-install-jhdf5: jhdf5-packages
 install-jhdfobj: ncsa.hdf.object
 	-mkdir -p $(LIBDIR);
 	$(JAR) cf $(JH45INSTALLDIR)/lib/jhdfobj.jar -C $(CLASS_DIR) $(HDFOBJCLASSES)
-	@if test -n "$(H4INC)" ; then $(MAKE) do-install-jhdf4obj ; fi
-	@if test -n "$(H5INC)" ; then $(MAKE) do-install-jhdf5obj ; fi
+	@if test x'$(H4INC)' != x'' ; then $(MAKE) do-install-jhdf4obj ; fi
+	@if test x'$(H5INC)' != x'' ; then $(MAKE) do-install-jhdf5obj ; fi
 	@echo "Install HDFOBJ complete"
 
 do-install-jhdf4obj: ncsa.hdf.object.h4
@@ -390,7 +390,7 @@ install-docs: install-javadocs install-ug
 
 install-javadocs:
 	-mkdir -p $(DOCDIR)/javadocs;
-	@if test -n "$(H45INC)" ; then \
+	@if test x'$(H45INC)' != x'' ; then \
 	$(JAVADOC) -sourcepath $(CLASSPATH) -d $(DOCDIR)/javadocs $(JAVADOC_FLAGS) $(JH45PACKAGES) ncsa.hdf.hdflib $(JHI5PACKAGES) $(HDFOBJPACKAGES); \
 	else \
 	$(JAVADOC) -sourcepath $(CLASSPATH) -d $(DOCDIR)/javadocs $(JAVADOC_FLAGS) ncsa.hdf.hdflib $(JHI5PACKAGES) $(HDFOBJPACKAGES); \
