@@ -1580,6 +1580,9 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
             private final boolean      isInt            = (NT == 'B' || NT == 'S' || NT == 'I' || NT == 'J');
             private final boolean      isUINT64         = (dtype.isUnsigned() && (NT == 'J'));
             private Object             theValue;
+            
+            boolean isNaturalOrder = (dataset.getRank()==1 ||
+            		                  (dataset.getSelectedIndex()[0] < dataset.getSelectedIndex()[1]));
 
             public int getColumnCount() {
                 return columnNames.length;
@@ -1636,11 +1639,9 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
                     theValue = stringBuffer;
                 }
                 else {
-                    int selectedIndex[] = dataset.getSelectedIndex();
                     int index = column * rowCount + row;
 
                     if (dataset.getRank() > 1) {
-                        boolean isNaturalOrder = (selectedIndex[0] < selectedIndex[1]);
                         if ((isDataTransposed && isNaturalOrder) || (!isDataTransposed && !isNaturalOrder))
                             index = column * rowCount + row;
                         else
