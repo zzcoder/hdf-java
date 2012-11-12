@@ -1333,7 +1333,7 @@ public class HDFView extends JFrame implements ViewManager, ActionListener, Chan
                     ViewProperties.getLargeHdfIcon());
         }
         else if (cmd.equals("Java version")) {
-            String info = "Compiled at " + JAVA_COMPILER + "\nRunning at " + System.getProperty("java.vm.version");
+            String info = "Compiled at " + JAVA_COMPILER + "\nRunning at " + System.getProperty("java.version");
             JOptionPane.showMessageDialog(this, info, "HDFView", JOptionPane.PLAIN_MESSAGE,
                     ViewProperties.getLargeHdfIcon());
         }
@@ -2188,8 +2188,8 @@ public class HDFView extends JFrame implements ViewManager, ActionListener, Chan
                     e.printStackTrace();
                 }
             }
-            else if ("-java.vm.version".equalsIgnoreCase(args[i])) {
-                String info = "Compiled at " + JAVA_COMPILER + "\nRunning at " + System.getProperty("java.vm.version");
+            else if ("-java.version".equalsIgnoreCase(args[i])) {
+                String info = "Compiled at " + JAVA_COMPILER + "\nRunning at " + System.getProperty("java.version");
                 JOptionPane.showMessageDialog(new JFrame(), info, "HDFView", JOptionPane.PLAIN_MESSAGE,
                         ViewProperties.getLargeHdfIcon());
                 System.exit(0);
