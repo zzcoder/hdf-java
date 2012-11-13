@@ -1,19 +1,19 @@
 package test.object.misc;
 
-import java.text.DecimalFormat;
-import java.util.Vector;
 import java.io.File;
 import java.lang.management.ManagementFactory;
-import com.sun.management.OperatingSystemMXBean;
+import java.lang.management.MemoryUsage;
+import java.text.DecimalFormat;
+import java.util.Vector;
 
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 import ncsa.hdf.object.Attribute;
 import ncsa.hdf.object.Dataset;
-import ncsa.hdf.object.ScalarDS;
 import ncsa.hdf.object.Datatype;
 import ncsa.hdf.object.FileFormat;
 import ncsa.hdf.object.Group;
+import ncsa.hdf.object.ScalarDS;
 import ncsa.hdf.object.h5.H5Datatype;
 import ncsa.hdf.object.h5.H5File;
 
@@ -132,7 +132,7 @@ public class TestH5MemoryLeak
     private static final long test_user_file(String fname) throws Exception
     {
         H5File testFile = null;
-        OperatingSystemMXBean osm = null;
+        MemoryUsage memuse = null;
         DecimalFormat df = new DecimalFormat("000.00#E0#");
         
         int count = 0;
@@ -149,8 +149,8 @@ public class TestH5MemoryLeak
         {
             count ++;
             if (count % NPRINT == 0) {
-                osm = (com.sun.management.OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean() ;
-                mem1 = osm.getCommittedVirtualMemorySize()/KB;
+                memuse = (java.lang.management.MemoryUsage) ManagementFactory.getMemoryMXBean().getHeapMemoryUsage();
+                mem1 = memuse.getCommitted()/KB;
                 if (count>NSTART) {
                     sum += (mem1-mem0);
                     sumStr = df.format(sum);
@@ -161,7 +161,7 @@ public class TestH5MemoryLeak
                             df.format(count) + "   \t" +
                             sumStr + "    \t" +
                             df.format((mem1)) + "    \t" +
-                            df.format(osm.getTotalPhysicalMemorySize() / KB) + "   \t" +
+                            df.format(memuse.getMax() / KB) + "   \t" +
                             H5.getOpenIDCount());
                 }
 
@@ -186,7 +186,7 @@ public class TestH5MemoryLeak
         int nObjs = 0; // number of object left open
         Dataset dset =null;
         File tmpFile = null;
-        OperatingSystemMXBean osm = null;
+        MemoryUsage memuse = null;
         DecimalFormat df = new DecimalFormat("000.00#E0#");
      
         for (int i=0; i<DIM_SIZE; i++) {
@@ -218,8 +218,8 @@ public class TestH5MemoryLeak
         {
             count ++;
             if (count % NPRINT == 0) {
-                osm = (com.sun.management.OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean() ;
-                mem1 = osm.getCommittedVirtualMemorySize()/KB;
+                memuse = (java.lang.management.MemoryUsage) ManagementFactory.getMemoryMXBean().getHeapMemoryUsage();
+                mem1 = memuse.getCommitted()/KB;
                 if (count>NSTART) {
                     diff = mem1-mem0;
                     sum += diff;
@@ -235,7 +235,7 @@ public class TestH5MemoryLeak
                             df.format(count) + "   \t" +
                             sumStr + "    \t" +
                             df.format((mem1)) + "    \t" +
-                            df.format(osm.getTotalPhysicalMemorySize() / KB) + "   \t" +
+                            df.format(memuse.getMax() / KB) + "   \t" +
                             H5.getOpenIDCount());
                 }
 
