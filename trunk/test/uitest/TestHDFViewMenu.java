@@ -719,7 +719,7 @@ public class TestHDFViewMenu {
             fileMenuItem.click();
             mainFrameFixture.robot.waitForIdle();
             
-            mainFrameFixture.dialog().optionPane().requirePlainMessage().requireMessage("Compiled at jdk 1.6.*\\sRunning at.*");
+            mainFrameFixture.dialog().optionPane().requirePlainMessage().requireMessage("Compiled at jdk 1.7.*\\sRunning at.*");
             mainFrameFixture.dialog().optionPane().button("OptionPane.button").click();
             mainFrameFixture.robot.waitForIdle();
         }
