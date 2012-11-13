@@ -37,9 +37,14 @@ OBJECTS=exceptionImp.obj h5Constants.obj h5Imp.obj h5aImp.obj h5dImp.obj h5eImp.
         h5tImp.obj nativeData.obj h5util.obj h5zImp.obj
 
 
-MSDEV_LIBS=kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib \
-advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib \
-/NODEFAULTLIB:"MSVCRT" /NODEFAULTLIB:"LIBC.LIB"
+# the following works only for hdf5 1.8.8 or below
+#MSDEV_LIBS=kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib \
+#advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib \
+#/NODEFAULTLIB:"MSVCRT" /NODEFAULTLIB:"LIBC.LIB"
+
+MSDEV_LIBS="kernel32.lib" "user32.lib" "gdi32.lib" "winspool.lib" "shell32.lib" \
+"ole32.lib" "oleaut32.lib" "uuid.lib" "comdlg32.lib" "advapi32.lib" \
+/NODEFAULTLIB:"LIBCMT" /NODEFAULTLIB:"LIBC.LIB"
 
 all: $(OBJECTS)
 	$(LINKER) /OUT:"jhdf5.dll" $(LINKFLAG) $(OBJECTS) $(HDF5LIB) $(SZLIB) $(ZLIB) $(MSDEV_LIBS)
