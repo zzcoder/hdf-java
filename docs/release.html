@@ -2,14 +2,26 @@
 <body>
 <h3>HDF-Java 2.9 release (November 15, 2012)</h3>
 
-This release was built with <b>HDF 4.2.8</b> and <b>HDF5 1.8.10</b> using jdk 1.7.x.
+<strong>
+This release is the last one to support 32-bit Mac and 32-bit Solaris.
+Future releases will not support these two platforms anymore.
+</strong>
+
+</p>
+HDF-Java 2.9 was built with <b>HDF 4.2.8</b> and <b>HDF5 1.8.10</b> using 
+jdk 1.7.x. It  is a maintenance release. No Major changes in functionalities. 
+It mainly includes bug fixes and some minor enhancements.
+
 </P>
-<b>Major changes</b> includes the following:
+<b>Some highlights</b> include the following:
 <ul>
-<li> More methods were added to HDF5 JNI wrapper</li>
-<li> Unit tests were added to all major HDF5 JNI functions  </li>
-<li> This release includes over 35 enhancements and bug fixes </li>
-</ul>
+<li> Fixed 29 bugs</li>
+<li> Added 10 minor enhancements, e.g.
+<ul>
+<li>       add feature to show groups/attributes in creation order
+<li>       exclude fill values in data calculation
+<li>       add 'reload' option to quickly close and reopen a file  </li>
+</ul></ul>
 
 <p />
 For more information on the current release, please read 

@@ -36,17 +36,24 @@ This release was built and tested for the following platforms:
 
 Changes to the Java HDF5 Interface(JHI5)
 ==============================================================================================
-    -- Added options to sort file objects by index
+    * Added options to sort file objects by index
+    * Fixed native method, h5str_sprintf(), for incorrect doubles (floats) and a crash
+    * Fixed a segmentation fault on null datasets of variable-length string type
+    
 
 Major Enhancements
 ==============================================================================================  
-    * NA
+    * Added feature to show groups/attributes in creation order
+    * Excluded fill values in data calculation
+    * Added 'reload' option to quickly close and reopen a file
 
 
 Major Bug Fixes
 ============================================================================================== 
     * Fixed HDFView to display 64-bit unsigned integers
     * Fixed HDFView to display SCALAR arrays 
+    * Fixed fill value problem on Mac machines
+    * Fixed ImageView showing the wrong values for 3D array
 
 
 Limitations / Known Problems
