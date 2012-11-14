@@ -445,6 +445,8 @@ public class H5File extends FileFormat {
                 boolean isVLEN = false;
                 boolean isCompound = false;
                 boolean isScalar = false;
+                int     tclass = H5.H5Tget_class(tid);
+                
                 if(dims == null)
                     isScalar = true;
                 try {
@@ -452,11 +454,11 @@ public class H5File extends FileFormat {
                 }
                 catch (Exception ex) {}
                 try {
-                    isVLEN = (H5.H5Tget_class(tid) == HDF5Constants.H5T_VLEN);
+                    isVLEN = ( tclass == HDF5Constants.H5T_VLEN);
                 }
                 catch (Exception ex) {}
                 try {
-                    isCompound = (H5.H5Tget_class(tid) == HDF5Constants.H5T_COMPOUND);
+                    isCompound = ( tclass == HDF5Constants.H5T_COMPOUND);
                 }
                 catch (Exception ex) {}
 
@@ -466,8 +468,8 @@ public class H5File extends FileFormat {
                 }
 
                 Object value = null;
-
-                if (isVLEN || is_variable_str || isCompound || isScalar) {
+                if (isVLEN || is_variable_str || isCompound || 
+                		(isScalar &&  tclass!=HDF5Constants.H5T_STRING)) {
                     String[] strs = new String[(int) lsize];
                     for (int j = 0; j < lsize; j++) {
                         strs[j] = "";
@@ -479,7 +481,7 @@ public class H5File extends FileFormat {
                     value = strs;
                 }
                 else {
-                    value = H5Datatype.allocateArray(tid, (int) lsize);
+                	value = H5Datatype.allocateArray(tid, (int) lsize);
                     if (value == null) {
                         continue;
                     }
