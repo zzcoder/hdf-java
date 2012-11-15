@@ -469,7 +469,7 @@ public class H5File extends FileFormat {
 
                 Object value = null;
                 if (isVLEN || is_variable_str || isCompound || 
-                		(isScalar &&  tclass!=HDF5Constants.H5T_STRING)) {
+                		(isScalar &&  tclass == HDF5Constants.H5T_ARRAY)) {
                     String[] strs = new String[(int) lsize];
                     for (int j = 0; j < lsize; j++) {
                         strs[j] = "";
