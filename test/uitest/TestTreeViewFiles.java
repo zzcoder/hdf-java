@@ -717,6 +717,70 @@ public class TestTreeViewFiles {
         }
     }
 
+    @Test 
+    public void openHDF5ScalarString() {
+        File hdf_file = openHDF5File("tscalarstring", 2);
+
+        try {
+            JTreeFixture filetree = mainFrameFixture.tree().focus();
+            filetree.requireVisible();
+            assertTrue("openHDF5ScalarString filetree shows:", filetree.target.getRowCount()==2);
+            assertTrue("openHDF5ScalarString filetree has file", (filetree.valueAt(0)).compareTo("tscalarstring.h5")==0);
+            assertTrue("openHDF5ScalarString filetree has group", (filetree.valueAt(1)).compareTo("the_str")==0);
+
+            JMenuItemFixture dataset1MenuItem = filetree.showPopupMenuAt(1).menuItemWithPath("Open");
+            mainFrameFixture.robot.waitForIdle();
+            
+            dataset1MenuItem.requireVisible();
+            dataset1MenuItem.click();
+            mainFrameFixture.robot.waitForIdle();
+            
+            JTableFixture dataset1table = mainFrameFixture.table("TextView");
+            JTableCellFixture cell1 = dataset1table.cell(row(0).column(0));
+            cell1.requireValue("ABCDEFGHBCDEFGHICDEFGHIJDEFGHIJKEFGHIJKLFGHIJKLMGHIJKLMNHIJKLMNO");
+            mainFrameFixture.menuItemWithPath("Text", "Close").click();
+            mainFrameFixture.robot.waitForIdle();
+
+            JMenuItemFixture propMenuItem = filetree.showPopupMenuAt(0).menuItemWithPath("Show Properties");
+            mainFrameFixture.robot.waitForIdle();
+            
+            propMenuItem.requireVisible();
+            propMenuItem.click();
+            mainFrameFixture.robot.waitForIdle();
+            
+            DialogFixture propDialog = mainFrameFixture.dialog();
+            propDialog.requireVisible();
+            
+            JTabbedPaneFixture tabPane = propDialog.tabbedPane();
+            tabPane.requireVisible();
+            tabPane.requireTabTitles("General","Attributes","User Block");
+            tabPane.selectTab("Attributes");
+            mainFrameFixture.robot.waitForIdle();
+            
+            tabPane.requireVisible();
+            JTableFixture attrTable = propDialog.table("attributes");
+            JTableCellFixture cell = attrTable.cell(row(0).column(0));
+            cell.requireValue("attr_str");
+            cell = attrTable.cell(row(0).column(1));
+            cell.requireValue("ABCDEFGHBCDEFGHICDEFGHIJDEFGHIJKEFGHIJKLFGHIJKLMGHIJKLMNHIJKLMNO");
+            mainFrameFixture.robot.waitForIdle();
+            propDialog.button("Close").click();
+            mainFrameFixture.robot.waitForIdle();
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        catch (AssertionError ae) {
+            ae.printStackTrace();
+        }
+        finally {
+            try {
+                closeFile(hdf_file, false);
+            }
+            catch (Exception ex) {}
+        }
+    }
+
     @Test
     public void openCreateOrderHDF5Groups() {
         File hdf_file = openHDF5File("tordergr", 3);

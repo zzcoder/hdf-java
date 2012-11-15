@@ -45,6 +45,7 @@ SET (HDF_JAVA_TEST_FILES
       tcmpdintsize.h5
       tscalarattrintsize.h5
       tscalarintsize.h5
+      tscalarstring.h5
       tordergr.h5
 )
 
