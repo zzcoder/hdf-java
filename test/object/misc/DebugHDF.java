@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
+import javax.swing.tree.DefaultMutableTreeNode;
+
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 import ncsa.hdf.hdf5lib.HDFArray;
@@ -31,6 +33,7 @@ import ncsa.hdf.object.FileFormat;
 import ncsa.hdf.object.Group;
 import ncsa.hdf.object.HObject;
 import ncsa.hdf.object.h4.H4File;
+import ncsa.hdf.object.h4.H4SDS;
 import ncsa.hdf.object.h5.H5CompoundDS;
 import ncsa.hdf.object.h5.H5Datatype;
 import ncsa.hdf.object.h5.H5File;
@@ -163,9 +166,10 @@ public class DebugHDF {
         
 //      try { testH5Write2D("g:\\temp\\dset.h5"); } catch (Exception ex) {ex.printStackTrace();}
 
-        try { testHDF4("g:\\temp\\test_hdf4.hdf"); } catch (Exception ex) {ex.printStackTrace();}
+//        try { testHDF4("g:\\temp\\test_hdf4.hdf"); } catch (Exception ex) {ex.printStackTrace();}
 
-    }
+        try { test3DHDF4("g:\\temp\\hdf3d.hdf", "3dint"); } catch (Exception ex) {ex.printStackTrace();}
+     }
     
     public static void testRefData(String fname, String dname)throws Exception
     {
@@ -3912,6 +3916,54 @@ public class DebugHDF {
     	}
     }
 
+    private static void test3DHDF4(String filename, String dsetname) throws Exception
+    {
+        H4File file = new H4File(filename, H5File.READ);
         
+    	if (file==null){
+    		System.err.println("Cannot find HDF4 file: "+filename);
+    		return;
+    	}
+    	
+        file.open();
+        
+        Group g = (Group) ((DefaultMutableTreeNode)file.getRootNode()).getUserObject();
+        H4SDS sds = (H4SDS) g.getMemberList().get(0);
+
+    	if (sds==null){
+    		System.err.println("Cannot find HDF4 SDS: "+dsetname);
+    		return;
+    	}
+    	
+    	// only read 2D
+    	Object data=sds.read();
+    	int n = Array.getLength(data);
+    	for (int i=0; i<n; i++) {
+    		if ((i%10)==0)
+    			System.out.println("");
+    		
+    		System.out.print(Array.get(data, i)+"\t");
+    	}
+    	
+    	// read the whole 3D
+    	int rank = sds.getRank();
+    	long dims[] = sds.getDims();
+    	long selectedDims[] = sds.getSelectedDims();
+    	
+    	for (int i=0; i<rank; i++)
+    		selectedDims[i] = dims[i];
+    	
+    	data=sds.read();
+    	n = Array.getLength(data);
+    	for (int i=0; i<n; i++) {
+    		if ((i%10)==0)
+    			System.out.println("");
+    		
+    		System.out.print(Array.get(data, i)+"\t");
+    	}
+    }
+    	
+    	
+
  
 }
