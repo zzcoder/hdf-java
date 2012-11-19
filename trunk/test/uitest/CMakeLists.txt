@@ -18,6 +18,8 @@ SET (HDFJAVA_FEST_JARS
 )
 
 SET (HDFJAVA_TEST_UITEST_SRCS
+    TestHDFViewCLMultipleFiles.java
+    TestHDFViewCLRootMultipleFiles.java
     TestHDFViewMenu.java
     TestTreeViewNewMenu.java
     TestTreeViewFiles.java
@@ -25,7 +27,7 @@ SET (HDFJAVA_TEST_UITEST_SRCS
 )
 
 FILE (WRITE ${PROJECT_BINARY_DIR}/Manifest.txt
-"Main-Class: test.uitest.TestHDFViewMenu
+"Main-Class: test.uitest.TestAll
 "
 )
 
@@ -50,6 +52,8 @@ SET (HDF_JAVA_TEST_FILES
 )
 
 SET (HDF_JAVA_TEST_REFERENCE
+      JUnit-gui-CL-multi.txt
+      JUnit-gui-CL-root-multi.txt
       JUnit-gui-menu.txt
       JUnit-gui-treeview-files.txt
       JUnit-gui-treeview-newmenu.txt
@@ -177,5 +181,37 @@ ADD_TEST (
 
 SET_TESTS_PROPERTIES (JUnit-gui-treeview-files PROPERTIES
     DEPENDS JUnit-gui-treeview-files-copy
+)
+   
+ADD_TEST (
+    NAME JUnit-gui-CL-multi
+    COMMAND "${CMAKE_COMMAND}"
+        -D "TEST_TESTER=${CMAKE_Java_RUNTIME}"
+        -D "TEST_CLASSPATH:STRING=${CMAKE_JAVA_CLASSPATH}"
+        -D "TEST_ARGS:STRING=-ea;org.junit.runner.JUnitCore"
+        -D "TEST_PROGRAM=test.uitest.TestHDFViewCLMultipleFiles"
+        -D "TEST_LIBRARY_DIRECTORY=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
+        -D "TEST_FOLDER=${PROJECT_BINARY_DIR}"
+        -D "TEST_OUTPUT=JUnit-gui-CL-multi.out"
+        -D "TEST_EXPECT=0"
+        -D "TEST_APPEND=TRUE"
+        -D "TEST_REFERENCE=JUnit-gui-CL-multi.txt"
+        -P "${HDFJAVA_RESOURCES_DIR}/runTest.cmake"
+)
+   
+ADD_TEST (
+    NAME JUnit-gui-CL-root-multi
+    COMMAND "${CMAKE_COMMAND}"
+        -D "TEST_TESTER=${CMAKE_Java_RUNTIME}"
+        -D "TEST_CLASSPATH:STRING=${CMAKE_JAVA_CLASSPATH}"
+        -D "TEST_ARGS:STRING=-ea;org.junit.runner.JUnitCore"
+        -D "TEST_PROGRAM=test.uitest.TestHDFViewCLRootMultipleFiles"
+        -D "TEST_LIBRARY_DIRECTORY=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
+        -D "TEST_FOLDER=${PROJECT_BINARY_DIR}"
+        -D "TEST_OUTPUT=JUnit-gui-CL-root-multi.out"
+        -D "TEST_EXPECT=0"
+        -D "TEST_APPEND=TRUE"
+        -D "TEST_REFERENCE=JUnit-gui-CL-root-multi.txt"
+        -P "${HDFJAVA_RESOURCES_DIR}/runTest.cmake"
 )
    
