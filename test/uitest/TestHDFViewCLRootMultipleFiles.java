@@ -3,6 +3,7 @@ package test.uitest;
 import static org.fest.swing.finder.WindowFinder.findFrame;
 import static org.fest.swing.launcher.ApplicationLauncher.application;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeTrue;
 
 import java.io.File;
 import java.util.regex.Pattern;
@@ -25,6 +26,8 @@ public class TestHDFViewCLRootMultipleFiles {
     private static FrameFixture mainFrameFixture;
     // the version of the HDFViewer
     private static String VERSION = "2.99";
+    private static String root_dir = System.getenv("PWD");
+    private static String OS_type = System.getProperty("os.name").toLowerCase();
 
 
     private void closeFile() {
@@ -68,8 +71,7 @@ public class TestHDFViewCLRootMultipleFiles {
         clearRemovePropertyFile();
         FailOnThreadViolationRepaintManager.install();
         Robot robot = BasicRobot.robotWithNewAwtHierarchy();
-        String envvalue = System.getenv("PWD");
-        application("ncsa.hdf.view.HDFView").withArgs("-root", envvalue, "tattrintsize.h5", "tintsize.h5").start();
+        application("ncsa.hdf.view.HDFView").withArgs("-root", root_dir, "tattrintsize.h5", "tintsize.h5").start();
         mainFrameFixture = findFrame(
                 new GenericTypeMatcher<JFrame>(JFrame.class) {
                     protected boolean isMatching(JFrame frame) {
@@ -112,15 +114,16 @@ public class TestHDFViewCLRootMultipleFiles {
 
     @Test
     public void verifyrootDir() {
+        //Only run test if not on Windows because root_dir is null on windows
+        assumeTrue(OS_type.indexOf("win") < 0);
         try {
-            String envvalue = System.getenv("PWD");
-            
             JTabbedPaneFixture tabPane = mainFrameFixture.tabbedPane("tabpane").focus();
             tabPane.selectTab("Log Info");
             mainFrameFixture.robot.waitForIdle();
             
             tabPane.requireVisible();
-            Pattern pattern = Pattern.compile("^HDFView root - " + envvalue + ".*", Pattern.DOTALL);
+            String first_line = "^HDFView root - " + root_dir + ".*";
+            Pattern pattern = Pattern.compile(first_line, Pattern.DOTALL);
             mainFrameFixture.textBox("status").requireText(pattern);
         }
         catch (Exception ex) {
