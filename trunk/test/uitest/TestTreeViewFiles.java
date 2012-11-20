@@ -113,7 +113,7 @@ public class TestTreeViewFiles {
         FailOnThreadViolationRepaintManager.install();
         Robot robot = BasicRobot.robotWithNewAwtHierarchy(); 
         String envvalue = System.getProperty("hdfview.root");
-        application("ncsa.hdf.view.HDFView").withArgs("-root", envvalue, envvalue).start();
+        application("ncsa.hdf.view.HDFView").withArgs("-root", envvalue).start();
         mainFrameFixture = findFrame(new GenericTypeMatcher<JFrame>(JFrame.class) {
             protected boolean isMatching(JFrame frame) {
                 return frame.getTitle().equals("HDFView "+VERSION)
