@@ -163,7 +163,7 @@ public abstract class FileFormat extends File {
      * FileList, but is provided as a convenience for applications who may
      * choose to process only those files with recognized extensions.
      */
-    private static String                        extensions         = "hdf, h4, hdf5, h5";
+    private static String extensions         = "hdf, h4, hdf5, h5, nc, fits";
 
     /***************************************************************************
      * Sizing information and class metadata
@@ -208,7 +208,7 @@ public abstract class FileFormat extends File {
      * list.
      */
     static {
-        // add default HDF4 modules
+        // add HDF4 to default modules
         if (FileFormat.getFileFormat(FILE_TYPE_HDF4) == null) {
             try {
                 Class fileclass = Class.forName("ncsa.hdf.object.h4.H4File");
@@ -222,7 +222,7 @@ public abstract class FileFormat extends File {
             }
         }
 
-        // add default HDF5 modules
+        // add HDF4 to default modules
         if (FileFormat.getFileFormat(FILE_TYPE_HDF5) == null) {
             try {
                 Class fileclass = Class.forName("ncsa.hdf.object.h5.H5File");
@@ -235,6 +235,35 @@ public abstract class FileFormat extends File {
                 ;
             }
         }
+        
+        // add NetCDF to default modules
+        if (FileFormat.getFileFormat("NetCDF") == null) {
+            try {
+                Class fileclass = Class.forName("ncsa.hdf.object.nc2.NC2File");
+                FileFormat fileformat = (FileFormat) fileclass.newInstance();
+                if (fileformat != null) {
+                    FileFormat.addFileFormat("NetCDF", fileformat);
+                }
+            }
+            catch (Throwable err) {
+                ;
+            }
+        }
+        
+        // add Fits to default modules
+        if (FileFormat.getFileFormat("Fits") == null) {
+            try {
+                Class fileclass = Class.forName("ncsa.hdf.object.fits.FitsFile");
+                FileFormat fileformat = (FileFormat) fileclass.newInstance();
+                if (fileformat != null) {
+                    FileFormat.addFileFormat("Fits", fileformat);
+                }
+            }
+            catch (Throwable err) {
+                ;
+            }
+        }
+        
     }
 
     /***************************************************************************
