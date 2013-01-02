@@ -1,5 +1,6 @@
 # runTest.cmake executes a command and captures the output in a file. File is then compared
 # against a reference file. Exit status of command can also be compared.
+cmake_policy(SET CMP0007 NEW)
 
 # arguments checking
 IF (NOT TEST_TESTER)
@@ -67,16 +68,34 @@ IF (NOT TEST_SKIP_COMPARE)
   ENDIF (WIN32 AND NOT MINGW)
 
   # now compare the output with the reference
-  EXECUTE_PROCESS (
-      COMMAND ${CMAKE_COMMAND} -E compare_files ${TEST_FOLDER}/${TEST_OUTPUT} ${TEST_FOLDER}/${TEST_REFERENCE}
-      RESULT_VARIABLE TEST_RESULT
-  )
+  SET (TEST_RESULT 0)
+  FILE (STRINGS ${TEST_FOLDER}/${TEST_OUTPUT} test_act)
+  LIST (LENGTH test_act len_act)
+  FILE (STRINGS ${TEST_FOLDER}/${TEST_REFERENCE} test_ref)
+  LIST (LENGTH test_ref len_ref)
+  IF (NOT ${len_act} STREQUAL "0")
+    MATH (EXPR _FP_LEN "${len_ref} - 1")
+    FOREACH (line RANGE 0 ${_FP_LEN})
+      LIST (GET test_act ${line} str_act)
+      LIST (GET test_ref ${line} str_ref)
+      IF (NOT "${str_act}" STREQUAL "${str_ref}")
+        IF (NOT "${str_act}" STREQUAL "")
+          SET (TEST_RESULT 1)
+          MESSAGE ("line = ${line}\n***ACTUAL: ${str_act}\n****REFER: ${str_ref}\n")
+         ENDIF (NOT "${str_act}" STREQUAL "")
+      ENDIF (NOT "${str_act}" STREQUAL "${str_ref}")
+    ENDFOREACH (line RANGE 0 ${_FP_LEN})
+  ENDIF (NOT ${len_act} STREQUAL "0")
+  IF (NOT ${len_act} STREQUAL ${len_ref})
+    SET (TEST_RESULT 1)
+  ENDIF (NOT ${len_act} STREQUAL ${len_ref})
+
+  MESSAGE (STATUS "COMPARE Result: ${TEST_RESULT}")
 
   # again, if return value is !=0 scream and shout
-  IF (TEST_RESULT)
-    MESSAGE (STATUS "ERROR OUTPUT: ${TEST_STREAM}")
-    MESSAGE (FATAL_ERROR "Failed: The output of ${TEST_PROGRAM} did not match ${TEST_REFERENCE}")
-  ENDIF (TEST_RESULT)
+  IF (NOT ${TEST_RESULT} STREQUAL 0)
+    MESSAGE (FATAL_ERROR "Failed: The output of ${TEST_OUTPUT} did not match ${TEST_REFERENCE}")
+  ENDIF (NOT ${TEST_RESULT} STREQUAL 0)
 ENDIF (NOT TEST_SKIP_COMPARE)
 
 IF (TEST_GREP_COMPARE)
