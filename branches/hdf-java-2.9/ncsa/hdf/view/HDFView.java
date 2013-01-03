@@ -982,6 +982,8 @@ public class HDFView extends JFrame implements ViewManager, ActionListener, Chan
                 catch (Throwable ex2) {
                     String msg = "Failed to open file " + filename + "\n" + ex2;
                     toolkit.beep();
+                    currentFile = null;
+                    urlBar.setSelectedIndex(-1);
                     JOptionPane.showMessageDialog(this, msg, getTitle(), JOptionPane.ERROR_MESSAGE);
                 }
             }
@@ -2131,13 +2133,16 @@ public class HDFView extends JFrame implements ViewManager, ActionListener, Chan
 
         String rootDir = System.getProperty("user.dir");
         File tmpFile = null;
-        int i = 0, j = -1, W = 0, H = 0, X = 0, Y = 0;
+        int i = 0;
+        int j = args.length;
+        int W = 0, H = 0, X = 0, Y = 0;
 
         for (i = 0; i < args.length; i++) {
             if ("-root".equalsIgnoreCase(args[i])) {
+                j--;
                 try {
+                    j--;
                     tmpFile = new File(args[++i]);
-                    j = i + 1;
 
                     if (tmpFile.isDirectory()) {
                         rootDir = tmpFile.getPath();
@@ -2150,10 +2155,11 @@ public class HDFView extends JFrame implements ViewManager, ActionListener, Chan
                 }
             }
             else if ("-g".equalsIgnoreCase(args[i]) || "-geometry".equalsIgnoreCase(args[i])) {
+                j--;
                 // -geometry WIDTHxHEIGHT+XOFF+YOFF
                 try {
                     String geom = args[++i];
-                    j = i + 1;
+                    j--;
 
                     int idx = 0;
                     int idx0 = geom.lastIndexOf('-');
@@ -2199,7 +2205,7 @@ public class HDFView extends JFrame implements ViewManager, ActionListener, Chan
         Vector<File> flist = new Vector<File>();
         tmpFile = null;
         if (j >= 0) {
-            for (i = j; i < args.length; i++) {
+            for (i=args.length-j; i < args.length; i++) {
                 tmpFile = new File(args[i]);
                 if (tmpFile.exists() && (tmpFile.isFile() || tmpFile.isDirectory())) {
                     flist.add(new File(tmpFile.getAbsolutePath()));
