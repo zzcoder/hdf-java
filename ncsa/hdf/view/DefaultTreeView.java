@@ -1686,21 +1686,29 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
 
             fileFormat.open();
         }
+        catch (Exception ex) {
+        	fileFormat = null;
+        }
         finally {
             ((JFrame) viewer).setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         }
 
-        fileRoot = (MutableTreeNode) fileFormat.getRootNode();
-        if (fileRoot != null) {
-            insertNode(fileRoot, root);
+        if (fileFormat == null) {
+            throw new java.io.IOException("Failed to open file - " + filename);
+        } else  {
+            fileRoot = (MutableTreeNode) fileFormat.getRootNode();
+            if (fileRoot != null) {
+                insertNode(fileRoot, root);
 
-            int currentRowCount = tree.getRowCount();
-            if (currentRowCount > 0) {
-                tree.expandRow(tree.getRowCount() - 1);
-            }
+                int currentRowCount = tree.getRowCount();
+                if (currentRowCount > 0) {
+                    tree.expandRow(tree.getRowCount() - 1);
+                }
 
-            fileList.add(fileFormat);
+                fileList.add(fileFormat);
+            }       	
         }
+
 
         return fileFormat;
     }
