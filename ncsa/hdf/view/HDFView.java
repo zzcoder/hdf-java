@@ -982,6 +982,8 @@ public class HDFView extends JFrame implements ViewManager, ActionListener, Chan
                 catch (Throwable ex2) {
                     String msg = "Failed to open file " + filename + "\n" + ex2;
                     toolkit.beep();
+                    currentFile = null;
+                    urlBar.setSelectedIndex(-1);
                     JOptionPane.showMessageDialog(this, msg, getTitle(), JOptionPane.ERROR_MESSAGE);
                 }
             }
