@@ -20,6 +20,7 @@ import org.fest.swing.fixture.JMenuItemFixture;
 import org.fest.swing.fixture.JTreeFixture;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class TestHDFViewMenu {
@@ -763,7 +764,7 @@ public class TestHDFViewMenu {
             fileMenuItem.click();
             mainFrameFixture.robot.waitForIdle();
             
-            mainFrameFixture.dialog().optionPane().requirePlainMessage().requireMessage("\\sSupported File Formats: \\s.*HDF5\\s.*HDF4\\s\\s");
+            mainFrameFixture.dialog().optionPane().requirePlainMessage().requireMessage("\\sSupported File Formats: \\s.*Fits\\s.*HDF5\\s.*NetCDF\\s.*HDF4\\s\\s");
             mainFrameFixture.dialog().optionPane().okButton().click();
             mainFrameFixture.robot.waitForIdle();
         }
@@ -778,14 +779,14 @@ public class TestHDFViewMenu {
     @Test
     public void verifyRegisterFileFormatTools() {
         try {
-            JMenuItemFixture fileMenuItem = mainFrameFixture.menuItemWithPath("Tools", "Register File Format");
+            JMenuItemFixture fileMenuItem = mainFrameFixture.menuItemWithPath("Tools", "Unregister File Format");
             mainFrameFixture.robot.waitForIdle();
             
             fileMenuItem.requireVisible();
             fileMenuItem.click();
             mainFrameFixture.robot.waitForIdle();
             
-            mainFrameFixture.dialog().optionPane().textBox("OptionPane.textField").setText("FITS:ncsa.hdf.object.fits.FitsFile:fits");
+            mainFrameFixture.dialog().optionPane().comboBox("OptionPane.comboBox").selectItem("Fits");
             mainFrameFixture.dialog().optionPane().okButton().click();
             mainFrameFixture.robot.waitForIdle();
             
@@ -796,7 +797,29 @@ public class TestHDFViewMenu {
             fileMenuItem.click();
             mainFrameFixture.robot.waitForIdle();
             
-            mainFrameFixture.dialog().optionPane().requirePlainMessage().requireMessage("\\sSupported File Formats: \\s.*HDF5\\s.*HDF4\\s.*FITS\\s\\s");
+            mainFrameFixture.dialog().optionPane().requirePlainMessage().requireMessage("\\sSupported File Formats: \\s.*HDF5\\s.*NetCDF\\s.*HDF4\\s\\s");
+            mainFrameFixture.dialog().optionPane().okButton().click();
+            mainFrameFixture.robot.waitForIdle();
+
+            fileMenuItem = mainFrameFixture.menuItemWithPath("Tools", "Register File Format");
+            mainFrameFixture.robot.waitForIdle();
+            
+            fileMenuItem.requireVisible();
+            fileMenuItem.click();
+            mainFrameFixture.robot.waitForIdle();
+            
+            mainFrameFixture.dialog().optionPane().textBox("OptionPane.textField").setText("Fits:ncsa.hdf.object.fits.FitsFile:fits");
+            mainFrameFixture.dialog().optionPane().okButton().click();
+            mainFrameFixture.robot.waitForIdle();
+            
+            fileMenuItem = mainFrameFixture.menuItemWithPath("Help", "Supported File Formats");
+            mainFrameFixture.robot.waitForIdle();
+            
+            fileMenuItem.requireVisible();
+            fileMenuItem.click();
+            mainFrameFixture.robot.waitForIdle();
+            
+            mainFrameFixture.dialog().optionPane().requirePlainMessage().requireMessage("\\sSupported File Formats: \\s.*Fits\\s.*HDF5\\s.*NetCDF\\s.*HDF4\\s\\s");
             mainFrameFixture.dialog().optionPane().okButton().click();
             mainFrameFixture.robot.waitForIdle();
         }
@@ -808,7 +831,7 @@ public class TestHDFViewMenu {
         }
     }
 
-    @Test
+    @Ignore
     public void verifyUnregisterFileFormatTools() {
         try {
             JMenuItemFixture fileMenuItem = mainFrameFixture.menuItemWithPath("Tools", "Unregister File Format");
@@ -818,7 +841,7 @@ public class TestHDFViewMenu {
             fileMenuItem.click();
             mainFrameFixture.robot.waitForIdle();
             
-            mainFrameFixture.dialog().optionPane().comboBox("OptionPane.comboBox").selectItem("FITS");
+            mainFrameFixture.dialog().optionPane().comboBox("OptionPane.comboBox").selectItem("Fits");
             mainFrameFixture.dialog().optionPane().okButton().click();
             mainFrameFixture.robot.waitForIdle();
             
@@ -829,7 +852,7 @@ public class TestHDFViewMenu {
             fileMenuItem.click();
             mainFrameFixture.robot.waitForIdle();
             
-            mainFrameFixture.dialog().optionPane().requirePlainMessage().requireMessage("\\sSupported File Formats: \\s.*HDF5\\s.*HDF4\\s\\s");
+            mainFrameFixture.dialog().optionPane().requirePlainMessage().requireMessage("\\sSupported File Formats: \\s.*HDF5\\s.*NetCDF\\s.*HDF4\\s\\s");
             mainFrameFixture.dialog().optionPane().okButton().click();
             mainFrameFixture.robot.waitForIdle();
         }
