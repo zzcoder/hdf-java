@@ -19,7 +19,10 @@ rem
 setlocal enabledelayedexpansion
 pushd %~dp0
 
+rem Adjust the following two variables to match your environment
 set JAVABIN=@JAVA_PATH@
+set INSTALLDIR=@CMAKE_INSTALL_PREFIX@
+
 echo.Setting environment
 if "!%JAVABIN%!\java.exe"=="\java.exe" (
         echo.%JAVABIN%\java.exe not found,
@@ -27,8 +30,6 @@ if "!%JAVABIN%!\java.exe"=="\java.exe" (
         exit /b 1
 )
 
-set INSTALLDIR=@CMAKE_INSTALL_PREFIX@
- 
 "%JAVABIN%\java.exe" -Xmx1024M -Djava.library.path="%INSTALLDIR%\lib" -Dhdfview.root="%INSTALLDIR%\lib" -cp "@HDFVIEW_CLASSPATH@" -jar "%INSTALLDIR%\lib\@HDFVIEW_JAR@" -root "%INSTALLDIR%\share"
 
 exit /b 0

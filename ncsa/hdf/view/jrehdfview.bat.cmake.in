@@ -19,7 +19,9 @@ rem
 setlocal enabledelayedexpansion
 pushd %~dp0
 
+rem Adjust the following variable to match your environment
 set INSTALLDIR=@CMAKE_INSTALL_PREFIX@
+
 set JAVABIN=%INSTALLDIR%\bin\JRE\bin
 
 echo.Setting environment
