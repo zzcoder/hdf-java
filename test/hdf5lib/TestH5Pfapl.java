@@ -264,7 +264,7 @@ public class TestH5Pfapl {
         }
         assertTrue(plapl_id > 0);
         try {
-            multi_dxplid = H5.H5Pcreate(HDF5Constants.H5P_DATASET_XFER);
+//            multi_dxplid = H5.H5Pcreate(HDF5Constants.H5P_DATASET_XFER);
             plist_id = H5.H5Pcreate(HDF5Constants.H5P_DATASET_XFER);
             btplist_id = H5.H5Pcreate(HDF5Constants.H5P_DATASET_XFER);
             dapl_id = H5.H5Pcreate(HDF5Constants.H5P_DATASET_ACCESS);
@@ -273,7 +273,7 @@ public class TestH5Pfapl {
             err.printStackTrace();
             fail("TestH5D.createFileAccess: " + err);
         }
-        assertTrue(multi_dxplid > 0);
+//        assertTrue(multi_dxplid > 0);
         assertTrue(plist_id > 0);
         assertTrue(btplist_id > 0);
         assertTrue(dapl_id > 0);
@@ -1167,6 +1167,7 @@ public class TestH5Pfapl {
         String[] member_name = new String[HDF5Constants.H5FD_MEM_NTYPES];
         long[] member_addr = new long[HDF5Constants.H5FD_MEM_NTYPES];
         int[] member_dxpl = new int[HDF5Constants.H5FD_MEM_NTYPES];
+        int[] member_dxpl_read = new int[HDF5Constants.H5FD_MEM_NTYPES];
 
         try {
             H5.H5Pset_data_transform(plist_id, f_to_c);
@@ -1180,6 +1181,7 @@ public class TestH5Pfapl {
         for(int mt=HDF5Constants.H5FD_MEM_DEFAULT; mt<HDF5Constants.H5FD_MEM_NTYPES; mt++) {
             member_fapl[mt] = HDF5Constants.H5P_DEFAULT;
             member_dxpl[mt] = HDF5Constants.H5P_DEFAULT;
+            member_dxpl_read[mt] = HDF5Constants.H5P_DEFAULT;
             member_map[mt] = HDF5Constants.H5FD_MEM_SUPER;
         }
         member_map[HDF5Constants.H5FD_MEM_DRAW] = HDF5Constants.H5FD_MEM_DRAW;
@@ -1210,7 +1212,7 @@ public class TestH5Pfapl {
         try {
             member_dxpl[HDF5Constants.H5FD_MEM_DRAW] = plist_id;
             member_dxpl[HDF5Constants.H5FD_MEM_BTREE] = btplist_id;
-            H5.H5Pset_dxpl_multi(multi_dxplid, member_dxpl);
+//            H5.H5Pset_dxpl_multi(multi_dxplid, member_dxpl);
         }
         catch (Throwable err) {
             err.printStackTrace();
@@ -1237,11 +1239,11 @@ public class TestH5Pfapl {
             assertTrue("H5Pget_fapl_muti: member_name="+member_name[HDF5Constants.H5FD_MEM_GHEAP], member_name[HDF5Constants.H5FD_MEM_GHEAP].compareTo("%s-gheap.h5")==0);
             assertTrue("H5Pget_fapl_muti: member_addr="+member_addr[HDF5Constants.H5FD_MEM_GHEAP], member_addr[HDF5Constants.H5FD_MEM_GHEAP] == (HADDRMAX/4)*3);
 
-            H5.H5Pget_dxpl_multi(multi_dxplid, member_dxpl);
-            assertTrue("H5Pget_dxpl_muti: member_dxpl=", H5.H5P_equal(member_dxpl[HDF5Constants.H5FD_MEM_DEFAULT], HDF5Constants.H5P_DATASET_XFER_DEFAULT));
-//            assertTrue("H5Pget_dxpl_muti: member_dxpl="+member_dxpl[HDF5Constants.H5FD_MEM_DRAW]+" : "+plist_id, H5.H5P_equal(member_dxpl[HDF5Constants.H5FD_MEM_DRAW], plist_id));
-            assertTrue("H5Pget_dxpl_muti: member_dxpl=", H5.H5P_equal(member_dxpl[HDF5Constants.H5FD_MEM_BTREE], btplist_id));
-            assertTrue("H5Pget_dxpl_muti: member_dxpl=", H5.H5P_equal(member_dxpl[HDF5Constants.H5FD_MEM_GHEAP], HDF5Constants.H5P_DATASET_XFER_DEFAULT));
+//            H5.H5Pget_dxpl_multi(multi_dxplid, member_dxpl_read);
+//            assertTrue("H5Pget_dxpl_muti: member_dxpl=", H5.H5P_equal(member_dxpl_read[HDF5Constants.H5FD_MEM_DEFAULT], HDF5Constants.H5P_DATASET_XFER_DEFAULT));
+//            assertTrue("H5Pget_dxpl_muti: member_dxpl="+member_dxpl_read[HDF5Constants.H5FD_MEM_DRAW]+" : "+plist_id, H5.H5P_equal(member_dxpl_read[HDF5Constants.H5FD_MEM_DRAW], plist_id));
+//            assertTrue("H5Pget_dxpl_muti: member_dxpl=", H5.H5P_equal(member_dxpl_read[HDF5Constants.H5FD_MEM_BTREE], btplist_id));
+//            assertTrue("H5Pget_dxpl_muti: member_dxpl=", H5.H5P_equal(member_dxpl_read[HDF5Constants.H5FD_MEM_GHEAP], HDF5Constants.H5P_DATASET_XFER_DEFAULT));
         }
         catch (Throwable err) {
             err.printStackTrace();
@@ -1260,7 +1262,7 @@ public class TestH5Pfapl {
         }
         try {
             H5.H5Dwrite(H5Fdid, HDF5Constants.H5T_NATIVE_DOUBLE, HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL,
-                    member_dxpl[HDF5Constants.H5FD_MEM_DRAW], windchillF);
+                    plist_id, windchillF);
             H5.H5Dread(H5Fdid, HDF5Constants.H5T_NATIVE_DOUBLE, HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL,
                     HDF5Constants.H5P_DEFAULT, windchillFread);
         } 

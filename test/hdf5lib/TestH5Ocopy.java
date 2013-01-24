@@ -123,7 +123,7 @@ public class TestH5Ocopy {
         int attribute_id = -1;
         
         
-        try{
+        try {
             rbuf0 = H5.H5Rcreate(H5fid, "/G1", HDF5Constants.H5R_OBJECT, -1);
             rbuf1 = H5.H5Rcreate(H5fid, "DS2", HDF5Constants.H5R_OBJECT, -1);
             //System.arraycopy(rbuf0, 0, dset_data, 0, 8);
@@ -133,27 +133,30 @@ public class TestH5Ocopy {
             H5.H5Awrite(attribute_id, HDF5Constants.H5T_STD_REF_OBJ, dset_data);
             
             H5.H5Aclose(attribute_id);
-            
+        }
+        catch (Exception ex) {
+            try {H5.H5Aclose(attribute_id);} catch (Exception exx) {}
+            fail("testH5OcopyRefsAttr: H5Ocopy failed");
+        }
+        try {
             ocp_plist_id = H5.H5Pcreate(HDF5Constants.H5P_OBJECT_COPY);
             H5.H5Pset_copy_object(ocp_plist_id, HDF5Constants.H5O_COPY_EXPAND_REFERENCE_FLAG);
             H5.H5Ocopy(H5fid, ".", H5fid, "CPYREF", ocp_plist_id, HDF5Constants.H5P_DEFAULT);        
         }
-        catch (Exception ex){
+        catch (Exception ex) {
+            try {H5.H5Pclose(ocp_plist_id);} catch (Exception exx) {}
             fail("testH5OcopyRefsAttr: H5Ocopy failed");
         }
-        try{
-            H5.H5Pclose(ocp_plist_id);
-        }
-        catch (Exception ex){
-        }
+        try {H5.H5Pclose(ocp_plist_id);} catch (Exception ex) {}
     }
     
     @Test
     public void testH5OcopyRefsDatasettodiffFile() {
-        int ocp_plist_id = -1;
         byte rbuf1[] = null;
         byte[] dset_data = new byte[16];
+        int ocp_plist_id = -1;
         int dataset_id = -1;        
+        int H5fid2 = -1;        
         
         try{
             rbuf1 = H5.H5Rcreate(H5fid, "DS2", HDF5Constants.H5R_OBJECT, -1);
@@ -166,51 +169,58 @@ public class TestH5Ocopy {
                     HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL,
                     HDF5Constants.H5P_DEFAULT, dset_data);
             H5.H5Dclose(dataset_id);
-            
+        }
+        catch (Exception ex) {
+            try {H5.H5Dclose(dataset_id);} catch (Exception exx) {}
+            fail("testH5OcopyRefsDatasettodiffFile: H5Ocopy failed");
+        }
+        
+        try {
             //create new file
-            int H5fid2 = H5.H5Fcreate("copy.h5", HDF5Constants.H5F_ACC_TRUNC,
+            H5fid2 = H5.H5Fcreate("copy.h5", HDF5Constants.H5F_ACC_TRUNC,
                     HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
             H5.H5Fflush(H5fid2, HDF5Constants.H5F_SCOPE_LOCAL);
-            
+        }
+        catch (Exception ex) {
+            try {H5.H5Fclose(H5fid2);} catch (Exception exx) {}
+            fail("testH5OcopyRefsDatasettodiffFile: H5Ocopy failed");
+        }
+        
+        try {
             //create object copy property list id and set the flags.
             ocp_plist_id = H5.H5Pcreate(HDF5Constants.H5P_OBJECT_COPY);
             H5.H5Pset_copy_object(ocp_plist_id, HDF5Constants.H5O_COPY_EXPAND_REFERENCE_FLAG);
             
             //Perform copy function.
             H5.H5Ocopy(H5fid, ".", H5fid2, "CPYREFD", ocp_plist_id, HDF5Constants.H5P_DEFAULT);
-            
-            //Close file.
-            H5.H5Fclose(H5fid2);
-            
         }
         catch (Exception ex){
             ex.printStackTrace();
             fail("testH5OcopyRefsDatasettodiffFile: H5Ocopy failed");
         }
-        try{
-            H5.H5Pclose(ocp_plist_id);
-        }
-        catch (Exception ex){
-        }
+            
+            //Close file.
+        try {H5.H5Fclose(H5fid2);} catch (Exception ex) {}
+        try {H5.H5Pclose(ocp_plist_id);} catch (Exception ex) {}
     }
     
     @Test
     public void testH5OcopyRefsDatasettosameFile() {
-        int ocp_plist_id = -1;
         byte rbuf0[]=null , rbuf1[] = null;
         byte[] dset_data = new byte[16];
+        int ocp_plist_id = -1;
         int dataset_id = -1;
-        int[] otype = { 1 };
-        int obj_type = -1;
-        byte[] read_data = new byte[16];
         int did = -1;
-                
-        try{
+        int obj_type = -1;
+        int[] otype = { 1 };
+        byte[] read_data = new byte[16];
+
+        try {
             rbuf0 = H5.H5Rcreate(H5fid, "/G1", HDF5Constants.H5R_OBJECT, -1);
             rbuf1 = H5.H5Rcreate(H5fid, "DS2", HDF5Constants.H5R_OBJECT, -1);
             System.arraycopy(rbuf0, 0, dset_data, 0, 8);
             System.arraycopy(rbuf1, 0, dset_data, 8, 8);
-            
+
             //Create a dataset and write object references to it.
             dataset_id = H5.H5Dcreate(H5fid, "DSREF",
                     HDF5Constants.H5T_STD_REF_OBJ, H5dsid,
@@ -219,64 +229,85 @@ public class TestH5Ocopy {
                     HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL,
                     HDF5Constants.H5P_DEFAULT, dset_data);
             //Close the dataset.
-               H5.H5Dclose(dataset_id);
-               
-               ocp_plist_id = H5.H5Pcreate(HDF5Constants.H5P_OBJECT_COPY);
-            H5.H5Pset_copy_object(ocp_plist_id, HDF5Constants.H5O_COPY_EXPAND_REFERENCE_FLAG);
-           
-            //Perform copy function.
-               try{
-            H5.H5Ocopy(H5fid, "DSREF", H5fid, "CPYREFD", ocp_plist_id, HDF5Constants.H5P_DEFAULT);
-               }
-               catch(Exception ex){
-                fail("testH5OcopyRefsDatasettosameFile: H5Ocopy failed");
-            }
+            H5.H5Dclose(dataset_id);
+        }
+        catch (Exception ex) {
+            try {H5.H5Dclose(dataset_id);} catch (Exception exx) {}
+            fail("testH5OcopyRefsDatasettosameFile: H5Ocopy failed");
+        }
 
-            //Open the dataset that has been copied
-            try {
-                did = H5.H5Dopen(H5fid, "DSREF", HDF5Constants.H5P_DEFAULT);
-            }
-            catch (Exception e) {
-                e.printStackTrace();
-            }
+        try {
+
+            ocp_plist_id = H5.H5Pcreate(HDF5Constants.H5P_OBJECT_COPY);
+            H5.H5Pset_copy_object(ocp_plist_id, HDF5Constants.H5O_COPY_EXPAND_REFERENCE_FLAG);
+        }
+        catch (Exception ex) {
+            try {H5.H5Pclose(ocp_plist_id);} catch (Exception exx) {}
+            fail("testH5OcopyRefsDatasettosameFile: H5Ocopy failed");
+        }
+
+        //Perform copy function.
+        try {
+            H5.H5Ocopy(H5fid, "DSREF", H5fid, "CPYREFD", ocp_plist_id, HDF5Constants.H5P_DEFAULT);
+        }
+        catch(Exception ex) {
+            try {H5.H5Pclose(ocp_plist_id);} catch (Exception exx) {}
+            fail("testH5OcopyRefsDatasettosameFile: H5Ocopy failed");
+        }
+
+        //Open the dataset that has been copied
+        try {
+            did = H5.H5Dopen(H5fid, "DSREF", HDF5Constants.H5P_DEFAULT);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        try {
             //Read the dataset object references in the read_data buffer.
             H5.H5Dread(did, HDF5Constants.H5T_STD_REF_OBJ, HDF5Constants.H5S_ALL,HDF5Constants.H5S_ALL, HDF5Constants.H5P_DEFAULT, read_data);
             System.arraycopy(read_data, 0, rbuf0, 0, 8);
             System.arraycopy(read_data, 8, rbuf1, 0, 8);    
-            
+
             //Get the type of object the reference points to.
             obj_type = H5.H5Rget_obj_type(H5fid, HDF5Constants.H5R_OBJECT, rbuf1, otype);
             assertEquals(obj_type, HDF5Constants.H5O_TYPE_DATASET);
-            
+
             obj_type = H5.H5Rget_obj_type(H5fid, HDF5Constants.H5R_OBJECT, rbuf0, otype);
             assertEquals(obj_type, HDF5Constants.H5O_TYPE_GROUP);
-                
+
             //close the dataset
             H5.H5Dclose(did);
         }
-        catch (Exception ex){
+        catch (Exception ex) {
             ex.printStackTrace();
         }
-        try{
-            H5.H5Pclose(ocp_plist_id);
-        }
-        catch (Exception ex){
-        }
+        
+        try {H5.H5Dclose(did);} catch (Exception ex) {}
+        try {H5.H5Pclose(ocp_plist_id);} catch (Exception ex) {}
     }
     
     @Test
     public void testH5OcopyInvalidRef() { 
     	final int _pid_ = HDF5Constants.H5P_DEFAULT;
+        int sid = -1;
+        int did = -1;
+        int aid = -1;
 
     	try {
-    		int sid = H5.H5Screate_simple(1, new long[] {1}, null);
-    		int did = H5.H5Dcreate(H5fid, "Dataset_with_invalid_Ref", HDF5Constants.H5T_NATIVE_INT, sid, _pid_, _pid_, _pid_);
-    		int aid = H5.H5Acreate(did, "Invalid_Ref", HDF5Constants.H5T_STD_REF_OBJ, sid, _pid_, _pid_);
+    		sid = H5.H5Screate_simple(1, new long[] {1}, null);
+    		did = H5.H5Dcreate(H5fid, "Dataset_with_invalid_Ref", HDF5Constants.H5T_NATIVE_INT, sid, _pid_, _pid_, _pid_);
+    		aid = H5.H5Acreate(did, "Invalid_Ref", HDF5Constants.H5T_STD_REF_OBJ, sid, _pid_, _pid_);
     		H5.H5Awrite(aid, HDF5Constants.H5T_STD_REF_OBJ, new long[]{-1});
     		H5.H5Dclose(did);
     		H5.H5Aclose(aid);
     		H5.H5Sclose(sid);
-    	} catch (Exception ex) {}			
+    	} 
+    	catch (Exception ex) {
+            try {H5.H5Dclose(did);} catch (Exception exx) {}
+            try {H5.H5Aclose(aid);} catch (Exception exx) {}
+            try {H5.H5Sclose(sid);} catch (Exception exx) {}
+    	}			
 
     	try {
     		int ocp_plist_id = H5.H5Pcreate(HDF5Constants.H5P_OBJECT_COPY);
