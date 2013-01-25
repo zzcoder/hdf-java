@@ -2242,12 +2242,15 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
         public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected, boolean expanded,
                 boolean leaf, int row, boolean hasFocus) {
             HObject theObject = (HObject) ((DefaultMutableTreeNode) value).getUserObject();
+            
+            if (theObject == null)
+            	return super.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);
 
-            boolean hasAttribute = false;
+            boolean hasAttribute = theObject.hasAttribute();
+            
             if (theObject instanceof Dataset) {
                 if (theObject instanceof ScalarDS) {
                     ScalarDS sd = (ScalarDS) theObject;
-                    hasAttribute = sd.hasAttribute();
                     if (sd.isImage()) {
                         if (hasAttribute) {
                             leafIcon = imageIconA;
@@ -2275,7 +2278,7 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
                     }
                 }
                 else if (theObject instanceof CompoundDS) {
-                    if (theObject.hasAttribute()) {
+                    if (hasAttribute) {
                         leafIcon = tableIconA;
                     }
                     else {
@@ -2286,7 +2289,7 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
             else if (theObject instanceof Group) {
                 Group g = (Group) theObject;
 
-                if (g.hasAttribute()) {
+                if (hasAttribute) {
                     openIcon = openFolderA;
                     closedIcon = closeFolderA;
                 }
@@ -2307,7 +2310,7 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
             else if (theObject instanceof Datatype) {
                 Datatype t = (Datatype) theObject;
 
-                if (t.hasAttribute()) {
+                if (hasAttribute) {
                     leafIcon = datatypeIconA;
                 }
                 else {
