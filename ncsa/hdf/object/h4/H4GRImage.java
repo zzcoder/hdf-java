@@ -523,6 +523,7 @@ public class H4GRImage extends ScalarDS
         }
 
         attributeList.add(info);
+        nAttributes = attributeList.size();
     }
 
     // ***** need to implement from DataFormat *****

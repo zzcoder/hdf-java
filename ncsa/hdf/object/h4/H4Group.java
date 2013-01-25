@@ -180,6 +180,7 @@ public class H4Group extends Group
         }
 
         attributeList.add(info);
+        nAttributes = attributeList.size();
     }
 
 
