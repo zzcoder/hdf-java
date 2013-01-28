@@ -2739,6 +2739,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
         DataOutputStream out = new DataOutputStream(outputFile);
 
         if (dataset instanceof ScalarDS) {
+            ((ScalarDS) dataset).convertToUnsignedC();
             Object data = dataset.getData();
             String cname = data.getClass().getName();
             char dname = cname.charAt(cname.lastIndexOf("[") + 1);
