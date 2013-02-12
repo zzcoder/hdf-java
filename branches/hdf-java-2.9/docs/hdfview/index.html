@@ -68,7 +68,16 @@ distribution (except for Mac). No additional software is needed to run HDFView.
   <li><a href="http://www.hdfgroup.org/ftp/HDF5/hdf-java/hdfview/hdfview_install_win64.exe">Windows</a> [40 MB]
   <li><a href="http://www.hdfgroup.org/ftp/HDF5/hdf-java/hdfview/hdfview_install_linux64.bin">Linux x86</a> [63 MB] 
   <li><a href="http://www.hdfgroup.org/ftp/HDF5/hdf-java/hdfview/hdfview_install_solaris64.bin">Solaris SPARC</a> 86 MB]
-  <li><a href="http://www.hdfgroup.org/ftp/HDF5/hdf-java/hdfview/hdfview_install_macosx_intel64.zip">Mac Intel</a> [8 MB]
+  <li><a href="http://www.hdfgroup.org/ftp/HDF5/hdf-java/hdfview/hdfview_install_macosx_intel64.zip">Mac Intel</a> [8 MB] 
+<font size=-1>
+When you run the HDFView installer on Mac Mountain Lion, you may get an error message saying 
+"the software is damaged and need to be moved to the trash". The error message is because of 
+the OS X 10.8 GateKeeper that defaults to only running apps that are code-signed. Please use 
+the workaround if you encounter such a problem: before you run the HDFView installer, run the this command on the installer
+"xattr -d com.apple.quarantine ~/Downloads/hdfview_install_macosx_intel64.app"
+</font>
+
+
 </ul>
 
 <ul class="ul">
