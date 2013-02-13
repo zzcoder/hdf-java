@@ -18,7 +18,7 @@ SET (HDFJAVA_FEST_JARS
 )
 
 SET (HDFJAVA_TEST_UITEST_SRCS
-    TestHDFViewCLGeometry.java
+#    TestHDFViewCLGeometry.java
     TestHDFViewCLMultipleFiles.java
     TestHDFViewCLRootMultipleFiles.java
     TestHDFViewMenu.java
@@ -53,7 +53,7 @@ SET (HDF_JAVA_TEST_FILES
 )
 
 SET (HDF_JAVA_TEST_REFERENCE
-      JUnit-gui-CL-geom.txt
+#      JUnit-gui-CL-geom.txt
       JUnit-gui-CL-multi.txt
       JUnit-gui-CL-root-multi.txt
       JUnit-gui-menu.txt
