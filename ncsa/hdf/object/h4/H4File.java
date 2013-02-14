@@ -1105,12 +1105,20 @@ public class H4File extends FileFormat
             try { HDFLibrary.VSdetach(id); }
             catch (HDFException ex) {}
         }
-
+        
         if (showAll || ((id != HDFConstants.FAIL) &&
             // do not display Vdata named "Attr0.0" // commented out for bug 1737
-            //!vClass[0].equalsIgnoreCase(HDFConstants.HDF_ATTRIBUTE) &&
+            !vClass[0].equalsIgnoreCase(HDFConstants.HDF_ATTRIBUTE) &&
             // do not display internal Vdata, "_HDF_CHK_TBL_"
             !vClass[0].startsWith(HDFConstants.HDF_CHK_TBL) &&
+            // do not display attributes 
+            !vClass[0].startsWith(HDFConstants.HDF_SDSVAR) &&
+            !vClass[0].startsWith(HDFConstants.HDF_CRDVAR) &&
+            !vClass[0].startsWith(HDFConstants.DIM_VALS) &&
+            !vClass[0].startsWith(HDFConstants.DIM_VALS01) &&
+            !vClass[0].startsWith(HDFConstants.RIGATTRCLASS) &&
+            !vClass[0].startsWith(HDFConstants.RIGATTRNAME) &&
+
             // do not display internal vdata for CDF, "CDF0.0"
             !vClass[0].equalsIgnoreCase(HDFConstants.HDF_CDF)))
         {

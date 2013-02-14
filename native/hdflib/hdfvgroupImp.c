@@ -585,7 +585,7 @@ jstring name)
     }
 }
 
-JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_Vattrinfo
+JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary__1Vattrinfo
 ( JNIEnv *env,
 jclass clss,
 jint id,
@@ -603,9 +603,9 @@ jintArray argv)  /* OUT:  NT, count, size */
 
     theArgs = ENVPTR->GetIntArrayElements(ENVPAR argv,&bb);
 
-    retVal = Vattrinfo((int32)id, (int32)index, nam,
+    retVal = Vattrinfo2((int32)id, (int32)index, nam,
         (int32 *)&(theArgs[0]), (int32 *)&(theArgs[1]),
-        (int32 *)&(theArgs[2]));
+        (int32 *)&(theArgs[2]), (int32 *)&(theArgs[3]), (uint16 *)&(theArgs[4]));
 
     nam[255] = '\0';
 
@@ -664,7 +664,7 @@ jbyteArray values)  /* OUT: byte[] */
     jboolean bb;
 
     arr = ENVPTR->GetByteArrayElements(ENVPAR values,&bb);
-    rval = Vgetattr((int32) gr_id, (int32) attr_index,  (VOIDP) arr);
+    rval = Vgetattr2((int32) gr_id, (int32) attr_index,  (VOIDP) arr);
     if (rval == FAIL) {
         ENVPTR->ReleaseByteArrayElements(ENVPAR values,arr,JNI_ABORT);
         return JNI_FALSE;
@@ -687,7 +687,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_Vnattrs
 jclass clss,
 jint id)
 {
-    return (Vnattrs((int32) id));
+    return (Vnattrs2((int32) id));
 }
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_Vsetattr__ILjava_lang_String_2IILjava_lang_String_2
