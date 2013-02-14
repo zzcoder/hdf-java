@@ -548,6 +548,7 @@ public class H4SDS extends ScalarDS
         }
 
         attributeList.add(info);
+        nAttributes = attributeList.size();
     }
 
    // To do: implementing DataFormat

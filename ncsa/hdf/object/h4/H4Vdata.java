@@ -453,6 +453,7 @@ public class H4Vdata extends CompoundDS
         }
 
         attributeList.add(info);
+        nAttributes = attributeList.size();
     }
 
     // To do: Implementing DataFormat
