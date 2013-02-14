@@ -115,9 +115,10 @@ public class H4Group extends Group
 
         try {
             n = HDFLibrary.Vnattrs(vgid);
+            
             boolean b = false;
             String[] attrName = new String[1];
-            int[] attrInfo = new int[3];
+            int[] attrInfo = new int[5];
             for (int i=0; i<n; i++)
             {
                 attrName[0] = "";
@@ -139,10 +140,12 @@ public class H4Group extends Group
                 attributeList.add(attr);
 
                 Object buf = H4Datatype.allocateArray(attrInfo[0], attrInfo[1]);
+                
                 try {
                     HDFLibrary.Vgetattr(vgid, i, buf);
                 } catch (HDFException ex)
                 {
+                	ex.printStackTrace();
                     buf = null;
                 }
 

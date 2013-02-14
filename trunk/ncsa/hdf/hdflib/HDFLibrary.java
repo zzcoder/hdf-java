@@ -2480,10 +2480,26 @@ public class HDFLibrary implements java.io.Serializable
      *
      *
      *  @return name[0] = name, argv[0] = data_type, argv[1] = count,
-     *  argv[2] = size
+     *  argv[2] = size, argv[3] = nfields, argv[4] = refnum
      */
-    public static native boolean  Vattrinfo( int id, int index, String[] name, int[] argv) throws HDFException;
+    public static boolean  Vattrinfo( int id, int index, String[] name, int[] argv) throws HDFException
+    {
+    	boolean retval;
+    	
+    	int[] _argv = new int[5];
+    	
+    	retval = _Vattrinfo(id, index, name, _argv);
+    	
+    	int n = Math.min(argv.length, 5);
+    	for (int i=0; i<n; i++)
+    		argv[i] = _argv[i];
+    	
+    	return retval;
+    	
+    }
+    private static native boolean _Vattrinfo( int id, int index, String[] name, int[] argv) throws HDFException;
 
+    
     public static native int  Vfindattr(int id,  String name) throws HDFException;
 
     /**
