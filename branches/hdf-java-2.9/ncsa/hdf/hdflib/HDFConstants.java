@@ -244,6 +244,9 @@ public class HDFConstants
     public static final String  DIM_VALS = "DimVal0.0";
     public static final String  DIM_VALS01 = "DimVal0.1";
     public static final String  HDF_CHK_TBL = "_HDF_CHK_TBL_";
+    public static final String  HDF_SDSVAR = "SDSVar";
+    public static final String  HDF_CRDVAR ="CoordVar";
+    
     public static final String  HDF_CDF = "CDF0.0";
 
     // names of data object types

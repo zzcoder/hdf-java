@@ -223,7 +223,7 @@ public class HDFLibrary implements java.io.Serializable
 
     public final static String HDFPATH_PROPERTY_KEY = "ncsa.hdf.hdflib.HDFLibrary.hdflib";
 
-    private final static String JHI_VERSION= "2.6";
+    private final static String JHI_VERSION= "2.9";
     private static boolean isLibraryLoaded = false;
 
     static { loadH4Lib(); }
@@ -237,8 +237,8 @@ public class HDFLibrary implements java.io.Serializable
       
         if ((filename != null) && (filename.length() > 0))
         {
-            File h5dll = new File(filename);
-            if (h5dll.exists() && h5dll.canRead() && h5dll.isFile()) {
+            File h4dll = new File(filename);
+            if (h4dll.exists() && h4dll.canRead() && h4dll.isFile()) {
                 try {
                     System.load(filename);
                     isLibraryLoaded = true;
@@ -266,6 +266,7 @@ public class HDFLibrary implements java.io.Serializable
         /* Important!  Exit quietly */
     }
 
+    @Deprecated
     public static final String getJHIVersion() { return JHI_VERSION; }
 
     public  static int Hopen(String filename) throws HDFException {
@@ -2479,10 +2480,26 @@ public class HDFLibrary implements java.io.Serializable
      *
      *
      *  @return name[0] = name, argv[0] = data_type, argv[1] = count,
-     *  argv[2] = size
+     *  argv[2] = size, argv[3] = nfields, argv[4] = refnum
      */
-    public static native boolean  Vattrinfo( int id, int index, String[] name, int[] argv) throws HDFException;
+    public static boolean  Vattrinfo( int id, int index, String[] name, int[] argv) throws HDFException
+    {
+    	boolean retval;
+    	
+    	int[] _argv = new int[5];
+    	
+    	retval = _Vattrinfo(id, index, name, _argv);
+    	
+    	int n = Math.min(argv.length, 5);
+    	for (int i=0; i<n; i++)
+    		argv[i] = _argv[i];
+    	
+    	return retval;
+    	
+    }
+    private static native boolean _Vattrinfo( int id, int index, String[] name, int[] argv) throws HDFException;
 
+    
     public static native int  Vfindattr(int id,  String name) throws HDFException;
 
     /**
