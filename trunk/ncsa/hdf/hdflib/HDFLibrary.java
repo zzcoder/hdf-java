@@ -223,7 +223,7 @@ public class HDFLibrary implements java.io.Serializable
 
     public final static String HDFPATH_PROPERTY_KEY = "ncsa.hdf.hdflib.HDFLibrary.hdflib";
 
-    private final static String JHI_VERSION= "2.6";
+    private final static String JHI_VERSION= "2.9";
     private static boolean isLibraryLoaded = false;
 
     static { loadH4Lib(); }
@@ -237,8 +237,8 @@ public class HDFLibrary implements java.io.Serializable
       
         if ((filename != null) && (filename.length() > 0))
         {
-            File h5dll = new File(filename);
-            if (h5dll.exists() && h5dll.canRead() && h5dll.isFile()) {
+            File h4dll = new File(filename);
+            if (h4dll.exists() && h4dll.canRead() && h4dll.isFile()) {
                 try {
                     System.load(filename);
                     isLibraryLoaded = true;
@@ -266,6 +266,7 @@ public class HDFLibrary implements java.io.Serializable
         /* Important!  Exit quietly */
     }
 
+    @Deprecated
     public static final String getJHIVersion() { return JHI_VERSION; }
 
     public  static int Hopen(String filename) throws HDFException {
