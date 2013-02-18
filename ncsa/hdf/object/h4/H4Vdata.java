@@ -388,46 +388,55 @@ public class H4Vdata extends CompoundDS
             attributeList = new Vector(n, 5);
             boolean b = false;
             String[] attrName = new String[1];
-            int[] attrInfo = new int[3];
-            for (int i=0; i<n; i++)
-            {
-                attrName[0] = "";
-                try {
-                    b = HDFLibrary.VSattrinfo(id, -1, i, attrName, attrInfo);
-                    // mask off the litend bit
-                    attrInfo[0] = attrInfo[0] & (~HDFConstants.DFNT_LITEND);
-                } catch (HDFException ex)
+            int[] attrInfo = new int[5];
+            
+            // _HDF_VDATA (or -1) to specify the vdata attribute
+            int nleft = n;
+            for (int j=-1; j<numberOfMembers; j++) {
+                for (int i=0; i<nleft; i++)
                 {
-                    b = false;
-                }
-
-                if (!b) {
-                    continue;
-                }
-
-                long[] attrDims = {attrInfo[1]};
-                Attribute attr = new Attribute(attrName[0], new H4Datatype(attrInfo[0]), attrDims);;
-                attributeList.add(attr);
-
-                Object buf = H4Datatype.allocateArray(attrInfo[0], attrInfo[1]);
-                try {
-                    HDFLibrary.VSgetattr(id, -1, i, buf);
-                } catch (HDFException ex)
-                {
-                    buf = null;
-                }
-
-                if (buf != null)
-                {
-                    if ((attrInfo[0] == HDFConstants.DFNT_CHAR) ||
-                        (attrInfo[0] ==  HDFConstants.DFNT_UCHAR8))
+                    attrName[0] = "";
+                    
+                    try {
+                        b = HDFLibrary.VSattrinfo(id, j, i, attrName, attrInfo);
+                        // mask off the litend bit
+                        attrInfo[0] = attrInfo[0] & (~HDFConstants.DFNT_LITEND);
+                    } catch (HDFException ex)
                     {
-                        buf = Dataset.byteToString((byte[])buf, attrInfo[1]);
+                        b = false;
+                        ex.printStackTrace();
                     }
 
-                    attr.setValue(buf);
-                }
-            } // for (int i=0; i<n; i++)
+                    if (!b || attrName[0].length()<=0) {
+                        continue;
+                    }
+
+                    long[] attrDims = {attrInfo[1]};
+                    Attribute attr = new Attribute(attrName[0], new H4Datatype(attrInfo[0]), attrDims);;
+                    attributeList.add(attr);
+
+                    Object buf = H4Datatype.allocateArray(attrInfo[0], attrInfo[1]);
+                    try {
+                        HDFLibrary.VSgetattr(id, j, i, buf);
+                    } catch (HDFException ex)
+                    {
+                        buf = null;
+                    }
+
+                    if (buf != null)
+                    {
+                        if ((attrInfo[0] == HDFConstants.DFNT_CHAR) ||
+                            (attrInfo[0] ==  HDFConstants.DFNT_UCHAR8))
+                        {
+                            buf = Dataset.byteToString((byte[])buf, attrInfo[1]);
+                        }
+
+                        attr.setValue(buf);
+                        nleft--;
+                    }
+                } // for (int i=0; i<n; i++)            	
+            } // for (int j=-1; j<numberOfMembers; j++) 
+
         } finally
         {
             close(id);
