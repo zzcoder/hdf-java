@@ -412,7 +412,9 @@ public class H4Vdata extends CompoundDS
                     }
 
                     long[] attrDims = {attrInfo[1]};
-                    Attribute attr = new Attribute(attrName[0], new H4Datatype(attrInfo[0]), attrDims);;
+                    Attribute attr = new Attribute(attrName[0], new H4Datatype(attrInfo[0]), attrDims);
+                    if (j>=0) 
+                    	attr.setProperty("field", memberNames[j]);
                     attributeList.add(attr);
 
                     Object buf = H4Datatype.allocateArray(attrInfo[0], attrInfo[1]);
