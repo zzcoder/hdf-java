@@ -16,6 +16,9 @@ package ncsa.hdf.object;
 
 import java.lang.reflect.Array;
 import java.math.BigInteger;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * An attribute is a (name, value) pair of metadata attached to a primary data
@@ -74,6 +77,9 @@ public class Attribute implements Metadata {
 
     /** The value of the attribute. */
     private Object            value;
+    
+    /** additional information and properties for the attribute */
+    private Map<String, Object>  properties;
 
     /** Flag to indicate if the datatype is an unsigned integer. */
     private boolean           isUnsigned;
@@ -159,6 +165,7 @@ public class Attribute implements Metadata {
         type = attrType;
         dims = attrDims;
         value = null;
+        properties = new HashMap();
         rank = 0;
 
         if (dims != null) {
@@ -189,7 +196,32 @@ public class Attribute implements Metadata {
     public Object getValue() {
         return value;
     }
+    
+    /**
+     * set a property for the attribute. 
+     */
+    public void setProperty(String key, Object value) 
+    {
+    	properties.put(key, value);
+    }
+    
+    /**
+     * get a property for a given key. 
+     */
+    public Object getProperty(String key) 
+    {
+    	return properties.get(key);
+    }
 
+    /**
+     * get all property keys. 
+     */
+    public Collection<String> getPropertyKeys() 
+    {
+    	return properties.keySet();
+    }
+
+    
     /**
      * Sets the value of the attribute. It returns null if failed to retrieve
      * the name from file.
