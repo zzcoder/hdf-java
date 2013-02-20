@@ -994,7 +994,12 @@ public class DefaultMetaDataView extends JDialog implements ActionListener, Meta
                 }
             }
 
-            attrTable.setValueAt(name, i, 0);
+            if (attr.getProperty("field") !=null) {
+            	String fieldInfo = " {Field: "+attr.getProperty("field")+"}";
+            	attrTable.setValueAt(name+fieldInfo, i, 0);
+            } else
+                attrTable.setValueAt(name, i, 0);
+            
             attrTable.setValueAt(attr.toString(", "), i, 1);
             attrTable.setValueAt(type, i, 2);
             attrTable.setValueAt(size, i, 3);
