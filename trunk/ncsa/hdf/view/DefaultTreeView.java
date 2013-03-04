@@ -49,6 +49,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 import javax.swing.JMenu;
@@ -69,6 +70,7 @@ import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
+import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.object.CompoundDS;
 import ncsa.hdf.object.Dataset;
 import ncsa.hdf.object.Datatype;
@@ -153,7 +155,11 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
     /** the list of current selected objects */
     private List<Object>                 objectsToCopy;
 
-    private JMenuItem                    addTableMenuItem, addDatasetMenuItem;
+    private JMenu                        exportDatasetMenu;
+
+    private JMenuItem                    addTableMenuItem;
+
+    private JMenuItem                    addDatasetMenuItem;
 
     private JMenuItem                    addDatatypeMenuItem;
 
@@ -174,6 +180,8 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
     private int                          currentIndexType;
 
     private int                          currentIndexOrder;
+
+    private int                          binaryOrder;
 
     public DefaultTreeView(ViewManager theView) {
         viewer = theView;
@@ -348,6 +356,26 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
         item.setActionCommand("Move object");
         menu.add(item);
         editGUIs.add(item);
+        
+        exportDatasetMenu = new JMenu("Export Dataset");
+        menu.add(exportDatasetMenu);
+        item = new JMenuItem("Export Data to Text File");
+        item.addActionListener(this);
+        item.setActionCommand("Save table as text");
+        exportDatasetMenu.add(item);
+    
+        item = new JMenuItem("Export Data as Native Order");
+        item.addActionListener(this);
+        item.setActionCommand("Save table as binary Native Order");
+        exportDatasetMenu.add(item);
+        item = new JMenuItem("Export Data as Little Endian");
+        item.addActionListener(this);
+        item.setActionCommand("Save table as binary Little Endian");
+        exportDatasetMenu.add(item);
+        item = new JMenuItem("Export Data as Big Endian");
+        item.addActionListener(this);
+        item.setActionCommand("Save table as binary Big Endian");
+        exportDatasetMenu.add(item);
 
         menu.addSeparator();
 
@@ -444,8 +472,8 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
             // menuitem
             popupMenu.getComponent(7).setEnabled(state && isWritable); // "Delete"
             // menuitem
-            popupMenu.getComponent(10).setEnabled(state); // "save to" menuitem
-            popupMenu.getComponent(11).setEnabled(state && isWritable); // "rename"
+            popupMenu.getComponent(11).setEnabled(state); // "save to" menuitem
+            popupMenu.getComponent(12).setEnabled(state && isWritable); // "rename"
             // menuitem
             popupMenu.getComponent(8).setEnabled(
                     (selectedObject.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5)))
@@ -459,8 +487,8 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
             // menuitem
             popupMenu.getComponent(7).setEnabled(isWritable); // "Delete"
             // menuitem
-            popupMenu.getComponent(10).setEnabled(true); // "save to" menuitem
-            popupMenu.getComponent(11).setEnabled(isWritable); // "rename"
+            popupMenu.getComponent(11).setEnabled(true); // "save to" menuitem
+            popupMenu.getComponent(12).setEnabled(isWritable); // "rename"
             // menuitem
             popupMenu.getComponent(8).setEnabled(
                     (selectedObject.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5)))
@@ -499,7 +527,23 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
             setLibVerBoundsItem.setVisible(false);
             changeIndexItem.setVisible(false);
         }
-
+    
+        // export table is only supported by HDF5
+        if ((selectedObject != null) && selectedObject.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5))) {
+            if ((selectedObject instanceof Dataset)) {
+                Dataset dataset = (Dataset) selectedObject;
+                if ((dataset instanceof ScalarDS)) {
+                    exportDatasetMenu.setVisible(true);
+                }
+            }
+            else {
+                exportDatasetMenu.setVisible(false);
+            }
+        }
+        else {
+            exportDatasetMenu.setVisible(false);
+        }
+    
         popupMenu.show((JComponent) e.getSource(), x, y);
     }
 
@@ -1327,6 +1371,78 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
         }
     }
 
+    /** Save data as file. */
+    private void saveAsFile() throws Exception {
+        if (!(selectedObject instanceof Dataset) || (selectedObject == null) || (selectedNode == null)) {
+            return;
+        }
+        Dataset dataset = (Dataset) selectedObject;
+        final JFileChooser fchooser = new JFileChooser(dataset.getFile());
+        fchooser.setFileFilter(DefaultFileFilter.getFileFilterText());
+        // fchooser.changeToParentDirectory();
+        File choosedFile = null;
+        
+        if(binaryOrder == 99) {
+            fchooser.setDialogTitle("Save Dataset Data To Text File --- " + dataset.getName());
+    
+            choosedFile = new File(dataset.getName() + ".txt");
+        }
+        else {
+            fchooser.setDialogTitle("Save Current Data To Binary File --- " + dataset.getName());
+
+            choosedFile = new File(dataset.getName() + ".bin");
+        }
+
+        fchooser.setSelectedFile(choosedFile);
+        int returnVal = fchooser.showSaveDialog(this);
+
+        if (returnVal != JFileChooser.APPROVE_OPTION) {
+            return;
+        }
+
+        choosedFile = fchooser.getSelectedFile();
+        if (choosedFile == null) {
+            return;
+        }
+        String fname = choosedFile.getAbsolutePath();
+
+        // check if the file is in use
+        List fileList = viewer.getTreeView().getCurrentFiles();
+        if (fileList != null) {
+            FileFormat theFile = null;
+            Iterator iterator = fileList.iterator();
+            while (iterator.hasNext()) {
+                theFile = (FileFormat) iterator.next();
+                if (theFile.getFilePath().equals(fname)) {
+                    toolkit.beep();
+                    JOptionPane.showMessageDialog(this, 
+                            "Unable to save data to file \"" + fname + "\". \nThe file is being used.", 
+                            "Export Dataset", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+            }
+        }
+
+        if (choosedFile.exists()) {
+            int newFileFlag = JOptionPane.showConfirmDialog(this, 
+                    "File exists. Do you want to replace it ?",
+                    "Export Dataset", JOptionPane.YES_NO_OPTION);
+            if (newFileFlag == JOptionPane.NO_OPTION) {
+                return;
+            }
+        }
+
+        try {
+            H5.H5export_dataset(fname, dataset.getFile(), dataset.getFullName(), binaryOrder);
+        }
+        catch (Exception ex) {
+            toolkit.beep();
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "HDFView", JOptionPane.ERROR_MESSAGE);
+        }
+
+        viewer.showStatus("Data save to: " + fname);
+    }
+
     private void renameObject() {
         if (selectedObject == null) {
             return;
@@ -1437,6 +1553,28 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
         }
         else if (cmd.equals("Add link")) {
             addLink();
+        }
+        else if (cmd.equals("Save table as text")) {
+            binaryOrder = 99;
+            try {
+                saveAsFile();
+            }
+            catch (Exception ex) {
+                toolkit.beep();
+                JOptionPane.showMessageDialog((JFrame) viewer, ex, "Export Dataset", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+        else if (cmd.startsWith("Save table as binary")) {
+            if (cmd.equals("Save table as binary Native Order")) binaryOrder = 1;
+            if (cmd.equals("Save table as binary Little Endian")) binaryOrder = 2;
+            if (cmd.equals("Save table as binary Big Endian")) binaryOrder = 3;
+            try {
+                saveAsFile();
+            }
+            catch (Exception ex) {
+                toolkit.beep();
+                JOptionPane.showMessageDialog((JFrame) viewer, ex, "Export Dataset", JOptionPane.ERROR_MESSAGE);
+            }
         }
         else if (cmd.startsWith("Open data")) {
             if (cmd.equals("Open data")) {
