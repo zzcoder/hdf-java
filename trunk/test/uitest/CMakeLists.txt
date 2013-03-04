@@ -26,6 +26,7 @@ SET (HDFJAVA_TEST_UITEST_SRCS
     TestTreeViewGroups.java
     TestTreeViewFiles.java
     TestTreeViewExport.java
+    TestTableViewMenu.java
     TestAll.java
 )
 
@@ -63,6 +64,7 @@ SET (HDF_JAVA_TEST_REFERENCE
       JUnit-gui-treeview-files.txt
       JUnit-gui-treeview-export.txt
       JUnit-gui-treeview-newmenu.txt
+      JUnit-gui-tableview-menu.txt
 )
 
 FOREACH (h5_file ${HDF_JAVA_TEST_FILES})
@@ -270,6 +272,26 @@ SET_TESTS_PROPERTIES (JUnit-gui-CL-multi PROPERTIES
 )
    
 ADD_TEST (
+    NAME JUnit-gui-tableview-menu
+    COMMAND "${CMAKE_COMMAND}"
+        -D "TEST_TESTER=${CMAKE_Java_RUNTIME}"
+        -D "TEST_CLASSPATH:STRING=${CMAKE_JAVA_CLASSPATH}"
+        -D "TEST_ARGS:STRING=-ea;org.junit.runner.JUnitCore"
+        -D "TEST_PROGRAM=test.uitest.TestTableViewMenu"
+        -D "TEST_LIBRARY_DIRECTORY=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
+        -D "TEST_FOLDER=${PROJECT_BINARY_DIR}"
+        -D "TEST_OUTPUT=JUnit-gui-tableview-menu.out"
+        -D "TEST_EXPECT=0"
+        -D "TEST_APPEND=TRUE"
+        -D "TEST_REFERENCE=JUnit-gui-tableview-menu.txt"
+        -P "${HDFJAVA_RESOURCES_DIR}/runTest.cmake"
+)
+
+SET_TESTS_PROPERTIES (JUnit-gui-tableview-menu PROPERTIES
+    DEPENDS JUnit-gui-treeview-export3
+)
+   
+ADD_TEST (
     NAME JUnit-gui-CL-root-multi
     COMMAND "${CMAKE_COMMAND}"
         -D "TEST_TESTER=${CMAKE_Java_RUNTIME}"
@@ -286,7 +308,7 @@ ADD_TEST (
 )
 
 SET_TESTS_PROPERTIES (JUnit-gui-CL-root-multi PROPERTIES
-    DEPENDS JUnit-gui-CL-multi
+    DEPENDS JUnit-gui-tableview-menu
 )
    
 #ADD_TEST (
