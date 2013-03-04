@@ -183,6 +183,14 @@ JNIEXPORT jstring JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Fget_1name
 JNIEXPORT jstring JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Fget_2name
   (JNIEnv *, jclass, jint, jstring, jint);
 
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5export_dataset
+ * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;I)V
+ */
+JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5export_1dataset
+  (JNIEnv *env, jclass cls, jstring file_export_name, jstring file_name, jstring object_path, jint binary_order);
+
 #ifdef __cplusplus
 }
 #endif
