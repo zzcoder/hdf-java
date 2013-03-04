@@ -518,6 +518,22 @@ public synchronized static native int H5set_free_list_limits(
         int arr_list_lim, int blk_global_lim, int blk_list_lim)
         throws HDF5LibraryException;
 
+/**
+ * H5export_dataset is a utility function to save data in a file.
+ * 
+ * @param file_export_name
+ *            The file name to export data into.
+ * @param file_name
+ *            The name of the HDF5 file containing the dataset.
+ * @param object_path
+ *            The full path of the dataset to be exported.
+ * 
+ * @exception HDF5LibraryException
+ *                - Error from the HDF-5 Library.
+ **/
+public synchronized static native void H5export_dataset(String file_export_name, String file_name, String object_path, int binary_order) 
+        throws HDF5LibraryException;
+
 
 //////////////////////////////////////////////////////////////
 ////
