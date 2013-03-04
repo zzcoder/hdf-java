@@ -23,7 +23,9 @@ SET (HDFJAVA_TEST_UITEST_SRCS
     TestHDFViewCLRootMultipleFiles.java
     TestHDFViewMenu.java
     TestTreeViewNewMenu.java
+    TestTreeViewGroups.java
     TestTreeViewFiles.java
+    TestTreeViewExport.java
     TestAll.java
 )
 
@@ -57,7 +59,9 @@ SET (HDF_JAVA_TEST_REFERENCE
       JUnit-gui-CL-multi.txt
       JUnit-gui-CL-root-multi.txt
       JUnit-gui-menu.txt
+      JUnit-gui-treeview-groups.txt
       JUnit-gui-treeview-files.txt
+      JUnit-gui-treeview-export.txt
       JUnit-gui-treeview-newmenu.txt
 )
 
@@ -113,6 +117,8 @@ ADD_TEST (
         testsaveasfile2.h5
         testgrp.h5
         testds.h5
+        DS64BITS.txt
+        DU64BITS.bin
 )
 
 ADD_TEST (
@@ -156,13 +162,33 @@ SET_TESTS_PROPERTIES (JUnit-gui-treeview-newmenu PROPERTIES
 )
 
 ADD_TEST (
+    NAME JUnit-gui-treeview-groups
+    COMMAND "${CMAKE_COMMAND}"
+        -D "TEST_TESTER=${CMAKE_Java_RUNTIME}"
+        -D "TEST_CLASSPATH:STRING=${CMAKE_JAVA_CLASSPATH}"
+        -D "TEST_ARGS:STRING=-ea;org.junit.runner.JUnitCore"
+        -D "TEST_PROGRAM=test.uitest.TestTreeViewGroups"
+        -D "TEST_LIBRARY_DIRECTORY=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
+        -D "TEST_FOLDER=${PROJECT_BINARY_DIR}"
+        -D "TEST_OUTPUT=JUnit-gui-treeview-groups.out"
+        -D "TEST_EXPECT=0"
+        -D "TEST_APPEND=TRUE"
+        -D "TEST_REFERENCE=JUnit-gui-treeview-groups.txt"
+        -P "${HDFJAVA_RESOURCES_DIR}/runTest.cmake"
+)
+
+SET_TESTS_PROPERTIES (JUnit-gui-treeview-groups PROPERTIES
+    DEPENDS JUnit-gui-treeview-newmenu
+)
+
+ADD_TEST (
     NAME JUnit-gui-treeview-files-copy
     COMMAND    ${CMAKE_COMMAND}
         -E copy ${PROJECT_SOURCE_DIR}/tcmpdintsize.h5 ${PROJECT_BINARY_DIR}/temp_cmpdimport.h5
 )
 
 SET_TESTS_PROPERTIES (JUnit-gui-treeview-files-copy PROPERTIES
-    DEPENDS JUnit-gui-treeview-newmenu
+    DEPENDS JUnit-gui-treeview-groups
 )
 
 ADD_TEST (
@@ -184,6 +210,44 @@ ADD_TEST (
 SET_TESTS_PROPERTIES (JUnit-gui-treeview-files PROPERTIES
     DEPENDS JUnit-gui-treeview-files-copy
 )
+
+ADD_TEST (
+    NAME JUnit-gui-treeview-export
+    COMMAND "${CMAKE_COMMAND}"
+        -D "TEST_TESTER=${CMAKE_Java_RUNTIME}"
+        -D "TEST_CLASSPATH:STRING=${CMAKE_JAVA_CLASSPATH}"
+        -D "TEST_ARGS:STRING=-ea;org.junit.runner.JUnitCore"
+        -D "TEST_PROGRAM=test.uitest.TestTreeViewExport"
+        -D "TEST_LIBRARY_DIRECTORY=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
+        -D "TEST_FOLDER=${PROJECT_BINARY_DIR}"
+        -D "TEST_OUTPUT=JUnit-gui-treeview-export.out"
+        -D "TEST_EXPECT=0"
+        -D "TEST_APPEND=TRUE"
+        -D "TEST_REFERENCE=JUnit-gui-treeview-export.txt"
+        -P "${HDFJAVA_RESOURCES_DIR}/runTest.cmake"
+)
+
+SET_TESTS_PROPERTIES (JUnit-gui-treeview-export PROPERTIES
+    DEPENDS JUnit-gui-treeview-files
+)
+
+ADD_TEST (
+    NAME JUnit-gui-treeview-export2
+    COMMAND ${CMAKE_COMMAND}
+        -E compare_files ${PROJECT_SOURCE_DIR}/DS64BITS.xtxt ${PROJECT_BINARY_DIR}/DS64BITS.txt
+)
+SET_TESTS_PROPERTIES (JUnit-gui-treeview-export2 PROPERTIES
+    DEPENDS JUnit-gui-treeview-export
+)
+
+ADD_TEST (
+    NAME JUnit-gui-treeview-export3
+    COMMAND ${CMAKE_COMMAND}
+        -E compare_files ${PROJECT_SOURCE_DIR}/DU64BITS.xbin ${PROJECT_BINARY_DIR}/DU64BITS.bin
+)
+SET_TESTS_PROPERTIES (JUnit-gui-treeview-export3 PROPERTIES
+    DEPENDS JUnit-gui-treeview-export2
+)
    
 ADD_TEST (
     NAME JUnit-gui-CL-multi
@@ -202,7 +266,7 @@ ADD_TEST (
 )
 
 SET_TESTS_PROPERTIES (JUnit-gui-CL-multi PROPERTIES
-    DEPENDS JUnit-gui-treeview-files
+    DEPENDS JUnit-gui-treeview-export3
 )
    
 ADD_TEST (

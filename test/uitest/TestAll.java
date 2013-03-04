@@ -5,11 +5,14 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses( { 
+//    TestHDFViewCLGeometry.class,
     TestHDFViewCLMultipleFiles.class,
     TestHDFViewCLRootMultipleFiles.class,
     TestHDFViewMenu.class,
     TestTreeViewNewMenu.class,
-    TestTreeViewFiles.class
+    TestTreeViewGroups.class,
+    TestTreeViewFiles.class,
+    TestTreeViewExport.class
 })
 
 public class TestAll {
