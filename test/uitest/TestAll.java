@@ -12,7 +12,8 @@ import org.junit.runners.Suite;
     TestTreeViewNewMenu.class,
     TestTreeViewGroups.class,
     TestTreeViewFiles.class,
-    TestTreeViewExport.class
+    TestTreeViewExport.class,
+    TestTableViewMenu.class
 })
 
 public class TestAll {
