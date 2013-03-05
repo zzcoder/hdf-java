@@ -65,6 +65,11 @@ SET (HDF_JAVA_TEST_REFERENCE
       JUnit-gui-treeview-export.txt
       JUnit-gui-treeview-newmenu.txt
       JUnit-gui-tableview-menu.txt
+      DU64BITS.xbin
+)
+
+SET (HDF_JAVA_EXPORT_REFERENCE
+      DS64BITS.xtxt
 )
 
 FOREACH (h5_file ${HDF_JAVA_TEST_FILES})
@@ -88,6 +93,20 @@ FOREACH (ref_file ${HDF_JAVA_TEST_REFERENCE})
       ARGS       -E copy_if_different ${PROJECT_SOURCE_DIR}/${ref_file} ${dest}
   )
 ENDFOREACH (ref_file ${HDF_JAVA_TEST_REFERENCE})
+
+FOREACH (exp_file ${HDF_JAVA_EXPORT_REFERENCE})
+  IF (WIN32 AND NOT CYGWIN)
+    FILE (READ ${PROJECT_SOURCE_DIR}/${exp_file} TEST_STREAM)
+    FILE (WRITE ${PROJECT_BINARY_DIR}/${exp_file} "${TEST_STREAM}")
+  ELSE (WIN32 AND NOT CYGWIN)
+    ADD_CUSTOM_COMMAND (
+        TARGET     ${HDFJAVA_TEST_UITEST_TARGET}
+        POST_BUILD
+        COMMAND    ${CMAKE_COMMAND}
+        ARGS       -E copy_if_different ${PROJECT_SOURCE_DIR}/${exp_file} ${dest}
+    )
+  ENDIF (WIN32 AND NOT CYGWIN)
+ENDFOREACH (exp_file ${HDF_JAVA_EXPORT_REFERENCE})
 
 IF (WIN32 AND NOT CYGWIN)
   SET(CMAKE_JAVA_INCLUDE_FLAG_SEP ";")
@@ -252,7 +271,7 @@ SET_TESTS_PROPERTIES (JUnit-gui-treeview-export PROPERTIES
 ADD_TEST (
     NAME JUnit-gui-treeview-export2
     COMMAND ${CMAKE_COMMAND}
-        -E compare_files ${PROJECT_SOURCE_DIR}/DS64BITS.xtxt ${PROJECT_BINARY_DIR}/DS64BITS.txt
+        -E compare_files ${PROJECT_BINARY_DIR}/DS64BITS.xtxt ${PROJECT_BINARY_DIR}/DS64BITS.txt
 )
 SET_TESTS_PROPERTIES (JUnit-gui-treeview-export2 PROPERTIES
     DEPENDS JUnit-gui-treeview-export
@@ -261,7 +280,7 @@ SET_TESTS_PROPERTIES (JUnit-gui-treeview-export2 PROPERTIES
 ADD_TEST (
     NAME JUnit-gui-treeview-export3
     COMMAND ${CMAKE_COMMAND}
-        -E compare_files ${PROJECT_SOURCE_DIR}/DU64BITS.xbin ${PROJECT_BINARY_DIR}/DU64BITS.bin
+        -E compare_files ${PROJECT_BINARY_DIR}/DU64BITS.xbin ${PROJECT_BINARY_DIR}/DU64BITS.bin
 )
 SET_TESTS_PROPERTIES (JUnit-gui-treeview-export3 PROPERTIES
     DEPENDS JUnit-gui-treeview-export2
