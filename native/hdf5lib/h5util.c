@@ -449,7 +449,7 @@ int h5str_sprintf(h5str_t *str, hid_t container, hid_t tid, void *ptr) {
 
     if (this_str) {
         h5str_append(str, this_str);
-        this_strlen = strlen(this_str);
+        this_strlen = strlen(str);
         free(this_str);
     }
 
@@ -1723,13 +1723,13 @@ int h5tools_dump_simple_data(FILE *stream, hid_t container, hid_t type, void *_m
             h5str_new(&buffer, 32 * size);
             bytes_in = h5str_sprintf(&buffer, container, type, memref);
             if(i > 0) {
-                fprintf(stream, ", ", buffer);
+                fprintf(stream, ", ");
                 if (line_count >= H5TOOLS_TEXT_BLOCK) {
                     line_count = 0;
                     fprintf(stream, "\n");
                 }
             }
-            fprintf(stream, "%s", buffer);
+            fprintf(stream, "%s", buffer.s);
             h5str_free(&buffer);
         } /* end for (i = 0; i < nelmts... */
         fprintf(stream, "\n");
