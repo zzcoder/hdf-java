@@ -121,6 +121,22 @@ ADD_TEST (
         testds.h5
         DS64BITS.txt
         DU64BITS.bin
+        JUnit-gui-menu.out
+        JUnit-gui-menu.out.err
+        JUnit-gui-treeview-newmenu.out
+        JUnit-gui-treeview-newmenu.out.err
+        JUnit-gui-treeview-groups.out
+        JUnit-gui-treeview-groups.out.err
+        JUnit-gui-treeview-files.out
+        JUnit-gui-treeview-files.out.err
+        JUnit-gui-treeview-export.out
+        JUnit-gui-treeview-export.out.err
+        JUnit-gui-tableview-menu.out
+        JUnit-gui-tableview-menu.out.err
+        JUnit-gui-CL-multi.out
+        JUnit-gui-CL-multi.out.err
+        JUnit-gui-CL-root-multi.out
+        JUnit-gui-CL-root-multi.out.err
 )
 
 ADD_TEST (
@@ -252,26 +268,6 @@ SET_TESTS_PROPERTIES (JUnit-gui-treeview-export3 PROPERTIES
 )
    
 ADD_TEST (
-    NAME JUnit-gui-CL-multi
-    COMMAND "${CMAKE_COMMAND}"
-        -D "TEST_TESTER=${CMAKE_Java_RUNTIME}"
-        -D "TEST_CLASSPATH:STRING=${CMAKE_JAVA_CLASSPATH}"
-        -D "TEST_ARGS:STRING=-ea;org.junit.runner.JUnitCore"
-        -D "TEST_PROGRAM=test.uitest.TestHDFViewCLMultipleFiles"
-        -D "TEST_LIBRARY_DIRECTORY=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
-        -D "TEST_FOLDER=${PROJECT_BINARY_DIR}"
-        -D "TEST_OUTPUT=JUnit-gui-CL-multi.out"
-        -D "TEST_EXPECT=0"
-        -D "TEST_APPEND=TRUE"
-        -D "TEST_REFERENCE=JUnit-gui-CL-multi.txt"
-        -P "${HDFJAVA_RESOURCES_DIR}/runTest.cmake"
-)
-
-SET_TESTS_PROPERTIES (JUnit-gui-CL-multi PROPERTIES
-    DEPENDS JUnit-gui-treeview-export3
-)
-   
-ADD_TEST (
     NAME JUnit-gui-tableview-menu
     COMMAND "${CMAKE_COMMAND}"
         -D "TEST_TESTER=${CMAKE_Java_RUNTIME}"
@@ -292,6 +288,26 @@ SET_TESTS_PROPERTIES (JUnit-gui-tableview-menu PROPERTIES
 )
    
 ADD_TEST (
+    NAME JUnit-gui-CL-multi
+    COMMAND "${CMAKE_COMMAND}"
+        -D "TEST_TESTER=${CMAKE_Java_RUNTIME}"
+        -D "TEST_CLASSPATH:STRING=${CMAKE_JAVA_CLASSPATH}"
+        -D "TEST_ARGS:STRING=-ea;org.junit.runner.JUnitCore"
+        -D "TEST_PROGRAM=test.uitest.TestHDFViewCLMultipleFiles"
+        -D "TEST_LIBRARY_DIRECTORY=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
+        -D "TEST_FOLDER=${PROJECT_BINARY_DIR}"
+        -D "TEST_OUTPUT=JUnit-gui-CL-multi.out"
+        -D "TEST_EXPECT=0"
+        -D "TEST_APPEND=TRUE"
+        -D "TEST_REFERENCE=JUnit-gui-CL-multi.txt"
+        -P "${HDFJAVA_RESOURCES_DIR}/runTest.cmake"
+)
+
+SET_TESTS_PROPERTIES (JUnit-gui-CL-multi PROPERTIES
+    DEPENDS JUnit-gui-tableview-menu
+)
+   
+ADD_TEST (
     NAME JUnit-gui-CL-root-multi
     COMMAND "${CMAKE_COMMAND}"
         -D "TEST_TESTER=${CMAKE_Java_RUNTIME}"
@@ -308,7 +324,7 @@ ADD_TEST (
 )
 
 SET_TESTS_PROPERTIES (JUnit-gui-CL-root-multi PROPERTIES
-    DEPENDS JUnit-gui-tableview-menu
+    DEPENDS JUnit-gui-CL-multi
 )
    
 #ADD_TEST (
