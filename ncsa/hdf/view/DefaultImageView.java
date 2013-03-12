@@ -480,11 +480,15 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
             titlePosition = TitledBorder.BOTTOM;
         }
         
+        String originTag = "(0,0)";
+        if (ViewProperties.isIndexBase1())
+        	originTag = "(1,1)";
+        
         Border border = BorderFactory.createCompoundBorder(
                 BorderFactory.createRaisedBevelBorder(), BorderFactory
                         .createTitledBorder(BorderFactory
                                 .createLineBorder(Color.lightGray, 1),
-                                "(0,0)",
+                                originTag,
                                 titleJustification, titlePosition,
                                 this.getFont(), Color.black));
         contentPane.setBorder(border);
