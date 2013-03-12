@@ -2131,11 +2131,11 @@ public class HDFView extends JFrame implements ViewManager, ActionListener, Chan
 //        catch (Exception e) {
 //        }
 
-    	try {
-    		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-    	}
-    	catch (Exception e) {
-    	}
+//    	try {
+//    		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+//    	}
+//    	catch (Exception e) {
+//    	}
 
     	
         String rootDir = System.getProperty("user.dir");
