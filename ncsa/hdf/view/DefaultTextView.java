@@ -193,6 +193,7 @@ public class DefaultTextView extends JInternalFrame implements TextView,
         this.setTitle("TextView  -  " + dataset.getName() + "  -  "
                 + dataset.getPath() + "  -  " + fname);
         this.setFrameIcon(ViewProperties.getTextIcon());
+        this.setName("textdata");
         
         int rank = dataset.getRank();
         long start[] = dataset.getStartDims();

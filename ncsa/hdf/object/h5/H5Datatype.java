@@ -824,13 +824,7 @@ public class H5Datatype extends Datatype {
         if (tclass == HDF5Constants.H5T_INTEGER) {
             if (tsize == 1) {
                 try {
-                    if (H5.H5Tequal(tid, HDF5Constants.H5T_NATIVE_UCHAR)) {
-                        description = "8-bit unsigned character";
-                    }
-                    else if (H5.H5Tequal(tid, HDF5Constants.H5T_NATIVE_CHAR)) {
-                        description = "8-bit character";
-                    }
-                    else if (tsign == HDF5Constants.H5T_SGN_NONE) {
+                    if (tsign == HDF5Constants.H5T_SGN_NONE) {
                         description = "8-bit unsigned integer";
                     }
                     else {
