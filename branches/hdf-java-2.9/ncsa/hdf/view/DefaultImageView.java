@@ -410,12 +410,15 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
         }
 
         // set title
-        StringBuffer sb = new StringBuffer("ImageView <"+ViewProperties.getImageOrigin()+">  -  ");
-        sb.append(hobject.getName());
-        sb.append("  -  ");
+        StringBuffer sb = new StringBuffer(hobject.getName());
+        sb.append("  at  ");
         sb.append(hobject.getPath());
-        sb.append("  -  ");
-        sb.append(dataset.getFile());
+        sb.append("  [");
+        sb.append(dataset.getFileFormat().getName());
+        sb.append("  in  ");
+        sb.append(dataset.getFileFormat().getParent());
+        sb.append("]");
+        
         setTitle(sb.toString());
 
         frameTitle = sb.toString();
@@ -464,6 +467,31 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
 
         setJMenuBar(createMenuBar());
         viewer.showStatus(sb.toString());
+        
+        int titleJustification = TitledBorder.LEFT;
+        int titlePosition = TitledBorder.TOP;
+        String orgin = ViewProperties.getImageOrigin();
+        if (orgin.equalsIgnoreCase(ViewProperties.ORIGIN_UR))
+        	titleJustification = TitledBorder.RIGHT;
+        else if (orgin.equalsIgnoreCase(ViewProperties.ORIGIN_LL))
+            titlePosition = TitledBorder.BOTTOM;
+        else if (orgin.equalsIgnoreCase(ViewProperties.ORIGIN_LR)) {
+            titleJustification = TitledBorder.RIGHT;
+            titlePosition = TitledBorder.BOTTOM;
+        }
+        
+        String originTag = "(0,0)";
+        if (ViewProperties.isIndexBase1())
+        	originTag = "(1,1)";
+        
+        Border border = BorderFactory.createCompoundBorder(
+                BorderFactory.createRaisedBevelBorder(), BorderFactory
+                        .createTitledBorder(BorderFactory
+                                .createLineBorder(Color.lightGray, 1),
+                                originTag,
+                                titleJustification, titlePosition,
+                                this.getFont(), Color.black));
+        contentPane.setBorder(border);
     }
 
     private JMenuBar createMenuBar() {
@@ -941,15 +969,16 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
                 if (bitmaskOP==ViewProperties.BITMASK_OP.AND)
                     opName = "Apply bitwise AND ";
                 
-                Border border = BorderFactory.createCompoundBorder(
-                        BorderFactory.createRaisedBevelBorder(), BorderFactory
-                                .createTitledBorder(BorderFactory
-                                        .createLineBorder(Color.BLUE, 1),
-                                        opName + bitmask,
-                                        TitledBorder.RIGHT, TitledBorder.TOP,
-                                        this.getFont(), Color.RED));
+//                Border border = BorderFactory.createCompoundBorder(
+//                        BorderFactory.createRaisedBevelBorder(), BorderFactory
+//                                .createTitledBorder(BorderFactory
+//                                        .createLineBorder(Color.BLUE, 1),
+//                                        opName + bitmask,
+//                                        TitledBorder.RIGHT, TitledBorder.TOP,
+//                                        this.getFont(), Color.RED));
+//                this.setBorder(border);
+                
                 doAutoGainContrast = false;
-                this.setBorder(border);
             }
         }
 

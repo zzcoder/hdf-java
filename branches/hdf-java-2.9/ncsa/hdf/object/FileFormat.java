@@ -163,7 +163,7 @@ public abstract class FileFormat extends File {
      * FileList, but is provided as a convenience for applications who may
      * choose to process only those files with recognized extensions.
      */
-    private static String                        extensions         = "hdf, h4, hdf5, h5";
+    private static String extensions         = "hdf, h4, hdf5, h5, nc, fits";
 
     /***************************************************************************
      * Sizing information and class metadata

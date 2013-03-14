@@ -182,11 +182,13 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
 
     private final JCheckBoxMenuItem checkFixedDataLength;
     private int                     fixedDataLength;
+    private final JCheckBoxMenuItem checkCustomNotation;
     private final JCheckBoxMenuItem checkScientificNotation;
     private final JCheckBoxMenuItem checkHex;
     private final JCheckBoxMenuItem checkBin;
 
     private final DecimalFormat     scientificFormat = new DecimalFormat("###.#####E0#");
+    private DecimalFormat           customFormat     = new DecimalFormat("###.#####");
     private final NumberFormat      normalFormat     = null;                              // NumberFormat.getInstance();
     private NumberFormat            numberFormat     = normalFormat;
     private boolean                 showAsHex        = false, showAsBin = false;
@@ -273,6 +275,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
         if (ViewProperties.isIndexBase1()) indexBase = 1;
 
         checkFixedDataLength = new JCheckBoxMenuItem("Fixed Data Length", false);
+        checkCustomNotation = new JCheckBoxMenuItem("Show Custom Notation", false);
         checkScientificNotation = new JCheckBoxMenuItem("Show Scientific Notation", false);
         checkHex = new JCheckBoxMenuItem("Show Hexadecimal", false);
         checkBin = new JCheckBoxMenuItem("Show Binary", false);
@@ -608,6 +611,19 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
             menu.add(item);
         }
 
+        item = checkCustomNotation;
+        item.addActionListener(this);
+        item.setActionCommand("Show custom notation");
+        if (dataset instanceof ScalarDS) {
+            menu.add(item);
+        }
+
+        item = new JMenuItem("Create custom notation");
+        item.addActionListener(this);
+        item.setActionCommand("Create custom notation");
+        menu.add(item);
+
+
         boolean isInt = (NT == 'B' || NT == 'S' || NT == 'I' || NT == 'J');
         item = checkHex;
         item.addActionListener(this);
@@ -887,7 +903,37 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
             }
             else if (cmd.equals("Show scientific notation")) {
                 if (checkScientificNotation.isSelected()) {
+                    checkCustomNotation.setSelected(false);
                     numberFormat = scientificFormat;
+                    checkHex.setSelected(false);
+                    checkBin.setSelected(false);
+                    showAsHex = false;
+                    showAsBin = false;
+                }
+                else
+                    numberFormat = normalFormat;
+                this.updateUI();
+            }
+            else if (cmd.equals("Create custom notation")) {
+                String msg = "Create number format by pattern \nINTEGER . FRACTION E EXPONENT\nusing # for optional digits and 0 for required digits"
+                        + "\nwhere, INTEGER: the pattern for the integer part"
+                        + "\n       FRACTION: the pattern for the fractional part"
+                        + "\n       EXPONENT: the pattern for the exponent part" + "\n\nFor example, "
+                        + "\n\t the scientific notation format is, \"###.#####E0#\""
+                        + "\n\t to make the digits required, \"000.00000E00\"\n\n";
+                String str = (String) JOptionPane.showInputDialog(this, msg, "Create a custom number format",
+                        JOptionPane.PLAIN_MESSAGE, ViewProperties.getLargeHdfIcon(), null, null);
+                if ((str == null) || (str.length() < 1)) {
+                    return;
+                }
+
+                customFormat.applyPattern(str);
+
+            }
+            else if (cmd.equals("Show custom notation")) {
+                if (checkCustomNotation.isSelected()) {
+                    numberFormat = customFormat;
+                    checkScientificNotation.setSelected(false);
                     checkHex.setSelected(false);
                     checkBin.setSelected(false);
                     showAsHex = false;
@@ -901,6 +947,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
                 showAsHex = checkHex.isSelected();
                 if (showAsHex) {
                     checkScientificNotation.setSelected(false);
+                    checkCustomNotation.setSelected(false);
                     checkBin.setSelected(false);
                     showAsBin = false;
                     numberFormat = normalFormat;
@@ -911,6 +958,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
                 showAsBin = checkBin.isSelected();
                 if (showAsBin) {
                     checkScientificNotation.setSelected(false);
+                    checkCustomNotation.setSelected(false);
                     checkHex.setSelected(false);
                     showAsHex = false;
                     numberFormat = normalFormat;
@@ -1747,17 +1795,26 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
                     String strVal = null;
 
                     if (isRegRef) {
-                        String reg = (String) val;
-                        String oidStr = reg.substring(reg.indexOf(':') + 1, reg.indexOf(' '));
-                        long oid[] = { -1 };
+                        if(val != null && ((String)val).compareTo("NULL")!=0) {
+                            String reg = (String)val;
+                            boolean isPointSelection = false;
 
-                        // decode object ID
-                        try {
-                            oid[0] = Long.valueOf(oidStr);
-                            HObject obj = FileFormat.findObject(dataset.getFileFormat(), oid);
-                            strVal = obj.getFullName() + " " + reg.substring(reg.indexOf("{"));
+                            isPointSelection = (reg.indexOf('-') <= 0);
+
+                            // find the object location
+                            String oidStr = reg.substring(reg.indexOf('/'), reg.indexOf(' '));
+
+                            // decode the region selection
+                            String regStr = reg.substring(reg.indexOf('{') + 1, reg.indexOf('}'));
+                            if (regStr == null || regStr.length() <= 0) { // no selection
+                                strVal = null;
+                            }
+                            else {
+                                // decode the region selection
+                                strVal = reg.substring(reg.indexOf('}') + 1);
+                            }
                         }
-                        catch (Exception ex) {
+                        else {
                             strVal = null;
                         }
                     }
@@ -2739,6 +2796,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
         DataOutputStream out = new DataOutputStream(outputFile);
 
         if (dataset instanceof ScalarDS) {
+            ((ScalarDS) dataset).convertToUnsignedC();
             Object data = dataset.getData();
             String cname = data.getClass().getName();
             char dname = cname.charAt(cname.lastIndexOf("[") + 1);
@@ -3784,7 +3842,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
             viewType = ViewType.TABLE;
             Object theData = null;
             try {
-                theData = getDataObject();
+                theData = ((Dataset)getDataObject()).getData();
             }
             catch (Exception ex) {
                 JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(), JOptionPane.ERROR_MESSAGE);
@@ -3941,31 +3999,25 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
     private void showRegRefData(String reg) {
         boolean isPointSelection = false;
 
-        if (reg == null || reg.length() <= 0) return;
+        if (reg == null || (reg.length() <= 0) || (reg.compareTo("NULL")==0)) return;
 
         isPointSelection = (reg.indexOf('-') <= 0);
 
-        // find the object id
-        String oidStr = reg.substring(reg.indexOf(':') + 1, reg.indexOf(' '));
-        long oid[] = { -1 };
-
-        // decode object ID
-        try {
-            oid[0] = Long.valueOf(oidStr);
-        }
-        catch (Exception ex) {
-            return;
-        }
+        // find the object location
+        String oidStr = reg.substring(reg.indexOf('/'), reg.indexOf(' '));
 
         // decode the region selection
         String regStr = reg.substring(reg.indexOf('{') + 1, reg.indexOf('}'));
         if (regStr == null || regStr.length() <= 0) return; // no selection
 
+        // decode the region selection
+        String dataStr = reg.substring(reg.indexOf('}') + 1);
+
         StringTokenizer st = new StringTokenizer(regStr);
         int nSelections = st.countTokens();
         if (nSelections <= 0) return; // no selection
 
-        HObject obj = FileFormat.findObject(dataset.getFileFormat(), oid);
+        HObject obj = FileFormat.findObject(dataset.getFileFormat(), oidStr);
         if (obj == null || !(obj instanceof ScalarDS)) return;
 
         ScalarDS dset = (ScalarDS) obj;
