@@ -128,11 +128,13 @@ implements ActionListener, ItemListener {
         contentPane.setPreferredSize(new Dimension(w, h));
 
         JButton okButton = new JButton("   Ok   ");
+        okButton.setName("OK");
         okButton.setActionCommand("Ok");
         okButton.setMnemonic(KeyEvent.VK_O);
         okButton.addActionListener(this);
 
         JButton cancelButton = new JButton("Cancel");
+        cancelButton.setName("Cancel");
         cancelButton.setMnemonic(KeyEvent.VK_C);
         cancelButton.setActionCommand("Cancel");
         cancelButton.addActionListener(this);
@@ -153,7 +155,9 @@ implements ActionListener, ItemListener {
         namePanel.add(tmpP, BorderLayout.WEST);
         tmpP = new JPanel();
         tmpP.setLayout(new GridLayout(2, 1));
-        tmpP.add(nameField = new JTextField());
+        nameField = new JTextField();
+        nameField.setName("dtname");
+        tmpP.add(nameField);
         tmpP.add(parentChoice);
         namePanel.add(tmpP, BorderLayout.CENTER);
         contentPane.add(namePanel, BorderLayout.NORTH);
@@ -166,11 +170,15 @@ implements ActionListener, ItemListener {
         typePanel.setBorder(border);
 
         stringLengthField = new JTextField("String length");
+        stringLengthField.setName("dtstringlen");
         stringLengthField.setEnabled(false);
 
         endianChoice = new JComboBox();
+        endianChoice.setName("dtendian");
         classChoice = new JComboBox();
+        classChoice.setName("dtclass");
         sizeChoice = new JComboBox();
+        sizeChoice.setName("dtsize");
         endianChoice.setEnabled(isH5);
 
         classChoice.addItem("INTEGER");
@@ -180,6 +188,9 @@ implements ActionListener, ItemListener {
         if (isH5) {
             classChoice.addItem("STRING");
             classChoice.addItem("REFERENCE");
+            classChoice.addItem("VLEN_INTEGER");
+            classChoice.addItem("VLEN_FLOAT");
+            classChoice.addItem("VLEN_STRING");
             sizeChoice.addItem("NATIVE");
             endianChoice.addItem("NATIVE");
             endianChoice.addItem("LITTLE ENDIAN");
@@ -198,7 +209,9 @@ implements ActionListener, ItemListener {
         typePanel.add(new JLabel("Datatype class"));
         typePanel.add(new JLabel("Size (bits)"));
         typePanel.add(new JLabel("Byte ordering"));
-        typePanel.add(checkUnsigned = new JCheckBox("Unsigned"));
+        checkUnsigned = new JCheckBox("Unsigned");
+        checkUnsigned.setName("dtchkunsigned");
+        typePanel.add(checkUnsigned);
 
         typePanel.add(classChoice);
         typePanel.add(sizeChoice);
@@ -245,7 +258,7 @@ implements ActionListener, ItemListener {
             endianChoice.setSelectedIndex(0);
             stringLengthField.setEnabled(false);
 
-            if (idx == 0) {
+            if ((idx == 0) || (idx == 5)) {
                 sizeChoice.setEnabled(true);
                 endianChoice.setEnabled(isH5);
                 checkUnsigned.setEnabled(true);
@@ -259,7 +272,7 @@ implements ActionListener, ItemListener {
                     sizeChoice.addItem("64");
                 }
             }
-            else if (idx == 1) {
+            else if ((idx == 1) || (idx == 6)) {
                 sizeChoice.setEnabled(true);
                 endianChoice.setEnabled(isH5);
                 checkUnsigned.setEnabled(false);
@@ -287,6 +300,12 @@ implements ActionListener, ItemListener {
                 checkUnsigned.setEnabled(false);
                 stringLengthField.setEnabled(false);
             }
+            else if (idx == 7) {
+                sizeChoice.setEnabled(false);
+                endianChoice.setEnabled(false);
+                checkUnsigned.setEnabled(false);
+                stringLengthField.setEnabled(false);
+            }
         }
         else if (source.equals(sizeChoice)) {
             if (classChoice.getSelectedIndex() == 0) {
@@ -298,6 +317,7 @@ implements ActionListener, ItemListener {
     private HObject createDatatype() {
         String name = null;
         Group pgroup = null;
+        boolean isVLen = false;
         int tclass = -1, tsize = -1, torder = -1, tsign = -1;
         name = nameField.getText().trim();
         if ((name == null) || (name.length() < 1)) {
@@ -352,28 +372,48 @@ implements ActionListener, ItemListener {
         else if (idx == 4) {
             tclass = Datatype.CLASS_REFERENCE;
         }
+        else if (idx == 5) {;
+            isVLen = true;
+            tclass = Datatype.CLASS_INTEGER;
+            if (checkUnsigned.isSelected()) {
+                tsign = Datatype.SIGN_NONE;
+            }
+        }
+        else if (idx == 6) {;
+            isVLen = true;
+            tclass = Datatype.CLASS_FLOAT;
+        }
+        else if (idx == 7) {
+            isVLen = true;
+            tclass = Datatype.CLASS_STRING;
+        }
 
         // set datatype size/order
         idx = sizeChoice.getSelectedIndex();
         if (tclass == Datatype.CLASS_STRING) {
-            int stringLength = 0;
-            try {
-                stringLength = Integer.parseInt(stringLengthField.getText());
+            if (isVLen) {
+                tsize = -1;
             }
-            catch (NumberFormatException ex) {
-                stringLength = -1;
-            }
-
-            if (stringLength <= 0) {
-                toolkit.beep();
-                JOptionPane.showMessageDialog(this, 
-                        "Invalid string length: " + stringLengthField.getText(), 
-                        getTitle(),
-                        JOptionPane.ERROR_MESSAGE);
-                return null;
-            }
-
-            tsize = stringLength;
+            else {
+                int stringLength = 0;
+                try {
+                    stringLength = Integer.parseInt(stringLengthField.getText());
+                }
+                catch (NumberFormatException ex) {
+                    stringLength = -1;
+                }
+    
+                if (stringLength <= 0) {
+                    toolkit.beep();
+                    JOptionPane.showMessageDialog(this, 
+                            "Invalid string length: " + stringLengthField.getText(), 
+                            getTitle(),
+                            JOptionPane.ERROR_MESSAGE);
+                    return null;
+                }
+    
+                tsize = stringLength;
+            }        
         }
         else if (tclass == Datatype.CLASS_REFERENCE) {
             tsize = 1;
@@ -418,7 +458,12 @@ implements ActionListener, ItemListener {
             else {
                 fullPath = pgroup.getPath() + HObject.separator + pgroup.getName() + HObject.separator + name;
             }
-            Datatype datatype = fileFormat.createDatatype(tclass, tsize, torder, tsign, fullPath);
+            Datatype basedatatype = null;
+            if (isVLen) {
+                basedatatype = fileFormat.createDatatype(tclass, tsize, torder, tsign);
+                tclass = Datatype.CLASS_VLEN;
+            }
+            Datatype datatype = fileFormat.createDatatype(tclass, tsize, torder, tsign, basedatatype, fullPath);
             obj = datatype;
         }
         catch (Exception ex) {

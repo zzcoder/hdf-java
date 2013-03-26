@@ -70,7 +70,6 @@ import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
-import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.object.CompoundDS;
 import ncsa.hdf.object.Dataset;
 import ncsa.hdf.object.Datatype;
@@ -1432,8 +1431,16 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
             }
         }
 
+        boolean isH4 = selectedObject.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF4));
+
+        if (isH4) {
+            toolkit.beep();
+            JOptionPane.showMessageDialog(this, "Cannot export HDF4 object.", "HDFView", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
         try {
-            H5.H5export_dataset(fname, dataset.getFile(), dataset.getFullName(), binaryOrder);
+            selectedObject.getFileFormat().exportDataset(fname, dataset.getFile(), dataset.getFullName(), binaryOrder);
         }
         catch (Exception ex) {
             toolkit.beep();

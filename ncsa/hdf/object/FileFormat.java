@@ -1118,6 +1118,41 @@ public abstract class FileFormat extends File {
      */
     public abstract Datatype createDatatype(int tclass, int tsize, int torder, int tsign, String name) throws Exception;
 
+    /**
+     * Creates a named datatype in a file.
+     * <p>
+     * The following code creates a named datatype in a file.
+     * 
+     * <pre>
+     * H5File file = (H5File) h5file.createInstance(&quot;test_hdf5.h5&quot;, FileFormat.WRITE);
+     *                                                                                 H5Datatype dtype = file.createDatatype(
+     *                                                                                                          Datatype.CLASS_INTEGER,
+     *                                                                                                          4,
+     *                                                                                                          Datatype.NATIVE,
+     *                                                                                                          Datatype.NATIVE,
+     *                                                                                                          basetype,
+     *                                                                                                          &quot;Native Integer&quot;);
+     * </pre>
+     * 
+     * @param tclass
+     *            class of datatype, e.g. Datatype.CLASS_INTEGER
+     * @param tsize
+     *            size of the datatype in bytes, e.g. 4 for 32-bit integer.
+     * @param torder
+     *            order of the byte endianing, Datatype.ORDER_LE.
+     * @param tsign
+     *            signed or unsigned of an integer, Datatype.SIGN_NONE.
+     * @param tbase
+     *            the base datatype of the new datatype
+     * @param name
+     *            name of the datatype to create, e.g. "Native Integer".
+     * @return The new datatype if successful; otherwise returns null.
+     * @throws Exception
+     *             The exceptions thrown vary depending on the implementing
+     *             class.
+     */
+    public abstract Datatype createDatatype(int tclass, int tsize, int torder, int tsign, Datatype tbase, String name) throws Exception;
+
     // REVIEW DOCS for createDatatype(). Check and document exceptions.
 
     /***************************************************************************
@@ -1166,6 +1201,38 @@ public abstract class FileFormat extends File {
      *             class.
      */
     public abstract Datatype createDatatype(int tclass, int tsize, int torder, int tsign) throws Exception;
+
+    /**
+     * Creates a new datatype in memory.
+     * <p>
+     * The following code creates an instance of H5Datatype in memory.
+     * 
+     * <pre>
+     * H5File file = (H5File) h5file.createInstance(&quot;test_hdf5.h5&quot;, FileFormat.WRITE);
+     *                                                                                 H5Datatype dtype = file.createDatatype(
+     *                                                                                                          Datatype.CLASS_INTEGER,
+     *                                                                                                          4,
+     *                                                                                                          Datatype.NATIVE,
+     *                                                                                                          Datatype.NATIVE,
+     *                                                                                                          basetype);
+     * </pre>
+     * 
+     * @param tclass
+     *            class of datatype, e.g. Datatype.CLASS_INTEGER
+     * @param tsize
+     *            size of the datatype in bytes, e.g. 4 for 32-bit integer.
+     * @param torder
+     *            order of the byte endian, e.g. Datatype.ORDER_LE.
+     * @param tsign
+     *            signed or unsigned of an integer, Datatype.SIGN_NONE.
+     * @param tbase
+     *            the base datatype of the new datatype
+     * @return The new datatype object if successful; otherwise returns null.
+     * @throws Exception
+     *             The exceptions thrown vary depending on the implementing
+     *             class.
+     */
+    public abstract Datatype createDatatype(int tclass, int tsize, int torder, int tsign, Datatype tbase) throws Exception;
 
     // REVIEW DOCS for createDatatype(). Check and document exceptions.
 
@@ -1882,6 +1949,21 @@ public abstract class FileFormat extends File {
      *             class.
      */
     public HObject createLink(Group linkGroup, String name, Object currentObj) throws Exception {
+        throw new UnsupportedOperationException("Unsupported operation. Subclasses must implement it.");
+    }
+
+    /**
+     * Export dataset.
+     * 
+     * @param file_export_name
+     *            The file name to export data into.
+     * @param file_name
+     *            The name of the HDF5 file containing the dataset.
+     * @param object_path
+     *            The full path of the dataset to be exported.
+     * @throws Exception
+     */
+    public void exportDataset(String file_export_name, String file_name, String object_path, int binary_order) throws Exception {
         throw new UnsupportedOperationException("Unsupported operation. Subclasses must implement it.");
     }
 
