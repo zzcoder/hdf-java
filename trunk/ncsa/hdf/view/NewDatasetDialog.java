@@ -197,11 +197,15 @@ public class NewDatasetDialog extends JDialog implements ActionListener, ItemLis
         typePanel.setBorder(border);
 
         stringLengthField = new JTextField("String length");
+        stringLengthField.setName("datasetstringlen");
         stringLengthField.setEnabled(false);
 
         endianChoice = new JComboBox();
+        endianChoice.setName("datasetendian");
         classChoice = new JComboBox();
+        classChoice.setName("datasetclass");
         sizeChoice = new JComboBox();
+        sizeChoice.setName("datasetsize");
         endianChoice.setEnabled(isH5);
 
         classChoice.addItem("INTEGER");
@@ -212,6 +216,9 @@ public class NewDatasetDialog extends JDialog implements ActionListener, ItemLis
             classChoice.addItem("STRING");
             classChoice.addItem("REFERENCE");
             classChoice.addItem("ENUM");
+            classChoice.addItem("VLEN_INTEGER");
+            classChoice.addItem("VLEN_FLOAT");
+            classChoice.addItem("VLEN_STRING");
             sizeChoice.addItem("NATIVE");
             endianChoice.addItem("NATIVE");
             endianChoice.addItem("LITTLE ENDIAN");
@@ -229,7 +236,9 @@ public class NewDatasetDialog extends JDialog implements ActionListener, ItemLis
         typePanel.add(new JLabel("Datatype class"));
         typePanel.add(new JLabel("Size (bits)"));
         typePanel.add(new JLabel("Byte ordering"));
-        typePanel.add(checkUnsigned = new JCheckBox("Unsigned"));
+        checkUnsigned = new JCheckBox("Unsigned");
+        checkUnsigned.setName("datasetchkunsigned");
+        typePanel.add(checkUnsigned);
 
         typePanel.add(classChoice);
         typePanel.add(sizeChoice);
@@ -244,6 +253,7 @@ public class NewDatasetDialog extends JDialog implements ActionListener, ItemLis
         spacePanel.setBorder(border);
 
         rankChoice = new JComboBox();
+        rankChoice.setName("datasetrank");
         for (int i = 1; i < 33; i++) {
             rankChoice.addItem(String.valueOf(i));
         }
@@ -271,16 +281,21 @@ public class NewDatasetDialog extends JDialog implements ActionListener, ItemLis
         layoutPanel.setBorder(border);
 
         checkContinguous = new JRadioButton("Contiguous");
+        checkContinguous.setName("datasetcontinguous");
         checkContinguous.setSelected(true);
         checkChunked = new JRadioButton("Chunked (size) ");
+        checkChunked.setName("datasetchunk");
         ButtonGroup bgroup = new ButtonGroup();
         bgroup.add(checkChunked);
         bgroup.add(checkContinguous);
         chunkSizeField = new JTextField("1 x 1");
+        chunkSizeField.setName("datasetchunksize");
         chunkSizeField.setEnabled(false);
         checkCompression = new JCheckBox("gzip (level) ");
+        checkCompression.setName("datasetgzip");
 
         compressionLevel = new JComboBox();
+        compressionLevel.setName("datasetlevel");
         for (int i = 0; i < 10; i++) {
             compressionLevel.addItem(String.valueOf(i));
         }
@@ -320,7 +335,9 @@ public class NewDatasetDialog extends JDialog implements ActionListener, ItemLis
 
         // fill values
         checkFillValue = new JCheckBox("Fill Value ");
+        checkFillValue.setName("datasetchkfill");
         fillValueField = new JTextField("0");
+        fillValueField.setName("datasetfillval");
         fillValueField.setEnabled(false);
         checkFillValue.setSelected(false);
         tmpP00 = new JPanel();
@@ -514,7 +531,7 @@ public class NewDatasetDialog extends JDialog implements ActionListener, ItemLis
             endianChoice.setSelectedIndex(0);
             stringLengthField.setEnabled(false);
 
-            if (idx == 0) { // INTEGER
+            if ((idx == 0) || (idx == 6)) { // INTEGER
                 sizeChoice.setEnabled(true);
                 endianChoice.setEnabled(isH5);
                 checkUnsigned.setEnabled(true);
@@ -528,7 +545,7 @@ public class NewDatasetDialog extends JDialog implements ActionListener, ItemLis
                     sizeChoice.addItem("64");
                 }
             }
-            else if (idx == 1) { // FLOAT
+            else if ((idx == 1) || (idx == 7)) { // FLOAT
                 sizeChoice.setEnabled(true);
                 endianChoice.setEnabled(isH5);
                 checkUnsigned.setEnabled(false);
@@ -561,6 +578,12 @@ public class NewDatasetDialog extends JDialog implements ActionListener, ItemLis
                 checkUnsigned.setEnabled(true);
                 stringLengthField.setEnabled(true);
                 stringLengthField.setText("R=0,G=1,B=2,...");
+            }
+            else if (idx == 8) {
+                sizeChoice.setEnabled(false);
+                endianChoice.setEnabled(false);
+                checkUnsigned.setEnabled(false);
+                stringLengthField.setEnabled(false);
             }
         }
         else if (source.equals(sizeChoice)) {
@@ -832,6 +855,7 @@ public class NewDatasetDialog extends JDialog implements ActionListener, ItemLis
     private HObject createFromScratch() {
         String name = null;
         Group pgroup = null;
+        boolean isVLen = false;
         int rank = -1, gzip = -1, tclass = -1, tsize = -1, torder = -1, tsign = -1;
         long dims[], maxdims[] = null, chunks[] = null;
 
@@ -884,25 +908,45 @@ public class NewDatasetDialog extends JDialog implements ActionListener, ItemLis
         else if (idx == 5) {
             tclass = Datatype.CLASS_ENUM;
         }
+        else if (idx == 6) {
+            isVLen = true;
+            tclass = Datatype.CLASS_INTEGER;
+            if (checkUnsigned.isSelected()) {
+                tsign = Datatype.SIGN_NONE;
+            }
+        }
+        else if (idx == 7) {
+            isVLen = true;
+            tclass = Datatype.CLASS_FLOAT;
+        }
+        else if (idx == 8) {
+            isVLen = true;
+            tclass = Datatype.CLASS_STRING;
+        }
 
         // set datatype size/order
         idx = sizeChoice.getSelectedIndex();
         if (tclass == Datatype.CLASS_STRING) {
-            int stringLength = 0;
-            try {
-                stringLength = Integer.parseInt(stringLengthField.getText());
+            if (isVLen) {
+                tsize = -1;
             }
-            catch (NumberFormatException ex) {
-                stringLength = -1;
+            else {
+                int stringLength = 0;
+                try {
+                    stringLength = Integer.parseInt(stringLengthField.getText());
+                }
+                catch (NumberFormatException ex) {
+                    stringLength = -1;
+                }
+    
+                if (stringLength <= 0) {
+                    toolkit.beep();
+                    JOptionPane.showMessageDialog(this, "Invalid string length: " + stringLengthField.getText(),
+                            getTitle(), JOptionPane.ERROR_MESSAGE);
+                    return null;
+                }
+                tsize = stringLength;
             }
-
-            if (stringLength <= 0) {
-                toolkit.beep();
-                JOptionPane.showMessageDialog(this, "Invalid string length: " + stringLengthField.getText(),
-                        getTitle(), JOptionPane.ERROR_MESSAGE);
-                return null;
-            }
-            tsize = stringLength;
         }
         else if (tclass == Datatype.CLASS_ENUM) {
             String enumStr = stringLengthField.getText();
@@ -1095,7 +1139,12 @@ public class NewDatasetDialog extends JDialog implements ActionListener, ItemLis
 
         HObject obj = null;
         try {
-            Datatype datatype = fileFormat.createDatatype(tclass, tsize, torder, tsign);
+            Datatype basedatatype = null;
+            if (isVLen) {
+                basedatatype = fileFormat.createDatatype(tclass, tsize, torder, tsign);
+                tclass = Datatype.CLASS_VLEN;
+            }
+            Datatype datatype = fileFormat.createDatatype(tclass, tsize, torder, tsign, basedatatype);
             if (tclass == Datatype.CLASS_ENUM) {
                 datatype.setEnumMembers(stringLengthField.getText());
             }

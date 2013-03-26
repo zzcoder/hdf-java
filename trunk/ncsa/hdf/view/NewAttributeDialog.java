@@ -33,6 +33,7 @@ import java.util.StringTokenizer;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JEditorPane;
@@ -75,12 +76,14 @@ public class NewAttributeDialog extends JDialog implements ActionListener, ItemL
     private JTextField        nameField;
 
     /** The Choice of the datatypes */
-    private JComboBox         typeChoice;
+    private JComboBox         classChoice, sizeChoice;
+
+    private JCheckBox         checkUnsigned;
 
     /** TextField for entering the attribute value. */
     private JTextField        valueField;
 
-    /** The Choice of the boject list */
+    /** The Choice of the object list */
     private JComboBox         objChoice;
 
     private FileFormat        fileFormat;
@@ -113,46 +116,71 @@ public class NewAttributeDialog extends JDialog implements ActionListener, ItemL
         isH5 = obj.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5));
         helpDialog = null;
         fileFormat = obj.getFileFormat();
+        
+        JPanel typeLabelPanel = new JPanel();
+        typeLabelPanel.setLayout(new GridLayout(1, 4, 15, 3));
+        JPanel typePanel = new JPanel();
+        typePanel.setLayout(new GridLayout(1, 4, 15, 3));
 
-        typeChoice = new JComboBox();
-        typeChoice.addItem("string");
-        typeChoice.addItem("byte (8-bit)");
-        typeChoice.addItem("short (16-bit)");
-        typeChoice.addItem("int (32-bit)");
-        typeChoice.addItem("unsigned byte (8-bit)");
-        typeChoice.addItem("unsigned short (16-bit)");
-        typeChoice.addItem("unsigned int (32-bit)");
-        typeChoice.addItem("long (64-bit)");
-        typeChoice.addItem("float");
-        typeChoice.addItem("double");
+        classChoice = new JComboBox();
+        classChoice.setName("attrclass");
+        sizeChoice = new JComboBox();
+        sizeChoice.setName("attrsize");
+
+        classChoice.addItem("INTEGER");
+        classChoice.addItem("FLOAT");
+        classChoice.addItem("CHAR");
+
         if (isH5) {
-            typeChoice.addItem("object reference");
+            classChoice.addItem("STRING");
+            classChoice.addItem("REFERENCE");
+            classChoice.addItem("VLEN_INTEGER");
+            classChoice.addItem("VLEN_FLOAT");
+            classChoice.addItem("VLEN_STRING");
         }
+        sizeChoice.addItem("8");
+        sizeChoice.addItem("16");
+        sizeChoice.addItem("32");
+        sizeChoice.addItem("64");
+
+        typeLabelPanel.add(new JLabel("Datatype class"));
+        typeLabelPanel.add(new JLabel("Size (bits)"));
+        typeLabelPanel.add(new JLabel(" "));
+
+        typePanel.add(classChoice);
+        typePanel.add(sizeChoice);
+        checkUnsigned = new JCheckBox("Unsigned");
+        checkUnsigned.setName("attrchkunsigned");
+        typePanel.add(checkUnsigned);
 
         JPanel contentPane = (JPanel) getContentPane();
         contentPane.setLayout(new BorderLayout(5, 5));
         contentPane.setBorder(BorderFactory.createEmptyBorder(20, 10, 0, 10));
-        int w = 400 + (ViewProperties.getFontSize() - 12) * 15;
-        int h = 180 + (ViewProperties.getFontSize() - 12) * 10;
+        int w = 500 + (ViewProperties.getFontSize() - 12) * 15;
+        int h = 180 + (ViewProperties.getFontSize() - 12) * 12;
         contentPane.setPreferredSize(new Dimension(w, h));
 
         JButton okButton = new JButton("   Ok   ");
+        okButton.setName("OK");
         okButton.setActionCommand("Ok");
         okButton.setMnemonic(KeyEvent.VK_O);
 
         JButton cancelButton = new JButton("Cancel");
+        cancelButton.setName("Cancel");
         cancelButton.setActionCommand("Cancel");
         cancelButton.setMnemonic(KeyEvent.VK_C);
 
         JButton helpButton = new JButton(" Help ");
+        helpButton.setName("Help");
         helpButton.setActionCommand("Show help");
         helpButton.setMnemonic(KeyEvent.VK_H);
 
         JPanel p = new JPanel();
         p.setLayout(new BorderLayout(5, 5));
         JPanel p2 = new JPanel();
-        p2.setLayout(new GridLayout(5, 1, 3, 3));
+        p2.setLayout(new GridLayout(6, 1, 3, 3));
         p2.add(new JLabel("Name: "));
+        p2.add(new JLabel(" "));
         p2.add(new JLabel("Type: "));
         p2.add(arrayLengthLabel = new JLabel("Max String Length: "));
         p2.add(new JLabel("Value: "));
@@ -171,22 +199,31 @@ public class NewAttributeDialog extends JDialog implements ActionListener, ItemL
         sdAttr.setSelected(true);
         h4GattrPane.add(sdAttr);
         h4GattrPane.add(grAttr);
-        typePane.add(typeChoice, BorderLayout.CENTER);
+        typePane.add(typePanel, BorderLayout.CENTER);
         typePane.add(h4GattrPane, BorderLayout.EAST);
         h4GrAttrRadioButton = grAttr;
 
         p2 = new JPanel();
-        p2.setLayout(new GridLayout(5, 1, 3, 3));
-        p2.add(nameField = new JTextField("", 30));
+        p2.setLayout(new GridLayout(6, 1, 3, 3));
+        nameField = new JTextField("", 30);
+        nameField.setName("attrname");
+        p2.add(nameField);
         if (!isH5 && (obj instanceof Group) && ((Group) obj).isRoot()) {
             p2.add(typePane);
         }
         else {
-            p2.add(typeChoice);
+            p2.add(typeLabelPanel);
+            p2.add(typePanel);
         }
-        p2.add(lengthField = new JTextField("1"));
-        p2.add(valueField = new JTextField("0"));
-        p2.add(objChoice = new JComboBox());
+        lengthField = new JTextField("1");
+        lengthField.setName("attrlength");
+        p2.add(lengthField);
+        valueField = new JTextField("0");
+        valueField.setName("attrvalue");
+        p2.add(valueField);
+        objChoice = new JComboBox();
+        objChoice.setName("attrobjn");
+        p2.add(objChoice);
         p.add("Center", p2);
 
         contentPane.add("Center", p);
@@ -197,7 +234,9 @@ public class NewAttributeDialog extends JDialog implements ActionListener, ItemL
         p.add(helpButton);
         contentPane.add("South", p);
 
-        typeChoice.addItemListener(this);
+        classChoice.addItemListener(this);
+        sizeChoice.addItemListener(this);
+
         okButton.addActionListener(this);
         cancelButton.addActionListener(this);
         helpButton.addActionListener(this);
@@ -252,23 +291,64 @@ public class NewAttributeDialog extends JDialog implements ActionListener, ItemL
     public void itemStateChanged(ItemEvent e) {
         Object source = e.getSource();
 
-        if (source.equals(typeChoice)) {
-            int idx = typeChoice.getSelectedIndex();
+        if (source.equals(classChoice)) {
+            int idx = classChoice.getSelectedIndex();
+            sizeChoice.setSelectedIndex(0);
             objChoice.setEnabled(false);
             lengthField.setEnabled(true);
 
-            if (idx == 0) {
+            if ((idx == 0) || (idx == 5)) {
+                sizeChoice.setEnabled(true);
+                checkUnsigned.setEnabled(true);
+                arrayLengthLabel.setText("Array Size: ");
+
+                if (sizeChoice.getItemCount() == 2) {
+                    sizeChoice.removeItem("32");
+                    sizeChoice.removeItem("64");
+                    sizeChoice.addItem("8");
+                    sizeChoice.addItem("16");
+                    sizeChoice.addItem("32");
+                    sizeChoice.addItem("64");
+                }
+            }
+            else if ((idx == 1) || (idx == 6)) {
+                sizeChoice.setEnabled(true);
+                checkUnsigned.setEnabled(false);
+                arrayLengthLabel.setText("Array Size: ");
+
+                if (sizeChoice.getItemCount() == 4) {
+                    sizeChoice.removeItem("16");
+                    sizeChoice.removeItem("8");
+                }
+            }
+            else if (idx == 2) {
+                sizeChoice.setEnabled(false);
+                checkUnsigned.setEnabled(true);
+                arrayLengthLabel.setText("Array Size: ");
+            }
+            else if (idx == 3) {
+                sizeChoice.setEnabled(false);
+                checkUnsigned.setEnabled(false);
                 arrayLengthLabel.setText("Max String Length: ");
             }
-            else if (typeChoice.getSelectedItem().equals("object reference")) {
+            else if (idx == 4) {
+                sizeChoice.setEnabled(false);
+                checkUnsigned.setEnabled(false);
                 lengthField.setText("1");
                 lengthField.setEnabled(false);
                 arrayLengthLabel.setText("Array Size: ");
                 objChoice.setEnabled(true);
                 valueField.setText("");
             }
-            else {
-                arrayLengthLabel.setText("Array Size: ");
+            else if (idx == 7) {
+                sizeChoice.setEnabled(false);
+                checkUnsigned.setEnabled(false);
+                lengthField.setEnabled(false);
+            }
+        }
+        else if (source.equals(sizeChoice)) {
+            if (classChoice.getSelectedIndex() == 0) {
+                checkUnsigned.setEnabled(true);
             }
         }
         else if (source.equals(objChoice)) {
@@ -300,9 +380,9 @@ public class NewAttributeDialog extends JDialog implements ActionListener, ItemL
     private boolean createAttribute() {
         int string_length = 0;
         int tclass = -1, tsize = -1, torder = -1, tsign = -1;
+        boolean isVLen = false;
 
         Object value = null;
-        String dt = (String) typeChoice.getSelectedItem();
         String strValue = valueField.getText();
 
         String attrName = nameField.getText();
@@ -339,216 +419,87 @@ public class NewAttributeDialog extends JDialog implements ActionListener, ItemL
         int count = Math.min(arraySize, st.countTokens());
         String theToken;
 
-        if (dt.startsWith("byte")) {
-            byte[] b = new byte[arraySize];
-            for (int j = 0; j < count; j++) {
-                theToken = st.nextToken().trim();
-                try {
-                    b[j] = Byte.parseByte(theToken);
-                }
-                catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(), JOptionPane.ERROR_MESSAGE);
-                    return false;
-                }
-            }
-            value = b;
+        // set datatype class
+        int idx = classChoice.getSelectedIndex();
+        if (idx == 0) {
             tclass = Datatype.CLASS_INTEGER;
-            tsize = 1;
+            if (checkUnsigned.isSelected()) {
+                tsign = Datatype.SIGN_NONE;
+            }
             torder = Datatype.NATIVE;
         }
-        else if (dt.startsWith("short")) {
-            short[] s = new short[arraySize];
-
-            for (int j = 0; j < count; j++) {
-                theToken = st.nextToken().trim();
-                try {
-                    s[j] = Short.parseShort(theToken);
-                }
-                catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(), JOptionPane.ERROR_MESSAGE);
-                    return false;
-                }
-            }
-            value = s;
-            tclass = Datatype.CLASS_INTEGER;
-            tsize = 2;
-            torder = Datatype.NATIVE;
-        }
-        else if (dt.startsWith("int")) {
-            int[] i = new int[arraySize];
-
-            for (int j = 0; j < count; j++) {
-                theToken = st.nextToken().trim();
-                try {
-                    i[j] = Integer.parseInt(theToken);
-                }
-                catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(), JOptionPane.ERROR_MESSAGE);
-                    return false;
-                }
-            }
-            value = i;
-            tclass = Datatype.CLASS_INTEGER;
-            tsize = 4;
-            torder = Datatype.NATIVE;
-        }
-        else if (dt.startsWith("unsigned byte")) {
-            byte[] b = new byte[arraySize];
-            short sv = 0;
-            for (int j = 0; j < count; j++) {
-                theToken = st.nextToken().trim();
-                try {
-                    sv = Short.parseShort(theToken);
-                }
-                catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(), JOptionPane.ERROR_MESSAGE);
-                    return false;
-                }
-                if (sv < 0) {
-                    sv = 0;
-                }
-                else if (sv > 255) {
-                    sv = 255;
-                }
-                b[j] = (byte) sv;
-            }
-            value = b;
-
-            tclass = Datatype.CLASS_INTEGER;
-            tsize = 1;
-            torder = Datatype.NATIVE;
-            tsign = Datatype.SIGN_NONE;
-        }
-        else if (dt.startsWith("unsigned short")) {
-            short[] s = new short[arraySize];
-            int iv = 0;
-            for (int j = 0; j < count; j++) {
-                theToken = st.nextToken().trim();
-                try {
-                    iv = Integer.parseInt(theToken);
-                }
-                catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(), JOptionPane.ERROR_MESSAGE);
-                    return false;
-                }
-                if (iv < 0) {
-                    iv = 0;
-                }
-                else if (iv > 65535) {
-                    iv = 65535;
-                }
-                s[j] = (short) iv;
-            }
-            value = s;
-            tclass = Datatype.CLASS_INTEGER;
-            tsize = 2;
-            torder = Datatype.NATIVE;
-            tsign = Datatype.SIGN_NONE;
-        }
-        else if (dt.startsWith("unsigned int")) {
-            int[] i = new int[arraySize];
-            long lv = 0;
-            for (int j = 0; j < count; j++) {
-                theToken = st.nextToken().trim();
-                try {
-                    lv = Long.parseLong(theToken);
-                }
-                catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(), JOptionPane.ERROR_MESSAGE);
-                    return false;
-                }
-                if (lv < 0) {
-                    lv = 0;
-                }
-                if (lv > 4294967295L) {
-                    lv = 4294967295L;
-                }
-                i[j] = (int) lv;
-            }
-            value = i;
-            tclass = Datatype.CLASS_INTEGER;
-            tsize = 4;
-            torder = Datatype.NATIVE;
-            tsign = Datatype.SIGN_NONE;
-        }
-        else if (dt.startsWith("long")) {
-            long[] l = new long[arraySize];
-            for (int j = 0; j < count; j++) {
-                theToken = st.nextToken().trim();
-                try {
-                    l[j] = Long.parseLong(theToken);
-                }
-                catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(), JOptionPane.ERROR_MESSAGE);
-                    return false;
-                }
-            }
-            value = l;
-            tclass = Datatype.CLASS_INTEGER;
-            tsize = 8;
-            torder = Datatype.NATIVE;
-        }
-        else if (dt.startsWith("unsigned long")) {
-            long[] i = new long[arraySize];
-            BigInteger lv = BigInteger.valueOf(0);
-            for (int j = 0; j < count; j++) {
-                theToken = st.nextToken().trim();
-                try {
-                    lv = new BigInteger(theToken);
-                }
-                catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(), JOptionPane.ERROR_MESSAGE);
-                    return false;
-                }
-                i[j] = (long) lv.longValue();
-            }
-            value = i;
-            tclass = Datatype.CLASS_INTEGER;
-            tsize = 8;
-            torder = Datatype.NATIVE;
-            tsign = Datatype.SIGN_NONE;
-        }
-        else if (dt.startsWith("float")) {
-            float[] f = new float[arraySize];
-            for (int j = 0; j < count; j++) {
-                theToken = st.nextToken().trim();
-                try {
-                    f[j] = Float.parseFloat(theToken);
-                }
-                catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(), JOptionPane.ERROR_MESSAGE);
-                    return false;
-                }
-                if (Float.isInfinite(f[j]) || Float.isNaN(f[j])) {
-                    f[j] = 0;
-                }
-            }
-            value = f;
+        else if (idx == 1) {
             tclass = Datatype.CLASS_FLOAT;
-            tsize = 4;
             torder = Datatype.NATIVE;
         }
-        else if (dt.startsWith("double")) {
-            double[] d = new double[arraySize];
-            for (int j = 0; j < count; j++) {
-                theToken = st.nextToken().trim();
+        else if (idx == 2) {
+            tclass = Datatype.CLASS_CHAR;
+            if (checkUnsigned.isSelected()) {
+                tsign = Datatype.SIGN_NONE;
+            }
+            torder = Datatype.NATIVE;
+        }
+        else if (idx == 3) {
+            tclass = Datatype.CLASS_STRING;
+        }
+        else if (idx == 4) {
+            tclass = Datatype.CLASS_REFERENCE;
+        }
+        else if (idx == 5) {;
+            isVLen = true;
+            tclass = Datatype.CLASS_INTEGER;
+            if (checkUnsigned.isSelected()) {
+                tsign = Datatype.SIGN_NONE;
+            }
+            torder = Datatype.NATIVE;
+        }
+        else if (idx == 6) {;
+            isVLen = true;
+            tclass = Datatype.CLASS_FLOAT;
+            torder = Datatype.NATIVE;
+        }
+        else if (idx == 7) {
+            isVLen = true;
+            tclass = Datatype.CLASS_STRING;
+        }
+
+        // set datatype size/order
+        idx = sizeChoice.getSelectedIndex();
+        if (tclass == Datatype.CLASS_STRING) {
+            if (isVLen) {
+                tsize = -1;
+            }
+            else {
+                int stringLength = 0;
                 try {
-                    d[j] = Double.parseDouble(theToken);
+                    stringLength = Integer.parseInt(lengthField.getText());
                 }
                 catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(), JOptionPane.ERROR_MESSAGE);
-                    return false;
+                    stringLength = -1;
                 }
-                if (Double.isInfinite(d[j]) || Double.isNaN(d[j])) {
-                    d[j] = 0;
+    
+                if (stringLength <= 0) {
+                    stringLength = DEFAULT_STRING_ATTRIBUTE_LENGTH;
                 }
-            }
-            value = d;
-            tclass = Datatype.CLASS_FLOAT;
-            tsize = 8;
-            torder = Datatype.NATIVE;
+                if (strValue.length() > stringLength) {
+                    strValue = strValue.substring(0, stringLength);
+                }
+    
+                tsize = stringLength;
+
+                String[] strArray = { strValue };
+                value = strArray;
+
+                if (isH5) {
+                    arraySize = 1; // support string type
+                }
+                else {
+                    arraySize = stringLength; // array of characters
+                }
+            }        
         }
-        else if (dt.startsWith("object reference")) {
+        else if (tclass == Datatype.CLASS_REFERENCE) {
+            tsize = 1;
             arraySize = st.countTokens();
             long[] ref = new long[arraySize];
             for (int j = 0; j < arraySize; j++) {
@@ -563,45 +514,218 @@ public class NewAttributeDialog extends JDialog implements ActionListener, ItemL
             }
 
             value = ref;
-            tclass = Datatype.CLASS_REFERENCE;
-            tsize = 8;
             torder = Datatype.NATIVE;
         }
-        else if (dt.equals("string")) {
-            try {
-                string_length = Integer.parseInt(lengthField.getText());
-            }
-            catch (Exception e) {
-                string_length = 0;
-            }
+        else if (idx == 0) {
+            tsize = Datatype.NATIVE;
+        }
+        else if (tclass == Datatype.CLASS_FLOAT) {
+            tsize = (idx + 1) * 4;
+        }
+        else {
+            tsize = 1 << (idx);
+        }
 
-            // string_length = Math.max(string_length, strValue.length());
-            if (string_length <= 0) {
-                string_length = DEFAULT_STRING_ATTRIBUTE_LENGTH;
-            }
+        if ((tsize == 8) && !isH5 && (tclass == Datatype.CLASS_INTEGER)) {
+            JOptionPane.showMessageDialog(this,
+                    "HDF4 does not support 64-bit integer.", 
+                    getTitle(),
+                    JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
 
-            if (strValue.length() > string_length) {
-                strValue = strValue.substring(0, string_length);
-            }
-
-            tclass = Datatype.CLASS_STRING;
-            tsize = string_length;
-
-            String[] strArray = { strValue };
-            value = strArray;
-
-            if (isH5) {
-                arraySize = 1; // support string type
+        if (tclass == Datatype.CLASS_INTEGER) {
+            if (tsign == Datatype.SIGN_NONE) {
+                if (tsize == 1) {
+                    byte[] b = new byte[arraySize];
+                    short sv = 0;
+                    for (int j = 0; j < count; j++) {
+                        theToken = st.nextToken().trim();
+                        try {
+                            sv = Short.parseShort(theToken);
+                        }
+                        catch (NumberFormatException ex) {
+                            JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(), JOptionPane.ERROR_MESSAGE);
+                            return false;
+                        }
+                        if (sv < 0) {
+                            sv = 0;
+                        }
+                        else if (sv > 255) {
+                            sv = 255;
+                        }
+                        b[j] = (byte) sv;
+                    }
+                    value = b;
+                }
+                else if (tsize == 2) {
+                    short[] s = new short[arraySize];
+                    int iv = 0;
+                    for (int j = 0; j < count; j++) {
+                        theToken = st.nextToken().trim();
+                        try {
+                            iv = Integer.parseInt(theToken);
+                        }
+                        catch (NumberFormatException ex) {
+                            JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(), JOptionPane.ERROR_MESSAGE);
+                            return false;
+                        }
+                        if (iv < 0) {
+                            iv = 0;
+                        }
+                        else if (iv > 65535) {
+                            iv = 65535;
+                        }
+                        s[j] = (short) iv;
+                    }
+                    value = s;
+                }
+                else if (tsize == 4) {
+                    int[] i = new int[arraySize];
+                    long lv = 0;
+                    for (int j = 0; j < count; j++) {
+                        theToken = st.nextToken().trim();
+                        try {
+                            lv = Long.parseLong(theToken);
+                        }
+                        catch (NumberFormatException ex) {
+                            JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(), JOptionPane.ERROR_MESSAGE);
+                            return false;
+                        }
+                        if (lv < 0) {
+                            lv = 0;
+                        }
+                        if (lv > 4294967295L) {
+                            lv = 4294967295L;
+                        }
+                        i[j] = (int) lv;
+                    }
+                    value = i;
+                }
+                else if (tsize == 8) {
+                    long[] i = new long[arraySize];
+                    BigInteger lv = BigInteger.valueOf(0);
+                    for (int j = 0; j < count; j++) {
+                        theToken = st.nextToken().trim();
+                        try {
+                            lv = new BigInteger(theToken);
+                        }
+                        catch (NumberFormatException ex) {
+                            JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(), JOptionPane.ERROR_MESSAGE);
+                            return false;
+                        }
+                        i[j] = (long) lv.longValue();
+                    }
+                    value = i;
+                }
             }
             else {
-                arraySize = string_length; // array of characters
+                if (tsize == 1) {
+                    byte[] b = new byte[arraySize];
+                    for (int j = 0; j < count; j++) {
+                        theToken = st.nextToken().trim();
+                        try {
+                            b[j] = Byte.parseByte(theToken);
+                        }
+                        catch (NumberFormatException ex) {
+                            JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(), JOptionPane.ERROR_MESSAGE);
+                            return false;
+                        }
+                    }
+                    value = b;
+                }
+                else if (tsize == 2) {
+                    short[] s = new short[arraySize];
+
+                    for (int j = 0; j < count; j++) {
+                        theToken = st.nextToken().trim();
+                        try {
+                            s[j] = Short.parseShort(theToken);
+                        }
+                        catch (NumberFormatException ex) {
+                            JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(), JOptionPane.ERROR_MESSAGE);
+                            return false;
+                        }
+                    }
+                    value = s;
+                }
+                else if (tsize == 4) {
+                    int[] i = new int[arraySize];
+
+                    for (int j = 0; j < count; j++) {
+                        theToken = st.nextToken().trim();
+                        try {
+                            i[j] = Integer.parseInt(theToken);
+                        }
+                        catch (NumberFormatException ex) {
+                            JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(), JOptionPane.ERROR_MESSAGE);
+                            return false;
+                        }
+                    }
+                    value = i;
+                }
+                else if (tsize == 8) {
+                    long[] l = new long[arraySize];
+                    for (int j = 0; j < count; j++) {
+                        theToken = st.nextToken().trim();
+                        try {
+                            l[j] = Long.parseLong(theToken);
+                        }
+                        catch (NumberFormatException ex) {
+                            JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(), JOptionPane.ERROR_MESSAGE);
+                            return false;
+                        }
+                    }
+                    value = l;
+                }
+            }
+        }
+
+        if (tclass == Datatype.CLASS_FLOAT) {
+            if (tsize == 4) {
+                float[] f = new float[arraySize];
+                for (int j = 0; j < count; j++) {
+                    theToken = st.nextToken().trim();
+                    try {
+                        f[j] = Float.parseFloat(theToken);
+                    }
+                    catch (NumberFormatException ex) {
+                        JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(), JOptionPane.ERROR_MESSAGE);
+                        return false;
+                    }
+                    if (Float.isInfinite(f[j]) || Float.isNaN(f[j])) {
+                        f[j] = 0;
+                    }
+                }
+                value = f;
+            }
+            else if (tsize == 8) {
+                double[] d = new double[arraySize];
+                for (int j = 0; j < count; j++) {
+                    theToken = st.nextToken().trim();
+                    try {
+                        d[j] = Double.parseDouble(theToken);
+                    }
+                    catch (NumberFormatException ex) {
+                        JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(), JOptionPane.ERROR_MESSAGE);
+                        return false;
+                    }
+                    if (Double.isInfinite(d[j]) || Double.isNaN(d[j])) {
+                        d[j] = 0;
+                    }
+                }
+                value = d;
             }
         }
 
         Datatype datatype = null;
-
         try {
-            datatype = fileFormat.createDatatype(tclass, tsize, torder, tsign);
+            Datatype basedatatype = null;
+            if (isVLen) {
+                basedatatype = fileFormat.createDatatype(tclass, tsize, torder, tsign);
+                tclass = Datatype.CLASS_VLEN;
+            }
+            datatype = fileFormat.createDatatype(tclass, tsize, torder, tsign, basedatatype);
         }
         catch (Exception ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(), JOptionPane.ERROR_MESSAGE);

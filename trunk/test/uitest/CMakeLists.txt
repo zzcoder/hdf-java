@@ -22,6 +22,7 @@ SET (HDFJAVA_TEST_UITEST_SRCS
     TestHDFViewCLMultipleFiles.java
     TestHDFViewCLRootMultipleFiles.java
     TestHDFViewMenu.java
+    TestTreeViewNewVLDatatypes.java
     TestTreeViewNewMenu.java
     TestTreeViewGroups.java
     TestTreeViewFiles.java
@@ -65,6 +66,7 @@ SET (HDF_JAVA_TEST_REFERENCE
       JUnit-gui-treeview-export.txt
       JUnit-gui-treeview-newmenu.txt
       JUnit-gui-tableview-menu.txt
+      JUnit-gui-treeview-newvldt.txt
       DU64BITS.xbin
 )
 
@@ -152,6 +154,8 @@ ADD_TEST (
         JUnit-gui-treeview-export.out.err
         JUnit-gui-tableview-menu.out
         JUnit-gui-tableview-menu.out.err
+        JUnit-gui-treeview-newvldt.out
+        JUnit-gui-treeview-newvldt.out.err
         JUnit-gui-CL-multi.out
         JUnit-gui-CL-multi.out.err
         JUnit-gui-CL-root-multi.out
@@ -305,6 +309,26 @@ ADD_TEST (
 SET_TESTS_PROPERTIES (JUnit-gui-tableview-menu PROPERTIES
     DEPENDS JUnit-gui-treeview-export3
 )
+
+ADD_TEST (
+    NAME JUnit-gui-treeview-newvldt
+    COMMAND "${CMAKE_COMMAND}"
+        -D "TEST_TESTER=${CMAKE_Java_RUNTIME}"
+        -D "TEST_CLASSPATH:STRING=${CMAKE_JAVA_CLASSPATH}"
+        -D "TEST_ARGS:STRING=-ea;org.junit.runner.JUnitCore"
+        -D "TEST_PROGRAM=test.uitest.TestTreeViewNewVLDatatypes"
+        -D "TEST_LIBRARY_DIRECTORY=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
+        -D "TEST_FOLDER=${PROJECT_BINARY_DIR}"
+        -D "TEST_OUTPUT=JUnit-gui-treeview-newvldt.out"
+        -D "TEST_EXPECT=0"
+        -D "TEST_APPEND=TRUE"
+        -D "TEST_REFERENCE=JUnit-gui-treeview-newvldt.txt"
+        -P "${HDFJAVA_RESOURCES_DIR}/runTest.cmake"
+)
+
+SET_TESTS_PROPERTIES (JUnit-gui-treeview-newvldt PROPERTIES
+    DEPENDS JUnit-gui-tableview-menu
+)
    
 ADD_TEST (
     NAME JUnit-gui-CL-multi
@@ -323,7 +347,7 @@ ADD_TEST (
 )
 
 SET_TESTS_PROPERTIES (JUnit-gui-CL-multi PROPERTIES
-    DEPENDS JUnit-gui-tableview-menu
+    DEPENDS JUnit-gui-treeview-newvldt
 )
    
 ADD_TEST (

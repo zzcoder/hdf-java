@@ -862,6 +862,7 @@ public class DefaultMetaDataView extends JDialog implements ActionListener, Meta
         FileFormat theFile = hObject.getFileFormat();
         JPanel bPanel = new JPanel();
         JButton b = new JButton(" Add ");
+        b.setName("Add");
         b.setMnemonic('A');
         b.addActionListener(this);
         b.setActionCommand("Add attribute");
@@ -871,6 +872,7 @@ public class DefaultMetaDataView extends JDialog implements ActionListener, Meta
         if (isH5) {
             // deleting is not supported by HDF4
             b = new JButton("Delete");
+            b.setName("Delete");
             b.setMnemonic('D');
             b.addActionListener(this);
             b.setActionCommand("Delete attribute");

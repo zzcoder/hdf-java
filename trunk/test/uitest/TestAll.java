@@ -13,7 +13,8 @@ import org.junit.runners.Suite;
     TestTreeViewGroups.class,
     TestTreeViewFiles.class,
     TestTreeViewExport.class,
-    TestTableViewMenu.class
+    TestTableViewMenu.class,
+    TestTreeViewNewVLDatatypes.class
 })
 
 public class TestAll {
