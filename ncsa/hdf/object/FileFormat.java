@@ -1151,7 +1151,11 @@ public abstract class FileFormat extends File {
      *             The exceptions thrown vary depending on the implementing
      *             class.
      */
-    public abstract Datatype createDatatype(int tclass, int tsize, int torder, int tsign, Datatype tbase, String name) throws Exception;
+    public Datatype createDatatype(int tclass, int tsize, int torder, int tsign, Datatype tbase, String name) throws Exception
+    {
+        // Derived classes must override this function to use base type option
+        return createDatatype(tclass, tsize, torder, tsign, name);
+    }
 
     // REVIEW DOCS for createDatatype(). Check and document exceptions.
 
@@ -1232,7 +1236,11 @@ public abstract class FileFormat extends File {
      *             The exceptions thrown vary depending on the implementing
      *             class.
      */
-    public abstract Datatype createDatatype(int tclass, int tsize, int torder, int tsign, Datatype tbase) throws Exception;
+    public Datatype createDatatype(int tclass, int tsize, int torder, int tsign, Datatype tbase) throws Exception
+    {
+        // Derived classes must override this function to use base type option
+        return createDatatype(tclass, tsize, torder, tsign);
+    }
 
     // REVIEW DOCS for createDatatype(). Check and document exceptions.
 

@@ -261,14 +261,6 @@ public class NC2File extends FileFormat {
     }
 
     @Override
-    public Datatype createDatatype(int tclass, int tsize, int torder, int tsign, 
-        Datatype tbase) throws Exception
-    {
-        // not supported
-        throw new UnsupportedOperationException("Unsupported operation.");
-    }
-
-    @Override
     public Datatype createDatatype(int tclass, int tsize, int torder,
             int tsign, String name) throws Exception {
         throw new UnsupportedOperationException("Unsupported operation.");

@@ -105,7 +105,7 @@ FOREACH (exp_file ${HDF_JAVA_EXPORT_REFERENCE})
         TARGET     ${HDFJAVA_TEST_UITEST_TARGET}
         POST_BUILD
         COMMAND    ${CMAKE_COMMAND}
-        ARGS       -E copy_if_different ${PROJECT_SOURCE_DIR}/${exp_file} ${dest}
+        ARGS       -E copy_if_different ${PROJECT_SOURCE_DIR}/${exp_file} ${PROJECT_BINARY_DIR}/${exp_file}
     )
   ENDIF (WIN32 AND NOT CYGWIN)
 ENDFOREACH (exp_file ${HDF_JAVA_EXPORT_REFERENCE})

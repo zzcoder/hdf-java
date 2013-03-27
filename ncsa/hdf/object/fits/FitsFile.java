@@ -269,18 +269,6 @@ public class FitsFile extends FileFormat
         throw new UnsupportedOperationException("Unsupported operation for Fits.");
     }
 
-    @Override
-    public Datatype createDatatype(
-        int tclass,
-        int tsize,
-        int torder,
-        int tsign, 
-        Datatype tbase) throws Exception
-    {
-        // not supported
-        throw new UnsupportedOperationException("Unsupported operation for Fits.");
-    }
-
     // implementign FileFormat
     @Override
     public Datatype createDatatype(
