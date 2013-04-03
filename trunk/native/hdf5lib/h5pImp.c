@@ -4182,66 +4182,6 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1fapl_1split
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
- * Method:    H5Pget_dxpl_multi
- * Signature: (I[I)V
- */
-JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1dxpl_1multi
-  (JNIEnv *env, jclass clss, jint tid, jintArray dxpl_id)
-{
-    herr_t       status;
-    jint        *thedxplArray = NULL;
-    jboolean     isCopy;
-    
-    if (dxpl_id) {
-        thedxplArray = (jint *)ENVPTR->GetIntArrayElements(ENVPAR dxpl_id, &isCopy);
-        if (thedxplArray == NULL) {
-            h5JNIFatalError(env, "H5Pget_dxpl_muti:  dxpl_id not pinned");
-            return;
-        }
-    }
-    
-    status = H5Pget_dxpl_multi((hid_t)tid, (hid_t *)thedxplArray);
-
-    if (status < 0) {
-        if (dxpl_id) ENVPTR->ReleaseIntArrayElements(ENVPAR dxpl_id, thedxplArray, JNI_ABORT);
-        h5libraryError(env);
-        return;
-    }
-    if (dxpl_id) ENVPTR->ReleaseIntArrayElements(ENVPAR dxpl_id, thedxplArray, 0);
-}
-
-/*
- * Class:     ncsa_hdf_hdf5lib_H5
- * Method:    H5Pset_dxpl_multi
- * Signature: (I[I)V
- */
-JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1dxpl_1multi
-  (JNIEnv *env, jclass clss, jint tid, jintArray dxpl_id)
-{
-    herr_t       status;
-    jint        *thedxplArray = NULL;
-    jboolean     isCopy;
-    
-    if (dxpl_id) {
-        thedxplArray = (jint *)ENVPTR->GetIntArrayElements(ENVPAR dxpl_id, &isCopy);
-        if (thedxplArray == NULL) {
-            h5JNIFatalError(env, "H5Pget_dxpl_muti:  dxpl_id not pinned");
-            return;
-        }
-    }
-    
-    status = H5Pset_dxpl_multi((hid_t)tid, (const hid_t *)thedxplArray);
-
-    if (status < 0) {
-        if (dxpl_id) ENVPTR->ReleaseIntArrayElements(ENVPAR dxpl_id, thedxplArray, JNI_ABORT);
-        h5libraryError(env);
-        return;
-    }
-    if (dxpl_id) ENVPTR->ReleaseIntArrayElements(ENVPAR dxpl_id, thedxplArray, 0);
-}
-
-/*
- * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Pset_meta_block_size
  * Signature: (IJ)V
  */

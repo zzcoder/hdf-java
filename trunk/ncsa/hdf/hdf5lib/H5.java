@@ -5460,12 +5460,6 @@ public synchronized static native int H5Pget_driver(int plid)
 //herr_t H5Pset_dxpl_mpio_chunk_opt_ratio (hid_t dxpl_id, unsigned percent_proc_per_chunk) 
 //herr_t H5Pset_dxpl_mpio_collective_opt (hid_t dxpl_id, H5FD_mpio_collective_opt_t opt_mode) 
 
-public synchronized static native void H5Pget_dxpl_multi(int dxpl_id, int[] memb_dxpl) 
-        throws HDF5LibraryException, NullPointerException;
-
-public synchronized static native void H5Pset_dxpl_multi(int dxpl_id, int[] memb_dxpl) 
-        throws HDF5LibraryException, NullPointerException;
-
 public synchronized static native int H5Pget_edc_check(int plist)
         throws HDF5LibraryException, NullPointerException;
 
