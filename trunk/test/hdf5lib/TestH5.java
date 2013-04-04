@@ -134,6 +134,7 @@ public class TestH5 {
     /**
      * Test method for {@link ncsa.hdf.hdf5lib.H5#H5get_libversion(int[])}.
      */
+/*
     @Test
     public void testH5get_libversion() {
         int libversion[] = { 0, 0, 0 };
@@ -151,6 +152,7 @@ public class TestH5 {
         for (int i = 0; i < 3; i++)
             assertFalse(libversion[i] == 0);
     }
+*/
 
     /**
      * Test method for
