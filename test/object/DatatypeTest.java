@@ -25,66 +25,66 @@ public class DatatypeTest extends TestCase {
     private int n_classes = 11;
     private int n_signs = 3;
     private int n_orders = 4;
-    private int[] sizes = { 32, 64, 8, 16 };
-    private String[] descriptions = { "Unknown", "Unknown", "Unknown",
-            "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown",
-            "Unknown", "Unknown", "Unknown", "8-bit character",
-            "8-bit unsigned character", "8-bit character", "8-bit character",
-            "8-bit unsigned character", "8-bit character", "8-bit character",
-            "8-bit unsigned character", "8-bit character", "8-bit character",
-            "8-bit unsigned character", "8-bit character", "Unknown",
-            "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown",
-            "Unknown", "Unknown", "Unknown", "Unknown", "Unknown",
-            "enum (0=1  1=2  )", "enum (0=1  1=2  )", "enum (0=1  1=2  )",
-            "enum (0=1  1=2  )", "enum (0=1  1=2  )", "enum (0=1  1=2  )",
-            "enum (0=1  1=2  )", "enum (0=1  1=2  )", "enum (0=1  1=2  )",
-            "enum (0=1  1=2  )", "enum (0=1  1=2  )", "enum (0=1  1=2  )",
-            "32-bit floating-point", "32-bit floating-point",
-            "32-bit floating-point", "32-bit floating-point",
-            "32-bit floating-point", "32-bit floating-point",
-            "32-bit floating-point", "32-bit floating-point",
-            "32-bit floating-point", "32-bit floating-point",
-            "32-bit floating-point", "32-bit floating-point",
-            "32-bit floating-point", "32-bit floating-point",
-            "32-bit floating-point", "32-bit floating-point",
-            "32-bit floating-point", "32-bit floating-point",
-            "32-bit floating-point", "32-bit floating-point",
-            "32-bit floating-point", "32-bit floating-point",
-            "32-bit floating-point", "32-bit floating-point", "32-bit integer",
-            "32-bit integer", "64-bit integer", "32-bit integer",
-            "32-bit unsigned integer", "32-bit unsigned integer",
-            "64-bit unsigned integer", "32-bit unsigned integer",
-            "32-bit integer", "32-bit integer", "64-bit integer",
-            "32-bit integer", "32-bit integer", "32-bit integer",
-            "64-bit integer", "32-bit integer", "32-bit unsigned integer",
-            "32-bit unsigned integer", "64-bit unsigned integer",
-            "32-bit unsigned integer", "32-bit integer", "32-bit integer",
-            "64-bit integer", "32-bit integer", "32-bit integer",
-            "32-bit integer", "64-bit integer", "32-bit integer",
-            "32-bit unsigned integer", "32-bit unsigned integer",
-            "64-bit unsigned integer", "32-bit unsigned integer",
-            "32-bit integer", "32-bit integer", "64-bit integer",
-            "32-bit integer", "32-bit integer", "32-bit integer",
-            "64-bit integer", "32-bit integer", "32-bit unsigned integer",
-            "32-bit unsigned integer", "64-bit unsigned integer",
-            "32-bit unsigned integer", "32-bit integer", "32-bit integer",
-            "64-bit integer", "32-bit integer", "Unknown", "Unknown",
-            "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown",
-            "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown",
-            "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown",
-            "Unknown", "Unknown", "Unknown", "Unknown", "Object reference",
-            "Object reference", "Object reference", "Object reference",
-            "Object reference", "Object reference", "Object reference",
-            "Object reference", "Object reference", "Object reference",
-            "Object reference", "Object reference", "String, length = 32",
-            "String, length = 32", "String, length = 32",
-            "String, length = 32", "String, length = 32",
-            "String, length = 32", "String, length = 32",
-            "String, length = 32", "String, length = 32",
-            "String, length = 32", "String, length = 32",
-            "String, length = 32", "Unknown", "Unknown", "Unknown", "Unknown",
-            "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown",
-            "Unknown", "Unknown" };
+    private int[] sizes = { 1, 2, 4, 8 };
+    private String[] descriptions = { 
+            "Unknown", "Unknown", "Unknown", 
+            "Unknown", "Unknown", "Unknown", 
+            "Unknown", "Unknown", "Unknown", 
+            "Unknown", "Unknown", "Unknown", 
+            "8-bit integer", "8-bit unsigned integer", "8-bit integer", 
+            "8-bit integer", "8-bit unsigned integer", "8-bit integer", 
+            "8-bit integer", "8-bit unsigned integer", "8-bit integer", 
+            "8-bit integer", "8-bit unsigned integer", "8-bit integer", 
+            "Unknown", "Unknown", "Unknown", 
+            "Unknown", "Unknown", "Unknown", 
+            "Unknown", "Unknown", "Unknown", 
+            "Unknown", "Unknown", "Unknown",
+            "enum ( 0=1  1=2  )", "enum ( 0=1  1=2  )", "enum ( 0=1  1=2  )",
+            "enum ( 0=1  1=2  )", "enum ( 0=1  1=2  )", "enum ( 0=1  1=2  )",
+            "enum ( 0=1  1=2  )", "enum ( 0=1  1=2  )", "enum ( 0=1  1=2  )",
+            "enum ( 0=1  1=2  )", "enum ( 0=1  1=2  )", "enum ( 0=1  1=2  )",
+            "32-bit floating-point", "32-bit floating-point", "32-bit floating-point", 
+            "32-bit floating-point", "32-bit floating-point", "32-bit floating-point", 
+            "32-bit floating-point", "32-bit floating-point", "32-bit floating-point", 
+            "32-bit floating-point", "32-bit floating-point", "32-bit floating-point",
+            "32-bit floating-point", "32-bit floating-point", "32-bit floating-point", 
+            "32-bit floating-point", "32-bit floating-point", "32-bit floating-point",
+            "32-bit floating-point", "32-bit floating-point", "32-bit floating-point", 
+            "32-bit floating-point", "32-bit floating-point", "32-bit floating-point", 
+            "8-bit integer", "16-bit integer", "32-bit integer", "64-bit integer", 
+            "8-bit unsigned integer", "16-bit unsigned integer", "32-bit unsigned integer", "64-bit unsigned integer",
+            "8-bit integer", "16-bit integer", "32-bit integer", "64-bit integer", 
+            "8-bit integer", "16-bit integer", "32-bit integer", "64-bit integer", 
+            "8-bit unsigned integer", "16-bit unsigned integer", "32-bit unsigned integer", "64-bit unsigned integer", 
+            "8-bit integer", "16-bit integer", "32-bit integer", "64-bit integer", 
+            "8-bit integer", "16-bit integer", "32-bit integer", "64-bit integer",
+            "8-bit unsigned integer", "16-bit unsigned integer", "32-bit unsigned integer", "64-bit unsigned integer",
+            "8-bit integer", "16-bit integer", "32-bit integer", "64-bit integer", 
+            "8-bit integer", "16-bit integer", "32-bit integer", "64-bit integer", 
+            "8-bit unsigned integer", "16-bit unsigned integer", "32-bit unsigned integer", "64-bit unsigned integer", 
+            "8-bit integer", "16-bit integer", "32-bit integer", "64-bit integer", 
+            "Unknown", "Unknown", "Unknown", 
+            "Unknown", "Unknown", "Unknown", 
+            "Unknown", "Unknown", "Unknown", 
+            "Unknown", "Unknown", "Unknown", 
+            "Unknown", "Unknown", "Unknown", 
+            "Unknown", "Unknown", "Unknown", 
+            "Unknown", "Unknown", "Unknown", 
+            "Unknown", "Unknown", "Unknown", 
+            "Object reference", "Object reference", "Object reference", 
+            "Object reference", "Object reference", "Object reference", 
+            "Object reference", "Object reference", "Object reference", 
+            "Object reference", "Object reference", "Object reference", 
+            "String, length = 1", "String, length = 2", "String, length = 1", "String, length = 2", 
+            "String, length = 1", "String, length = 2", "String, length = 1", "String, length = 2", 
+            "String, length = 1", "String, length = 2", "String, length = 1", "String, length = 2", 
+            "String, length = 1", "String, length = 2", "String, length = 1", "String, length = 2", 
+            "String, length = 1", "String, length = 2", "String, length = 1", "String, length = 2", 
+            "String, length = 1", "String, length = 2", "String, length = 1", "String, length = 2", 
+            "Unknown", "Unknown", "Unknown", 
+            "Unknown", "Unknown", "Unknown", 
+            "Unknown", "Unknown", "Unknown", 
+            "Unknown", "Unknown", "Unknown" };
 
     /**
      * @param arg0
@@ -100,7 +100,7 @@ public class DatatypeTest extends TestCase {
      */
     protected void setUp() throws Exception {
         super.setUp();
-        baseTypes = new Datatype[n_orders * n_signs * (n_classes + 4)];
+        baseTypes = new Datatype[n_orders * n_signs * (n_classes + 5)];
         int counter = 0;
         for (int i = 0; i < n_classes; i++) {
             for (int j = 0; j < n_orders; j++) {
@@ -113,14 +113,19 @@ public class DatatypeTest extends TestCase {
                     case Datatype.CLASS_FLOAT:
                         n_sizes = 2;
                         break;
+                    case Datatype.CLASS_STRING:
+                        n_sizes = 2;
+                        break;
                     default:
                         n_sizes = 1;
                         break;
                     }
                     for (int l = 0; l < n_sizes; l++) {
-                        baseTypes[counter++] = new H5Datatype(classes[i],
-                                sizes[l], orders[j], signs[k]);
-                        assertNotNull(baseTypes[i]);
+                        baseTypes[counter] = new H5Datatype(
+                                classes[i], sizes[l], orders[j], signs[k]);
+                        assertNotNull(baseTypes[counter]);
+                        //System.out.println(counter+": "+sizes[l]+" ["+classes[i]+","+orders[j]+","+signs[k]+"] type is "+baseTypes[counter].getDatatypeDescription());
+                        counter++;
                     }
                 }
             }
@@ -154,13 +159,15 @@ public class DatatypeTest extends TestCase {
                     case Datatype.CLASS_FLOAT:
                         n_sizes = 2;
                         break;
+                    case Datatype.CLASS_STRING:
+                        n_sizes = 2;
+                        break;
                     default:
                         n_sizes = 1;
                         break;
                     }
                     for (int l = 0; l < n_sizes; l++) {
-                        assertEquals(baseTypes[counter++].getDatatypeClass(),
-                                classes[i]);
+                        assertEquals("Class for size "+l+" ["+i+","+j+","+k+"]", classes[i], baseTypes[counter++].getDatatypeClass());
                     }
                 }
             }
@@ -185,13 +192,15 @@ public class DatatypeTest extends TestCase {
                     case Datatype.CLASS_FLOAT:
                         n_sizes = 2;
                         break;
+                    case Datatype.CLASS_STRING:
+                        n_sizes = 2;
+                        break;
                     default:
                         n_sizes = 1;
                         break;
                     }
                     for (int l = 0; l < n_sizes; l++) {
-                        assertEquals(baseTypes[counter++].getDatatypeSize(),
-                                sizes[l]);
+                        assertEquals("Size for size "+l+" ["+i+","+j+","+k+"]", sizes[l], baseTypes[counter++].getDatatypeSize());
                     }
                 }
             }
@@ -216,13 +225,15 @@ public class DatatypeTest extends TestCase {
                     case Datatype.CLASS_FLOAT:
                         n_sizes = 2;
                         break;
+                    case Datatype.CLASS_STRING:
+                        n_sizes = 2;
+                        break;
                     default:
                         n_sizes = 1;
                         break;
                     }
                     for (int l = 0; l < n_sizes; l++) {
-                        assertEquals(baseTypes[counter++].getDatatypeOrder(),
-                                orders[j]);
+                        assertEquals("Order for size "+l+" ["+i+","+j+","+k+"]", orders[j], baseTypes[counter++].getDatatypeOrder());
                     }
                 }
             }
@@ -247,13 +258,15 @@ public class DatatypeTest extends TestCase {
                     case Datatype.CLASS_FLOAT:
                         n_sizes = 2;
                         break;
+                    case Datatype.CLASS_STRING:
+                        n_sizes = 2;
+                        break;
                     default:
                         n_sizes = 1;
                         break;
                     }
                     for (int l = 0; l < n_sizes; l++) {
-                        assertEquals(baseTypes[counter++].getDatatypeSign(),
-                                signs[k]);
+                        assertEquals("Sign for size "+l+" ["+i+","+j+","+k+"]", signs[k], baseTypes[counter++].getDatatypeSign());
                     }
                 }
             }
@@ -302,14 +315,16 @@ public class DatatypeTest extends TestCase {
                     case Datatype.CLASS_FLOAT:
                         n_sizes = 2;
                         break;
+                    case Datatype.CLASS_STRING:
+                        n_sizes = 2;
+                        break;
                     default:
                         n_sizes = 1;
                         break;
                     }
                     for (int l = 0; l < n_sizes; l++) {
-                        assertEquals(baseTypes[counter]
-                                .getDatatypeDescription(),
-                                descriptions[counter]);
+                        assertEquals(counter+": Description for size "+l+" ["+i+","+j+","+k+"]", descriptions[counter], baseTypes[counter].getDatatypeDescription());
+                        counter++;
                     }
                 }
             }
@@ -333,6 +348,9 @@ public class DatatypeTest extends TestCase {
                         n_sizes = 4;
                         break;
                     case Datatype.CLASS_FLOAT:
+                        n_sizes = 2;
+                        break;
+                    case Datatype.CLASS_STRING:
                         n_sizes = 2;
                         break;
                     default:

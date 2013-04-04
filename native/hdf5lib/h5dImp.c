@@ -1360,7 +1360,8 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5DreadVL
         isComplex = H5Tdetect_class((hid_t)nested_tid, H5T_COMPOUND) ||
                     H5Tdetect_class((hid_t)nested_tid, H5T_VLEN);
         H5Tclose(nested_tid);
-    } else if (H5Tget_class((hid_t)mem_type_id) == H5T_VLEN) {
+    }
+    else if (H5Tget_class((hid_t)mem_type_id) == H5T_VLEN) {
       isVlenStr = 1; /* strings created by H5Tvlen_create( H5T_C_S1) */
     }
 

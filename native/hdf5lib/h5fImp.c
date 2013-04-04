@@ -33,6 +33,7 @@ extern "C" {
 #include "hdf5.h"
 #include "h5jni.h"
 #include "h5fImp.h"
+#include "h5util.h"
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
@@ -643,6 +644,86 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Freset_1mdc_1hit_1rate_1stats
     herr_t ret_val = -1;
 
     ret_val = H5Freset_mdc_hit_rate_stats((hid_t)file_id);
+
+    if (ret_val < 0) {
+        h5libraryError(env);
+    }
+}
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5export_dataset
+ * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;I)V
+ */
+JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5export_1dataset
+  (JNIEnv *env, jclass cls, jstring file_export_name, jstring file_name, jstring object_path, jint binary_order)
+{
+    herr_t status = -1;
+    herr_t ret_val = -1;
+    hid_t file_id = -1;
+    hid_t dataset_id = -1;
+    FILE *stream;
+    char *file_export;
+    char *file;
+    char *object_name;
+    jboolean isCopy;
+
+    if (file_export_name == NULL) {
+        h5nullArgument(env, "HDF5Library_export_data:  file_export_name is NULL");
+        return;
+    }
+    if (file_name == NULL) {
+        h5nullArgument(env, "HDF5Library_export_data:  file_name is NULL");
+        return;
+    }
+    if (object_path == NULL) {
+        h5nullArgument(env, "HDF5Library_export_data:  object_path is NULL");
+        return;
+    }
+
+    file = (char *)ENVPTR->GetStringUTFChars(ENVPAR file_name, &isCopy);
+    if (file == NULL) {
+        /* exception -- out of memory? */
+        h5JNIFatalError( env, "H5Fopen:  file name not pinned");
+        return;
+    }
+
+    file_id = H5Fopen(file, (unsigned)H5F_ACC_RDWR, (hid_t)H5P_DEFAULT);
+
+    ENVPTR->ReleaseStringUTFChars(ENVPAR file_name, file);
+    if (file_id < 0) {
+        /* throw exception */
+        h5libraryError(env);
+        return;
+    }
+
+    object_name = (char*)ENVPTR->GetStringUTFChars(ENVPAR object_path, &isCopy);
+    if (object_name == NULL) {
+        h5JNIFatalError( env, "H5Dopen:  object name not pinned");
+        return;
+    }
+
+    dataset_id = H5Dopen2(file_id, (const char*)object_name, (hid_t)H5P_DEFAULT);
+
+    ENVPTR->ReleaseStringUTFChars(ENVPAR object_path, object_name);
+    if (dataset_id < 0) {
+        H5Fclose(file_id);
+        h5libraryError(env);
+        return;
+    }
+
+    file_export = (char *)ENVPTR->GetStringUTFChars(ENVPAR file_export_name, 0);
+    stream = fopen(file_export, "w+");
+    ENVPTR->ReleaseStringUTFChars(ENVPAR file_export_name, file_export);
+
+    ret_val = h5str_dump_simple_dset(stream, dataset_id, binary_order);
+
+    if (stream)
+        fclose(stream);
+
+    H5Dclose(dataset_id);
+
+    H5Fclose(file_id);
 
     if (ret_val < 0) {
         h5libraryError(env);

@@ -264,12 +264,47 @@ public abstract class Datatype extends HObject {
      *            and MSGN
      */
     public Datatype(int tclass, int tsize, int torder, int tsign) {
+        this(tclass, tsize, torder, tsign, null);
+    }
+
+    /**
+     * Constructs a Datatype with specified class, size, byte order and sign.
+     * <p>
+     * The following is a list of a few example of H5Datatype.
+     * <OL>
+     * <LI>to create unsigned native integer<br>
+     * H5Datatype type = new H5Dataype(CLASS_INTEGER, NATIVE, NATIVE,
+     * SIGN_NONE);
+     * <LI>to create 16-bit signed integer with big endian<br>
+     * H5Datatype type = new H5Dataype(CLASS_INTEGER, 2, ORDER_BE, NATIVE);
+     * <LI>to create native float<br>
+     * H5Datatype type = new H5Dataype(CLASS_FLOAT, NATIVE, NATIVE, -1);
+     * <LI>to create 64-bit double<br>
+     * H5Datatype type = new H5Dataype(CLASS_FLOAT, 8, NATIVE, -1);
+     * </OL>
+     * 
+     * @param tclass
+     *            the class of the datatype, e.g. CLASS_INTEGER, CLASS_FLOAT and
+     *            etc.
+     * @param tsize
+     *            the size of the datatype in bytes, e.g. for a 32-bit integer,
+     *            the size is 4.
+     * @param torder
+     *            the byte order of the datatype. Valid values are ORDER_LE,
+     *            ORDER_BE, ORDER_VAX and ORDER_NONE
+     * @param tsign
+     *            the sign of the datatype. Valid values are SIGN_NONE, SIGN_2
+     *            and MSGN
+     * @param tbase
+     *            the base datatype of the new datatype
+     */
+    public Datatype(int tclass, int tsize, int torder, int tsign, Datatype tbase) {
         datatypeClass = tclass;
         datatypeSize = tsize;
         datatypeOrder = torder;
         datatypeSign = tsign;
         enumMembers = null;
-        baseType = null;
+        baseType = tbase;
         dims = null;
     }
 

@@ -19,7 +19,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.Point;
@@ -97,7 +96,7 @@ import javax.swing.JViewport;
 import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
-import javax.swing.border.Border;
+import javax.swing.WindowConstants;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
@@ -230,6 +229,8 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
 
     /* the value of the current cell value in editing. */
     private Object           currentEditingCellValue = null;
+    
+    private TitledBorder     border;
 
     /**
      * Constructs an TableView.
@@ -258,7 +259,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
     public DefaultTableView(ViewManager theView, HashMap map) {
         super();
 
-        setDefaultCloseOperation(JInternalFrame.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
         viewer = theView;
         toolkit = Toolkit.getDefaultToolkit();
@@ -279,6 +280,8 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
         checkScientificNotation = new JCheckBoxMenuItem("Show Scientific Notation", false);
         checkHex = new JCheckBoxMenuItem("Show Hexadecimal", false);
         checkBin = new JCheckBoxMenuItem("Show Binary", false);
+        border = BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.lightGray, 1),
+        		indexBase+"-based", TitledBorder.RIGHT, TitledBorder.TOP, this.getFont(), Color.black);
 
         if (map != null) {
             hobject = (HObject) map.get(ViewProperties.DATA_VIEW_KEY.OBJECT);
@@ -301,7 +304,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
             }
         }
 
-        if (hobject == null) hobject = (HObject) viewer.getTreeView().getCurrentObject();
+        if (hobject == null) hobject = viewer.getTreeView().getCurrentObject();
 
         if ((hobject == null) || !(hobject instanceof Dataset)) {
             return;
@@ -398,7 +401,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
         Dimension dim = cellLabel.getPreferredSize();
         dim.width = 75;
         cellLabel.setPreferredSize(dim);
-        cellLabel.setHorizontalAlignment(JLabel.RIGHT);
+        cellLabel.setHorizontalAlignment(SwingConstants.RIGHT);
 
         cellValueField = new JTextArea();
         cellValueField.setLineWrap(true);
@@ -421,13 +424,16 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
         contentPane.add(splitPane);
 
         // set title
-        StringBuffer sb = new StringBuffer("TableView  -  ");
-        sb.append(hobject.getName());
-        sb.append("  -  ");
+        StringBuffer sb = new StringBuffer(hobject.getName());
+        sb.append("  at  ");
         sb.append(hobject.getPath());
-        sb.append("  -  ");
-        sb.append(dataset.getFile());
+        sb.append("  [");
+        sb.append(dataset.getFileFormat().getName());
+        sb.append("  in  ");
+        sb.append(dataset.getFileFormat().getParent());
+        sb.append("]");
         setTitle(sb.toString());
+        contentPane.setBorder(border);        
 
         // setup subset information
         int rank = dataset.getRank();
@@ -549,13 +555,13 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
         item = new JMenuItem("Copy");
         item.addActionListener(this);
         item.setActionCommand("Copy data");
-        item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_MASK, true));
+        item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_MASK, true));
         menu.add(item);
 
         item = new JMenuItem("Paste");
         item.addActionListener(this);
         item.setActionCommand("Paste data");
-        item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, KeyEvent.CTRL_MASK, true));
+        item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.CTRL_MASK, true));
         item.setEnabled(isEditable);
         menu.add(item);
 
@@ -571,7 +577,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
         item.addActionListener(this);
         item.setActionCommand("Save dataset");
         item.setEnabled(isEditable);
-        item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_U, KeyEvent.CTRL_MASK, true));
+        item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_U, InputEvent.CTRL_MASK, true));
         menu.add(item);
 
         menu.addSeparator();
@@ -579,7 +585,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
         item = new JMenuItem("Select All");
         item.addActionListener(this);
         item.setActionCommand("Select all data");
-        item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, KeyEvent.CTRL_MASK, true));
+        item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.CTRL_MASK, true));
         menu.add(item);
 
         menu.addSeparator();
@@ -710,11 +716,12 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
         return bar;
     }
 
-    public void actionPerformed(ActionEvent e) {
+    @Override
+	public void actionPerformed(ActionEvent e) {
         try {
             setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
-            Object source = e.getSource();
+            e.getSource();
             String cmd = e.getActionCommand();
 
             if (cmd.equals("Close")) {
@@ -1026,11 +1033,13 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
     }
 
     // Implementing DataView.
-    public HObject getDataObject() {
+    @Override
+	public HObject getDataObject() {
         return dataset;
     }
 
-    public void dispose() {
+    @Override
+	public void dispose() {
         if (isValueChanged && !isReadOnly) {
             int op = JOptionPane.showConfirmDialog(this, 
                     "\"" + dataset.getName() + "\" has changed.\n" + "Do you want to save the changes?", 
@@ -1072,7 +1081,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
         }
 
         long[] start = dataset.getStartDims();
-        long[] dims = dataset.getDims();
+        dataset.getDims();
         int[] selectedIndex = dataset.getSelectedIndex();
         long idx = start[selectedIndex[2]];
         if (idx == 0) {
@@ -1111,7 +1120,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
 
         long[] start = dataset.getStartDims();
         int[] selectedIndex = dataset.getSelectedIndex();
-        long[] dims = dataset.getDims();
+        dataset.getDims();
         long idx = start[selectedIndex[2]];
         if (idx == 0) {
             return; // current page is the first page
@@ -1140,7 +1149,8 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
     }
 
     // Implementing TableObserver.
-    public JTable getTable() {
+    @Override
+	public JTable getTable() {
         return table;
     }
 
@@ -1350,7 +1360,8 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
     /**
      * Returns the selected data values.
      */
-    public Object getSelectedData() {
+    @Override
+	public Object getSelectedData() {
         if (dataset instanceof CompoundDS) {
             return getSelectedCompoundData();
         }
@@ -1415,8 +1426,8 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
             return null;
         }
 
-        int r0 = table.getSelectedRow();
-        int c0 = table.getSelectedColumn();
+        table.getSelectedRow();
+        table.getSelectedColumn();
         int w = table.getColumnCount();
         int idx_src = 0;
         int idx_dst = 0;
@@ -1539,14 +1550,13 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
 
             if (Tools.applyBitmask(dataValue, bitmask, bitmaskOP)) {
                 isReadOnly = true;
-                String opName = "Extract bits ";
-                if (bitmaskOP == ViewProperties.BITMASK_OP.AND) opName = "Apply bitwise AND ";
+                String opName = "Bits ";
+                
+                if (bitmaskOP == ViewProperties.BITMASK_OP.AND) opName = "Bitwise AND ";
 
-                Border border = BorderFactory.createCompoundBorder(
-                        BorderFactory.createRaisedBevelBorder(),
-                        BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.BLUE, 1), opName
-                                + bitmask, TitledBorder.RIGHT, TitledBorder.TOP, this.getFont(), Color.RED));
-                this.setBorder(border);
+                String btitle =border.getTitle();
+                btitle += ", "+opName + bitmask;
+                border.setTitle(btitle);
             }
 
             d.convertFromUnsignedC();
@@ -1565,13 +1575,11 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
 
         fillValue = d.getFillValue();
 
-        boolean isUnsigned = d.isUnsigned();
         String cName = dataValue.getClass().getName();
         int cIndex = cName.lastIndexOf("[");
         if (cIndex >= 0) {
             NT = cName.charAt(cIndex + 1);
         }
-        boolean isVL = cName.startsWith("[Ljava.lang.String;");
 
         // convert numerical data into char
         // only possible cases are byte[] and short[] (converted from unsigned
@@ -1632,19 +1640,23 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
             boolean isNaturalOrder = (dataset.getRank()==1 ||
             		                  (dataset.getSelectedIndex()[0] < dataset.getSelectedIndex()[1]));
 
-            public int getColumnCount() {
+            @Override
+			public int getColumnCount() {
                 return columnNames.length;
             }
 
-            public int getRowCount() {
+            @Override
+			public int getRowCount() {
                 return rowCount;
             }
 
-            public String getColumnName(int col) {
+            @Override
+			public String getColumnName(int col) {
                 return columnNames[col];
             }
 
-            public Object getValueAt(int row, int column) {
+            @Override
+			public Object getValueAt(int row, int column) {
                 if (startEditing[0]) return "";
 
                 if (isArray) {
@@ -1733,7 +1745,8 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
             private final Datatype    dtype            = dataset.getDatatype();
             private final boolean     isArray          = (dtype.getDatatypeClass() == Datatype.CLASS_ARRAY);
 
-            public boolean isCellEditable(int row, int col) {
+            @Override
+			public boolean isCellEditable(int row, int col) {
                 if (isReadOnly || isDisplayTypeChar || isArray || showAsBin || showAsHex) {
                     return false;
                 }
@@ -1742,7 +1755,8 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
                 }
             }
 
-            public boolean editCellAt(int row, int column, java.util.EventObject e) {
+            @Override
+			public boolean editCellAt(int row, int column, java.util.EventObject e) {
                 if (!isCellEditable(row, column)) {
                     return super.editCellAt(row, column, e);
                 }
@@ -1764,7 +1778,8 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
                 return super.editCellAt(row, column, e);
             }
 
-            public void editingStopped(ChangeEvent e) {
+            @Override
+			public void editingStopped(ChangeEvent e) {
                 int row = getEditingRow();
                 int col = getEditingColumn();
                 super.editingStopped(e);
@@ -1786,7 +1801,8 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
                 } // if (source instanceof CellEditor)
             }
 
-            public boolean isCellSelected(int row, int column) {
+            @Override
+			public boolean isCellSelected(int row, int column) {
                 if ((getSelectedRow() == row) && (getSelectedColumn() == column)) {
                     cellLabel.setText(String.valueOf(rowStart + indexBase + row * rowStride) + ", "
                             + table.getColumnName(column) + "  =  ");
@@ -1797,12 +1813,6 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
                     if (isRegRef) {
                         if(val != null && ((String)val).compareTo("NULL")!=0) {
                             String reg = (String)val;
-                            boolean isPointSelection = false;
-
-                            isPointSelection = (reg.indexOf('-') <= 0);
-
-                            // find the object location
-                            String oidStr = reg.substring(reg.indexOf('/'), reg.indexOf(' '));
 
                             // decode the region selection
                             String regStr = reg.substring(reg.indexOf('{') + 1, reg.indexOf('}'));
@@ -1926,19 +1936,23 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
             int                       nRows            = getRowCount();
             int                       nSubColumns      = (nFields > 0) ? getColumnCount() / nFields : 0;
 
-            public int getColumnCount() {
+            @Override
+			public int getColumnCount() {
                 return allColumnNames.length;
             }
 
-            public int getRowCount() {
+            @Override
+			public int getRowCount() {
                 return rows;
             }
 
-            public String getColumnName(int col) {
+            @Override
+			public String getColumnName(int col) {
                 return allColumnNames[col];
             }
 
-            public Object getValueAt(int row, int col) {
+            @Override
+			public Object getValueAt(int row, int col) {
                 if (startEditing[0]) return "";
 
                 int fieldIdx = col;
@@ -2013,11 +2027,13 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
             int                       lastSelectedRow    = -1;
             int                       lastSelectedColumn = -1;
 
-            public boolean isCellEditable(int row, int column) {
+            @Override
+			public boolean isCellEditable(int row, int column) {
                 return !isReadOnly;
             }
 
-            public boolean editCellAt(int row, int column, java.util.EventObject e) {
+            @Override
+			public boolean editCellAt(int row, int column, java.util.EventObject e) {
                 if (!isCellEditable(row, column)) {
                     return super.editCellAt(row, column, e);
                 }
@@ -2037,7 +2053,8 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
                 return super.editCellAt(row, column, e);
             }
 
-            public void editingStopped(ChangeEvent e) {
+            @Override
+			public void editingStopped(ChangeEvent e) {
                 int row = getEditingRow();
                 int col = getEditingColumn();
                 super.editingStopped(e);
@@ -2059,7 +2076,8 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
                 } // if (source instanceof CellEditor)
             }
 
-            public boolean isCellSelected(int row, int column) {
+            @Override
+			public boolean isCellSelected(int row, int column) {
                 if ((lastSelectedRow == row) && (lastSelectedColumn == column)) {
                     return super.isCellSelected(row, column);
                 }
@@ -2441,7 +2459,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
 
                 int bufferSize = (int) Math.min(fileSize, datasetByteSize);
 
-                int remainingSize = (int) bufferSize - (BYTE_BUFFER_SIZE);
+                int remainingSize = bufferSize - (BYTE_BUFFER_SIZE);
                 int allocValue = 0;
                 int iterationNumber = 0;
                 byte[] byteArray = new byte[BYTE_BUFFER_SIZE];
@@ -2474,7 +2492,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
                 else if (binaryOrder == 3) byteBuffer.order(ByteOrder.BIG_ENDIAN);
 
                 int bufferSize = (int) Math.min(fileSize, datasetShortSize);
-                int remainingSize = (int) bufferSize - (SHORT_BUFFER_SIZE * 2);
+                int remainingSize = bufferSize - (SHORT_BUFFER_SIZE * 2);
                 int allocValue = 0;
                 int iterationNumber = 0;
                 ShortBuffer sb = byteBuffer.asShortBuffer();
@@ -2508,7 +2526,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
                 else if (binaryOrder == 3) byteBuffer.order(ByteOrder.BIG_ENDIAN);
 
                 int bufferSize = (int) Math.min(fileSize, datasetIntSize);
-                int remainingSize = (int) bufferSize - (INT_BUFFER_SIZE * 4);
+                int remainingSize = bufferSize - (INT_BUFFER_SIZE * 4);
                 int allocValue = 0;
                 int iterationNumber = 0;
                 int[] intArray = new int[INT_BUFFER_SIZE];
@@ -2544,7 +2562,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
                 else if (binaryOrder == 3) byteBuffer.order(ByteOrder.BIG_ENDIAN);
 
                 int bufferSize = (int) Math.min(fileSize, datasetLongSize);
-                int remainingSize = (int) bufferSize - (LONG_BUFFER_SIZE * 8);
+                int remainingSize = bufferSize - (LONG_BUFFER_SIZE * 8);
                 int allocValue = 0;
                 int iterationNumber = 0;
                 long[] longArray = new long[LONG_BUFFER_SIZE];
@@ -2579,7 +2597,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
                 else if (binaryOrder == 3) byteBuffer.order(ByteOrder.BIG_ENDIAN);
 
                 int bufferSize = (int) Math.min(fileSize, datasetFloatSize);
-                int remainingSize = (int) bufferSize - (FLOAT_BUFFER_SIZE * 4);
+                int remainingSize = bufferSize - (FLOAT_BUFFER_SIZE * 4);
                 int allocValue = 0;
                 int iterationNumber = 0;
                 FloatBuffer fb = byteBuffer.asFloatBuffer();
@@ -2613,7 +2631,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
                 else if (binaryOrder == 3) byteBuffer.order(ByteOrder.BIG_ENDIAN);
 
                 int bufferSize = (int) Math.min(fileSize, datasetDoubleSize);
-                int remainingSize = (int) bufferSize - (DOUBLE_BUFFER_SIZE * 8);
+                int remainingSize = bufferSize - (DOUBLE_BUFFER_SIZE * 8);
                 int allocValue = 0;
                 int iterationNumber = 0;
                 DoubleBuffer db = byteBuffer.asDoubleBuffer();
@@ -3006,7 +3024,8 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
     /**
      * update dataset value in file. The change will go to file.
      */
-    public void updateValueInFile() {
+    @Override
+	public void updateValueInFile() {
         if (isReadOnly || showAsBin || showAsHex) {
             return;
         }
@@ -3260,7 +3279,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
         Datatype types[] = compDS.getSelectedMemberTypes();
         int nFields = cdata.size();
         int nSubColumns = table.getColumnCount() / nFields;
-        int nRows = table.getRowCount();
+        table.getRowCount();
         int column = col;
         int offset = 0;
         int morder = 1;
@@ -3384,15 +3403,12 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
         public static final int   ROW_PLOT         = 0;
         public static final int   COLUMN_PLOT      = 1;
 
-        private int               idx_xaxis        = -1, nRows = 0, nCols = 0, plotType = -1;
+        private int               idx_xaxis        = -1, plotType = -1;
         private JRadioButton      rowButton, colButton;
         private JComboBox         rowBox, colBox;
 
         public LineplotOption(JFrame owner, String title, int nrow, int ncol) {
             super(owner, title, true);
-
-            nRows = nrow;
-            nCols = ncol;
 
             rowBox = new JComboBox();
             rowBox.setEditable(false);
@@ -3485,8 +3501,9 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
             return plotType;
         }
 
-        public void actionPerformed(ActionEvent e) {
-            Object source = e.getSource();
+        @Override
+		public void actionPerformed(ActionEvent e) {
+            e.getSource();
             String cmd = e.getActionCommand();
 
             if (cmd.equals("Cancel")) {
@@ -3507,7 +3524,8 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
             }
         }
 
-        public void itemStateChanged(ItemEvent e) {
+        @Override
+		public void itemStateChanged(ItemEvent e) {
             Object source = e.getSource();
 
             if (source.equals(colButton) || source.equals(rowButton)) {
@@ -3530,7 +3548,8 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
             setReorderingAllowed(false);
         }
 
-        protected void processMouseMotionEvent(MouseEvent e) {
+        @Override
+		protected void processMouseMotionEvent(MouseEvent e) {
             super.processMouseMotionEvent(e);
 
             if (e.getID() == MouseEvent.MOUSE_DRAGGED) {
@@ -3559,7 +3578,8 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
             }
         }
 
-        protected void processMouseEvent(MouseEvent e) {
+        @Override
+		protected void processMouseEvent(MouseEvent e) {
             super.processMouseEvent(e);
 
             int mouseID = e.getID();
@@ -3623,19 +3643,23 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
             AbstractTableModel tm = new AbstractTableModel() {
                 private static final long serialVersionUID = -8117073107569884677L;
 
-                public int getColumnCount() {
+                @Override
+				public int getColumnCount() {
                     return 1;
                 }
 
-                public int getRowCount() {
+                @Override
+				public int getRowCount() {
                     return rowCount;
                 }
 
-                public String getColumnName(int col) {
+                @Override
+				public String getColumnName(int col) {
                     return " ";
                 }
 
-                public Object getValueAt(int row, int column) {
+                @Override
+				public Object getValueAt(int row, int column) {
                     return String.valueOf(start + indexBase + row * stride);
                 }
             };
@@ -3650,12 +3674,14 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
         }
 
         /** Overridden to return false since the headers are not editable. */
-        public boolean isCellEditable(int row, int col) {
+        @Override
+		public boolean isCellEditable(int row, int col) {
             return false;
         }
 
         /** This is called when the selection changes in the row headers. */
-        public void valueChanged(ListSelectionEvent e) {
+        @Override
+		public void valueChanged(ListSelectionEvent e) {
             if (parentTable == null) {
                 return;
             }
@@ -3670,7 +3696,8 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
             parentTable.setColumnSelectionInterval(0, parentTable.getColumnCount() - 1);
         }
 
-        protected void processMouseMotionEvent(MouseEvent e) {
+        @Override
+		protected void processMouseMotionEvent(MouseEvent e) {
             if (e.getID() == MouseEvent.MOUSE_DRAGGED) {
                 int colEnd = rowAtPoint(e.getPoint());
 
@@ -3694,7 +3721,8 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
             }
         }
 
-        protected void processMouseEvent(MouseEvent e) {
+        @Override
+		protected void processMouseEvent(MouseEvent e) {
             int mouseID = e.getID();
 
             if (mouseID == MouseEvent.MOUSE_CLICKED) {
@@ -3743,7 +3771,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
 
         public RowHeaderRenderer() {
             super();
-            setHorizontalAlignment(JLabel.CENTER);
+            setHorizontalAlignment(SwingConstants.CENTER);
 
             setOpaque(true);
             setBorder(UIManager.getBorder("TableHeader.cellBorder"));
@@ -3751,7 +3779,8 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
         }
 
         /** Configures the button for the current cell, and returns it. */
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+        @Override
+		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
                 boolean hasFocus, int row, int column) {
             setFont(table.getFont());
 
@@ -3773,18 +3802,17 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
                 new CompoundBorder(new MatteBorder(1, 1, 1, 0, java.awt.Color.darkGray), 
                         new MatteBorder(1, 2, 1, 0, java.awt.Color.white));
         Vector                       lines            = new Vector();
-        int                          nMajorcolumns    = 1;
         int                          nSubcolumns      = 1;
 
         public MultiLineHeaderRenderer(int majorColumns, int subColumns) {
-            nMajorcolumns = majorColumns;
             nSubcolumns = subColumns;
             setOpaque(true);
             setForeground(UIManager.getColor("TableHeader.foreground"));
             setBackground(UIManager.getColor("TableHeader.background"));
         }
 
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+        @Override
+		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
                 boolean hasFocus, int row, int column) {
             setFont(table.getFont());
             String str = (value == null) ? "" : value.toString();
@@ -3819,7 +3847,8 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
     // //
     // ////////////////////////////////////////////////////////////////////////
 
-    public void mouseClicked(MouseEvent e) {
+    @Override
+	public void mouseClicked(MouseEvent e) {
         // only deal with reg. ref
         if (!(isRegRef || isObjRef)) return;
 
@@ -3866,16 +3895,20 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
 
     }
 
-    public void mouseEntered(MouseEvent e) {
+    @Override
+	public void mouseEntered(MouseEvent e) {
     }
 
-    public void mouseExited(MouseEvent e) {
+    @Override
+	public void mouseExited(MouseEvent e) {
     }
 
-    public void mousePressed(MouseEvent e) {
+    @Override
+	public void mousePressed(MouseEvent e) {
     }
 
-    public void mouseReleased(MouseEvent e) {
+    @Override
+	public void mouseReleased(MouseEvent e) {
     }
 
     /** creates a popup menu for a right mouse click on a data object */
@@ -3940,13 +3973,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
 
         if (data == null) return;
 
-        // load each selection into a separate dataset and display it in
-        // a separate spreadsheet
-        StringBuffer titleSB = new StringBuffer();
-        Font font = this.getFont();
-        CompoundBorder border = BorderFactory.createCompoundBorder(BorderFactory.createRaisedBevelBorder(),
-                BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.BLUE, 3),
-                        "Data pointed by object reference", TitledBorder.RIGHT, TitledBorder.TOP, font, Color.RED));
+        new StringBuffer();
 
         JInternalFrame dataView = null;
         HashMap map = new HashMap(1);
@@ -3965,14 +3992,6 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
 
         if (dataView != null) {
             viewer.addDataView((DataView) dataView);
-            titleSB.append(dset_copy.getName());
-            titleSB.append("  -  ");
-            titleSB.append(dset_copy.getPath());
-            titleSB.append("  -  ");
-            titleSB.append(dataset.getFile());
-            dataView.setTitle(titleSB.toString());
-
-            dataView.setBorder(border);
         }
     }
 
@@ -4010,8 +4029,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
         String regStr = reg.substring(reg.indexOf('{') + 1, reg.indexOf('}'));
         if (regStr == null || regStr.length() <= 0) return; // no selection
 
-        // decode the region selection
-        String dataStr = reg.substring(reg.indexOf('}') + 1);
+        reg.substring(reg.indexOf('}') + 1);
 
         StringTokenizer st = new StringTokenizer(regStr);
         int nSelections = st.countTokens();
@@ -4038,10 +4056,6 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
         // load each selection into a separate dataset and display it in
         // a separate spreadsheet
         StringBuffer titleSB = new StringBuffer();
-        Font font = this.getFont();
-        CompoundBorder border = BorderFactory.createCompoundBorder(BorderFactory.createRaisedBevelBorder(),
-                BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.BLUE, 3),
-                        "Data pointed by region reference", TitledBorder.RIGHT, TitledBorder.TOP, font, Color.RED));
 
         while (st.hasMoreTokens()) {
             try {
@@ -4060,7 +4074,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
                 continue;
             }
 
-            int rank = dset_copy.getRank();
+            dset_copy.getRank();
             long start[] = dset_copy.getStartDims();
             long count[] = dset_copy.getSelectedDims();
 
@@ -4106,13 +4120,11 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
                 }
             }
 
-            Object data = null;
             try {
-                data = dset_copy.getData();
+                dset_copy.getData();
             }
             catch (Exception ex) {
                 JOptionPane.showMessageDialog(this, ex, "Region Reference:" + getTitle(), JOptionPane.ERROR_MESSAGE);
-                data = null;
             }
 
             JInternalFrame dataView = null;
@@ -4132,14 +4144,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
 
             if (dataView != null) {
                 viewer.addDataView((DataView) dataView);
-                titleSB.append(dset_copy.getName());
-                titleSB.append("  -  ");
-                titleSB.append(dset_copy.getPath());
-                titleSB.append("  -  ");
-                titleSB.append(dataset.getFile());
-                dataView.setTitle(titleSB.toString());
-
-                dataView.setBorder(border);
+                dataView.setTitle(dataView.getTitle() + "; "+titleSB.toString());
             }
         } // while (st.hasMoreTokens())
     } // private void showRegRefData(String reg)

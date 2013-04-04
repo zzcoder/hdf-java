@@ -1245,11 +1245,22 @@ public class H5File extends FileFormat {
      */
     @Override
     public Datatype createDatatype(int tclass, int tsize, int torder, int tsign, String name) throws Exception {
+        return createDatatype(tclass, tsize, torder, tsign, null, name);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ncsa.hdf.object.FileFormat#createDatatype(int, int, int, int, Datatype,
+     * java.lang.String)
+     */
+    @Override
+    public Datatype createDatatype(int tclass, int tsize, int torder, int tsign, Datatype tbase, String name) throws Exception {
         int tid = -1;
         H5Datatype dtype = null;
 
         try {
-            H5Datatype t = (H5Datatype) createDatatype(tclass, tsize, torder, tsign);
+            H5Datatype t = (H5Datatype) createDatatype(tclass, tsize, torder, tsign, tbase);
             tid = t.toNative();
 
             H5.H5Tcommit(fid, name, tid, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT,
@@ -1295,6 +1306,15 @@ public class H5File extends FileFormat {
     @Override
     public Datatype createDatatype(int tclass, int tsize, int torder, int tsign) throws Exception {
         return new H5Datatype(tclass, tsize, torder, tsign);
+    }
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ncsa.hdf.object.FileFormat#createDatatype(int, int, int, int, Datatype)
+     */
+    @Override
+    public Datatype createDatatype(int tclass, int tsize, int torder, int tsign, Datatype tbase) throws Exception {
+        return new H5Datatype(tclass, tsize, torder, tsign, tbase);
     }
 
     /*
@@ -2739,6 +2759,21 @@ public class H5File extends FileFormat {
             }
         }
         return targetObjName;
+    }
+
+    /**
+     * Export dataset.
+     * 
+     * @param file_export_name
+     *            The file name to export data into.
+     * @param file_name
+     *            The name of the HDF5 file containing the dataset.
+     * @param object_path
+     *            The full path of the dataset to be exported.
+     * @throws Exception
+     */
+    public void exportDataset(String file_export_name, String file_name, String object_path, int binary_order) throws Exception {
+        H5.H5export_dataset(file_export_name, file_name, object_path, binary_order);
     }
 
     /**

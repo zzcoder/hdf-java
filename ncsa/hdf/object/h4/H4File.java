@@ -359,7 +359,30 @@ public class H4File extends FileFormat
         int tclass,
         int tsize,
         int torder,
+        int tsign, 
+        Datatype tbase) throws Exception
+    {
+        return new H4Datatype(tclass, tsize, torder, tsign);
+    }
+
+    @Override
+    public Datatype createDatatype(
+        int tclass,
+        int tsize,
+        int torder,
         int tsign,
+        String name) throws Exception
+    {
+        throw new UnsupportedOperationException("HDF4 does not support named datatype.");
+    }
+
+    @Override
+    public Datatype createDatatype(
+        int tclass,
+        int tsize,
+        int torder,
+        int tsign, 
+        Datatype tbase,
         String name) throws Exception
     {
         throw new UnsupportedOperationException("HDF4 does not support named datatype.");
