@@ -135,6 +135,42 @@ public class H5Datatype extends Datatype {
         super(tclass, tsize, torder, tsign);
     }
 
+
+    /**
+     * Constructs a Datatype with specified class, size, byte order and sign.
+     * <p>
+     * The following is a list of a few example of H5Datatype.
+     * <OL>
+     * <LI>to create unsigned native integer<br>
+     * H5Datatype type = new H5Dataype(CLASS_INTEGER, NATIVE, NATIVE,
+     * SIGN_NONE);
+     * <LI>to create 16-bit signed integer with big endian<br>
+     * H5Datatype type = new H5Dataype(CLASS_INTEGER, 2, ORDER_BE, NATIVE);
+     * <LI>to create native float<br>
+     * H5Datatype type = new H5Dataype(CLASS_FLOAT, NATIVE, NATIVE, -1);
+     * <LI>to create 64-bit double<br>
+     * H5Datatype type = new H5Dataype(CLASS_FLOAT, 8, NATIVE, -1);
+     * </OL>
+     * 
+     * @param tclass
+     *            the class of the datatype, e.g. CLASS_INTEGER, CLASS_FLOAT and
+     *            etc.
+     * @param tsize
+     *            the size of the datatype in bytes, e.g. for a 32-bit integer,
+     *            the size is 4.
+     * @param torder
+     *            the byte order of the datatype. Valid values are ORDER_LE,
+     *            ORDER_BE, ORDER_VAX and ORDER_NONE
+     * @param tsign
+     *            the sign of the datatype. Valid values are SIGN_NONE, SIGN_2
+     *            and MSGN
+     * @param tbase
+     *            the base datatype of the new datatype
+     */
+    public H5Datatype(int tclass, int tsize, int torder, int tsign, Datatype tbase) {
+        super(tclass, tsize, torder, tsign, tbase);
+    }
+
     /**
      * Constructs a Datatype with a given native datatype identifier.
      * <p>
@@ -272,7 +308,7 @@ public class H5Datatype extends Datatype {
     }
 
     /**
-     * Converts namess in an Enumeration Datatype to values.
+     * Converts names in an Enumeration Datatype to values.
      * <p>
      * This method searches the identified enumeration datatype for the names
      * appearing in <code>inValues</code> and returns the values corresponding
@@ -425,7 +461,21 @@ public class H5Datatype extends Datatype {
             }
             catch (Exception ex) {}
         }
-
+        else if (tclass == HDF5Constants.H5T_VLEN) {
+            int tmptid = -1;
+            datatypeClass = CLASS_VLEN;
+            try {
+                tmptid = H5.H5Tget_super(tid);
+                baseType = new H5Datatype(tmptid);
+            }
+            catch (Exception ex) {}
+            finally {
+                try {
+                    H5.H5Tclose(tmptid);
+                }
+                catch (Exception ex) {}
+            }
+        }
         if (isVLEN)
             datatypeSize = -1;
         else
@@ -498,7 +548,7 @@ public class H5Datatype extends Datatype {
                     break;
                 case CLASS_INTEGER:
                 case CLASS_ENUM:
-                    if (datatypeSize == 1) {
+                   if (datatypeSize == 1) {
                         tid = H5.H5Tcopy(HDF5Constants.H5T_NATIVE_INT8);
                     }
                     else if (datatypeSize == 2) {
@@ -563,6 +613,15 @@ public class H5Datatype extends Datatype {
                     }
                     else {
                         tid = H5.H5Tcopy(HDF5Constants.H5T_STD_REF_OBJ);
+                    }
+                    break;
+                case CLASS_VLEN:
+                    try {
+                        tmptid = baseType.toNative();
+                        tid = H5.H5Tvlen_create(tmptid);
+                    }
+                    finally {
+                        close(tmptid);
                     }
                     break;
             } // switch (tclass)
