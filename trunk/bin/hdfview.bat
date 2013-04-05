@@ -19,6 +19,10 @@ rem
 setlocal enabledelayedexpansion
 pushd %~dp0
 
+rem Adjust the following two variables to match your environment
+#set JAVAHOME=
+set INSTALLDIR=%CD%
+
 set nerrors=0
 if "%1"=="/?" goto help
 goto main
@@ -56,8 +60,6 @@ rem Setup our environment
 		goto error
 	)
 	set java_run=%JAVAHOME%\bin\java.exe
-	
-	set INSTALLDIR=%CD%
 	
 	set CLASSPATH=%INSTALLDIR%\*;%INSTALLDIR%\ext\*
 

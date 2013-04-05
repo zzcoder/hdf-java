@@ -2,6 +2,7 @@
 
 # Set up default variable values if not supplied by the user.
 
+# Adjust the following two variables to match your environment
 # where the HDFView is installed, e.g. /home/user1/hdfview
 HDFJAVA=@JH45INST@
 export HDFJAVA
