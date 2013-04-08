@@ -16,6 +16,7 @@ import junit.framework.TestCase;
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 import ncsa.hdf.object.Attribute;
+import ncsa.hdf.object.Dataset;
 import ncsa.hdf.object.Datatype;
 import ncsa.hdf.object.FileFormat;
 import ncsa.hdf.object.h5.H5Datatype;
@@ -357,7 +358,7 @@ public class H5DatatypeTest extends TestCase {
      */
     public final void testFromNative() {
         int tid = -1;
-        final H5Datatype type = new H5Datatype(-1);
+        H5Datatype type = new H5Datatype(-1);
 
         assertFalse(Datatype.CLASS_INTEGER == type.getDatatypeClass());
         assertFalse(type.getDatatypeSize() == 4);
@@ -389,6 +390,17 @@ public class H5DatatypeTest extends TestCase {
             fail("H5.H5Fget_obj_count() failed. " + ex);
         }
         assertEquals(1, nObjs); // file id should be the only one left open
+        
+        int tids[] = {HDF5Constants.H5T_NATIVE_INT32, HDF5Constants.H5T_NATIVE_UINT16, HDF5Constants.H5T_STD_I32BE};
+        int sizes[] = {4, 2, 4};
+        int signs[] = {Datatype.SIGN_2, Datatype.SIGN_NONE, Datatype.SIGN_2};
+        int orders[] = {Datatype.ORDER_LE, Datatype.ORDER_LE, Datatype.ORDER_BE};
+        for (int i=0; i<tids.length; i++) {
+            type = new H5Datatype(tids[i]);
+            assertEquals(sizes[i], type.getDatatypeSize());
+            assertEquals(signs[i], type.getDatatypeSign());
+            assertEquals(orders[i], type.getDatatypeOrder());
+        }
     }
 
     /**

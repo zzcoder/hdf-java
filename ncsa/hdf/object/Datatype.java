@@ -50,7 +50,7 @@ public abstract class Datatype extends HObject {
      * The default definition for datatype size, order, and sign.
      */
     public static final int NATIVE = -1;
-
+    
     /**
      * See {@link <a href="http://hdfgroup.org/HDF5/doc/UG/index.html">HDF5
      * User's Guide</a>}
