@@ -20,13 +20,13 @@ setlocal enabledelayedexpansion
 pushd %~dp0
 
 rem Adjust the following two variables to match your environment
-#set JAVAHOME=
+rem set JAVAHOME=
 set INSTALLDIR=%CD%
 
 
-###############################################################################
-#            DO NOT MODIFY BELOW THIS LINE
-###############################################################################
+rem ###############################################################################
+rem #            DO NOT MODIFY BELOW THIS LINE
+rem ###############################################################################
 set nerrors=0
 if "%1"=="/?" goto help
 goto main
@@ -58,17 +58,25 @@ rem Parse through the parameters sent to file, and set appropriate variables
 rem Setup our environment
 :setup
 	echo.Setting environment
-	if !%JAVAHOME%!"\bin\java.exe"=="\bin\java.exe" (
-		echo.%JAVAHOME%\bin\java.exe not found,
+	if !"%JAVAHOME%"!"\bin\java.exe"=="\bin\java.exe" (
+		echo."%JAVAHOME%"\bin\java.exe not found,
 		echo.please check your java home directory.
 		goto error
 	)
-	set java_run=%JAVAHOME%\bin\java.exe
+	set java_run="%JAVAHOME%"\bin\java.exe
 	
-	set CLASSPATH=%INSTALLDIR%\*;%INSTALLDIR%\ext\*
+        SET PATH="%INSTALLDIR%"\lib\win;"%INSTALLDIR%"\lib\ext
 
-	set PATH=%INSTALLDIR%;%INSTALLDIR%\ext
+        @REM set the JNI classpath
+        set JNI_CLASSPATH="%INSTALLDIR%"\lib\jhdf.jar;"%INSTALLDIR%"\lib\jhdf5.jar
 
+        @REM set the object package classpath
+        set OBJ_CLASSPATH="%INSTALLDIR%"\lib\jhdfobj.jar;"%INSTALLDIR%"\lib\jhdf4obj.jar;"%INSTALLDIR%"\lib\jhdf5obj.jar;"%INSTALLDIR%"\lib\netcdf.jar;"%INSTALLDIR%"\lib\fits.jar
+
+        set EXT_CLASSPATH="%INSTALLDIR%"\lib\ext\*
+
+        @REM set the CLASSPATH
+        set CLASSPATH=%JNI_CLASSPATH%;%OBJ_CLASSPATH%;%EXT_CLASSPATH%;"%INSTALLDIR%"\lib\jhdfview.jar
     exit /b 0
 
 rem Handle errors
@@ -107,11 +115,12 @@ rem This is where the magic happens
     )
 
     if "%nerrors%"=="0" (
-		%JAVAHOME%\bin\java -Xmx1024m -Djava.library.path=%PATH% -Dhdfview.root=%INSTALLDIR% -classpath %CLASSPATH% ncsa.hdf.view.HDFView -root %INSTALLDIR%
+		"%JAVAHOME%"\bin\java -Xmx1024m -Djava.library.path=%PATH% -Dhdfview.root="%INSTALLDIR%" -classpath %CLASSPATH% ncsa.hdf.view.HDFView -root "%INSTALLDIR%"
     )
     rem Fall through to end
 
 :end
     popd
     endlocal & exit /b %nerrors%
+
 
