@@ -142,8 +142,8 @@ public class DebugHDF {
 //        try {testH5DeleteDS("g:\\temp\\strs.h5"); } catch (Exception ex) {ex.printStackTrace();} 
 //        try {testExtendData("g:\\temp\\extended.h5", "dset", 1000, 1500); } catch (Exception ex) {ex.printStackTrace();} 
 //        try {createNestedcompound("g:\\temp\\nested_cmp.h5", "dset"); } catch (Exception ex) {ex.printStackTrace();}
-        try {  testH5Vlen("G:\\temp\\str.h5") ; } catch (Exception ex) {ex.printStackTrace();}
-        try {  testH5VlenObj("G:\\temp\\str2.h5") ; } catch (Exception ex) {ex.printStackTrace();}
+//        try {  testH5Vlen("G:\\temp\\str.h5") ; } catch (Exception ex) {ex.printStackTrace();}
+//        try {  testH5VlenObj("G:\\temp\\str2.h5") ; } catch (Exception ex) {ex.printStackTrace();}
 //        try {  testH5VlenAttr("G:\\temp\\vlen_str_attr.h5") ; } catch (Exception ex) {ex.printStackTrace();}
 //        try {testRefData("g:\\temp\\refs.h5", "refs"); } catch (Exception ex) {ex.printStackTrace();}
 //      try {testH5WriteDouble("g:\\temp\\double.h5"); } catch (Exception ex) {ex.printStackTrace();}
@@ -169,6 +169,8 @@ public class DebugHDF {
 //        try { testHDF4("g:\\temp\\test_hdf4.hdf"); } catch (Exception ex) {ex.printStackTrace();}
 
         //try { test3DHDF4("g:\\temp\\hdf3d.hdf", "3dint"); } catch (Exception ex) {ex.printStackTrace();}
+        
+        try { testH5DataType("G:\\temp\\H5Datatype.h5"); } catch (Exception ex) {ex.printStackTrace();}
      }
     
     public static void testRefData(String fname, String dname)throws Exception
@@ -1847,6 +1849,43 @@ public class DebugHDF {
         H5.H5Sclose(sid);
         H5.H5Tclose(tid);
         H5.H5Fclose(fid);
+    }
+    
+    private static void testH5DataType(final String filename) throws Exception 
+    {
+        int buf[] = {1,2,3,4,5,6,7,8,9,10};
+        int tids[] = {HDF5Constants.H5T_NATIVE_INT32, HDF5Constants.H5T_NATIVE_UINT16, HDF5Constants.H5T_STD_I32BE};
+        String names[] = {"/int32", "/uint16", "/i32be"};
+
+        int fid = H5.H5Fcreate(filename, HDF5Constants.H5F_ACC_TRUNC, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+        int sid = H5.H5Screate_simple(1, new long[] {10}, null);
+        
+        for (int i=0; i<tids.length; i++) {
+            int did = H5.H5Dcreate(fid, names[i], tids[i], sid, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+            H5.H5Dwrite(did, tids[i], HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL, HDF5Constants.H5P_DEFAULT, buf);
+            H5.H5Dclose(did);
+        }
+        
+        // clean up
+        H5.H5Sclose(sid);
+        H5.H5Fclose(fid);
+        
+        final H5File file = new H5File(filename, H5File.READ);
+        file.open();
+        
+        for (int i=0; i<tids.length; i++) {
+            Dataset dset = (Dataset)file.get(names[i]);
+            dset.init();
+            
+            Datatype type = dset.getDatatype();
+            System.out.println("Name="+names[i]+
+            		"\t tclass="+type.getDatatypeClass()+
+            		"\t tsize="+type.getDatatypeSize()+
+            		"\t tsign="+type.getDatatypeSign()+
+            		"\t torder="+type.getDatatypeOrder());
+        }
+
+        file.close();
     }
     
     private static void testH5VlenObj(final String fname) throws Exception 

@@ -141,12 +141,12 @@ public class FileFormatTest extends TestCase {
      * </ul>
      */
     public final void testGetFileFormatKeys() {
-        Enumeration e = FileFormat.getFileFormatKeys();
-        String keys[] = { "HDF5", "HDF4" };
-        int pos = 0;
-        while (e.hasMoreElements()) {
-            assertEquals(keys[pos++], e.nextElement());
-        }
+     	
+    	Enumeration<String> e = FileFormat.getFileFormatKeys();
+
+        while (e.hasMoreElements())
+        	assertNotNull(FileFormat.getFileFormat((String)e.nextElement()));
+        
         int nObjs = 0;
         try {
             nObjs = H5.H5Fget_obj_count(testFile.getFID(),

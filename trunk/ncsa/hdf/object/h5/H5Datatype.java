@@ -381,18 +381,22 @@ public class H5Datatype extends Datatype {
      */
     @Override
     public void fromNative(int tid) {
-        int tclass = -1, tsize = -1;
+        int tclass = -1, tsize = -1, torder=-1;
         boolean isChar = false, isUchar = false;
 
         try {
             tclass = H5.H5Tget_class(tid);
             tsize = H5.H5Tget_size(tid);
+            torder = H5.H5Tget_order(tid);
             isVLEN = (tclass == HDF5Constants.H5T_VLEN);
         }
         catch (Exception ex) {
             datatypeClass = CLASS_NO_CLASS;
         }
 
+        if (torder==HDF5Constants.H5T_ORDER_BE) datatypeOrder = ORDER_BE;
+        else datatypeOrder = ORDER_LE;
+        
         try {
             isUchar = H5.H5Tequal(tid, HDF5Constants.H5T_NATIVE_UCHAR);
             isChar = (H5.H5Tequal(tid, HDF5Constants.H5T_NATIVE_CHAR) || isUchar);
@@ -420,6 +424,7 @@ public class H5Datatype extends Datatype {
         else if (isChar) {
             datatypeClass = CLASS_CHAR;
             if (isUchar) datatypeSign = SIGN_NONE;
+            else datatypeSign = SIGN_2;
         }
         else if (tclass == HDF5Constants.H5T_INTEGER) {
             datatypeClass = CLASS_INTEGER;
@@ -428,6 +433,8 @@ public class H5Datatype extends Datatype {
                 if (tsign == HDF5Constants.H5T_SGN_NONE) {
                     datatypeSign = SIGN_NONE;
                 }
+                else datatypeSign = SIGN_2;
+                	
             }
             catch (Exception ex) {}
         }
@@ -480,8 +487,6 @@ public class H5Datatype extends Datatype {
             datatypeSize = -1;
         else
             datatypeSize = tsize;
-
-        datatypeOrder = NATIVE;
     }
 
     /**

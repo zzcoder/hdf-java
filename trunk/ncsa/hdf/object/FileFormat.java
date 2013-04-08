@@ -155,7 +155,7 @@ public abstract class FileFormat extends File {
      * @see #getFileFormats()
      * @see #removeFileFormat(String)
      */
-    private static final Map<String, FileFormat> FileList           = new Hashtable<String, FileFormat>(10);
+    private static final Map<String, FileFormat> FileList = new Hashtable<String, FileFormat>(10);
 
     /**
      * A list of file extensions for the supported file formats. This list of
