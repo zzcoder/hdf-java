@@ -23,6 +23,10 @@ rem Adjust the following two variables to match your environment
 #set JAVAHOME=
 set INSTALLDIR=%CD%
 
+
+###############################################################################
+#            DO NOT MODIFY BELOW THIS LINE
+###############################################################################
 set nerrors=0
 if "%1"=="/?" goto help
 goto main
