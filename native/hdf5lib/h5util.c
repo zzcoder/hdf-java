@@ -38,6 +38,7 @@ hid_t   h5str_get_little_endian_type(hid_t type);
 hid_t   h5str_get_big_endian_type(hid_t type);
 htri_t  h5str_detect_vlen(hid_t tid);
 htri_t  h5str_detect_vlen_str(hid_t tid);
+int     h5tools_dump_simple_data(FILE *stream, hid_t container, hid_t type, void *_mem, hsize_t nelmts);
 int     h5str_render_bin_output(FILE *stream, hid_t container, hid_t tid, void *_mem, hsize_t block_nelmts);
 int     render_bin_output_region_data_blocks(FILE *stream, hid_t region_id,
             hid_t container, int ndims, hid_t type_id, hssize_t nblocks, hsize_t *ptdata);
@@ -449,7 +450,7 @@ int h5str_sprintf(h5str_t *str, hid_t container, hid_t tid, void *ptr) {
 
     if (this_str) {
         h5str_append(str, this_str);
-        this_strlen = strlen(str);
+        this_strlen = strlen(str->s);
         free(this_str);
     }
 
@@ -808,7 +809,7 @@ int h5str_is_zero(const void *_mem, size_t size) {
 htri_t
 h5str_detect_vlen_str(hid_t tid)
 {
-    H5T_class_t tclass = -1;
+    H5T_class_t tclass = H5T_NO_CLASS;
     htri_t ret = 0;
 
     ret = H5Tis_variable_str(tid);
