@@ -22,7 +22,7 @@ import org.junit.Test;
 public class TestHDFViewCLMultipleFiles {
     private static FrameFixture mainFrameFixture;
     // the version of the HDFViewer
-    private static String VERSION = "2.99";
+    private static String VERSION = "2.9.1";
 
 
     private void closeFile() {
