@@ -1,0 +1,107 @@
+cmake_minimum_required (VERSION 2.8.6)
+PROJECT (HDFJAVA_TEST_HDF5LIB Java)
+
+SET(CMAKE_VERBOSE_MAKEFILE 1)
+
+INCLUDE_DIRECTORIES(
+    ${JAVA_NCSA_HDF_HDF4_BINARY_DIR}
+    ${JAVA_NCSA_HDF_HDF5_BINARY_DIR}
+    ${JAVA_NCSA_HDF_OBJECT_BINARY_DIR}
+    ${HDFJAVA_LIB_DIR}
+)
+
+SET (HDFJAVA_TEST_HDF5LIB_SRCS
+    TestH5.java
+    TestH5E.java
+    TestH5Edefault.java
+    TestH5Eregister.java
+    TestH5Fparams.java
+    TestH5Fbasic.java
+    TestH5F.java
+    TestH5Gbasic.java
+    TestH5G.java
+    TestH5Giterate.java
+    TestH5Sbasic.java
+    TestH5S.java
+    TestH5Tparams.java
+    TestH5Tbasic.java
+    TestH5T.java
+    TestH5Dparams.java
+    TestH5D.java
+    TestH5Dplist.java
+    TestH5Lparams.java
+    TestH5Lbasic.java
+    TestH5Lcreate.java
+    TestH5R.java
+    TestH5P.java
+    TestH5PData.java
+    TestH5Pfapl.java
+    TestH5A.java
+    TestH5Oparams.java
+    TestH5Obasic.java
+    TestH5Ocreate.java
+    TestH5Ocopy.java
+    TestH5Z.java
+    TestAll.java
+)
+
+FILE (WRITE ${PROJECT_BINARY_DIR}/Manifest.txt
+"Main-Class: test.hdf5lib.TestAll
+"
+)
+
+SET (CMAKE_JAVA_INCLUDE_PATH "${HDFJAVA_LIB_DIR}/junit.jar;${HDFJAVA_HDF5_JARS}")
+
+ADD_JAR (${HDFJAVA_TEST_HDF5_LIB_TARGET} ${PROJECT_BINARY_DIR}/Manifest.txt ${HDFJAVA_TEST_HDF5LIB_SRCS})
+
+GET_TARGET_PROPERTY(${HDFJAVA_TEST_HDF5_LIB_TARGET}_JAR_FILE ${HDFJAVA_TEST_HDF5_LIB_TARGET} JAR_FILE)
+#INSTALL_JAR (${HDFJAVA_TEST_HDF5_LIB_TARGET} ${HJAVA_INSTALL_DATA_DIR}/tests tests)
+#GET_TARGET_PROPERTY(${HDFJAVA_TEST_HDF5_LIB_TARGET}_CLASSPATH ${HDFJAVA_TEST_HDF5_LIB_TARGET} CLASSDIR)
+
+ADD_DEPENDENCIES (${HDFJAVA_TEST_HDF5_LIB_TARGET} ${HDFJAVA_NCSA_HDF5_LIB_TARGET})
+
+SET (HDF_JAVA_TEST_FILES
+      h5ex_g_iterate.hdf
+      JUnit-interface.txt
+)
+
+FOREACH (h5_file ${HDF_JAVA_TEST_FILES})
+  SET (dest "${PROJECT_BINARY_DIR}/${h5_file}")
+  #MESSAGE (STATUS " Copying ${h5_file}")
+  ADD_CUSTOM_COMMAND (
+      TARGET     ${HDFJAVA_TEST_HDF5_LIB_TARGET}
+      POST_BUILD
+      COMMAND    ${CMAKE_COMMAND}
+      ARGS       -E copy_if_different ${PROJECT_SOURCE_DIR}/${h5_file} ${dest}
+  )
+ENDFOREACH (h5_file ${HDF_JAVA_TEST_FILES})
+
+IF (WIN32 AND NOT CYGWIN)
+  SET(CMAKE_JAVA_INCLUDE_FLAG_SEP ";")
+ELSE (WIN32 AND NOT CYGWIN)
+  SET(CMAKE_JAVA_INCLUDE_FLAG_SEP ":")
+ENDIF(WIN32 AND NOT CYGWIN)
+
+SET (CMAKE_JAVA_CLASSPATH ".")
+FOREACH (CMAKE_INCLUDE_PATH ${CMAKE_JAVA_INCLUDE_PATH})
+  SET(CMAKE_JAVA_CLASSPATH "${CMAKE_JAVA_CLASSPATH}${CMAKE_JAVA_INCLUDE_FLAG_SEP}${CMAKE_INCLUDE_PATH}")
+ENDFOREACH(CMAKE_INCLUDE_PATH)
+SET (CMAKE_JAVA_CLASSPATH "${CMAKE_JAVA_CLASSPATH}${CMAKE_JAVA_INCLUDE_FLAG_SEP}${${HDFJAVA_TEST_HDF5_LIB_TARGET}_JAR_FILE}")
+SET (testfilter "OK (598 tests)")
+
+ADD_TEST (
+    NAME JUnit-interface
+    COMMAND "${CMAKE_COMMAND}"
+        -D "TEST_TESTER=${CMAKE_Java_RUNTIME}"
+        -D "TEST_CLASSPATH:STRING=${CMAKE_JAVA_CLASSPATH}"
+        -D "TEST_ARGS:STRING=-ea;org.junit.runner.JUnitCore"
+        -D "TEST_PROGRAM=test.hdf5lib.TestAll"
+        -D "TEST_LIBRARY_DIRECTORY=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
+        -D "TEST_FOLDER=${HDFJAVA_BINARY_DIR}"
+        -D "TEST_OUTPUT=${HDFJAVA_TEST_HDF5LIB_BINARY_DIR}/JUnit-interface.out"
+        -D "TEST_EXPECT=0"
+        -D "TEST_SKIP_COMPARE=TRUE"
+        -D "TEST_FILTER:STRING=${testfilter}"
+        -D "TEST_REFERENCE=${testfilter}"
+        -P "${HDFJAVA_RESOURCES_DIR}/runTest.cmake"
+)

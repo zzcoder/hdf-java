@@ -1,0 +1,15 @@
+#!/bin/sh
+
+# Set up default variable values if not supplied by the user.
+
+# Adjust the following two variables to match your environment
+export JAVAHOME=
+export INSTALLDIR=@CMAKE_INSTALL_PREFIX@
+
+if [ ! -d \$JAVAHOME ]; then
+    JAVALOC=`which java`
+    LASTSLASH=`perl -e "print rindex(\"${JAVALOC}\", '/')"`
+    JAVAHOME=`perl -e "print substr(\"${JAVALOC}\", 0, $LASTSLASH)"`
+fi
+
+$JAVAHOME/java -Xmx1024M -Djava.library.path="$INSTALLDIR/lib" -Dhdfview.root="$INSTALLDIR/lib" -cp "@HDFVIEW_CLASSPATH@" -jar "$INSTALLDIR/lib/@HDFVIEW_JAR@" -root "$INSTALLDIR/share"
