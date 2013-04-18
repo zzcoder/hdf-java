@@ -205,6 +205,7 @@ int h5str_sprintf(h5str_t *str, hid_t container, hid_t tid, void *ptr) {
 
 				/* Check for NULL pointer for string */
 				if (tmp_str == NULL) {
+					this_str = (char *) malloc(5);
 					strncpy(this_str, "NULL", 4);
 				}
 				else {
