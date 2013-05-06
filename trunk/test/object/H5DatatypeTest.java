@@ -16,12 +16,10 @@ import junit.framework.TestCase;
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 import ncsa.hdf.object.Attribute;
-import ncsa.hdf.object.Dataset;
 import ncsa.hdf.object.Datatype;
 import ncsa.hdf.object.FileFormat;
 import ncsa.hdf.object.h5.H5Datatype;
 import ncsa.hdf.object.h5.H5File;
-import ncsa.hdf.object.h5.H5ScalarDS;
 
 /**
  * TestCase for H5Datatype.
@@ -397,9 +395,9 @@ public class H5DatatypeTest extends TestCase {
         int orders[] = {Datatype.ORDER_LE, Datatype.ORDER_LE, Datatype.ORDER_BE};
         for (int i=0; i<tids.length; i++) {
             type = new H5Datatype(tids[i]);
-            assertEquals(sizes[i], type.getDatatypeSize());
-            assertEquals(signs[i], type.getDatatypeSign());
-            assertEquals(orders[i], type.getDatatypeOrder());
+            assertEquals("sizes#"+i,sizes[i], type.getDatatypeSize());
+            assertEquals("signs#"+i,signs[i], type.getDatatypeSign());
+            assertEquals("orders#"+i, orders[i], type.getDatatypeOrder());
         }
     }
 
