@@ -146,7 +146,7 @@ public class TestH5 {
         }
 
         for (int i = 0; i < 3; i++)
-            assertEquals(libversion[i], H5.LIB_VERSION[i]);
+            assertEquals(H5.LIB_VERSION[i], libversion[i]);
 
         for (int i = 0; i < 3; i++)
             assertFalse(libversion[i] == 0);
