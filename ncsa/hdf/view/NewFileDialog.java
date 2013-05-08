@@ -102,6 +102,7 @@ public class NewFileDialog extends JFileChooser // JDialog
         }
 
 
+        this.setAcceptAllFileFilterUsed(false);
         this.showSaveDialog(owner);
     }
 
