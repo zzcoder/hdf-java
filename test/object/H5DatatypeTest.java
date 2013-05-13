@@ -389,7 +389,7 @@ public class H5DatatypeTest extends TestCase {
         }
         assertEquals(1, nObjs); // file id should be the only one left open
         
-        int tids[] = {HDF5Constants.H5T_NATIVE_INT32, HDF5Constants.H5T_NATIVE_UINT16, HDF5Constants.H5T_STD_I32BE};
+        int tids[] = {HDF5Constants.H5T_STD_I32LE, HDF5Constants.H5T_STD_U16LE, HDF5Constants.H5T_STD_I32BE};
         int sizes[] = {4, 2, 4};
         int signs[] = {Datatype.SIGN_2, Datatype.SIGN_NONE, Datatype.SIGN_2};
         int orders[] = {Datatype.ORDER_LE, Datatype.ORDER_LE, Datatype.ORDER_BE};
