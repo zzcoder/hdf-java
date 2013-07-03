@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.6)
+cmake_minimum_required(VERSION 2.8.10)
 PROJECT ( HDFJAVA C Java )
 
 #-----------------------------------------------------------------------------
@@ -230,6 +230,11 @@ IF (HDF_ENABLE_COVERAGE)
     SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O0 -fprofile-arcs -ftest-coverage")
     SET (LDFLAGS "${LDFLAGS} -fprofile-arcs -ftest-coverage")   
 ENDIF (HDF_ENABLE_COVERAGE)
+
+#-----------------------------------------------------------------------------
+# Include user macros
+#-----------------------------------------------------------------------------
+INCLUDE (UserMacros.cmake)
 
 #-----------------------------------------------------------------------------
 # Include the main src and config directories
