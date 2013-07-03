@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 2.8.6)
+cmake_minimum_required (VERSION 2.8.10)
 PROJECT (HDFJAVA_TEST_OBJECT_MISC Java)
 
 SET(CMAKE_VERBOSE_MAKEFILE 1)
@@ -20,7 +20,7 @@ FILE (WRITE ${PROJECT_BINARY_DIR}/TestH5Object_Manifest.txt
 "Main-Class: test.object.misc.TestH5Object
 "
 )
-ADD_JAR (TestH5Object ${PROJECT_BINARY_DIR}/TestH5Object_Manifest.txt TestH5Object.java)
+ADD_JAR (TestH5Object MANIFEST ${PROJECT_BINARY_DIR}/TestH5Object_Manifest.txt TestH5Object.java)
 GET_TARGET_PROPERTY(TestH5Object_JAR_FILE TestH5Object JAR_FILE)
 ADD_DEPENDENCIES (TestH5Object ${HDFJAVA_NCSA_H5_LIB_TARGET})
 
@@ -60,7 +60,7 @@ FILE (WRITE ${PROJECT_BINARY_DIR}/TestH5Table_Manifest.txt
 "Main-Class: test.object.misc.TestH5Table
 "
 )
-ADD_JAR (TestH5Table ${PROJECT_BINARY_DIR}/TestH5Table_Manifest.txt TestH5Table.java)
+ADD_JAR (TestH5Table MANIFEST ${PROJECT_BINARY_DIR}/TestH5Table_Manifest.txt TestH5Table.java)
 GET_TARGET_PROPERTY(TestH5Table_JAR_FILE TestH5Table JAR_FILE)
 ADD_DEPENDENCIES (TestH5Table ${HDFJAVA_NCSA_H5_LIB_TARGET})
 
@@ -102,7 +102,7 @@ FILE (WRITE ${PROJECT_BINARY_DIR}/TestDebugHDF_Manifest.txt
 "Main-Class: test.object.misc.DebugHDF
 "
 )
-ADD_JAR (TestDebugHDF ${PROJECT_BINARY_DIR}/TestDebugHDF_Manifest.txt DebugHDF.java)
+ADD_JAR (TestDebugHDF MANIFEST ${PROJECT_BINARY_DIR}/TestDebugHDF_Manifest.txt DebugHDF.java)
 GET_TARGET_PROPERTY(TestDebugHDF_JAR_FILE TestDebugHDF JAR_FILE)
 ADD_DEPENDENCIES (TestDebugHDF ${HDFJAVA_NCSA_H5_LIB_TARGET})
 
@@ -144,7 +144,7 @@ FILE (WRITE ${PROJECT_BINARY_DIR}/TestH5File_Manifest.txt
 "Main-Class: test.object.misc.TestH5File
 "
 )
-ADD_JAR (TestH5File ${PROJECT_BINARY_DIR}/TestH5File_Manifest.txt TestH5File.java)
+ADD_JAR (TestH5File MANIFEST ${PROJECT_BINARY_DIR}/TestH5File_Manifest.txt TestH5File.java)
 GET_TARGET_PROPERTY(TestH5File_JAR_FILE TestH5File JAR_FILE)
 ADD_DEPENDENCIES (TestH5File ${HDFJAVA_NCSA_H5_LIB_TARGET})
 
@@ -186,7 +186,7 @@ FILE (WRITE ${PROJECT_BINARY_DIR}/TestH5MemoryLeak_Manifest.txt
 "Main-Class: test.object.misc.TestH5MemoryLeak
 "
 )
-ADD_JAR (TestH5MemoryLeak ${PROJECT_BINARY_DIR}/TestH5MemoryLeak_Manifest.txt TestH5MemoryLeak.java)
+ADD_JAR (TestH5MemoryLeak MANIFEST ${PROJECT_BINARY_DIR}/TestH5MemoryLeak_Manifest.txt TestH5MemoryLeak.java)
 GET_TARGET_PROPERTY(TestH5MemoryLeak_JAR_FILE TestH5MemoryLeak JAR_FILE)
 ADD_DEPENDENCIES (TestH5MemoryLeak ${HDFJAVA_NCSA_H5_LIB_TARGET})
 
@@ -228,7 +228,7 @@ FILE (WRITE ${PROJECT_BINARY_DIR}/TestH4File_Manifest.txt
 "Main-Class: test.object.misc.TestH4File
 "
 )
-ADD_JAR (TestH4File ${PROJECT_BINARY_DIR}/TestH4File_Manifest.txt TestH4File.java)
+ADD_JAR (TestH4File MANIFEST ${PROJECT_BINARY_DIR}/TestH4File_Manifest.txt TestH4File.java)
 GET_TARGET_PROPERTY(TestH4File_JAR_FILE TestH4File JAR_FILE)
 ADD_DEPENDENCIES (TestH4File ${HDFJAVA_NCSA_H4_LIB_TARGET})
 

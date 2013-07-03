@@ -3,11 +3,19 @@
 # has already been loaded.  See FindJava.cmake for information on how to
 # load Java into your CMake project.
 #
-# add_jar(TARGET_NAME SRC1 SRC2 .. SRCN RCS1 RCS2 .. RCSN)
+# add_jar(target_name
+#         [SOURCES] source1 [source2 ...] [resource1 ...]
+#         [INCLUDE_JARS jar1 [jar2 ...]]
+#        )
 #
-# This command creates a <TARGET_NAME>.jar. It compiles the given source
-# files (SRC) and adds the given resource files (RCS) to the jar file.
-# If only resource files are given then just a jar file is created.
+# This command creates a <target_name>.jar. It compiles the given source files
+# (source) and adds the given resource files (resource) to the jar file. If
+# only resource files are given then just a jar file is created. The list of
+# include jars are added to the classpath when compiling the java sources and
+# also to the dependencies of the target. INCLUDE_JARS also accepts other
+# target names created by add_jar. For backwards compatibility, jar files
+# listed as sources are ignored (as they have been since the first version of
+# this module).
 #
 # Additional instructions:
 #   To add compile flags to the target you can set these flags with
@@ -190,6 +198,8 @@
 # (To distribute this file outside of CMake, substitute the full
 #  License text for the above reference.)
 
+include(${CMAKE_CURRENT_LIST_DIR}/CMakeParseArguments.cmake)
+
 function (__java_copy_file src dest comment)
 #    add_custom_command(
 #        OUTPUT  ${dest}
@@ -207,8 +217,11 @@ endfunction ()
 set(_JAVA_CLASS_FILELIST_SCRIPT ${CMAKE_CURRENT_LIST_DIR}/UseJavaClassFilelist.cmake)
 set(_JAVA_SYMLINK_SCRIPT ${CMAKE_CURRENT_LIST_DIR}/UseJavaSymlinks.cmake)
 
-function(add_jar _TARGET_NAME _MANIFEST_TXT)
-    set(_JAVA_SOURCE_FILES ${ARGN})
+function(add_jar _TARGET_NAME)
+
+    cmake_parse_arguments(_add_jar "" "MANIFEST" "SOURCES;INCLUDE_JARS" ${ARGN})
+
+    set(_JAVA_SOURCE_FILES ${_add_jar_SOURCES} ${_add_jar_UNPARSED_ARGUMENTS})
 
     if (NOT DEFINED CMAKE_JAVA_TARGET_OUTPUT_DIR)
       set(CMAKE_JAVA_TARGET_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR})
@@ -268,6 +281,7 @@ function(add_jar _TARGET_NAME _MANIFEST_TXT)
     set(_JAVA_CLASS_FILES)
     set(_JAVA_COMPILE_FILES)
     set(_JAVA_DEPENDS)
+    set(_JAVA_COMPILE_DEPENDS)
     set(_JAVA_RESOURCE_FILES)
     foreach(_JAVA_SOURCE_FILE ${_JAVA_SOURCE_FILES})
         get_filename_component(_JAVA_EXT ${_JAVA_SOURCE_FILE} EXT)
@@ -275,18 +289,18 @@ function(add_jar _TARGET_NAME _MANIFEST_TXT)
         get_filename_component(_JAVA_PATH ${_JAVA_SOURCE_FILE} PATH)
         get_filename_component(_JAVA_FULL ${_JAVA_SOURCE_FILE} ABSOLUTE)
 
-        file(RELATIVE_PATH _JAVA_REL_BINARY_PATH ${CMAKE_JAVA_TARGET_OUTPUT_DIR} ${_JAVA_FULL})
-        file(RELATIVE_PATH _JAVA_REL_SOURCE_PATH ${CMAKE_CURRENT_SOURCE_DIR} ${_JAVA_FULL})
-        string(LENGTH ${_JAVA_REL_BINARY_PATH} _BIN_LEN)
-        string(LENGTH ${_JAVA_REL_SOURCE_PATH} _SRC_LEN)
-        if (${_BIN_LEN} LESS ${_SRC_LEN})
-            set(_JAVA_REL_PATH ${_JAVA_REL_BINARY_PATH})
-        else ()
-            set(_JAVA_REL_PATH ${_JAVA_REL_SOURCE_PATH})
-        endif ()
-        get_filename_component(_JAVA_REL_PATH ${_JAVA_REL_PATH} PATH)
-
         if (_JAVA_EXT MATCHES ".java")
+            file(RELATIVE_PATH _JAVA_REL_BINARY_PATH ${CMAKE_JAVA_TARGET_OUTPUT_DIR} ${_JAVA_FULL})
+            file(RELATIVE_PATH _JAVA_REL_SOURCE_PATH ${CMAKE_CURRENT_SOURCE_DIR} ${_JAVA_FULL})
+            string(LENGTH ${_JAVA_REL_BINARY_PATH} _BIN_LEN)
+            string(LENGTH ${_JAVA_REL_SOURCE_PATH} _SRC_LEN)
+            if (${_BIN_LEN} LESS ${_SRC_LEN})
+                set(_JAVA_REL_PATH ${_JAVA_REL_BINARY_PATH})
+            else ()
+                set(_JAVA_REL_PATH ${_JAVA_REL_SOURCE_PATH})
+            endif ()
+            get_filename_component(_JAVA_REL_PATH ${_JAVA_REL_PATH} PATH)
+
             list(APPEND _JAVA_COMPILE_FILES ${_JAVA_SOURCE_FILE})
             set(_JAVA_CLASS_FILE "${CMAKE_JAVA_CLASS_OUTPUT_PATH}/${_JAVA_REL_PATH}/${_JAVA_FILE}.class")
             set(_JAVA_CLASS_FILES ${_JAVA_CLASS_FILES} ${_JAVA_CLASS_FILE})
@@ -295,7 +309,7 @@ function(add_jar _TARGET_NAME _MANIFEST_TXT)
                 OR _JAVA_EXT MATCHES ".war"
                 OR _JAVA_EXT MATCHES ".ear"
                 OR _JAVA_EXT MATCHES ".sar")
-            list(APPEND CMAKE_JAVA_INCLUDE_PATH ${_JAVA_SOURCE_FILE})
+            # Ignored for backward compatibility
 
         elseif (_JAVA_EXT STREQUAL "")
             list(APPEND CMAKE_JAVA_INCLUDE_PATH ${JAVA_JAR_TARGET_${_JAVA_SOURCE_FILE}} ${JAVA_JAR_TARGET_${_JAVA_SOURCE_FILE}_CLASSPATH})
@@ -307,6 +321,25 @@ function(add_jar _TARGET_NAME _MANIFEST_TXT)
                              "Copying ${_JAVA_SOURCE_FILE} to the build directory")
             list(APPEND _JAVA_RESOURCE_LIST ${_CMAKE_JAVA_RESOURCE_PATH}/${_JAVA_SOURCE_FILE})
             list(APPEND _JAVA_RESOURCE_FILES ${CMAKE_JAVA_RESOURCE_PATH}/${_JAVA_SOURCE_FILE})
+        endif ()
+    endforeach()
+
+    foreach(_JAVA_INCLUDE_JAR ${_add_jar_INCLUDE_JARS})
+        if (TARGET ${_JAVA_INCLUDE_JAR})
+            get_target_property(_JAVA_JAR_PATH ${_JAVA_INCLUDE_JAR} JAR_FILE)
+            if (_JAVA_JAR_PATH)
+                set(CMAKE_JAVA_INCLUDE_PATH_FINAL "${CMAKE_JAVA_INCLUDE_PATH_FINAL}${CMAKE_JAVA_INCLUDE_FLAG_SEP}${_JAVA_JAR_PATH}")
+                list(APPEND CMAKE_JAVA_INCLUDE_PATH ${_JAVA_JAR_PATH})
+                list(APPEND _JAVA_DEPENDS ${_JAVA_INCLUDE_JAR})
+                list(APPEND _JAVA_COMPILE_DEPENDS ${_JAVA_INCLUDE_JAR})
+            else ()
+                message(SEND_ERROR "add_jar: INCLUDE_JARS target ${_JAVA_INCLUDE_JAR} is not a jar")
+            endif ()
+        else ()
+            set(CMAKE_JAVA_INCLUDE_PATH_FINAL "${CMAKE_JAVA_INCLUDE_PATH_FINAL}${CMAKE_JAVA_INCLUDE_FLAG_SEP}${_JAVA_INCLUDE_JAR}")
+            list(APPEND CMAKE_JAVA_INCLUDE_PATH "${_JAVA_INCLUDE_JAR}")
+            list(APPEND _JAVA_DEPENDS "${_JAVA_INCLUDE_JAR}")
+            list(APPEND _JAVA_COMPILE_DEPENDS "${_JAVA_INCLUDE_JAR}")
         endif ()
     endforeach()
 
@@ -326,7 +359,7 @@ function(add_jar _TARGET_NAME _MANIFEST_TXT)
                 -d ${CMAKE_JAVA_CLASS_OUTPUT_PATH}
                 ${_JAVA_COMPILE_FILES}
             COMMAND ${CMAKE_COMMAND} -E touch ${CMAKE_JAVA_CLASS_OUTPUT_PATH}/java_compiled_${_TARGET_NAME}
-            DEPENDS ${_JAVA_COMPILE_FILES}
+            DEPENDS ${_JAVA_COMPILE_FILES} ${_JAVA_COMPILE_DEPENDS}
             WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
             COMMENT "Building Java objects for ${_TARGET_NAME}.jar"
         )
@@ -377,7 +410,7 @@ function(add_jar _TARGET_NAME _MANIFEST_TXT)
                 -P ${_JAVA_SYMLINK_SCRIPT}
             COMMAND ${Java_JAR_EXECUTABLE}
                 -ufm ${_JAVA_JAR_OUTPUT_PATH}
-                ${_MANIFEST_TXT}
+                ${_add_jar_MANIFEST}
             WORKING_DIRECTORY ${CMAKE_JAVA_CLASS_OUTPUT_PATH}
             DEPENDS ${_JAVA_RESOURCE_LIST} ${_JAVA_DEPENDS} ${CMAKE_JAVA_CLASS_OUTPUT_PATH}/java_class_filelist
             COMMENT "Creating Java archive ${_JAVA_TARGET_OUTPUT_NAME}"
@@ -552,7 +585,7 @@ function (find_jar VARIABLE)
         endif ()
     endforeach ()
 
-    if (${_jar_names} STREQUAL "")
+    if (NOT _jar_names)
         message(FATAL_ERROR "find_jar: No name to search for given")
     endif ()
 

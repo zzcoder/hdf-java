@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 2.8.6)
+cmake_minimum_required (VERSION 2.8.10)
 PROJECT (HDFJAVA_EXAMPLES_GROUPS Java)
 
 SET(CMAKE_VERBOSE_MAKEFILE 1)
@@ -46,7 +46,7 @@ FOREACH (example ${HDF_JAVA_EXAMPLES})
   "Main-Class: examples.groups.${example}
 "
   )
-  ADD_JAR (${example} ${PROJECT_BINARY_DIR}/Manifest.txt ${example}.java)
+  ADD_JAR (${example} MANIFEST ${PROJECT_BINARY_DIR}/Manifest.txt ${example}.java)
   GET_TARGET_PROPERTY(${example}_JAR_FILE ${example} JAR_FILE)
 #  INSTALL_JAR (${example} ${HJAVA_INSTALL_DATA_DIR}/examples examples)
   GET_TARGET_PROPERTY(${example}_CLASSPATH ${example} CLASSDIR)
@@ -65,7 +65,7 @@ FOREACH (example ${HDF_JAVA_OBJECT_EXAMPLES})
   "Main-Class: examples.groups.${example}
 "
   )
-  ADD_JAR (${example} ${PROJECT_BINARY_DIR}/Manifest.txt ${example}.java)
+  ADD_JAR (${example} MANIFEST ${PROJECT_BINARY_DIR}/Manifest.txt ${example}.java)
   GET_TARGET_PROPERTY(${example}_JAR_FILE ${example} JAR_FILE)
 #  INSTALL_JAR (${example} ${HJAVA_INSTALL_DATA_DIR}/examples examples)
   GET_TARGET_PROPERTY(${example}_CLASSPATH ${example} CLASSDIR)
