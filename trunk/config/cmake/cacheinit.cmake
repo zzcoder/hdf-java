@@ -28,6 +28,8 @@ SET (HDF_ENABLE_PARALLEL OFF CACHE BOOL "Enable parallel build (requires MPI)" F
 
 SET (HDF_ENABLE_COVERAGE OFF CACHE BOOL "Enable code coverage for Libraries and Programs" FORCE)
 
+SET (HDF_SKIP_GUI_TESTS OFF CACHE BOOL "Skip testing of GUI" FORCE)
+
 SET (HDF_PACKAGE_EXTLIBS OFF CACHE BOOL "(WINDOWS)CPACK - include external libraries" FORCE)
 
 SET (HDF_ALLOW_EXTERNAL_SUPPORT "NO" CACHE STRING "Allow External Library Building" FORCE)
