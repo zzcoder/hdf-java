@@ -101,6 +101,7 @@ JAVA_APPEND_LIBRARY_DIRECTORIES(JAVA_AWT_LIBRARY_DIRECTORIES
   ${_JAVA_HOME}/jre/lib
   ${_JAVA_HOME}/lib
   ${_JAVA_HOME}
+  /usr/java/lib
   /usr/lib
   /usr/lib64
   /usr/local/lib
