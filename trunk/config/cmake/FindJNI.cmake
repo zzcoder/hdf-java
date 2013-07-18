@@ -102,6 +102,7 @@ JAVA_APPEND_LIBRARY_DIRECTORIES(JAVA_AWT_LIBRARY_DIRECTORIES
   ${_JAVA_HOME}/lib
   ${_JAVA_HOME}
   /usr/java/lib
+  /usr/java/jre/lib
   /usr/lib
   /usr/lib64
   /usr/local/lib
@@ -152,6 +153,7 @@ set(JAVA_AWT_INCLUDE_DIRECTORIES
   "[HKEY_LOCAL_MACHINE\\SOFTWARE\\JavaSoft\\Java Development Kit\\${java_install_version};JavaHome]/include"
   ${_JAVA_HOME}/include
   /usr/include
+  /usr/java/include
   /usr/local/include
   /usr/lib/java/include
   /usr/lib64/java/include
@@ -163,7 +165,10 @@ set(JAVA_AWT_INCLUDE_DIRECTORIES
   /usr/lib/jvm/java-6-sun-1.6.0.00/include       # can this one be removed according to #8821 ? Alex
   /usr/lib/jvm/java-6-openjdk/include
   /usr/lib/jvm/java-7-openjdk/include
+  /usr/lib/jvm/java-7-openjdk-i386/include
+  /usr/lib/jvm/java-7-openjdk-amd64/include
   /usr/lib64/jvm/java-7-openjdk/include
+  /usr/lib64/jvm/java-7-openjdk-amd64/include
   /usr/local/share/java/include
   /usr/lib/j2sdk1.4-sun/include
   /usr/lib/j2sdk1.5-sun/include
@@ -174,14 +179,6 @@ set(JAVA_AWT_INCLUDE_DIRECTORIES
   /usr/local/jdk-1.7.0/include
   /usr/local/jdk-1.6.0/include
   )
-
-foreach(dir ${JAVA_AWT_LIBRARY_DIRECTORIES})
-  foreach(JAVA_INC_PATH ../include ../java/include ../share/java/include)
-    if(EXISTS ${dir}/${JAVA_INC_PATH})
-      set(JAVA_AWT_INCLUDE_DIRECTORIES ${JAVA_AWT_INCLUDE_DIRECTORIES} "${dir}/${JAVA_INC_PATH}")
-    endif()
-  endforeach()
-endforeach()
 
 foreach(JAVA_PROG "${JAVA_RUNTIME}" "${JAVA_COMPILE}" "${JAVA_ARCHIVE}")
   get_filename_component(jpath "${JAVA_PROG}" PATH)
@@ -289,4 +286,5 @@ set(JNI_INCLUDE_DIRS
   ${JAVA_AWT_INCLUDE_PATH}
 )
 
+message ("JNI_LIBRARIES=${JNI_LIBRARIES}")
 message ("JNI_INCLUDE_DIRS=${JNI_INCLUDE_DIRS}")
