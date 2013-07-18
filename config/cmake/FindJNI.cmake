@@ -163,8 +163,6 @@ set(JAVA_AWT_INCLUDE_DIRECTORIES
   /usr/lib/jvm/java-6-openjdk/include
   /usr/lib/jvm/java-7-openjdk/include
   /usr/lib64/jvm/java-7-openjdk/include
-  /usr/lib/jvm/java-7-openjdk-{libarch}/include
-  /usr/lib64/jvm/java-7-openjdk-{libarch}/include
   /usr/local/share/java/include
   /usr/lib/j2sdk1.4-sun/include
   /usr/lib/j2sdk1.5-sun/include
@@ -175,6 +173,14 @@ set(JAVA_AWT_INCLUDE_DIRECTORIES
   /usr/local/jdk-1.7.0/include
   /usr/local/jdk-1.6.0/include
   )
+
+foreach(dir ${JAVA_AWT_LIBRARY_DIRECTORIES})
+  foreach(JAVA_INC_PATH ../include ../java/include ../share/java/include)
+    if(EXISTS ${dir}/${JAVA_INC_PATH})
+      set(JAVA_AWT_INCLUDE_DIRECTORIES ${JAVA_AWT_INCLUDE_DIRECTORIES} "${dir}/${JAVA_INC_PATH}")
+    endif()
+  endforeach()
+endforeach()
 
 foreach(JAVA_PROG "${JAVA_RUNTIME}" "${JAVA_COMPILE}" "${JAVA_ARCHIVE}")
   get_filename_component(jpath "${JAVA_PROG}" PATH)
