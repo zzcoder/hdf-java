@@ -14,6 +14,9 @@
 
 package ncsa.hdf.object;
 
+import java.util.List;
+import java.util.Vector;
+
 /**
  * A scalar dataset is a multiple dimension array of scalar points. The Datatype
  * of a scalar dataset must be an atomic datatype. Common datatypes of scalar
@@ -99,6 +102,8 @@ public abstract class ScalarDS extends Dataset {
 
     /** The fill value of the dataset. */
     protected Object fillValue = null;
+    
+    private List<Number> filteredImageValues;    
 
     /** Flag to indicate if the dataset is displayed as an image */
     protected boolean isImageDisplay;
@@ -153,6 +158,7 @@ public abstract class ScalarDS extends Dataset {
         isImageDisplay = false;
         isDefaultImageOrder = true;
         isFillValueConverted = false;
+        filteredImageValues = new Vector<Number>();
     }
 
     /*
@@ -368,6 +374,38 @@ public abstract class ScalarDS extends Dataset {
             enumConverted = false;
         }
     }
+    
+    /**
+     * Sets data range for an image.
+     * 
+     * @param minmax the data range.
+     */
+    public final void setImageDataRange(double min, double max) {
+        if (max<=min)
+        	return;
+
+        if (imageDataRange==null)
+        	imageDataRange = new double[2];
+
+        imageDataRange[0] = min;
+        imageDataRange[1] = max;
+    }    
+    
+    /**
+     * Add a value that will be filtered out in image
+     * @param x value to be filtered
+     */
+    public void addFilteredImageValue(Number x) {
+    	filteredImageValues.add(x);
+    }
+    
+    /**
+     * get a list of values that will be filtered out in image
+     */
+    public List<Number> getFilteredImageValues() {
+    	return filteredImageValues;
+    }
+    
 
     /**
      * Returns true if this dataset is a true color image.

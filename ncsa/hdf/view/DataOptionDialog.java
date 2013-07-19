@@ -32,7 +32,9 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.lang.reflect.Array;
 import java.util.BitSet;
+import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
@@ -132,7 +134,7 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
 
     private JLabel maxLabels[], selLabel;
 
-    private JTextField startFields[], endFields[], strideFields[];
+    private JTextField startFields[], endFields[], strideFields[], dataRangeField, fillValueField;
 
     private JList fieldList;
 
@@ -258,6 +260,7 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
         applyBitmaskButton.addItemListener(this);
         
         bitmaskHelp = new JButton(ViewProperties.getHelpIcon());
+        bitmaskHelp.setEnabled(false);
         bitmaskHelp.setToolTipText("Help on how to set bitmask");
         bitmaskHelp.setMargin(new Insets(0, 0, 0, 0));
         bitmaskHelp.addActionListener(this);
@@ -273,7 +276,9 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
 
         JPanel centerP = new JPanel();
         centerP.setLayout(new BorderLayout());
-        centerP.setBorder(new TitledBorder("Dimension and Subset Selection"));
+        TitledBorder tborder = new TitledBorder("Dimension and Subset Selection");
+        tborder.setTitleColor(Color.gray);
+        centerP.setBorder(tborder);
 
         JPanel navigatorP = new JPanel();
         navigatorP.setLayout(new BorderLayout());
@@ -295,7 +300,9 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
             fieldP.setPreferredSize(new Dimension(w1, h1));
             JScrollPane scrollP = new JScrollPane(fieldList);
             fieldP.add(scrollP);
-            fieldP.setBorder(new TitledBorder("Select Members"));
+            tborder = new TitledBorder("Select Members");
+            tborder.setTitleColor(Color.gray);
+            fieldP.setBorder(tborder);
             contentPane.add(fieldP, BorderLayout.WEST);
 
             JPanel tviewP = new JPanel();
@@ -325,7 +332,7 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
                 centerP.add(txtviewP, BorderLayout.SOUTH);
             }
             else {
-                 w1 = 680 + (ViewProperties.getFontSize() - 12) * 15;
+                 w1 = 800 + (ViewProperties.getFontSize() - 12) * 15;
                  h1 = 400 + (ViewProperties.getFontSize() - 12) * 10;
                 contentPane.setPreferredSize(new Dimension(w1, h1));
                 if (rank > 1) {
@@ -340,16 +347,19 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
                 rgroup.add(imageButton);
                 JPanel viewP = new JPanel();
                 viewP.setLayout(new GridLayout(2, 1, 5, 5));
-                viewP.setBorder(new TitledBorder("Display As"));
+                tborder = new TitledBorder("Display As");
+                tborder.setTitleColor(Color.gray);
+                viewP.setBorder(tborder);
 
                 JPanel sheetP = new JPanel();
                 sheetP.setLayout(new GridLayout(1, 2, 25, 5));
                 sheetP.add(spreadsheetButton);
                 int tclass = sd.getDatatype().getDatatypeClass();
+                sheetP.add(charCheckbox);
                 if (tclass == Datatype.CLASS_CHAR
                         || (tclass == Datatype.CLASS_INTEGER && sd
                                 .getDatatype().getDatatypeSize() == 1)) {
-                    sheetP.add(charCheckbox);
+                	charCheckbox.setEnabled(false);
                 }
 
                 // add tableview selection
@@ -367,37 +377,69 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
 
                 viewP.add(leftP);
 
-                JPanel imageP = new JPanel();
-                imageP.setLayout(new BorderLayout(5, 5));
-                imageP.add(imageButton, BorderLayout.WEST);
-                imageP.add(choicePalette, BorderLayout.CENTER);
-
                 // add imageview selection
-                JPanel iviewP = new JPanel();
-                iviewP.setLayout(new BorderLayout());
-                iviewP.add(new JLabel("ImageView: "), BorderLayout.WEST);
-                iviewP.add(choiceImageView, BorderLayout.CENTER);
-
                 JPanel rightP = new JPanel();
-                rightP.setBorder(BorderFactory
-                        .createLineBorder(Color.LIGHT_GRAY));
-                rightP.setLayout(new GridLayout(2, 1, 5, 5));
-                rightP.add(imageP);
-                rightP.add(iviewP);
-
+                rightP.setLayout(new BorderLayout(5, 5));
+                rightP.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+                JPanel imageP1 = new JPanel();
+                JPanel imageP2 = new JPanel();
+                rightP.add(imageP1, BorderLayout.CENTER);
+                rightP.add(imageP2, BorderLayout.EAST);
                 viewP.add(rightP);
+                imageP1.setLayout(new BorderLayout(5, 5));
+                JPanel tmpP = new JPanel();
+                tmpP.setLayout(new GridLayout(2, 1, 5, 5));
+                tmpP.add(imageButton);
+                tmpP.add(new JLabel("ImageView: "));
+                imageP1.add(tmpP, BorderLayout.WEST);
+                tmpP = new JPanel();
+                tmpP.setLayout(new GridLayout(2, 1, 5, 5));
+                tmpP.add(choicePalette);
+                tmpP.add(choiceImageView);               
+                imageP1.add(tmpP, BorderLayout.CENTER);  
+                
+                imageP2.setLayout(new GridLayout(1, 2, 5, 5));
+                tmpP = new JPanel();
+                tmpP.setLayout(new GridLayout(2, 1, 5, 5));
+                tmpP.add(new JLabel("  Valid Range: "));
+                tmpP.add(new JLabel("  Invalid Values:  "));
+                imageP2.add(tmpP);
+                tmpP = new JPanel();
+                tmpP.setLayout(new GridLayout(2, 1, 5, 5));
+                String minmaxStr="min, max", fillStr="val1, val2, ...";
+                double minmax[] = ((ScalarDS) dataset).getImageDataRange();
+                if (minmax!=null) {
+                	if (dataset.getDatatype().getDatatypeClass()==Datatype.CLASS_FLOAT)
+                	    minmaxStr = minmax[0] + ","+minmax[1];
+                	else
+                    	minmaxStr = ((long)minmax[0]) + ","+((long)minmax[1]);
+                }
+                List<Number> fillValue = ((ScalarDS) dataset).getFilteredImageValues();
+                int n = fillValue.size();
+                if (n>0) {
+                	fillStr = fillValue.get(0).toString();
+                    for (int i=1; i<n; i++) {
+                    	fillStr += fillValue.get(i)+ ",";
+                    }
+                }
+                tmpP.add(dataRangeField = new JTextField( minmaxStr));
+                tmpP.add(fillValueField = new JTextField(fillStr));               
+                imageP2.add(tmpP);                 
 
                 JPanel northP = new JPanel();
-                northP.setLayout(new GridLayout(1, 2, 5, 5));
-                northP.add(viewP);
+                northP.setLayout(new BorderLayout(5, 5));
+                northP.add(viewP, BorderLayout.CENTER);
                
+                // index base and bit mask
                 viewP = new JPanel();
                 viewP.setLayout(new BorderLayout());
-                northP.add(viewP);
+                northP.add(viewP, BorderLayout.EAST);
                 
                 JPanel baseIndexP = new JPanel();
                 viewP.add(baseIndexP, BorderLayout.NORTH);
-                baseIndexP.setBorder(new TitledBorder("Index Base"));
+                tborder = new TitledBorder("Index Base");
+                tborder.setTitleColor(Color.gray);
+                baseIndexP.setBorder(tborder);
                 baseIndexP.setLayout(new GridLayout(1, 2, 5, 5));
                 base0Button = new JRadioButton("0-based ");
                 base1Button = new JRadioButton("1-based ");
@@ -411,55 +453,59 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
                 baseIndexP.add(base0Button);
                 baseIndexP.add(base1Button);
                 
-                if (tclass == Datatype.CLASS_CHAR
-                        || (tclass == Datatype.CLASS_INTEGER && sd
-                                .getDatatype().getDatatypeSize() <= 2)) {
-                    bitmaskButtons = new JRadioButton[8 * sd.getDatatype()
-                            .getDatatypeSize()];
-                    for (int i = 0; i < bitmaskButtons.length; i++) {
-                        bitmaskButtons[i] = new JRadioButton(String.valueOf(i));
-                        bitmaskButtons[i].setEnabled(false);
-                        bitmaskButtons[i].addItemListener(this);
-                    }
-
-                    JPanel sheetP2 = new JPanel();
-                    viewP.add(sheetP2, BorderLayout.CENTER);
-                    sheetP2.setBorder(new TitledBorder("Bitmask"));
-
-                    JPanel tmpP = new JPanel();
-                    if(bitmaskButtons.length <=8){
-                        tmpP.setLayout(new GridLayout(1, bitmaskButtons.length));
-                        for (int i = bitmaskButtons.length; i>0; i--)
-                            tmpP.add(bitmaskButtons[i-1]);
-                    }
-                    else{
-                        tmpP.setLayout(new GridLayout(2, bitmaskButtons.length/2));
-
-                        for (int i = bitmaskButtons.length; i>bitmaskButtons.length/2; i--)
-                            tmpP.add(bitmaskButtons[i-1]);
-                        
-                        for (int i = bitmaskButtons.length/2; i>0; i--)
-                            tmpP.add(bitmaskButtons[i-1]);
-                        
-                    }
-                    sheetP2.setLayout(new BorderLayout(10, 10));
-                    sheetP2.add(tmpP, BorderLayout.CENTER);
-                    sheetP2.add(new JLabel(), BorderLayout.NORTH);
-
-                    JPanel tmpP2 = new JPanel();
-                    tmpP2.setLayout(new GridLayout(2,1));
-                    tmpP2.add(extractBitButton);
-                    tmpP2.add(applyBitmaskButton);
-                    tmpP = new JPanel();
-                    tmpP.setLayout(new BorderLayout());
-                    tmpP.add(tmpP2, BorderLayout.WEST);
-                    tmpP2 = new JPanel();
-                    tmpP2.add(bitmaskHelp);
-                    tmpP.add(tmpP2, BorderLayout.EAST);
-                    sheetP2.add(tmpP, BorderLayout.NORTH);
+                int tsize = sd.getDatatype().getDatatypeSize();
+                bitmaskButtons = new JRadioButton[8 *tsize];
+                for (int i = 0; i < bitmaskButtons.length; i++) {
+                	bitmaskButtons[i] = new JRadioButton(String.valueOf(i));
+                	bitmaskButtons[i].setEnabled(false);
+                	bitmaskButtons[i].addItemListener(this);
                 }
 
+                JPanel sheetP2 = new JPanel();
+                viewP.add(sheetP2, BorderLayout.CENTER);
+                tborder = new TitledBorder("Bitmask");
+                tborder.setTitleColor(Color.gray);
+                sheetP2.setBorder(tborder);
+
+                tmpP = new JPanel();
+                if(bitmaskButtons.length <=8){
+                	tmpP.setLayout(new GridLayout(1, bitmaskButtons.length));
+                	for (int i = bitmaskButtons.length; i>0; i--)
+                		tmpP.add(bitmaskButtons[i-1]);
+                }
+                else{
+                	tmpP.setLayout(new GridLayout(2, bitmaskButtons.length/2));
+
+                	for (int i = bitmaskButtons.length; i>bitmaskButtons.length/2; i--)
+                		tmpP.add(bitmaskButtons[i-1]);
+
+                	for (int i = bitmaskButtons.length/2; i>0; i--)
+                		tmpP.add(bitmaskButtons[i-1]);
+
+                }
+                sheetP2.setLayout(new BorderLayout(10, 10));
+                if (tsize <= 2) sheetP2.add(tmpP, BorderLayout.CENTER);
+                sheetP2.add(new JLabel(), BorderLayout.NORTH);
+
+                JPanel tmpP2 = new JPanel();
+                tmpP2.setLayout(new GridLayout(2,1));
+                tmpP2.add(extractBitButton);
+                tmpP2.add(applyBitmaskButton);
+                tmpP = new JPanel();
+                tmpP.setLayout(new BorderLayout());
+                tmpP.add(tmpP2, BorderLayout.WEST);
+                tmpP2 = new JPanel();
+                tmpP2.add(bitmaskHelp);
+                tmpP.add(tmpP2, BorderLayout.EAST);
+                sheetP2.add(tmpP, BorderLayout.NORTH);
                 contentPane.add(northP, BorderLayout.NORTH);
+                                        
+                if (tclass == Datatype.CLASS_CHAR
+                        || (tclass == Datatype.CLASS_INTEGER && tsize <= 2)) {
+                	extractBitButton.setEnabled(true);
+                	applyBitmaskButton.setEnabled(true);
+                	bitmaskHelp.setEnabled(true);
+                }
             }
         }
 
@@ -692,6 +738,8 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
     	if (source.equals(imageButton))
     	{
     		choicePalette.setEnabled(!isTrueColorImage);
+    		dataRangeField.setEnabled(true);
+    		fillValueField.setEnabled(true);
     		choiceImageView.setEnabled(true);
     		choiceTableView.setEnabled(false);
     		charCheckbox.setSelected(false);
@@ -700,7 +748,8 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
     		choicePalette.setEnabled(false);
     		choiceImageView.setEnabled(false);
     		choiceTableView.setEnabled(true);
-
+    		dataRangeField.setEnabled(false);
+    		fillValueField.setEnabled(false);
     		Datatype dtype = dataset.getDatatype();
     		int tclass = dtype.getDatatypeClass();
     		charCheckbox.setEnabled((tclass == Datatype.CLASS_CHAR || 
@@ -882,6 +931,8 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
         choiceTableView.setEnabled(!isImage);
         choiceImageView.setEnabled(isImage);
         imageButton.setSelected(isImage);
+        dataRangeField.setEnabled(isImage);
+        fillValueField.setEnabled(isImage);
         choicePalette.setEnabled(isImage && !isTrueColorImage);
 
         int n = Math.min(3, rank);
@@ -1084,6 +1135,26 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
             for (int i = 0; i < selectedFieldIndices.length; i++) {
                 d.selectMember(selectedFieldIndices[i]);
             }
+        } else {
+        	ScalarDS ds = (ScalarDS) dataset;
+        	StringTokenizer st = new StringTokenizer(dataRangeField.getText(), ",");
+        	if (st.countTokens()==2) {
+        		double min=0, max=0;
+        		try { 
+        		    min = Double.valueOf(st.nextToken());
+        		    max = Double.valueOf(st.nextToken());
+        		} catch (Throwable ex) {}
+        		if (max>min)
+        			ds.setImageDataRange(min, max);
+        	}
+        	st = new StringTokenizer(fillValueField.getText(), ",");
+        	while (st.hasMoreTokens()) {
+        		double x=0;
+        		try { 
+        		    x = Double.valueOf(st.nextToken());
+        		    ds.addFilteredImageValue(x);
+        		} catch (Throwable ex) {}
+        	}
         }
 
         // reset selected size
@@ -1253,15 +1324,10 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
 
             try {
                 Object data = sd.read();
-                Object fillValue = sd.getFillValue();
-                if (fillValue != null){
-                    if(sd.isFillValueConverted)
-                        fillValue = ScalarDS.convertToUnsignedC(fillValue, null);
-                }
-                byte[] bData = Tools.getBytes(data, sd.getImageDataRange(), fillValue, null);
-
                 int h = sd.getHeight();
                 int w = sd.getWidth();
+                
+                byte[] bData = Tools.getBytes(data, sd.getImageDataRange(), w, h, false, sd.getFilteredImageValues(), null);
 
                 if (isTrueColorImage) {
                     boolean isPlaneInterlace = (sd.getInterlace() == ScalarDS.INTERLACE_PLANE);
@@ -1279,7 +1345,6 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
                         // transpose data
                         int n = bData.length;
                         byte[] bData2 = new byte[n];
-                        System.arraycopy(bData, 0, bData2, 0, n);
                         for (int i = 0; i < h; i++) {
                             for (int j = 0; j < w; j++) {
                                 bData[i * w + j] = bData2[j * h + i];
@@ -1290,19 +1355,17 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
                         // transpose data for hdf4 images where selectedIndex[1] > selectedIndex[0]
                         int n = bData.length;
                         byte[] bData2 = new byte[n];
-                        System.arraycopy(bData, 0, bData2, 0, n);
                         for (int i = 0; i < h; i++) {
                             for (int j = 0; j < w; j++) {
                                 bData[i * w + j] = bData2[j * h + i];
                             }
                         }
                     }
-                    preImage = Tools.createIndexedImage(bData, imagePalette, w,
-                            h);
+                    preImage = Tools.createIndexedImage(null, bData, imagePalette, w, h);
                 }
             }
             finally {
-                // set back the origianl selection
+                // set back the original selection
                 System.arraycopy(strideBackup, 0, stride, 0, rank);
                 System.arraycopy(selectedBackup, 0, selected, 0, rank);
                 System.arraycopy(startBackup, 0, start, 0, rank);

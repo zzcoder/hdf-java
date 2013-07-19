@@ -157,7 +157,7 @@ public class NewAttributeDialog extends JDialog implements ActionListener, ItemL
         contentPane.setLayout(new BorderLayout(5, 5));
         contentPane.setBorder(BorderFactory.createEmptyBorder(20, 10, 0, 10));
         int w = 500 + (ViewProperties.getFontSize() - 12) * 15;
-        int h = 180 + (ViewProperties.getFontSize() - 12) * 12;
+        int h = 220 + (ViewProperties.getFontSize() - 12) * 12;
         contentPane.setPreferredSize(new Dimension(w, h));
 
         JButton okButton = new JButton("   Ok   ");
@@ -182,7 +182,7 @@ public class NewAttributeDialog extends JDialog implements ActionListener, ItemL
         p2.add(new JLabel("Name: "));
         p2.add(new JLabel(" "));
         p2.add(new JLabel("Type: "));
-        p2.add(arrayLengthLabel = new JLabel("Max String Length: "));
+        p2.add(arrayLengthLabel = new JLabel("Array Size: "));
         p2.add(new JLabel("Value: "));
         p2.add(new JLabel("Object List: "));
         p.add("West", p2);
@@ -329,7 +329,7 @@ public class NewAttributeDialog extends JDialog implements ActionListener, ItemL
             else if (idx == 3) {
                 sizeChoice.setEnabled(false);
                 checkUnsigned.setEnabled(false);
-                arrayLengthLabel.setText("Max String Length: ");
+                arrayLengthLabel.setText("String Length: ");
             }
             else if (idx == 4) {
                 sizeChoice.setEnabled(false);
