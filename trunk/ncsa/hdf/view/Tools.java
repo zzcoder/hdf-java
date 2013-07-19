@@ -18,6 +18,7 @@ import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
+import java.awt.image.DataBufferInt;
 import java.awt.image.DirectColorModel;
 import java.awt.image.IndexColorModel;
 import java.awt.image.MemoryImageSource;
@@ -32,6 +33,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.util.BitSet;
+import java.util.List;
 import java.util.StringTokenizer;
 
 import javax.imageio.ImageIO;
@@ -571,20 +573,30 @@ public final class Tools {
      *            the height of the image.
      * @return the image.
      */
-    public static Image createIndexedImage(byte[] imageData, byte[][] palette, int w, int h) {
-        Image theImage = null;
+    public static Image createIndexedImage(BufferedImage bufferedImage, byte[] imageData, byte[][] palette, int w, int h) 
+    {
+    	if (imageData==null || w<=0 || h<=0)
+    		return null;
+    	
+    	if (palette==null)
+    		palette = Tools.createGrayPalette();
+    	
+        if (bufferedImage == null)
+            bufferedImage = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+        
+        final int[] pixels = ( (DataBufferInt) bufferedImage.getRaster().getDataBuffer() ).getData();
+        int len = pixels.length;
 
-        IndexColorModel colorModel = new IndexColorModel(8, // bits - the number
-                                                            // of bits each
-                                                            // pixel occupies
-                256, // size - the size of the color component arrays
-                palette[0], // r - the array of red color components
-                palette[1], // g - the array of green color components
-                palette[2]); // b - the array of blue color components
+        for (int i=0; i<len; i++) {
+        	int idx = imageData[i] & 0xff;
+        	int r = ((int)(palette[0][idx] & 0xff))<<16;
+         	int g = ((int)(palette[1][idx] & 0xff))<<8;
+        	int b = palette[2][idx] & 0xff;
 
-        theImage = Toolkit.getDefaultToolkit().createImage(new MemoryImageSource(w, h, colorModel, imageData, 0, w));
-
-        return theImage;
+        	pixels[i] = 0xff000000 | r | g | b;
+        }
+      
+        return bufferedImage;
     }
 
     /**
@@ -683,23 +695,20 @@ public final class Tools {
      *            the range of the raw data.
      * @return the byte array of pixel data.
      */
-    public static byte[] getBytes(Object rawData, double[] minmax, byte[] byteData) {
-        return Tools.getBytes(rawData, minmax, -1, -1, false, null, false, byteData);
-    }
-
     public static byte[] getBytes(Object rawData, double[] minmax, int w, int h, boolean isTransposed, byte[] byteData) {
         return Tools.getBytes(rawData, minmax, w, h, isTransposed, null, false, byteData);
     }
 
-    public static byte[] getBytes(Object rawData, double[] minmax, Object fillValue, byte[] byteData) {
-        return Tools.getBytes(rawData, minmax, -1, -1, false, fillValue, false, byteData);
+    public static byte[] getBytes(Object rawData, double[] minmax, int w, int h, boolean isTransposed,
+            List<Number> invalidValues, byte[] byteData) {
+        return getBytes(rawData, minmax, w, h, isTransposed, invalidValues, false, byteData);
     }
 
     public static byte[] getBytes(Object rawData, double[] minmax, int w, int h, boolean isTransposed,
-            Object fillValue, byte[] byteData) {
-        return getBytes(rawData, minmax, w, h, isTransposed, fillValue, false, byteData);
+    		List<Number> invalidValues, boolean convertByteData, byte[] byteData) {
+    	return getBytes(rawData, minmax, w, h, isTransposed,invalidValues, convertByteData, byteData, null);
     }
-
+    
     /**
      * Convert an array of raw data into array of a byte data.
      * <p>
@@ -713,9 +722,12 @@ public final class Tools {
      * @return the byte array of pixel data.
      */
     public static byte[] getBytes(Object rawData, double[] minmax, int w, int h, boolean isTransposed,
-            Object fillValue, boolean convertByteData, byte[] byteData) {
+    		List<Number> invalidValues, boolean convertByteData, byte[] byteData, List<Integer> list) 
+    {
+    	double fillValue[] = null;
+    	
         // no input data
-        if (rawData == null) {
+        if (rawData == null || w<=0 || h<=0) {
             return null;
         }
 
@@ -735,7 +747,7 @@ public final class Tools {
         }
 
         if (dname == 'B') {
-            return convertByteData((byte[]) rawData, minmax, w, h, isTransposed, fillValue, convertByteData, byteData);
+            return convertByteData((byte[]) rawData, minmax, w, h, isTransposed, fillValue, convertByteData, byteData, list);
         }
 
         if ((byteData == null) || (size != byteData.length)) {
@@ -748,192 +760,70 @@ public final class Tools {
 
         min = minmax[0];
         max = minmax[1];
-        ratio = (min == max) ? 1.00d : (double) (255.00 / (max - min));
 
+        if (invalidValues!=null && invalidValues.size()>0) {
+        	int n = invalidValues.size();
+        	fillValue = new double[n];
+        	for (int i=0; i<n; i++) {
+        		fillValue[i] = invalidValues.get(i).doubleValue();
+        	}
+        }
+        ratio = (min == max) ? 1.00d : (double) (255.00 / (max - min));
         int idxSrc = 0, idxDst = 0;
         switch (dname) {
             case 'S':
                 short[] s = (short[]) rawData;
-                short fvs = 0;
-
-                // set fill value to zero
-                if (fillValue != null) {
-                    fvs = ((short[]) fillValue)[0];
-                }
-
-                if (isTransposed) {
-                    for (int i = 0; i < h; i++) {
-                        for (int j = 0; j < w; j++) {
-                            idxSrc = j * h + i;
-                            idxDst = i * w + j;
-                            if (s[idxSrc] <= min || s[idxSrc] == fvs)
-                                byteData[idxDst] = 0;
-                            else if (s[idxSrc] >= max)
-                                byteData[idxDst] = (byte) 255;
-                            else
-                                byteData[idxDst] = (byte) ((s[idxSrc] - min) * ratio);
-                        }
+                for (int i = 0; i < h; i++) {
+                    for (int j = 0; j < w; j++) {
+                        idxSrc = idxDst =j * h + i;
+                        if (isTransposed) idxDst = i * w + j;
+                        byteData[idxDst] = toByte(s[idxSrc], ratio, min, max, fillValue, idxSrc, list);
                     }
                 }
-                else {
-                    for (int i = 0; i < size; i++) {
-                        if (s[i] <= min || s[i] == fvs)
-                            byteData[i] = 0;
-                        else if (s[i] >= max)
-                            byteData[i] = (byte) 255;
-                        else
-                            byteData[i] = (byte) ((s[i] - min) * ratio);
-                    }
-                }
-
                 break;
 
             case 'I':
                 int[] ia = (int[]) rawData;
-                int fvi = 0;
-
-                // set fill value to zero
-                if (fillValue != null) {
-                    fvi = ((int[]) fillValue)[0];
-                }
-
-                if (isTransposed) {
-                    for (int i = 0; i < h; i++) {
-                        for (int j = 0; j < w; j++) {
-                            idxSrc = j * h + i;
-                            idxDst = i * w + j;
-
-                            if (ia[idxSrc] <= min || ia[idxSrc] == fvi)
-                                byteData[idxDst] = 0;
-                            else if (ia[idxSrc] >= max)
-                                byteData[idxDst] = (byte) 255;
-                            else
-                                byteData[idxDst] = (byte) ((ia[idxSrc] - min) * ratio);
-                        }
+                for (int i = 0; i < h; i++) {
+                    for (int j = 0; j < w; j++) {
+                        idxSrc = idxDst =j * h + i;
+                        if (isTransposed) idxDst = i * w + j;
+                        byteData[idxDst] = toByte(ia[idxSrc], ratio, min, max, fillValue, idxSrc, list);
                     }
-                }
-                else {
-                    for (int i = 0; i < size; i++) {
-                        if (ia[i] <= min || ia[i] == fvi)
-                            byteData[i] = 0;
-                        else if (ia[i] >= max)
-                            byteData[i] = (byte) 255;
-                        else
-                            byteData[i] = (byte) ((ia[i] - min) * ratio);
-                    }
-                }
-
+                }               
                 break;
 
             case 'J':
                 long[] l = (long[]) rawData;
-                long fvl = 0;
-
-                // set fill value to zero
-                if (fillValue != null) {
-                    fvl = ((long[]) fillValue)[0];
-                }
-
-                if (isTransposed) {
-                    for (int i = 0; i < h; i++) {
-                        for (int j = 0; j < w; j++) {
-                            idxSrc = j * h + i;
-                            idxDst = i * w + j;
-
-                            if (l[idxSrc] <= min || l[idxSrc] == fvl)
-                                byteData[idxDst] = 0;
-                            else if (l[idxSrc] >= max)
-                                byteData[idxDst] = (byte) 255;
-                            else
-                                byteData[idxDst] = (byte) ((l[idxSrc] - min) * ratio);
-                        }
+                for (int i = 0; i < h; i++) {
+                    for (int j = 0; j < w; j++) {
+                        idxSrc = idxDst =j * h + i;
+                        if (isTransposed) idxDst = i * w + j;
+                        byteData[idxDst] = toByte(l[idxSrc], ratio, min, max, fillValue, idxSrc, list);
                     }
                 }
-                else {
-                    for (int i = 0; i < size; i++) {
-                        if (l[i] <= min || l[i] == fvl)
-                            byteData[i] = 0;
-                        else if (l[i] >= max)
-                            byteData[i] = (byte) 255;
-                        else
-                            byteData[i] = (byte) ((l[i] - min) * ratio);
-                    }
-                }
-
                 break;
 
             case 'F':
                 float[] f = (float[]) rawData;
-                float fvf = 0;
-
-                // set fill value to zero
-                if (fillValue != null) {
-                    fvf = ((float[]) fillValue)[0];
-                }
-
-                if (isTransposed) {
-                    for (int i = 0; i < h; i++) {
-                        for (int j = 0; j < w; j++) {
-                            idxSrc = j * h + i;
-                            idxDst = i * w + j;
-
-                            if (f[idxSrc] <= min || f[idxSrc] == fvf || isNaNINF((double) f[idxSrc]))
-                                byteData[idxDst] = 0;
-                            else if (f[idxSrc] >= max)
-                                byteData[idxDst] = (byte) 255;
-                            else
-                                byteData[idxDst] = (byte) ((f[idxSrc] - min) * ratio);
-                        }
+                for (int i = 0; i < h; i++) {
+                    for (int j = 0; j < w; j++) {
+                        idxSrc = idxDst =j * h + i;
+                        if (isTransposed) idxDst = i * w + j;
+                        byteData[idxDst] = toByte(f[idxSrc], ratio, min, max, fillValue, idxSrc, list);
                     }
                 }
-                else {
-                    for (int i = 0; i < size; i++) {
-                        if (f[i] <= min | f[i] == fvf || isNaNINF((double) f[i]))
-                            byteData[i] = 0;
-                        else if (f[i] >= max)
-                            byteData[i] = (byte) 255;
-                        else
-                            byteData[i] = (byte) ((f[i] - min) * ratio);
-                    }
-                }
-
                 break;
 
             case 'D':
                 double[] d = (double[]) rawData;
-                double fvd = 0;
-
-                // set fill value to zero
-                if (fillValue != null) {
-                    fvd = ((double[]) fillValue)[0];
-                }
-
-                if (isTransposed) {
-                    for (int i = 0; i < h; i++) {
-                        for (int j = 0; j < w; j++) {
-                            idxSrc = j * h + i;
-                            idxDst = i * w + j;
-
-                            if (d[idxSrc] <= min || d[idxSrc] == fvd || isNaNINF(d[idxSrc]))
-                                byteData[idxDst] = 0;
-                            else if (d[idxSrc] >= max)
-                                byteData[idxDst] = (byte) 255;
-                            else
-                                byteData[idxDst] = (byte) ((d[idxSrc] - min) * ratio);
-                        }
+                for (int i = 0; i < h; i++) {
+                    for (int j = 0; j < w; j++) {
+                        idxSrc = idxDst =j * h + i;
+                        if (isTransposed) idxDst = i * w + j;
+                        byteData[idxDst] = toByte(d[idxSrc], ratio, min, max, fillValue, idxSrc, list);
                     }
                 }
-                else {
-                    for (int i = 0; i < size; i++) {
-                        if (d[i] <= min || d[i] == fvd || isNaNINF(d[i]))
-                            byteData[i] = 0;
-                        else if (d[i] >= max)
-                            byteData[i] = (byte) 255;
-                        else
-                            byteData[i] = (byte) ((d[i] - min) * ratio);
-                    }
-                }
-
                 break;
 
             default:
@@ -943,9 +833,36 @@ public final class Tools {
 
         return byteData;
     }
+    
+    private static byte toByte(double in, double ratio, double min, double max, double[] fill, int idx,  List<Integer> list) 
+    {
+    	byte out = 0;
+    	
+    	if (in < min || in > max || isFillValue(in, fill) || isNaNINF(in)) {
+    		out = 0;
+    		if (list!=null)
+    			list.add(idx);
+    	} else
+    		out = (byte) ((in-min)*ratio);
+    	
+    	return out;
+    }
+    
+    private static boolean isFillValue(double in, double[] fill) {
+    	
+    	if (fill==null)
+    		return false;
+    	
+    	for (int i=0; i<fill.length; i++) {
+    		if (fill[i] == in)
+    			return true;
+    	}
+    	
+    	return false;
+    }
 
     private static byte[] convertByteData(byte[] rawData, double[] minmax, int w, int h, boolean isTransposed,
-            Object fillValue, boolean convertByteData, byte[] byteData) {
+            Object fillValue, boolean convertByteData, byte[] byteData, List<Integer> list) {
         double min = Double.MAX_VALUE, max = -Double.MAX_VALUE, ratio = 1.0d;
 
         if (rawData == null) return null;
@@ -989,29 +906,19 @@ public final class Tools {
         min = minmax[0];
         max = minmax[1];
         ratio = (min == max) ? 1.00d : (double) (255.00 / (max - min));
-        if (isTransposed) {
-            for (int i = 0; i < h; i++) {
-                for (int j = 0; j < w; j++) {
-                    int idxSrc = j * h + i;
-                    int idxDst = i * w + j;
+        int idxSrc = 0, idxDst = 0;        
+        for (int i = 0; i < h; i++) {
+            for (int j = 0; j < w; j++) {
+                idxSrc = idxDst =j * h + i;
+                if (isTransposed) idxDst = i * w + j;
 
-                    if (rawData[idxSrc] >= max)
-                        byteData[idxDst] = (byte) 255;
-                    else if (rawData[idxSrc] <= min)
-                        byteData[idxDst] = (byte) 0;
-                    else
-                        byteData[idxDst] = (byte) ((rawData[idxSrc] - min) * ratio);
+                if (rawData[idxSrc] > max || rawData[idxSrc] < min) {
+                	byteData[idxDst] = (byte) 0;
+                	if (list!=null)
+                	    list.add(idxSrc);
                 }
-            }
-        }
-        else {
-            for (int i = 0; i < rawData.length; i++) {
-                if (rawData[i] >= max)
-                    byteData[i] = (byte) 255;
-                else if (rawData[i] <= min)
-                    byteData[i] = (byte) 0;
                 else
-                    byteData[i] = (byte) ((rawData[i] - min) * ratio);
+                    byteData[idxDst] = (byte) ((rawData[idxSrc] - min) * ratio);
             }
         }
 
@@ -1587,8 +1494,10 @@ public final class Tools {
         double val;
         for (int i = 0; i < n; i++) {
             val = ((Number) Array.get(data, i)).doubleValue();
-            idx = (int) ((val - minmax[0]) * delt);
-            dataDist[idx]++;
+            if (val>=minmax[0] && val <=minmax[1]) {
+                idx = (int) ((val - minmax[0]) * delt);
+                dataDist[idx]++;
+            } // don't count invalid values
         }
 
         return retval;
