@@ -3378,7 +3378,7 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
         public DataRangeDialog(JFrame theOwner, double[] minmaxCurrent, 
                 double[] minmaxOriginal, final int[] dataDist) 
         {
-            super(theOwner, "Image Vaule Range", true);
+            super(theOwner, "Image Value Range", true);
 
             Tools.findMinMax(dataDist, minmax_dist, null);
             
