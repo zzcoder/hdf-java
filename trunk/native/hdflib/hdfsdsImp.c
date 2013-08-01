@@ -1205,6 +1205,29 @@ jobject cinfo) /* IN: CompInfo */
         }
 }
 
+JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_SDgetcompinfo
+( JNIEnv *env,
+jclass clss,
+jint id,
+jobject cinfo) /* out: CompInfo */
+{
+        intn rval;
+        comp_coder_t coder;
+        comp_info cinf;
+
+        /* check for success... */
+
+        rval = SDgetcompinfo((int32) id, (comp_coder_t *) &coder,
+        (comp_info *)&cinf);
+
+
+        if (rval == FAIL) {
+                return JNI_FALSE;
+        } else {
+            return setNewCompInfo(env, cinfo, coder, &cinf);
+         }
+}
+
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_SDgetcompress
 ( JNIEnv *env,
 jclass clss,
