@@ -12,4 +12,4 @@ if [ ! -d \$JAVAHOME ]; then
     JAVAHOME=`perl -e "print substr(\"${JAVALOC}\", 0, $LASTSLASH)"`
 fi
 
-$JAVAHOME/java -Xmx1024M -Djava.library.path="$INSTALLDIR/lib" -Dhdfview.root="$INSTALLDIR/lib" -cp "@HDFVIEW_CLASSPATH@" -jar "$INSTALLDIR/lib/@HDFVIEW_JAR@" -root "$INSTALLDIR/share"
+$JAVAHOME/java -Xmx1024M -Djava.library.path="$INSTALLDIR/lib" -Dhdfview.root="$INSTALLDIR/lib" -cp "@HDFVIEW_CLASSPATH@" -jar "$INSTALLDIR/lib/@HDFVIEW_JAR@" -root "$INSTALLDIR/share" $*
