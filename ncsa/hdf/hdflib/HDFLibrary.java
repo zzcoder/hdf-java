@@ -1787,7 +1787,13 @@ public class HDFLibrary implements java.io.Serializable
      */
     public static native boolean SDsetcompress( int id, int type, HDFCompInfo cinfo) throws HDFException;
 
+    /**
+ *  @deprecated As of HDF 4.2.9, replaced by {@link #SDgetcompinfo(int, HDFCompInfo)}
+     */
+    @Deprecated
     public static native boolean SDgetcompress( int id, HDFCompInfo cinfo) throws HDFException;
+
+    public static native boolean SDgetcompinfo( int id, HDFCompInfo cinfo) throws HDFException;
 
     public static native boolean SDsetaccesstype( int id, int accesstype ) throws HDFException;
 
