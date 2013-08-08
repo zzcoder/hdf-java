@@ -418,20 +418,6 @@ IF (HDFJAVA_PACK_JREFILE)
 ENDIF (HDFJAVA_PACK_JREFILE)
 
 #-----------------------------------------------------------------------------
-# Configure the HDFJAVA-startup.sh and Info.plist file for the install bundle
-#-----------------------------------------------------------------------------
-IF (APPLE)
-  CONFIGURE_FILE (
-      ${HDFJAVA_RESOURCES_DIR}/LaunchHDFViewFromAppBundle.sh.in
-      ${HDFJAVA_BINARY_DIR}/CMakeFiles/${HDFJAVA_PACKAGE}${HDF_PACKAGE_EXT}-startup.sh @ONLY
-  )
-  CONFIGURE_FILE (
-      ${CMAKE_ROOT}/Modules/CPack.Info.plist.in
-      ${HDFJAVA_BINARY_DIR}/CMakeFiles/Info.plist @ONLY
-  )
-ENDIF (APPLE)
-
-#-----------------------------------------------------------------------------
 # Set the cpack variables
 #-----------------------------------------------------------------------------
 SET (CPACK_PACKAGE_VENDOR "HDF_Group")
@@ -465,6 +451,17 @@ ELSEIF (APPLE)
   SET (CPACK_SET_DESTDIR TRUE) # Required when packaging, and set CMAKE_INSTALL_PREFIX to "/".
     
   LIST (APPEND CPACK_GENERATOR "Bundle")
+  #-----------------------------------------------------------------------------
+  # Configure the HDFJAVA-startup.sh and Info.plist file for the install bundle
+  #-----------------------------------------------------------------------------
+  CONFIGURE_FILE (
+      ${HDFJAVA_RESOURCES_DIR}/LaunchHDFViewFromAppBundle.sh.in
+      ${HDFJAVA_BINARY_DIR}/CMakeFiles/${HDFJAVA_PACKAGE}${HDF_PACKAGE_EXT}-startup.sh @ONLY
+  )
+  CONFIGURE_FILE (
+      ${CMAKE_ROOT}/Modules/CPack.Info.plist.in
+      ${HDFJAVA_BINARY_DIR}/CMakeFiles/Info.plist @ONLY
+  )
   SET (CMAKE_BUNDLE_NAME "${HDFJAVA_PACKAGE_STRING}")
   SET (CMAKE_BUNDLE_LOCATION "/")    # make sure CMAKE_INSTALL_PREFIX ends in "/"
   SET (CMAKE_INSTALL_PREFIX "/${CMAKE_BUNDLE_NAME}.app/Contents")
