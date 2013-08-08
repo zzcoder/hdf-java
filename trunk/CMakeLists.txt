@@ -418,16 +418,16 @@ IF (HDFJAVA_PACK_JREFILE)
 ENDIF (HDFJAVA_PACK_JREFILE)
 
 #-----------------------------------------------------------------------------
-# Configure the HDFJAVA-startup.sh file for the install directory
+# Configure the HDFJAVA-startup.sh and Info.plist file for the install bundle
 #-----------------------------------------------------------------------------
 IF (APPLE)
   CONFIGURE_FILE (
       ${HDFJAVA_RESOURCES_DIR}/LaunchHDFViewFromAppBundle.sh.in
       ${HDFJAVA_BINARY_DIR}/CMakeFiles/${HDFJAVA_PACKAGE}${HDF_PACKAGE_EXT}-startup.sh @ONLY
   )
-  INSTALL (
-      FILES ${HDFJAVA_BINARY_DIR}/CMakeFiles/${HDFJAVA_PACKAGE}${HDF_PACKAGE_EXT}-startup.sh
-      DESTINATION ${HJAVA_INSTALL_BIN_DIR}
+  CONFIGURE_FILE (
+      ${CMAKE_ROOT}/Modules/CPack.Info.plist.in
+      ${HDFJAVA_BINARY_DIR}/CMakeFiles/Info.plist @ONLY
   )
 ENDIF (APPLE)
 
@@ -464,14 +464,13 @@ ELSEIF (APPLE)
   SET (CPACK_PACKAGE_ICON "${HDFJAVA_RESOURCES_DIR}/hdf.gif")
   SET (CPACK_SET_DESTDIR TRUE) # Required when packaging, and set CMAKE_INSTALL_PREFIX to "/".
     
-#  LIST (APPEND CPACK_GENERATOR "Bundle")
+  LIST (APPEND CPACK_GENERATOR "Bundle")
   SET (CMAKE_BUNDLE_NAME "${HDFJAVA_PACKAGE_STRING}")
-  SET (CMAKE_BUNDLE_LOCATION "/")    # make sure CMAKE_INSTALL_PREFIX ends in /
-  SET(CMAKE_INSTALL_PREFIX "/${CMAKE_BUNDLE_NAME}.app/Contents")
-#  SET (CMAKE_INSTALL_PREFIX "/${CMAKE_BUNDLE_NAME}.framework/Versions/${CPACK_PACKAGE_VERSION}/${CPACK_PACKAGE_NAME}")
+  SET (CMAKE_BUNDLE_LOCATION "/")    # make sure CMAKE_INSTALL_PREFIX ends in "/"
+  SET (CMAKE_INSTALL_PREFIX "/${CMAKE_BUNDLE_NAME}.app/Contents")
   SET (CPACK_BUNDLE_ICON "${HDFJAVA_RESOURCES_DIR}/hdf.gif")
-#  CPACK_BUNDLE_PLIST - path to a file that will become the bundle plist.
-  SET (CPACK_BUNDLE_STARTUP_COMMAND "${HDFJAVA_PACKAGE}${HDF_PACKAGE_EXT}-startup.sh")
+  SET (CPACK_BUNDLE_PLIST "${HDFJAVA_BINARY_DIR}/CMakeFiles/Info.plist")
+  SET (CPACK_BUNDLE_STARTUP_COMMAND "${HDFJAVA_BINARY_DIR}/CMakeFiles/${HDFJAVA_PACKAGE}${HDF_PACKAGE_EXT}-startup.sh")
 ELSE (WIN32)
   SET (CPACK_PACKAGING_INSTALL_PREFIX "/usr")
   SET (CPACK_COMPONENTS_ALL_IN_ONE_PACKAGE ON)
