@@ -1,0 +1,27 @@
+#!/bin/sh
+#
+
+HDFJAVA_BUNDLE="`echo "$0" | sed -e 's/\/Contents\/MacOS\/HDFJAVA//'`"
+HDFJAVA_RESOURCES="$HDFJAVA_BUNDLE/Contents/Resources"
+HDFJAVA_TEMP="/tmp/hdfjava/$UID"
+HDFJAVA_ETC="$HDFJAVA_TEMP/etc"
+
+echo "running $0"
+echo "HDFJAVA_BUNDLE: $HDFJAVA_BUNDLE"
+
+mkdir -p $HDFJAVA_TEMP
+
+# Setup temporary runtime files
+rm -rf "$HDFJAVA_TEMP"
+
+# Because the bundle could be located anywhere at runtime, we have to
+# create temporary copies of the configuration files that
+# reflect our current location
+mkdir -p "$HDFJAVA_ETC/hdfjava"
+sed -e 's|@CMAKE_INSTALL_PREFIX@|'"$0|g" "$HDFJAVA_RESOURCES/bin/hdfview.sh" > "$HDFJAVA_ETC/bin/hdfview.sh"
+
+export "DYLD_LIBRARY_PATH=$HDFJAVA_RESOURCES/lib"
+export "PATH=$HDFJAVA_RESOURCES/bin:$PATH"
+
+#export
+exec "$HDFJAVA_RESOURCES/bin/hdfjava" "--log-level=debug" "--share=$HDFJAVA_RESOURCES/share/hdfjava"

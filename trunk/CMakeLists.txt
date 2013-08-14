@@ -455,7 +455,7 @@ ELSEIF (APPLE)
   # Configure the HDFJAVA-startup.sh and Info.plist file for the install bundle
   #-----------------------------------------------------------------------------
   CONFIGURE_FILE (
-      ${HDFJAVA_RESOURCES_DIR}/LaunchHDFViewFromAppBundle.sh.in
+      ${HDFJAVA_RESOURCES_DIR}/SetupFromAppBundle.sh.in
       ${HDFJAVA_BINARY_DIR}/CMakeFiles/${HDFJAVA_PACKAGE}${HDF_PACKAGE_EXT}-startup.sh @ONLY
   )
   CONFIGURE_FILE (
