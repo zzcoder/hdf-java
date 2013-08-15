@@ -18,7 +18,7 @@ rm -rf "$HDFJAVA_TEMP"
 # create temporary copies of the configuration files that
 # reflect our current location
 mkdir -p "$HDFJAVA_ETC"
-sed -e 's|\/usr|'"$HDFJAVA_RESOURCES|g" "$HDFJAVA_RESOURCES/bin/hdfview.sh" > "$HDFJAVA_ETC/hdfview.sh"
+sed -e 's|\/usr.*|'"$HDFJAVA_RESOURCES|g" "$HDFJAVA_RESOURCES/bin/hdfview.sh" > "$HDFJAVA_ETC/hdfview.sh"
 chmod u+x "$HDFJAVA_ETC/hdfview.sh"
 
 export "DYLD_LIBRARY_PATH=$HDFJAVA_RESOURCES/lib"
