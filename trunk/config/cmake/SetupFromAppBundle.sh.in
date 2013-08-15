@@ -9,7 +9,7 @@ HDFJAVA_ETC="$HDFJAVA_TEMP/etc"
 echo "running $0"
 echo "HDFJAVA_BUNDLE: $HDFJAVA_BUNDLE"
 
-mkdir -p $HDFJAVA_TEMP
+mkdir -p "$HDFJAVA_TEMP"
 
 # Setup temporary runtime files
 rm -rf "$HDFJAVA_TEMP"
