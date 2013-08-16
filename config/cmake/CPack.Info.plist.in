@@ -3,35 +3,66 @@
 
 <plist version="1.0">
 <dict>
-<key>IFMajorVersion</key>
-<integer>@CPACK_PACKAGE_VERSION_MAJOR@</integer>
-<key>IFMinorVersion</key>
-<integer>@CPACK_PACKAGE_VERSION_MINOR@</integer>
-<key>IFPkgFlagAllowBackRev</key>
-<false/>
-<key>IFPkgFlagAuthorizationAction</key>
-<string>AdminAuthorization</string>
-<key>IFPkgFlagDefaultLocation</key>
-<string>@CPACK_PACKAGE_DEFAULT_LOCATION@</string>
-<key>IFPkgFlagInstallFat</key>
-<false/>
-<key>IFPkgFlagIsRequired</key>
-<false/>
-<key>IFPkgFlagOverwritePermissions</key>
-<true/>
-<key>IFPkgFlagRelocatable</key>
-<@CPACK_PACKAGE_RELOCATABLE@/>
-<key>IFPkgFlagRestartAction</key>
-<string>NoRestart</string>
-<key>IFPkgFlagRootVolumeOnly</key>
-<false/>
-<key>IFPkgFlagUpdateInstalledLanguages</key>
-<false/>
-<key>IFPkgFlagUseUserMask</key>
-<false/>
-<key>IFPkgFormatVersion</key>
-<real>0.10000000149011612</real>
-<key>CFBundleIdentifier</key>
-<string>org.@CPACK_PACKAGE_VENDOR@.@CPACK_PACKAGE_NAME@@CPACK_MODULE_VERSION_SUFFIX@</string>
+    <key>IFMajorVersion</key>
+    <integer>@CPACK_PACKAGE_VERSION_MAJOR@</integer>
+    <key>IFMinorVersion</key>
+    <integer>@CPACK_PACKAGE_VERSION_MINOR@</integer>
+    <key>IFPkgFlagAllowBackRev</key>
+    <false/>
+    <key>IFPkgFlagAuthorizationAction</key>
+    <string>AdminAuthorization</string>
+    <key>IFPkgFlagDefaultLocation</key>
+    <string>@CPACK_PACKAGE_DEFAULT_LOCATION@</string>
+    <key>IFPkgFlagInstallFat</key>
+    <false/>
+    <key>IFPkgFlagIsRequired</key>
+    <false/>
+    <key>IFPkgFlagOverwritePermissions</key>
+    <true/>
+    <key>IFPkgFlagRelocatable</key>
+    <@CPACK_PACKAGE_RELOCATABLE@/>
+    <key>IFPkgFlagRestartAction</key>
+    <string>NoRestart</string>
+    <key>IFPkgFlagRootVolumeOnly</key>
+    <false/>
+    <key>IFPkgFlagUpdateInstalledLanguages</key>
+    <false/>
+    <key>IFPkgFlagUseUserMask</key>
+    <false/>
+    <key>IFPkgFormatVersion</key>
+    <real>0.10000000149011612</real>
+    <key>CFBundleDevelopmentRegion</key>
+    <string>English</string>
+    <key>CFBundleDocumentTypes</key>
+    <array>
+        <dict>
+        <key>CFBundleTypeExtensions</key>
+        <array>
+          <string>hdf</string>
+          <string>h4</string>
+          <string>hdf4</string>
+          <string>h5</string>
+          <string>hdf5</string>
+        </array>
+        <key>CFBundleTypeName</key>
+        <string>HDF Files</string>
+        <key>CFBundleTypeRole</key>
+        <string>Editor</string>
+        </dict>
+    </array>
+    <key>CFBundleExecutable</key>
+    <string>@CPACK_PACKAGE_FILE_NAME@</string>
+    <key>CFBundleName</key>
+    <string>@CPACK_APPLE_GUI_BUNDLE_NAME@</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>CFBundleShortVersionString</key>
+    <string>@CPACK_APPLE_GUI_SHORT_VERSION_STRING@</string>
+    <key>CFBundleSignature</key>
+    <string>????</string>
+    <key>CFBundleIdentifier</key>
+    <string>org.@CPACK_PACKAGE_VENDOR@.@CPACK_PACKAGE_NAME@@CPACK_MODULE_VERSION_SUFFIX@</string>
+    <key>NSHumanReadableCopyright</key>
+    <string>@CPACK_APPLE_GUI_COPYRIGHT@</string>
 </dict>
 </plist>
