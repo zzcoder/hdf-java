@@ -910,6 +910,7 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
      * @throws OutOfMemoryError
      */
     private void getIndexedImage() throws Exception, OutOfMemoryError {
+
         if (imagePalette==null)
             imagePalette = dataset.getPalette();
         
@@ -3367,9 +3368,11 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
 
     private class DataRangeDialog extends JDialog implements ActionListener,
             ChangeListener, PropertyChangeListener {
+    	final int NTICKS = 10;
+    	double tickRatio = 1;
         final int W = 500, H = 400;
         double[] minmax_current = {0, 0};
-        double min, max;
+        double min, max, min_org, max_org;
         final double[] minmax_previous = {0, 0};
         final double[] minmax_dist = {0,0};
         JSlider minSlider, maxSlider;
@@ -3397,9 +3400,11 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
             
             minmax_previous[0] = min = minmax_current[0];
             minmax_previous[1] = max = minmax_current[1];
+            min_org = originalRange[0];
+            max_org = originalRange[1];
             
-            int tickSpace = (int) (minmaxOriginal[1]-minmaxOriginal[0]) / 10;
-
+            tickRatio = (max_org-min_org)/(double)NTICKS;
+            
             final DecimalFormat numberFormat = new DecimalFormat("#.##E0");
             NumberFormatter formatter = new NumberFormatter(numberFormat);
             formatter.setMinimum(new Double(min));
@@ -3412,17 +3417,17 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
             maxField.addPropertyChangeListener(this);
             maxField.setValue(new Double(max));
 
-            minSlider = new JSlider(JSlider.HORIZONTAL, (int)minmaxOriginal[0], (int)minmaxOriginal[1], (int) min);
-            minSlider.setMajorTickSpacing(tickSpace);
+            minSlider = new JSlider(JSlider.HORIZONTAL, 0, NTICKS, 0);
+            minSlider.setMajorTickSpacing(1);
             minSlider.setPaintTicks(true);
-            minSlider.setPaintLabels(true);
+            minSlider.setPaintLabels(false);
             minSlider.addChangeListener(this);
             minSlider.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
 
-            maxSlider = new JSlider(JSlider.HORIZONTAL, (int)minmaxOriginal[0], (int)minmaxOriginal[1], (int) max);
-            maxSlider.setMajorTickSpacing(tickSpace);
+            maxSlider = new JSlider(JSlider.HORIZONTAL, 0, NTICKS, NTICKS);
+            maxSlider.setMajorTickSpacing(1);
             maxSlider.setPaintTicks(true);
-            maxSlider.setPaintLabels(true);
+            maxSlider.setPaintLabels(false);
             maxSlider.addChangeListener(this);
             maxSlider.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
 
@@ -3520,7 +3525,7 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
             contentPane.add(confirmP, BorderLayout.SOUTH);
             contentPane.add(new JLabel(" "), BorderLayout.NORTH);
 
-            if ((max-min) < 2) {
+            if (min==max) {
                 minSlider.setEnabled(false);
                 maxSlider.setEnabled(false);
             }
@@ -3584,7 +3589,7 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
                     slider.setValue((int)value);
                 }
 
-                minField.setValue(new Double(value));
+                minField.setValue(new Double(value*tickRatio+min_org));
             }
             else if (slider.equals(maxSlider)) {
                 double minValue = minSlider.getValue();
@@ -3592,7 +3597,7 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
                     value = minValue;
                     slider.setValue((int)value);
                 }
-                maxField.setValue(new Double(value));
+                maxField.setValue(new Double(value*tickRatio+min_org));
             }
         }
 
@@ -3609,26 +3614,21 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
                 }
                 double value = num.doubleValue();
 
-                if (source.equals(minField) && (minSlider != null)
-                        && minSlider.isEnabled()) {
-                    int maxValue = maxSlider.getValue();
-                    if (value > maxValue) {
-                        value = maxValue;
+                if (source.equals(minField) && (minSlider != null) && minSlider.isEnabled()) {
+                     if (value > max_org) {
+                        value = max_org;
                         minField.setText(String.valueOf(value));
                     }
-                    //minmax[0] = value;
 
-                    minSlider.setValue((int) value);
+                    minSlider.setValue((int) ((value-min_org)/tickRatio));
                 }
-                else if (source.equals(maxField) && (maxSlider != null)
-                        && minSlider.isEnabled()) {
-                    int minValue = minSlider.getValue();
-                    if (value < minValue) {
-                        value = minValue;
+                else if (source.equals(maxField) && (maxSlider != null)  && minSlider.isEnabled()) {
+                    if (value < min_org) {
+                        value = min_org;
                         maxField.setText(String.valueOf(value));
                     }
                     //minmax[1] = value;
-                    maxSlider.setValue((int) value);
+                    maxSlider.setValue((int) ((value-min_org)/tickRatio));
                 }
             }
         }
