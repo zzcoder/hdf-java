@@ -419,7 +419,7 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
                 if (n>0) {
                 	fillStr = fillValue.get(0).toString();
                     for (int i=1; i<n; i++) {
-                    	fillStr += fillValue.get(i)+ ",";
+                    	fillStr += ", "+fillValue.get(i);
                     }
                 }
                 tmpP.add(dataRangeField = new JTextField( minmaxStr));

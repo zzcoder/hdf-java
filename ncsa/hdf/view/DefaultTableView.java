@@ -1619,10 +1619,12 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
         if (rank > 1) {
             start = (int) startArray[selectedIndex[1]];
             stride = (int) strideArray[selectedIndex[1]];
-        }
 
-        for (int i = 0; i < cols; i++) {
-            columnNames[i] = String.valueOf(start + indexBase + i * stride);
+            for (int i = 0; i < cols; i++) {
+            	columnNames[i] = String.valueOf(start + indexBase + i * stride);
+            }
+        } else {
+        	columnNames[0] = "  ";
         }
 
         AbstractTableModel tm = new AbstractTableModel() {

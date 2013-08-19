@@ -14,6 +14,7 @@
 
 package ncsa.hdf.object;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
@@ -396,7 +397,14 @@ public abstract class ScalarDS extends Dataset {
      * @param x value to be filtered
      */
     public void addFilteredImageValue(Number x) {
-    	filteredImageValues.add(x);
+    	
+    	Iterator<Number> it = filteredImageValues.iterator();
+    	while (it.hasNext()) {
+    		if (it.next().toString().equals(x.toString()))
+    			return;
+    	}
+    	
+ 	    filteredImageValues.add(x);
     }
     
     /**
