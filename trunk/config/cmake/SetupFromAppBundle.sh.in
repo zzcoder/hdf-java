@@ -2,7 +2,7 @@
 #
 
 HDFJAVA_BUNDLE="`echo "$0" | sed -e 's/\/Contents\/MacOS\/HDF-JAVA//'`"
-HDFJAVA_RESOURCES="$HDFJAVA_BUNDLE/Contents"
+HDFJAVA_RESOURCES="$HDFJAVA_BUNDLE/Contents/Resources"
 HDFJAVA_TEMP="/tmp/hdfjava/$UID"
 HDFJAVA_ETC="$HDFJAVA_TEMP/etc"
 
