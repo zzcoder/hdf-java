@@ -251,7 +251,7 @@ public class H5 implements java.io.Serializable {
      * 
      * Make sure to update the verions number when a different library is used.
      */
-    public final static int LIB_VERSION[] = { 1, 8, 12 };
+    public final static int LIB_VERSION[] = { 1, 8, 13 };
 
     public final static String H5PATH_PROPERTY_KEY = "ncsa.hdf.hdf5lib.H5.hdf5lib";
 
