@@ -40,7 +40,7 @@ SET (SZIP_SVN_URL "http://svn.hdfgroup.uiuc.edu/szip/trunk" CACHE STRING "Use SZ
 
 SET (JPEG_SVN_URL "http://svn.hdfgroup.uiuc.edu/jpeg/branches/jpeg8b" CACHE STRING "Use JPEG from HDF repository" FORCE)
 
-SET (HDF4_SVN_URL "http://svn.hdfgroup.uiuc.edu/branches/hdf4_2_9k" CACHE STRING "Use HDF4 from HDF repository" FORCE)
+SET (HDF4_SVN_URL "http://svn.hdfgroup.uiuc.edu/hdf4/tags/hdf-4_2_9" CACHE STRING "Use HDF4 from HDF repository" FORCE)
 
 SET (HDF5_SVN_URL "http://svn.hdfgroup.uiuc.edu/hdf5/branches/hdf5_1_8_12" CACHE STRING "Use HDF5 from HDF repository" FORCE)
 
