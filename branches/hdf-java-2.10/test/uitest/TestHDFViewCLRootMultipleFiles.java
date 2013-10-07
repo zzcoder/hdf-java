@@ -25,7 +25,7 @@ import org.junit.Test;
 public class TestHDFViewCLRootMultipleFiles {
     private static FrameFixture mainFrameFixture;
     // the version of the HDFViewer
-    private static String VERSION = "2.99";
+    private static String VERSION = "2.10";
     private static String root_dir = System.getenv("PWD");
     private static String OS_type = System.getProperty("os.name").toLowerCase();
 
