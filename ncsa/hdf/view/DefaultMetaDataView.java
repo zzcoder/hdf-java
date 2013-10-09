@@ -72,6 +72,9 @@ import ncsa.hdf.object.ScalarDS;
 public class DefaultMetaDataView extends JDialog implements ActionListener, MetaDataView {
     private static final long serialVersionUID = 7891048909810508761L;
 
+    /** the logger reference. */
+    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DefaultMetaDataView.class);
+
     /**
      * The main HDFView.
      */
@@ -133,6 +136,7 @@ public class DefaultMetaDataView extends JDialog implements ActionListener, Meta
             hObject.getMetadata();
         }
         catch (Exception ex) {
+        	log.debug("get the metadata information before add GUI components:", ex);
         }
         tabbedPane.addTab("General", createGeneralPropertyPanel());
         tabbedPane.addTab("Attributes", createAttributePanel());
@@ -229,6 +233,7 @@ public class DefaultMetaDataView extends JDialog implements ActionListener, Meta
             pgroup = (Group) hObject.getFileFormat().get(hObject.getPath());
         }
         catch (Exception ex) {
+        	log.debug("parent group:", ex);
         }
         if (pgroup == null) {
             JOptionPane.showMessageDialog(this, "Parent group is null.", getTitle(), JOptionPane.ERROR_MESSAGE);
@@ -344,7 +349,7 @@ public class DefaultMetaDataView extends JDialog implements ActionListener, Meta
             obj.removeMetadata(attr);
         }
         catch (Exception ex) {
-            ;
+        	log.debug("delete an attribute from a data object:", ex);
         }
 
         attrTableModel.removeRow(idx);
@@ -999,7 +1004,8 @@ public class DefaultMetaDataView extends JDialog implements ActionListener, Meta
             if (attr.getProperty("field") !=null) {
             	String fieldInfo = " {Field: "+attr.getProperty("field")+"}";
             	attrTable.setValueAt(name+fieldInfo, i, 0);
-            } else
+            } 
+            else
                 attrTable.setValueAt(name, i, 0);
             
             attrTable.setValueAt(attr.toString(", "), i, 1);
@@ -1345,11 +1351,13 @@ public class DefaultMetaDataView extends JDialog implements ActionListener, Meta
                 }
             }
             catch (Exception ex) {
+            	log.debug("raf write:", ex);
             }
             try {
                 raf.close();
             }
             catch (Exception ex) {
+            	log.debug("raf close:", ex);
             }
 
             JOptionPane.showMessageDialog(this, "Saving user block is successful.", getTitle(),

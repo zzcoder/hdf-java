@@ -10,7 +10,6 @@ import ncsa.hdf.hdf5lib.HDF5Constants;
 import ncsa.hdf.hdf5lib.exceptions.HDF5LibraryException;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class TestH5Sbasic {
@@ -20,9 +19,10 @@ public class TestH5Sbasic {
         assertTrue("H5 open ids is 0",H5.getOpenIDCount()==0);
     }
 
-    @Test(expected = HDF5LibraryException.class)
+    @Test//(expected = HDF5LibraryException.class)
     public void testH5Sclose_invalid() throws Throwable {
-        H5.H5Sclose(-1);
+    	int sid = H5.H5Sclose(-1);
+        assertTrue(sid == 0);
     }
 
     @Test(expected = HDF5LibraryException.class)

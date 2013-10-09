@@ -556,7 +556,7 @@ public synchronized static native void H5export_dataset(String file_export_name,
 public static int H5Aclose(int attr_id) throws HDF5LibraryException
 {
     if (attr_id < 0)
-        throw new HDF5LibraryException("Negative ID");;
+    	return 0; // throw new HDF5LibraryException("Negative ID");;
     
     OPEN_IDS.removeElement(attr_id);
     return _H5Aclose(attr_id);
@@ -1275,7 +1275,7 @@ public synchronized static native int H5Dcopy(int src_did, int dst_did)
 public static int H5Dclose(int dataset_id) throws HDF5LibraryException
 {
     if (dataset_id < 0)
-        throw new HDF5LibraryException("Negative ID");
+    	return 0; // throw new HDF5LibraryException("Negative ID");
     
     OPEN_IDS.removeElement(dataset_id);
     return _H5Dclose(dataset_id);
@@ -2581,7 +2581,7 @@ public synchronized static native void H5Eunregister_class(int class_id)
 public static int H5Fclose(int file_id) throws HDF5LibraryException
 {
     if (file_id <0)
-        throw new HDF5LibraryException("Negative ID");;
+    	return 0; // throw new HDF5LibraryException("Negative ID");;
     
     OPEN_IDS.removeElement(file_id);
     return _H5Fclose(file_id);
@@ -3146,7 +3146,7 @@ public synchronized static native void H5Freset_mdc_hit_rate_stats(
 public static int H5Gclose(int group_id) throws HDF5LibraryException
 {
     if (group_id < 0)
-        throw new HDF5LibraryException("Negative ID");;
+    	return 0; // throw new HDF5LibraryException("Negative ID");;
     
     OPEN_IDS.removeElement(group_id);
     return _H5Gclose(group_id);
@@ -4463,7 +4463,7 @@ public synchronized static native void H5Lmove(int src_loc, String src_name, int
 public static int H5Oclose(int object_id) throws HDF5LibraryException
 {
     if (object_id < 0)
-        throw new HDF5LibraryException("Negative ID");;
+    	return 0; // throw new HDF5LibraryException("Negative ID");;
     
     OPEN_IDS.removeElement(object_id);
     return _H5Oclose(object_id);
@@ -4768,7 +4768,7 @@ public synchronized static native boolean H5Pall_filters_avail(int dcpl_id)
 public static int H5Pclose(int plist) throws HDF5LibraryException
 {
     if (plist < 0)
-        throw new HDF5LibraryException("Negative ID");;
+    	return 0; // throw new HDF5LibraryException("Negative ID");;
     
     OPEN_IDS.removeElement(plist);
     return _H5Pclose(plist);
@@ -7264,7 +7264,7 @@ private synchronized static native int _H5Rget_region(int loc_id,
 public static int H5Sclose(int space_id) throws HDF5LibraryException
 {
     if (space_id < 0)
-        throw new HDF5LibraryException("Negative ID");;
+    	return 0; // throw new HDF5LibraryException("Negative ID");;
     
     OPEN_IDS.removeElement(space_id);
     return _H5Sclose(space_id);
@@ -7982,7 +7982,7 @@ throws HDF5LibraryException, NullPointerException;
 public static int H5Tclose(int type_id) throws HDF5LibraryException
 {
     if (type_id < 0)
-        throw new HDF5LibraryException("Negative ID");;
+    	return 0; // throw new HDF5LibraryException("Negative ID");;
     
     OPEN_IDS.removeElement(type_id);
     return _H5Tclose(type_id);

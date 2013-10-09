@@ -50,6 +50,9 @@ public class H5ScalarDS extends ScalarDS {
      */
     private static final long serialVersionUID  = 2887517608230611642L;
 
+    /** the logger reference. */
+    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H5ScalarDS.class);
+
     /**
      * The list of attributes of this data object. Members of the list are
      * instance of Attribute.
@@ -123,6 +126,7 @@ public class H5ScalarDS extends ScalarDS {
                 this.oid[0] = HDFNativeData.byteToLong(ref_buf, 0);
             }
             catch (Exception ex) {
+            	log.debug("constructor:", ex);
             }
         }
     }
@@ -152,10 +156,16 @@ public class H5ScalarDS extends ScalarDS {
                 isVLEN = ((tclass == HDF5Constants.H5T_VLEN) || H5.H5Tis_variable_str(tid));
                 isEnum = (tclass == HDF5Constants.H5T_ENUM);
             }
-            catch (Exception ex) { ; }
+            catch (Exception ex) {
+            	log.debug("test if it is an image:", ex);
+            }
             finally {
-                try { H5.H5Tclose(tid); }
-                catch (HDF5Exception ex) { ; }
+                try { 
+                	H5.H5Tclose(tid); 
+                }
+                catch (HDF5Exception ex) {
+                	log.debug("finally close:", ex);
+                }
             }
 
             // check image 
@@ -163,7 +173,10 @@ public class H5ScalarDS extends ScalarDS {
             if (avalue!=null) {
             	try { 
                 	isImageDisplay = isImage =  "IMAGE".equalsIgnoreCase(new String((byte[])avalue).trim());
-            	} catch (Throwable err) {}
+            	} 
+            	catch (Throwable err) {
+            		log.debug("check image:", err);
+            	}
             }
             
             // retrieve the IMAGE_MINMAXRANGE
@@ -186,7 +199,10 @@ public class H5ScalarDS extends ScalarDS {
 
             try { 
                 checkCFconvention(did);
-            } catch (Exception ex) {}
+            } 
+            catch (Exception ex) {
+            	log.debug("checkCFconvention({}):", did, ex);
+            }
 
             close(did);
         }
@@ -215,14 +231,20 @@ public class H5ScalarDS extends ScalarDS {
                     imageDataRange[0] = x0;
                 	imageDataRange[1] = x1;
                 	return;
-                } catch (Exception ex) {}            	
+                } 
+                catch (Exception ex) {
+                	log.debug("valid_range:", ex);
+                }            	
             }
 
             avalue = getAttrValue(oid, "valid_min");
             if (avalue !=null) {
                 try {
                     x0 = Double.valueOf(java.lang.reflect.Array.get(avalue, 0).toString()).doubleValue();
-                } catch (Exception ex) {}  
+                } 
+                catch (Exception ex) {
+                	log.debug("valid_min:", ex);
+                }  
                 avalue = getAttrValue(oid, "valid_max");
                 if (avalue !=null) {
                     try {
@@ -230,7 +252,10 @@ public class H5ScalarDS extends ScalarDS {
                     	imageDataRange = new double[2];
                         imageDataRange[0] = x0;
                     	imageDataRange[1] = x1;                        
-                    } catch (Exception ex) {}  
+                    } 
+                    catch (Exception ex) {
+                    	log.debug("valid_max:", ex);
+                    }  
                 }
             }
     	} // if (imageDataRange==null || imageDataRange[1]<=imageDataRange[0])
@@ -251,6 +276,7 @@ public class H5ScalarDS extends ScalarDS {
                     H5.H5Tclose(tmptid);
                 }
                 catch (Exception ex) {
+                	log.debug("try to find out if the dataset is an image:", ex);
                 }
 
                 asid = H5.H5Aget_space(aid);
@@ -278,25 +304,26 @@ public class H5ScalarDS extends ScalarDS {
             } // if (aid > 0)
         }
         catch (Exception ex) {
+        	log.debug("try to find out if the dataset is an image:", ex);
         }
         finally {
             try {
                 H5.H5Tclose(atid);
             }
             catch (HDF5Exception ex) {
-                ;
+            	log.debug("finally close:", ex);
             }
             try {
                 H5.H5Sclose(asid);
             }
             catch (HDF5Exception ex) {
-                ;
+            	log.debug("finally close:", ex);
             }
             try {
                 H5.H5Aclose(aid);
             }
             catch (HDF5Exception ex) {
-                ;
+            	log.debug("finally close:", ex);
             }
         }
     	
@@ -349,6 +376,7 @@ public class H5ScalarDS extends ScalarDS {
                 isExternal = (nfiles > 0);
             }
             catch (Exception ex) {
+            	log.debug("check if it is an external dataset:", ex);
             }
 
             // check if datatype in file is native datatype
@@ -387,13 +415,13 @@ public class H5ScalarDS extends ScalarDS {
                     H5.H5Tclose(tmptid);
                 }
                 catch (HDF5Exception ex) {
-                    ;
+                	log.debug("finally close:", ex);
                 }
                 try {
                     H5.H5Pclose(pid);
                 }
                 catch (Exception ex) {
-                    ;
+                	log.debug("finally close:", ex);
                 }
             }
 
@@ -410,18 +438,20 @@ public class H5ScalarDS extends ScalarDS {
             }
         }
         catch (HDF5Exception ex) {
-            ;
+        	log.debug("init():", ex);
         }
         finally {
             try {
                 H5.H5Tclose(tid);
             }
             catch (HDF5Exception ex2) {
+            	log.debug("finally close:", ex2);
             }
             try {
                 H5.H5Sclose(sid);
             }
             catch (HDF5Exception ex2) {
+            	log.debug("finally close:", ex2);
             }
         }
 
@@ -464,19 +494,20 @@ public class H5ScalarDS extends ScalarDS {
             retValue = strValue.equalsIgnoreCase(value);
         }
         catch (Exception ex) {
+        	log.debug("try to find out interlace mode:", ex);
         }
         finally {
             try {
                 H5.H5Tclose(atid);
             }
             catch (HDF5Exception ex) {
-                ;
+            	log.debug("finally close:", ex);
             }
             try {
                 H5.H5Aclose(aid);
             }
             catch (HDF5Exception ex) {
-                ;
+            	log.debug("finally close:", ex);
             }
         }
 
@@ -630,6 +661,7 @@ public class H5ScalarDS extends ScalarDS {
                 }
             }
             catch (Exception ex) {
+            	log.debug("copy chunk:", ex);
             }
 
             if (setChunkFlag) H5.H5Pset_chunk(plist, dims.length, chunks);
@@ -639,12 +671,14 @@ public class H5ScalarDS extends ScalarDS {
                         HDF5Constants.H5P_DEFAULT);
             }
             catch (Exception e) {
+            	log.debug("copy create:", e);
             }
             finally {
                 try {
                     H5.H5Dclose(dstdid);
                 }
                 catch (Exception ex2) {
+                	log.debug("finally close:", ex2);
                 }
             }
 
@@ -662,26 +696,31 @@ public class H5ScalarDS extends ScalarDS {
                 H5.H5Pclose(plist);
             }
             catch (Exception ex) {
+            	log.debug("finally close:", ex);
             }
             try {
                 H5.H5Sclose(sid);
             }
             catch (Exception ex) {
+            	log.debug("finally close:", ex);
             }
             try {
                 H5.H5Tclose(tid);
             }
             catch (Exception ex) {
+            	log.debug("finally close:", ex);
             }
             try {
                 H5.H5Dclose(srcdid);
             }
             catch (Exception ex) {
+            	log.debug("finally close:", ex);
             }
             try {
                 H5.H5Dclose(dstdid);
             }
             catch (Exception ex) {
+            	log.debug("finally close:", ex);
             }
         }
 
@@ -736,16 +775,19 @@ public class H5ScalarDS extends ScalarDS {
                 H5.H5Sclose(fspace);
             }
             catch (Exception ex2) {
+            	log.debug("finally close:", ex2);
             }
             try {
                 H5.H5Sclose(mspace);
             }
             catch (Exception ex2) {
+            	log.debug("finally close:", ex2);
             }
             try {
                 H5.H5Tclose(tid);
             }
             catch (HDF5Exception ex2) {
+            	log.debug("finally close:", ex2);
             }
             close(did);
         }
@@ -797,6 +839,7 @@ public class H5ScalarDS extends ScalarDS {
                 }
             }
             catch (Exception ex) {
+            	log.debug("check is storage space is allocated:", ex);
             }
 
             tid = H5.H5Dget_type(did);
@@ -811,6 +854,7 @@ public class H5ScalarDS extends ScalarDS {
                         H5.H5Tclose(tmptid);
                     }
                     catch (Exception ex2) {
+                    	log.debug("finally close:", ex2);
                     }
                 }
             }
@@ -854,16 +898,19 @@ public class H5ScalarDS extends ScalarDS {
                 H5.H5Sclose(spaceIDs[0]);
             }
             catch (Exception ex) {
+            	log.debug("finally close:", ex);
             }
             try {
                 H5.H5Sclose(spaceIDs[1]);
             }
             catch (Exception ex) {
+            	log.debug("finally close:", ex);
             }
             try {
                 H5.H5Tclose(tid);
             }
             catch (Exception ex2) {
+            	log.debug("finally close:", ex2);
             }
             close(did);
         }
@@ -910,6 +957,7 @@ public class H5ScalarDS extends ScalarDS {
                         H5.H5Tclose(tmptid);
                     }
                     catch (Exception ex2) {
+                    	log.debug("finally close:", ex2);
                     }
                 }
             }
@@ -945,16 +993,19 @@ public class H5ScalarDS extends ScalarDS {
                 H5.H5Sclose(spaceIDs[0]);
             }
             catch (Exception ex) {
+            	log.debug("finally close:", ex);
             }
             try {
                 H5.H5Sclose(spaceIDs[1]);
             }
             catch (Exception ex) {
+            	log.debug("finally close:", ex);
             }
             try {
                 H5.H5Tclose(tid);
             }
             catch (Exception ex) {
+            	log.debug("finally close:", ex);
             }
             close(did);
         }
@@ -1128,7 +1179,7 @@ public class H5ScalarDS extends ScalarDS {
                 }
             }
             catch (Exception ex) {
-                ;
+            	log.debug("Storage allocation time:", ex);
             }
         }
         finally {
@@ -1136,6 +1187,7 @@ public class H5ScalarDS extends ScalarDS {
                 H5.H5Pclose(pid);
             }
             catch (Exception ex) {
+            	log.debug("finally close:", ex);
             }
             close(did);
         } // if (attributeList == null)
@@ -1227,12 +1279,13 @@ public class H5ScalarDS extends ScalarDS {
             H5.H5Fflush(did, HDF5Constants.H5F_SCOPE_LOCAL);
         }
         catch (Exception ex) {
+        	log.debug("close flush:", ex);
         }
         try {
             H5.H5Dclose(did);
         }
         catch (HDF5Exception ex) {
-            ;
+        	log.debug("close:", ex);
         }
     }
 
@@ -1540,6 +1593,7 @@ public class H5ScalarDS extends ScalarDS {
                 val_fill = parseFillValue(type, fillValue);
             }
             catch (Exception ex) {
+            	log.debug("fill value:", ex);
             }
 
             if (chunks != null || val_fill != null) {
@@ -1568,26 +1622,26 @@ public class H5ScalarDS extends ScalarDS {
                 H5.H5Pclose(plist);
             }
             catch (HDF5Exception ex) {
+            	log.debug("finally close:", ex);
             }
-            ;
             try {
                 H5.H5Sclose(sid);
             }
             catch (HDF5Exception ex) {
+            	log.debug("finally close:", ex);
             }
-            ;
             try {
                 H5.H5Tclose(tid);
             }
             catch (HDF5Exception ex) {
+            	log.debug("finally close:", ex);
             }
-            ;
             try {
                 H5.H5Dclose(did);
             }
             catch (HDF5Exception ex) {
+            	log.debug("finally close:", ex);
             }
-            ;
         }
 
         if (dataset != null) {
@@ -1653,16 +1707,19 @@ public class H5ScalarDS extends ScalarDS {
                 H5.H5Tclose(atype);
             }
             catch (HDF5Exception ex2) {
+            	log.debug("finally close:", ex2);
             }
             try {
                 H5.H5Sclose(sid);
             }
             catch (HDF5Exception ex2) {
+            	log.debug("finally close:", ex2);
             }
             try {
                 H5.H5Aclose(aid);
             }
             catch (HDF5Exception ex2) {
+            	log.debug("finally close:", ex2);
             }
         }
 
@@ -1695,6 +1752,7 @@ public class H5ScalarDS extends ScalarDS {
                             H5.H5Tclose(tmptid);
                         }
                         catch (Exception ex2) {
+                        	log.debug("finally close:", ex2);
                         }
                     }
                 }
@@ -1707,14 +1765,14 @@ public class H5ScalarDS extends ScalarDS {
                     H5.H5Tclose(tid);
                 }
                 catch (HDF5Exception ex) {
+                	log.debug("finally close:", ex);
                 }
-                ;
                 try {
                     H5.H5Dclose(did);
                 }
                 catch (HDF5Exception ex) {
+                	log.debug("finally close:", ex);
                 }
-                ;
             }
         }
 

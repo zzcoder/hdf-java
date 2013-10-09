@@ -31,6 +31,6 @@ if "!%JAVABIN%!\java.exe"=="\java.exe" (
         exit /b 1
 )
  
-start "HDFView" "%JAVABIN%\javaw.exe" -Xmx1024M -Djava.library.path="%INSTALLDIR%\lib" -Dhdfview.root="%INSTALLDIR%\lib" -cp "@HDFVIEW_CLASSPATH@" -jar "%INSTALLDIR%\lib\@HDFVIEW_JAR@" -root "%INSTALLDIR%\share" %1
+start "HDFView" "%JAVABIN%\javaw.exe" -Xmx1024M -Djava.library.path="%INSTALLDIR%\lib" -Dhdfview.root="%INSTALLDIR%\lib" -jar "%INSTALLDIR%\lib\@HDFVIEW_JAR@" -root "%INSTALLDIR%\share" %1
 
 exit /b 0

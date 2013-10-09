@@ -48,4 +48,8 @@ SET (HDFJAVA_INCLUDE_DIRS
     ${HDFJAVA_LIBRARY}/jarh4obj.jar
     ${HDFJAVA_LIBRARY}/jarh5obj.jar
     ${HDFJAVA_LIBRARY}/jarnc2obj.jar
+    ${HDFJAVA_LIBRARY}/fits.jar
+    ${HDFJAVA_LIBRARY}/netcdf.jar
+    ${HDFJAVA_LIBRARY}/slf4j-api-1.7.5.jar
+    ${HDFJAVA_LIBRARY}/slf4j-nop-1.7.5.jar
 )

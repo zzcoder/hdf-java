@@ -32,7 +32,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.lang.reflect.Array;
 import java.util.BitSet;
 import java.util.List;
 import java.util.StringTokenizer;
