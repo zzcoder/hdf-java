@@ -357,7 +357,7 @@ public abstract class FileFormat extends File {
         }
     }
 
-    /**
+	/**
      * Returns the FileFormat with specified key from the list of supported
      * formats.
      * <p>

@@ -53,6 +53,7 @@ H5OBJDISTFILES= ./ncsa/hdf/object/h5/*.java ./ncsa/hdf/object/h5/Makefile.in ./n
 FITSDISTJARFILE = $(CLASS_DIR)/fits.jar
 NC2SDISTJARFILE = $(CLASS_DIR)/netcdf.jar
 JUNITSDISTJARFILE = $(CLASS_DIR)/junit.jar
+LOGGINGDISTJARFILE = $(CLASS_DIR)/slf4j-api-1.7.5.jar $(CLASS_DIR)/slf4j-nop-1.7.5.jar
 
 NC2OBJDISTFILES= ./ncsa/hdf/object/nc2/*.java ./ncsa/hdf/object/nc2/Makefile.in ./ncsa/hdf/object/nc2/CMakeLists.txt $(CLASS_DIR)/netcdf.jar 
 
@@ -367,6 +368,8 @@ install-jhdfview: ncsa.hdf.view
 	cp lib/netcdf.jar $(LIBDIR)
 	cp lib/fits.jar $(LIBDIR)
 	cp lib/junit.jar $(LIBDIR)
+	cp lib/slf4j-api-1.7.5.jar $(LIBDIR)
+	cp lib/ext/slf4j-nop-1.7.5.jar $(LIBDIR)
 	cp bin/hdfview.sh $(BINDIR)
 	chmod a+x $(BINDIR)/hdfview.sh
 	@echo "Install HDFVIEW complete"

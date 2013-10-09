@@ -182,11 +182,14 @@ public class FitsDatatype extends Datatype
             default:
                 if (datatypeClass==Datatype.CLASS_STRING) {
                     description = "String";
-                } else if (datatypeClass==Datatype.CLASS_CHAR) {
+                } 
+                else if (datatypeClass==Datatype.CLASS_CHAR) {
                     description = "Char";
-                } else if (datatypeClass==Datatype.CLASS_INTEGER) {
+                } 
+                else if (datatypeClass==Datatype.CLASS_INTEGER) {
                     description = "Integer";
-                } else if (datatypeClass==Datatype.CLASS_FLOAT) {
+                } 
+                else if (datatypeClass==Datatype.CLASS_FLOAT) {
                     description = "Float";
                 }
                 break;
@@ -207,17 +210,22 @@ public class FitsDatatype extends Datatype
         if (datatypeClass == CLASS_INTEGER) {
             if (datatypeSize == 1) {
                 nativeType = BasicHDU.BITPIX_BYTE;
-            } else if (datatypeSize == 2) {
+            } 
+            else if (datatypeSize == 2) {
                 nativeType = BasicHDU.BITPIX_SHORT;
-            } else if (datatypeSize == 4) {
+            } 
+            else if (datatypeSize == 4) {
                 nativeType = BasicHDU.BITPIX_INT;
-            } else if (datatypeSize == 8) {
+            } 
+            else if (datatypeSize == 8) {
                 nativeType = BasicHDU.BITPIX_LONG;
             }
-        } else if (datatypeClass == CLASS_FLOAT) {
+        } 
+        else if (datatypeClass == CLASS_FLOAT) {
             if (datatypeSize == 4) {
                 nativeType = BasicHDU.BITPIX_FLOAT;
-            } else if (datatypeSize == 8) {
+            } 
+            else if (datatypeSize == 8) {
                 nativeType = BasicHDU.BITPIX_DOUBLE;
             }
         }

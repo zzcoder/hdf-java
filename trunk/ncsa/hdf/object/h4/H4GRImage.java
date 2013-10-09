@@ -107,6 +107,9 @@ public class H4GRImage extends ScalarDS
      */
     private static final long serialVersionUID = 1029672744963360976L;
 
+    /** the logger reference. */
+    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H4GRImage.class);
+
     /**
      * The list of attributes of this data object. Members of the list are
      * instance of Attribute.
@@ -171,7 +174,10 @@ public class H4GRImage extends ScalarDS
             try {
                 HDFLibrary.GRgetiminfo(id, objName, grInfo, idims);
                 nAttributes = grInfo[3];
-            } catch (Exception ex) { nAttributes = 0;}
+            } 
+            catch (Exception ex) { 
+            	nAttributes = 0;
+            }
             close(id);
         }
         
@@ -193,7 +199,8 @@ public class H4GRImage extends ScalarDS
 
         if (pgroup.isRoot()) {
             path = HObject.separator;
-        } else {
+        } 
+        else {
             path = pgroup.getPath()+pgroup.getName()+HObject.separator;
         }
 
@@ -202,8 +209,7 @@ public class H4GRImage extends ScalarDS
             return null;
         }
 
-        if (dims != null)
-        {
+        if (dims != null) {
             count = new int[2];
             count[0] = (int)dims[0];
             count[1] = (int)dims[1];
@@ -217,7 +223,10 @@ public class H4GRImage extends ScalarDS
             if (count == null) {
                 count = tmpDims;
             }
-        } catch (HDFException ex) {}
+        } 
+        catch (HDFException ex) {
+        	log.debug("copy.GRgetiminfo:", ex);
+        }
 
         int ncomp = grInfo[0];
         int tid = grInfo[1];
@@ -231,8 +240,7 @@ public class H4GRImage extends ScalarDS
         }
 
         int ref = HDFLibrary.GRidtoref(dstdid);
-        if (!pgroup.isRoot())
-        {
+        if (!pgroup.isRoot()) {
             int vgid = pgroup.open();
             HDFLibrary.Vaddtagref(vgid, HDFConstants.DFTAG_RIG, ref);
             pgroup.close(vgid);
@@ -240,8 +248,7 @@ public class H4GRImage extends ScalarDS
 
         // read data from the source dataset
         int[] start = {0, 0};
-        if (buff == null)
-        {
+        if (buff == null) {
             buff = new byte[count[0]*count[1] * HDFLibrary.DFKNTsize(tid)];
             HDFLibrary.GRreadimage(srcdid, start, null, count, buff);
         }
@@ -270,8 +277,12 @@ public class H4GRImage extends ScalarDS
         pgroup.addToMemberList(dataset);
 
         close(srcdid);
-        try { HDFLibrary.GRendaccess(dstdid); }
-        catch (HDFException ex) {;}
+        try { 
+        	HDFLibrary.GRendaccess(dstdid); 
+        }
+        catch (HDFException ex) {
+        	log.debug("copy.GRendaccess:", ex);
+        }
 
         return dataset;
     }
@@ -288,8 +299,7 @@ public class H4GRImage extends ScalarDS
     @Override
     public Datatype getDatatype()
     {
-        if (datatype == null)
-        {
+        if (datatype == null) {
             datatype = new H4Datatype(datatypeID);
         }
 
@@ -321,8 +331,7 @@ public class H4GRImage extends ScalarDS
             int[] select = {(int)selectedDims[0], (int)selectedDims[1]};
 
             int[] stride = null;
-            if (selectedStride != null)
-            {
+            if (selectedStride != null) {
                 stride = new int[rank];
                 for (int i=0; i<rank; i++) {
                     stride[i] = (int)selectedStride[i];
@@ -330,8 +339,8 @@ public class H4GRImage extends ScalarDS
             }
 
             HDFLibrary.GRreadimage(id, start, stride, select, theData);
-        } finally
-        {
+        } 
+        finally {
             close(id);
         }
 
@@ -360,8 +369,7 @@ public class H4GRImage extends ScalarDS
 
             theData = H4Datatype.allocateArray(datatypeID, datasize);
 
-            if (theData != null)
-            {
+            if (theData != null) {
                 // assume external data files are located in the same directory as the main file.
                 HDFLibrary.HXsetdir(getFileFormat().getParent());
                 
@@ -369,8 +377,7 @@ public class H4GRImage extends ScalarDS
                 int[] select = {(int)selectedDims[0], (int)selectedDims[1]};
 
                 int[] stride = null;
-                if (selectedStride != null)
-                {
+                if (selectedStride != null) {
                     stride = new int[rank];
                     for (int i=0; i<rank; i++) {
                         stride[i] = (int)selectedStride[i];
@@ -379,8 +386,8 @@ public class H4GRImage extends ScalarDS
 
                 HDFLibrary.GRreadimage(id, start, stride, select, theData);
             }
-        } finally
-        {
+        } 
+        finally {
             close(id);
         }
         
@@ -407,15 +414,13 @@ public class H4GRImage extends ScalarDS
 
         int[] select = new int[rank];
         int[] start = new int[rank];
-        for (int i=0; i<rank; i++)
-        {
+        for (int i=0; i<rank; i++) {
             select[i] = (int)selectedDims[i];
             start[i] = (int)startDims[i];
         }
 
         int[] stride = null;
-        if (selectedStride != null)
-        {
+        if (selectedStride != null) {
             stride = new int[rank];
             for (int i=0; i<rank; i++) {
                 stride[i] = (int)selectedStride[i];
@@ -431,8 +436,8 @@ public class H4GRImage extends ScalarDS
             HDFLibrary.HXsetdir(getFileFormat().getParent());
             
             HDFLibrary.GRwriteimage(id, start, stride, select, tmpData);
-        } finally
-        {
+        } 
+        finally {
             tmpData = null;
             close(id);
         }
@@ -462,15 +467,14 @@ public class H4GRImage extends ScalarDS
             boolean b = false;
             String[] attrName = new String[1];
             int[] attrInfo = {0, 0}; // data_type, length
-            for (int i=0; i<n; i++)
-            {
+            for (int i=0; i<n; i++) {
                 attrName[0] = "";
                 try {
                     b = HDFLibrary.GRattrinfo(id, i, attrName, attrInfo);
                     // mask off the litend bit
                     attrInfo[0] = attrInfo[0] & (~HDFConstants.DFNT_LITEND);
-                } catch (HDFException ex)
-                {
+                } 
+                catch (HDFException ex) {
                     b = false;
                 }
 
@@ -485,23 +489,22 @@ public class H4GRImage extends ScalarDS
                 Object buf = H4Datatype.allocateArray(attrInfo[0], attrInfo[1]);
                 try {
                     HDFLibrary.GRgetattr(id, i, buf);
-                } catch (HDFException ex)
-                {
+                } 
+                catch (HDFException ex) {
                     buf = null;
                 }
 
-                if (buf != null)
-                {
+                if (buf != null) {
                     if ((attrInfo[0] == HDFConstants.DFNT_CHAR) ||
-                        (attrInfo[0] ==  HDFConstants.DFNT_UCHAR8))
-                    {
+                        (attrInfo[0] ==  HDFConstants.DFNT_UCHAR8)) {
                         buf = Dataset.byteToString((byte[])buf, attrInfo[1]);
                     }
 
                     attr.setValue(buf);
                 }
             } // for (int i=0; i<n; i++)
-        } finally {
+        } 
+        finally {
             close(id);
         }
 
@@ -538,8 +541,8 @@ public class H4GRImage extends ScalarDS
         try {
             int index = HDFLibrary.GRreftoindex(grid, (short)oid[1]);
             id = HDFLibrary.GRselect(grid, index);
-        } catch (HDFException ex)
-        {
+        } 
+        catch (HDFException ex) {
             id = -1;
         }
 
@@ -578,18 +581,26 @@ public class H4GRImage extends ScalarDS
                 boolean status = HDFLibrary.GRgetcompress(id, compInfo);
                 if (compInfo.ctype == HDFConstants.COMP_CODE_DEFLATE) {
                     compression = "GZIP";
-                } else if (compInfo.ctype == HDFConstants.COMP_CODE_SZIP) {
+                } 
+                else if (compInfo.ctype == HDFConstants.COMP_CODE_SZIP) {
                     compression = "SZIP";
-                } else if (compInfo.ctype == HDFConstants.COMP_CODE_JPEG) {
+                } 
+                else if (compInfo.ctype == HDFConstants.COMP_CODE_JPEG) {
                     compression = "JPEG";
-                } else if (compInfo.ctype == HDFConstants.COMP_CODE_SKPHUFF) {
+                } 
+                else if (compInfo.ctype == HDFConstants.COMP_CODE_SKPHUFF) {
                     compression = "SKPHUFF";
-                } else if (compInfo.ctype == HDFConstants.COMP_CODE_RLE) {
+                } 
+                else if (compInfo.ctype == HDFConstants.COMP_CODE_RLE) {
                     compression = "RLE";
-                } else if (compInfo.ctype == HDFConstants.COMP_CODE_NBIT) {
+                } 
+                else if (compInfo.ctype == HDFConstants.COMP_CODE_NBIT) {
                     compression = "NBIT";
                 }
-            } catch (Exception ex) {}
+            } 
+            catch (Exception ex) {
+            	log.debug("get compression information:", ex);
+            }
 
             // get chunk information
             try {
@@ -598,15 +609,22 @@ public class H4GRImage extends ScalarDS
                 boolean status = HDFLibrary.GRgetchunkinfo(id, chunkInfo, cflag);
                 if (cflag[0] == HDFConstants.HDF_NONE) {
                     chunkSize = null;
-                } else {
+                } 
+                else {
                     chunkSize = new long[rank];
                     for (int i=0; i<rank; i++) {
                         chunkSize[i] = chunkInfo.chunk_lengths[i];
                     }
                 }
-            } catch (Exception ex) {}
+            } 
+            catch (Exception ex) {
+            	log.debug("get chunk information:", ex);
+            }
 
-        } catch (HDFException ex) {}
+        } 
+        catch (HDFException ex) {
+        	log.debug("H4GRImage.init():", ex);
+        }
         finally {
             close(id);
         }
@@ -630,8 +648,7 @@ public class H4GRImage extends ScalarDS
         dims = new long[rank];
         startDims = new long[rank];
         selectedDims = new long[rank];
-        for (int i=0; i<rank; i++)
-        {
+        for (int i=0; i<rank; i++) {
             startDims[i] = 0;
             selectedDims[i] = idims[i];
             dims[i] = idims[i];
@@ -660,8 +677,8 @@ public class H4GRImage extends ScalarDS
             // Todo: get all the palettes
             lutid = HDFLibrary.GRgetlutid(id, 0);
             HDFLibrary.GRgetlutinfo(lutid, lutInfo);
-        } catch (HDFException ex)
-        {
+        } 
+        catch (HDFException ex) {
             close(id);
             return null;
         }
@@ -669,8 +686,7 @@ public class H4GRImage extends ScalarDS
         // check if there is palette data. HDFLibrary.GRgetlutinfo() sometimes
         // return true even if there is no palette data, and check if it is a
         // RGB with 256 colors
-        if ((lutInfo[0] != 3) || (lutInfo[2] < 0) | (lutInfo[3] != 256))
-        {
+        if ((lutInfo[0] != 3) || (lutInfo[2] < 0) | (lutInfo[3] != 256)) {
             close(id);
             return null;
         }
@@ -682,31 +698,27 @@ public class H4GRImage extends ScalarDS
         {
             HDFLibrary.GRreqlutil(id, lutInfo[2]);
             b = HDFLibrary.GRreadlut(lutid, pal);
-        } catch (HDFException ex) {
+        } 
+        catch (HDFException ex) {
             b = false;
         }
 
-        if (!b)
-        {
+        if (!b) {
             close(id);
             return null;
         }
 
         palette = new byte[3][256];
-        if (lutInfo[2] == HDFConstants.MFGR_INTERLACE_PIXEL)
-        {
+        if (lutInfo[2] == HDFConstants.MFGR_INTERLACE_PIXEL) {
             // color conponents are arranged in RGB, RGB, RGB, ...
-            for (int i=0; i<256; i++)
-            {
+            for (int i=0; i<256; i++) {
                 palette[0][i] = pal[i*3];
                 palette[1][i] = pal[i*3+1];
                 palette[2][i] = pal[i*3+2];
             }
         }
-        else
-        {
-            for (int i=0; i<256; i++)
-            {
+        else {
+            for (int i=0; i<256; i++) {
                 palette[0][i] = pal[i];
                 palette[1][i] = pal[256+i];
                 palette[2][i] = pal[512+i];
@@ -770,7 +782,8 @@ public class H4GRImage extends ScalarDS
         }
         if (interlace == ScalarDS.INTERLACE_PLANE) {
             interlace = HDFConstants.MFGR_INTERLACE_COMPONENT;
-        } else {
+        } 
+        else {
             interlace = HDFConstants.MFGR_INTERLACE_PIXEL;
         }
 
@@ -778,20 +791,19 @@ public class H4GRImage extends ScalarDS
         int idims[] = new int[rank];
         int imaxdims[] = new int[rank];
         int start[] = new int [rank];
-        for (int i=0; i<rank; i++)
-        {
+        for (int i=0; i<rank; i++) {
             idims[i] = (int)dims[i];
             if (maxdims != null) {
                 imaxdims[i] = (int)maxdims[i];
-            } else {
+            } 
+            else {
                 imaxdims[i] = idims[i];
             }
             start[i] = 0;
         }
 
         int ichunks[] = null;
-        if (chunks != null)
-        {
+        if (chunks != null) {
             ichunks = new int[rank];
             for (int i=0; i<rank; i++) {
                 ichunks[i] = (int)chunks[i];
@@ -804,27 +816,26 @@ public class H4GRImage extends ScalarDS
 
         try {
             grid = HDFLibrary.GRcreate(gid, name, ncomp, tid, interlace, idims);
-        } catch (Exception ex) {  throw (ex); }
+        } 
+        catch (Exception ex) {  
+        	throw (ex); 
+        }
 
-        if (grid < 0)
-        {
+        if (grid < 0) {
             throw (new HDFException("Unable to create the new dataset."));
         }
 
-        if ((grid > 0) && (data != null))
-        {
+        if ((grid > 0) && (data != null)) {
             HDFLibrary.GRwriteimage(grid, start, null, idims, data);
         }
 
-        if (chunks != null)
-        {
+        if (chunks != null) {
             // set chunk
             HDFChunkInfo chunkInfo = new HDFChunkInfo(ichunks);
             HDFLibrary.GRsetchunk(grid, chunkInfo, HDFConstants.HDF_CHUNK);
         }
 
-        if (gzip > 0)
-        {
+        if (gzip > 0) {
             // set compression
             int compType = HDFConstants.COMP_CODE_DEFLATE;
             HDFDeflateCompInfo compInfo = new HDFDeflateCompInfo();
@@ -834,8 +845,7 @@ public class H4GRImage extends ScalarDS
 
         int ref = HDFLibrary.GRidtoref(grid);
 
-        if (!pgroup.isRoot())
-        {
+        if (!pgroup.isRoot()) {
             // add the dataset to the parent group
             vgid = pgroup.open();
             if (vgid < 0) {
@@ -850,9 +860,14 @@ public class H4GRImage extends ScalarDS
             pgroup.close(vgid);
         }
 
-        try {  if (grid > 0) {
-            HDFLibrary.GRendaccess(grid);
-        } } catch (Exception ex) {}
+        try {  
+        	if (grid > 0) {
+        		HDFLibrary.GRendaccess(grid);
+        	} 
+       	} 
+        catch (Exception ex) {
+        	log.debug("create.GRendaccess:", ex);
+        }
 
         long[] oid = {HDFConstants.DFTAG_NDG, ref};
         dataset = new H4GRImage(file, name, path, oid);
@@ -877,12 +892,14 @@ public class H4GRImage extends ScalarDS
             boolean b = false;
             String[] attrName = new String[1];
             int[] attrInfo = {0, 0};
-            for (int i=0; i<numberOfAttributes; i++)
-            {
+            for (int i=0; i<numberOfAttributes; i++) {
                 attrName[0] = "";
                 try {
                     b = HDFLibrary.GRattrinfo(srcdid, i, attrName, attrInfo);
-                } catch (HDFException ex) { b = false; }
+                } 
+                catch (HDFException ex) { 
+                	b = false; 
+                }
 
                 if (!b) {
                     continue;
@@ -890,8 +907,12 @@ public class H4GRImage extends ScalarDS
 
                 // read attribute data from source dataset
                 byte[] attrBuff = new byte[attrInfo[1] * HDFLibrary.DFKNTsize(attrInfo[0])];
-                try { HDFLibrary.GRgetattr(srcdid, i, attrBuff);
-                } catch (Exception ex) { attrBuff = null; }
+                try { 
+                	HDFLibrary.GRgetattr(srcdid, i, attrBuff);
+                } 
+                catch (Exception ex) { 
+                	attrBuff = null; 
+                }
 
                 if (attrBuff == null) {
                     continue;
@@ -900,7 +921,10 @@ public class H4GRImage extends ScalarDS
                 // attach attribute to the destination dataset
                 HDFLibrary.GRsetattr(dstdid, attrName[0], attrInfo[0], attrInfo[1], attrBuff);
             } // for (int i=0; i<numberOfAttributes; i++)
-        } catch (Exception ex) {}
+        } 
+        catch (Exception ex) {
+        	log.debug("copyAttribute:", ex);
+        }
     }
 
     //Implementing DataFormat

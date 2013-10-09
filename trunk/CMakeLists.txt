@@ -96,6 +96,10 @@ SET (HDFJAVA_JAVA_OBJECT_SRC_DIR ${HDFJAVA_SOURCE_DIR}/ncsa/hdf/object)
 SET (HDFJAVA_TEST_SRC_DIR        ${HDFJAVA_SOURCE_DIR}/test)
 SET (HDFJAVA_EXAMPLES_SOURCE_DIR ${HDFJAVA_SOURCE_DIR}/examples)
 SET (HDFJAVA_LIB_DIR             ${HDFJAVA_SOURCE_DIR}/lib)
+SET (HDFJAVA_FITS_JAR            ${HDFJAVA_LIB_DIR}/fits.jar)
+SET (HDFJAVA_NETCDF_JAR          ${HDFJAVA_LIB_DIR}/netcdf.jar)
+SET (HDFJAVA_LOGGING_JAR         ${HDFJAVA_LIB_DIR}/slf4j-api-1.7.5.jar)
+SET (HDFJAVA_LOGGING_NOP_JAR     ${HDFJAVA_LIB_DIR}/ext/slf4j-nop-1.7.5.jar)
 
 IF (NOT HJAVA_INSTALL_BIN_DIR)
   SET (HJAVA_INSTALL_BIN_DIR bin)
@@ -214,7 +218,7 @@ ENDIF (NOT HDFJAVA_EXPORTED_TARGETS)
 #-----------------------------------------------------------------------------
 SET_GLOBAL_VARIABLE (HDFJAVA_LIBRARIES_TO_EXPORT "")
 SET_GLOBAL_VARIABLE (HDFJAVA_JARS_TO_EXPORT "")
-SET_GLOBAL_VARIABLE (HDFJAVA_HDFVIEWJAR_TO_EXPORT "")
+SET_GLOBAL_VARIABLE (HDFJAVA_HDFVIEWJAR_TO_EXPORT "${HDFJAVA_LOGGING_JAR}")
 
 #-----------------------------------------------------------------------------
 # Run all the CMake configuration tests for our build environment
@@ -305,7 +309,11 @@ ENDIF (HDF_BUILD_EXAMPLES)
 # Add Required Jar(s)
 #-----------------------------------------------------------------------------
 INSTALL (
-    FILES ${HDFJAVA_LIB_DIR}/fits.jar ${HDFJAVA_LIB_DIR}/netcdf.jar
+    FILES
+        ${HDFJAVA_FITS_JAR}
+        ${HDFJAVA_NETCDF_JAR}
+        ${HDFJAVA_LOGGING_JAR}
+        ${HDFJAVA_LOGGING_NOP_JAR}
     DESTINATION ${HJAVA_INSTALL_LIB_DIR}
     COMPONENT libraries
 )
@@ -472,6 +480,7 @@ ELSEIF (APPLE)
       ${HDFJAVA_BINARY_DIR}/CMakeFiles/Info.plist @ONLY
   )
 ELSE (WIN32)
+  LIST (APPEND CPACK_GENERATOR "STGZ") 
   SET (CPACK_PACKAGING_INSTALL_PREFIX "/usr")
   SET (CPACK_COMPONENTS_ALL_IN_ONE_PACKAGE ON)
 

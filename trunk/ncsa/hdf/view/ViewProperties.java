@@ -45,7 +45,7 @@ public class ViewProperties extends Properties {
     public static final String  VERSION              = "2.99";
 
     /** the local property file name */
-    private static final String USER_PROPERTY_FILE   = ".hdfview" + VERSION.substring(0, 3);
+    private static final String USER_PROPERTY_FILE   = ".hdfview" + VERSION;
 
     /** the maximum number of most recent files */
     public static final int     MAX_RECENT_FILES     = 15;

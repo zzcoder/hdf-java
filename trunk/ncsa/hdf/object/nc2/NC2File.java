@@ -45,6 +45,9 @@ public class NC2File extends FileFormat {
      */
     private static final long serialVersionUID = 6941235662108358451L;
 
+    /** the logger reference. */
+//    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NC2File.class);
+
     /**
      * file identifier for the open file.
      */
@@ -85,6 +88,8 @@ public class NC2File extends FileFormat {
             ncFile = new NetcdfFile(fullFileName);
         }
         catch (Exception ex) {
+//            if(!pathname.isEmpty())
+//            	log.debug("constuctor {}:", fullFileName, ex);
         }
     }
 
@@ -128,6 +133,7 @@ public class NC2File extends FileFormat {
                 raf.close();
             }
             catch (Exception ex) {
+//            	log.debug("raf close:", ex);
             }
             return false;
         }
@@ -155,6 +161,7 @@ public class NC2File extends FileFormat {
             raf.close();
         }
         catch (Exception ex) {
+//        	log.debug("raf close:", ex);
         }
 
         return is_netcdf;

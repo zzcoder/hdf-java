@@ -50,6 +50,9 @@ public class H5Group extends Group {
      */
     private static final long serialVersionUID = -951164512330444150L;
 
+    /** the logger reference. */
+    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H5Group.class);
+
     /**
      * The list of attributes of this data object. Members of the list are
      * instance of Attribute.
@@ -202,6 +205,7 @@ public class H5Group extends Group {
             this.linkTargetObjName = H5File.getLinkTargetName(this);
         }
         catch (Exception ex) {
+        	log.debug("linkTargetObjName:", ex);
         }
 
         return attributeList;
@@ -295,7 +299,9 @@ public class H5Group extends Group {
         try {
             H5.H5Gclose(gid);
         }
-        catch (HDF5Exception ex) {}
+        catch (HDF5Exception ex) {
+        	log.debug("close:", ex);
+        }
     }
 
     /**
@@ -373,6 +379,7 @@ public class H5Group extends Group {
             H5.H5Gclose(gid);
         }
         catch (Exception ex) {
+        	log.debug("create group close:", ex);
         }
 
         byte[] ref_buf = H5.H5Rcreate(file.open(), fullPath, HDF5Constants.H5R_OBJECT, -1);
@@ -390,6 +397,7 @@ public class H5Group extends Group {
                 H5.H5Pclose(gcpl);
             }
             catch (final Exception ex) {
+            	log.debug("create prop close:", ex);
             }
         }
 
