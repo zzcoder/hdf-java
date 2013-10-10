@@ -223,7 +223,7 @@ public class HDFLibrary implements java.io.Serializable
 
     public final static String HDFPATH_PROPERTY_KEY = "ncsa.hdf.hdflib.HDFLibrary.hdflib";
 
-    private final static String JHI_VERSION= "2.9";
+    private final static String JHI_VERSION= "2.99";
     private static boolean isLibraryLoaded = false;
 
     static { loadH4Lib(); }
