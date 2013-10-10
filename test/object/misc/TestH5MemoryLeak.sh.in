@@ -16,7 +16,7 @@ export JAVAPATH
 
 rm TestH5MemoryLeak.class
 
-CPATH=".:"$HDFBLD_HOME"/lib/jhdf5.jar:"$HDFBLD_HOME"/lib/jhdfobj.jar:"$HDFBLD_HOME"/lib/jhdf5obj.jar"
+CPATH=".:"$HDFBLD_HOME"/lib/jhdf5.jar:"$HDFBLD_HOME"/lib/jhdfobj.jar:"$HDFBLD_HOME"/lib/jhdf5obj.jar:"$HDFBLD_HOME"/lib/slf4j-api-1.7.5.jar:"$HDFBLD_HOME"/lib/slf4j-nop-1.7.5.jar"
 
 TEST=/usr/bin/test
 if [ ! -x /usr/bin/test ]
