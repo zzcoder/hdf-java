@@ -1,5 +1,5 @@
 #
-# To be used by projects that make use of CMakeified hdf-4.2.5
+# To be used by projects that make use of CMakeified hdf-4
 #
 
 #
