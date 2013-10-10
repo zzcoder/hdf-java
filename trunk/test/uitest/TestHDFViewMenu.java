@@ -103,7 +103,7 @@ public class TestHDFViewMenu {
     private static void clearRemovePropertyFile() {
         // the local property file name
         // look for the property file at the use home directory
-        String fn = ".hdfview" + VERSION.substring(0, 3);
+        String fn = ".hdfview" + VERSION;
         String uh = System.getProperty("user.home") + File.separator + fn;
         String ud = System.getProperty("user.dir") + File.separator + fn;
 
