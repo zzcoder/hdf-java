@@ -376,7 +376,7 @@ public class HDFView extends JFrame implements ViewManager, ActionListener, Chan
             else {
                 currentDir = theFile.getAbsolutePath();
             }
-            log.info("currentDir is {}", currentDir);
+            log.info("CurrentDir is {}", currentDir);
         }
 
         if (FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF4) == null) {
