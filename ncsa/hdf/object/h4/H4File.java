@@ -239,7 +239,7 @@ public class H4File extends FileFormat {
 				HDFLibrary.Hclose(fileid);
 			} 
 			catch (HDFException ex) {
-				log.debug("", ex);
+				log.debug("Hclose failure: ", ex);
 			}
 		}
 
@@ -332,19 +332,19 @@ public class H4File extends FileFormat {
 			HDFLibrary.GRend(grid);
 		} 
 		catch (HDFException ex) {
-           	log.debug("", ex);
+           	log.debug("GRend failure: ", ex);
         }
 		try {
 			HDFLibrary.SDend(sdid);
 		} 
 		catch (HDFException ex) {
-           	log.debug("", ex);
+           	log.debug("SDend failure: ", ex);
         }
 		try {
 			HDFLibrary.Vend(fid);
 		} 
 		catch (HDFException ex) {
-           	log.debug("", ex);
+           	log.debug("Vend failure: ", ex);
         }
 
 		HDFLibrary.Hclose(fid);
@@ -614,7 +614,7 @@ public class H4File extends FileFormat {
 					newNode.add((MutableTreeNode) copy(mObj, group));
 				} 
 				catch (Exception ex) {
-		           	log.debug("", ex);
+		           	log.debug("newNode.ad failure: ", ex);
 		        }
 			}
 		}
@@ -624,7 +624,7 @@ public class H4File extends FileFormat {
 			HDFLibrary.Vdetach(dstgid);
 		} 
 		catch (Exception ex) {
-           	log.debug("", ex);
+           	log.debug("Vdetach failure: ", ex);
         }
 
 		return newNode;
@@ -787,7 +787,7 @@ public class H4File extends FileFormat {
 				attributeList = rootGroup.getMetadata();
 			} 
 			catch (HDFException ex) {
-	           	log.debug("", ex);
+	           	log.debug("rootGroup.getMetadata failure: ", ex);
 	        }
 
 			if (attributeList != null) {
@@ -795,19 +795,19 @@ public class H4File extends FileFormat {
 					getFileAnnotation(fid, attributeList);
 				} 
 				catch (HDFException ex) {
-		           	log.debug("", ex);
+		           	log.debug("getFileAnnotation failure: ", ex);
 		        }
 				try {
 					getGRglobleAttribute(grid, attributeList);
 				} 
 				catch (HDFException ex) {
-		           	log.debug("", ex);
+		           	log.debug("getGRglobleAttributte failure: ", ex);
 		        }
 				try {
 					getSDSglobleAttribute(sdid, attributeList);
 				} 
 				catch (HDFException ex) {
-		           	log.debug("", ex);
+		           	log.debug("getSDglobleAttributte failure: ", ex);
 		        }
 			}
 		}
@@ -997,7 +997,7 @@ public class H4File extends FileFormat {
 				HDFLibrary.GRendaccess(id);
 			} 
 			catch (HDFException ex) {
-	           	log.debug("", ex);
+	           	log.debug("GRendaccess failure: ", ex);
 	        }
 		}
 
@@ -1061,7 +1061,7 @@ public class H4File extends FileFormat {
 				HDFLibrary.SDendaccess(id);
 			} 
 			catch (HDFException ex) {
-	           	log.debug("", ex);
+	           	log.debug("SDendaccess failure: ", ex);
 	        }
 		}
 
@@ -1132,7 +1132,7 @@ public class H4File extends FileFormat {
 				HDFLibrary.VSdetach(id);
 			} 
 			catch (HDFException ex) {
-	           	log.debug("", ex);
+	           	log.debug("VSdetach failure: ", ex);
 	        }
 		}
 
@@ -1198,7 +1198,7 @@ public class H4File extends FileFormat {
 				HDFLibrary.Vdetach(id);
 			} 
 			catch (HDFException ex) {
-	           	log.debug("", ex);
+	           	log.debug("Vdetach failure: ", ex);
 	        }
 		}
 
@@ -1287,7 +1287,7 @@ public class H4File extends FileFormat {
 					HDFLibrary.ANend(anid);
 				} 
 				catch (HDFException ex) {
-		           	log.debug("", ex);
+		           	log.debug("ANend failure: ", ex);
 		        }
 				return attrList;
 			}
@@ -1322,7 +1322,7 @@ public class H4File extends FileFormat {
 							HDFLibrary.ANendaccess(id);
 						} 
 						catch (HDFException ex) {
-				           	log.debug("", ex);
+				           	log.debug("ANendaccess failure: ", ex);
 				        }
 						continue;
 					}
@@ -1358,7 +1358,7 @@ public class H4File extends FileFormat {
 						HDFLibrary.ANendaccess(id);
 					} 
 					catch (HDFException ex) {
-			           	log.debug("", ex);
+			           	log.debug("ANendaccess failure: ", ex);
 			        }
 				} // for (int i=0; i < fileInfo[annTYpe]; i++)
 			} // for (int annType=0; annType<2; annType++)
@@ -1368,7 +1368,7 @@ public class H4File extends FileFormat {
 				HDFLibrary.ANend(anid);
 			} 
 			catch (HDFException ex) {
-	           	log.debug("", ex);
+	           	log.debug("ANend failure: ", ex);
 	        }
 		}
 
@@ -1528,10 +1528,11 @@ public class H4File extends FileFormat {
 			HDFLibrary.Hgetlibversion(vers, verStr);
 		} 
 		catch (HDFException ex) {
-           	log.debug("", ex);
+           	log.debug("Hgetlibversion failure: ", ex);
         }
 
 		ver += vers[0] + "." + vers[1] + "." + vers[2];
+		log.info("libversion is {}", ver);
 
 		return ver;
 	}
@@ -1545,12 +1546,12 @@ public class H4File extends FileFormat {
 			raf = new java.io.RandomAccessFile(filename, "r");
 		} 
 		catch (Exception ex) {
-			log.debug("", ex);
+			log.debug("RandaomAccessFile {}", filename, ex);
 			try {
 				raf.close();
 			} 
 			catch (Exception ex2) {
-				log.debug("", ex2);
+				log.debug("RAF.close  failure: ", ex2);
 	        }
 			raf = null;
 		}
@@ -1582,7 +1583,7 @@ public class H4File extends FileFormat {
 			raf.close();
 		} 
 		catch (Exception ex) {
-           	log.debug("", ex);
+           	log.debug("RAF.close failure: ", ex);
         }
 
 		return isnetcdf;
@@ -1758,7 +1759,7 @@ public class H4File extends FileFormat {
 				attributeList = rootGroup.getMetadata();
 			} 
 			catch (HDFException ex) {
-	           	log.debug("", ex);
+	           	log.debug("rootGroup.getMetadata failure: ", ex);
 	        }
 
 			if (attributeList != null) {
@@ -1766,19 +1767,19 @@ public class H4File extends FileFormat {
 					getFileAnnotation(fid, attributeList);
 				} 
 				catch (HDFException ex) {
-		           	log.debug("", ex);
+		           	log.debug("getFileAnnotation failure: ", ex);
 		        }
 				try {
 					getGRglobleAttribute(grid, attributeList);
 				} 
 				catch (HDFException ex) {
-		           	log.debug("", ex);
+		           	log.debug("getGRglobleAttribute failure: ", ex);
 		        }
 				try {
 					getSDSglobleAttribute(sdid, attributeList);
 				} 
 				catch (HDFException ex) {
-		           	log.debug("", ex);
+		           	log.debug("getSDSglobleAttribute failure: ", ex);
 		        }
 			}
 		}
