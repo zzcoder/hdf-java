@@ -43,7 +43,7 @@ public class H5Object_CreateGroupDataset {
 			for (int jndx = 0; jndx < DIM2_Y; jndx++)
 				dset2_data[indx][jndx] = jndx + 1;
 
-		// Open an existing file.
+		// Open an existing file or create a new file.
 		try {
             file = new H5File(FILENAME, FileFormat.CREATE);
             file.open();
