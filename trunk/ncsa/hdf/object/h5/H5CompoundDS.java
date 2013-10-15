@@ -170,7 +170,7 @@ public class H5CompoundDS extends CompoundDS {
                 this.oid[0] = HDFNativeData.byteToLong(ref_buf, 0);
             }
             catch (Exception ex) {
-            	log.debug("constructor:", ex);
+            	log.debug("constructor ID {} for {} failed H5Rcreate", theFile.getFID(), this.getFullName());
             }
         }
     }
@@ -241,51 +241,53 @@ public class H5CompoundDS extends CompoundDS {
         }
 
         int did = open();
-        int fspace = -1, mspace = -1, tid = -1;
-
-        try {
-            long[] lsize = { 1 };
-            for (int j = 0; j < selectedDims.length; j++) {
-                lsize[0] *= selectedDims[j];
-            }
-
-            fspace = H5.H5Dget_space(did);
-            mspace = H5.H5Screate_simple(rank, selectedDims, null);
-
-            // set the rectangle selection
-            // HDF5 bug: for scalar dataset, H5Sselect_hyperslab gives core dump
-            if (rank * dims[0] > 1) {
-                H5.H5Sselect_hyperslab(fspace, HDF5Constants.H5S_SELECT_SET, startDims, selectedStride, selectedDims,
-                        null); // set
-                // block
-                // to 1
-            }
-
-            tid = H5.H5Dget_type(did);
-            int size = H5.H5Tget_size(tid) * (int) lsize[0];
-            theData = new byte[size];
-            H5.H5Dread(did, tid, mspace, fspace, HDF5Constants.H5P_DEFAULT, theData);
-        }
-        finally {
-            try {
-                H5.H5Sclose(fspace);
-            }
-            catch (Exception ex2) {
-            	log.debug("finally close:", ex2);
-            }
-            try {
-                H5.H5Sclose(mspace);
-            }
-            catch (Exception ex2) {
-            	log.debug("finally close:", ex2);
-            }
-            try {
-                H5.H5Tclose(tid);
-            }
-            catch (HDF5Exception ex2) {
-            	log.debug("finally close:", ex2);
-            }
-            close(did);
+        if(did >= 0) {
+	        int fspace = -1, mspace = -1, tid = -1;
+	
+	        try {
+	            long[] lsize = { 1 };
+	            for (int j = 0; j < selectedDims.length; j++) {
+	                lsize[0] *= selectedDims[j];
+	            }
+	
+	            fspace = H5.H5Dget_space(did);
+	            mspace = H5.H5Screate_simple(rank, selectedDims, null);
+	
+	            // set the rectangle selection
+	            // HDF5 bug: for scalar dataset, H5Sselect_hyperslab gives core dump
+	            if (rank * dims[0] > 1) {
+	                H5.H5Sselect_hyperslab(fspace, HDF5Constants.H5S_SELECT_SET, startDims, selectedStride, selectedDims,
+	                        null); // set
+	                // block
+	                // to 1
+	            }
+	
+	            tid = H5.H5Dget_type(did);
+	            int size = H5.H5Tget_size(tid) * (int) lsize[0];
+	            theData = new byte[size];
+	            H5.H5Dread(did, tid, mspace, fspace, HDF5Constants.H5P_DEFAULT, theData);
+	        }
+	        finally {
+	            try {
+	                H5.H5Sclose(fspace);
+	            }
+	            catch (Exception ex2) {
+	            	log.debug("finally close:", ex2);
+	            }
+	            try {
+	                H5.H5Sclose(mspace);
+	            }
+	            catch (Exception ex2) {
+	            	log.debug("finally close:", ex2);
+	            }
+	            try {
+	                H5.H5Tclose(tid);
+	            }
+	            catch (HDF5Exception ex2) {
+	            	log.debug("finally close:", ex2);
+	            }
+	            close(did);
+	        }
         }
 
         return theData;
@@ -322,178 +324,182 @@ public class H5CompoundDS extends CompoundDS {
         }
 
         int did = open();
-        list = new Vector<Object>(flatNameList.size());
-        Vector<Integer> atomicList = new Vector<Integer>();
-        try {
-            // to match finally for closing resources
-            long[] lsize = { 1 };
-            lsize[0] = selectHyperslab(did, spaceIDs);
+        if(did >= 0) {
+        	list = new Vector<Object>(flatNameList.size());
+        	Vector<Integer> atomicList = new Vector<Integer>();
+        	try {
+        		// to match finally for closing resources
+        		long[] lsize = { 1 };
+        		lsize[0] = selectHyperslab(did, spaceIDs);
 
-            // read each of member data into a byte array, then extract
-            // it into its type such, int, long, float, etc.
-            int n = flatNameList.size();
-            tid = H5.H5Dget_type(did);
-            int tclass = H5.H5Tget_class(tid);
-            if (tclass == HDF5Constants.H5T_ARRAY) {
-                // array of compound
-                int tmptid = tid;
-                tid = H5.H5Tget_super(tmptid);
-                try {
-                    H5.H5Tclose(tmptid);
-                }
-                catch (HDF5Exception ex) {
-                	log.debug("close array of compound:", ex);
-                }
-            }
+        		// read each of member data into a byte array, then extract
+        		// it into its type such, int, long, float, etc.
+        		int n = flatNameList.size();
+        		tid = H5.H5Dget_type(did);
+        		int tclass = H5.H5Tget_class(tid);
+        		if (tclass == HDF5Constants.H5T_ARRAY) {
+        			// array of compound
+        			int tmptid = tid;
+        			tid = H5.H5Tget_super(tmptid);
+        			try {
+        				H5.H5Tclose(tmptid);
+        			}
+        			catch (HDF5Exception ex) {
+        				log.debug("close array of compound:", ex);
+        			}
+        		}
 
-            extractCompoundInfo(tid, null, null, atomicList);
+        		extractCompoundInfo(tid, null, null, atomicList);
 
-            for (int i = 0; i < n; i++) {
-                boolean isVL = false;
+        		for (int i = 0; i < n; i++) {
+        			boolean isVL = false;
 
-                if (!isMemberSelected[i]) {
-                    continue; // the field is not selected
-                }
+        			if (!isMemberSelected[i]) {
+        				continue; // the field is not selected
+        			}
 
-                member_name = new String(memberNames[i]);
+        			member_name = new String(memberNames[i]);
 
-                atom_tid = ((Integer) atomicList.get(i)).intValue();
+        			atom_tid = ((Integer) atomicList.get(i)).intValue();
 
-                try {
-                    member_class = H5.H5Tget_class(atom_tid);
-                    member_size = H5.H5Tget_size(atom_tid);
-                    member_data = H5Datatype.allocateArray(atom_tid, (int) lsize[0]);
-                }
-                catch (Exception ex) {
-                    member_data = null;
-                }
+        			try {
+        				member_class = H5.H5Tget_class(atom_tid);
+        				member_size = H5.H5Tget_size(atom_tid);
+        				member_data = H5Datatype.allocateArray(atom_tid, (int) lsize[0]);
+        			}
+        			catch (Exception ex) {
+        				member_data = null;
+        			}
 
-                if (member_data == null || H5.H5Tequal(atom_tid, HDF5Constants.H5T_STD_REF_DSETREG)) {
-                    String[] nullValues = new String[(int) lsize[0]];
-                    String errorStr = "*unsupported*";
-                    for (int j = 0; j < lsize[0]; j++) {
-                        nullValues[j] = errorStr;
-                    }
-                    list.add(nullValues);
-                    continue;
-                }
+        			if (member_data == null || H5.H5Tequal(atom_tid, HDF5Constants.H5T_STD_REF_DSETREG)) {
+        				String[] nullValues = new String[(int) lsize[0]];
+        				String errorStr = "*unsupported*";
+        				for (int j = 0; j < lsize[0]; j++) {
+        					nullValues[j] = errorStr;
+        				}
+        				list.add(nullValues);
+        				continue;
+        			}
 
-                if (member_class == HDF5Constants.H5T_ARRAY) {
-                    int tmptid = H5.H5Tget_super(atom_tid);
-                    isVL = H5.H5Tis_variable_str(tmptid);
+        			if (member_class == HDF5Constants.H5T_ARRAY) {
+        				int tmptid = H5.H5Tget_super(atom_tid);
+        				isVL = H5.H5Tis_variable_str(tmptid);
 
-                    member_class = H5.H5Tget_class(tmptid);
-                    try {
-                        H5.H5Tclose(tmptid);
-                    }
-                    catch (Exception ex) {
-                    	log.debug("close temp:", ex);
-                    }
-                }
+        				member_class = H5.H5Tget_class(tmptid);
+        				try {
+        					H5.H5Tclose(tmptid);
+        				}
+        				catch (Exception ex) {
+        					log.debug("close temp:", ex);
+        				}
+        			}
 
-                int comp_tid = -1;
-                int compInfo[] = { member_class, member_size, 0 };
-                try {
-                    comp_tid = createCompoundFieldType(atom_tid, member_name, compInfo);
-                    try {
-                        // See BUG#951 isVL = H5.H5Tdetect_class(atom_tid,
-                        // HDF5Constants.H5T_VLEN);
-                        isVL = isVL || H5.H5Tis_variable_str(atom_tid);
-                        isVL = isVL || H5.H5Tdetect_class(atom_tid, HDF5Constants.H5T_VLEN);
-                    }
-                    catch (Exception ex) {
-                    	log.debug("detection of varstr:", ex);
-                    }
+        			int comp_tid = -1;
+        			int compInfo[] = { member_class, member_size, 0 };
+        			try {
+        				comp_tid = createCompoundFieldType(atom_tid, member_name, compInfo);
+        				try {
+        					// See BUG#951 isVL = H5.H5Tdetect_class(atom_tid,
+        					// HDF5Constants.H5T_VLEN);
+        					isVL = isVL || H5.H5Tis_variable_str(atom_tid);
+        					isVL = isVL || H5.H5Tdetect_class(atom_tid, HDF5Constants.H5T_VLEN);
+        				}
+        				catch (Exception ex) {
+        					log.debug("detection of varstr:", ex);
+        				}
 
-                    if (isVL) {
-                        H5.H5DreadVL(did, comp_tid, spaceIDs[0], spaceIDs[1], HDF5Constants.H5P_DEFAULT,
-                                (Object[]) member_data);
-                    }
-                    else {
-                        H5.H5Dread(did, comp_tid, spaceIDs[0], spaceIDs[1], HDF5Constants.H5P_DEFAULT, member_data);
-                    }
-                }
-                catch (HDF5Exception ex2) {
-                    String[] nullValues = new String[(int) lsize[0]];
-                    for (int j = 0; j < lsize[0]; j++) {
-                        nullValues[j] = "";
-                    }
-                    list.add(nullValues);
-                    continue;
-                }
-                finally {
-                    try {
-                        H5.H5Tclose(comp_tid);
-                    }
-                    catch (Exception ex2) {
-                    	log.debug("finally close:", ex2);
-                    }
-                }
+        				if (isVL) {
+        					H5.H5DreadVL(did, comp_tid, spaceIDs[0], spaceIDs[1], HDF5Constants.H5P_DEFAULT,
+        							(Object[]) member_data);
+        				}
+        				else {
+        					H5.H5Dread(did, comp_tid, spaceIDs[0], spaceIDs[1], HDF5Constants.H5P_DEFAULT, member_data);
+        				}
+        			}
+        			catch (HDF5Exception ex2) {
+        				String[] nullValues = new String[(int) lsize[0]];
+        				for (int j = 0; j < lsize[0]; j++) {
+        					nullValues[j] = "";
+        				}
+        				list.add(nullValues);
+        				continue;
+        			}
+        			finally {
+        				try {
+        					H5.H5Tclose(comp_tid);
+        				}
+        				catch (Exception ex2) {
+        					log.debug("finally close:", ex2);
+        				}
+        			}
 
-                if (!isVL) {
-                    String cname = member_data.getClass().getName();
-                    char dname = cname.charAt(cname.lastIndexOf("[") + 1);
+        			if (!isVL) {
+        				String cname = member_data.getClass().getName();
+        				char dname = cname.charAt(cname.lastIndexOf("[") + 1);
 
-                    if ((member_class == HDF5Constants.H5T_STRING) && convertByteToString) {
-                        if (dname == 'B')
-                            member_data = byteToString((byte[]) member_data, member_size / memberOrders[i]);
-                    }
-                    else if (member_class == HDF5Constants.H5T_REFERENCE) {
-                        if (dname == 'B') member_data = HDFNativeData.byteToLong((byte[]) member_data);
-                    }
-                    else if (compInfo[2] != 0) {
-                        member_data = Dataset.convertFromUnsignedC(member_data, null);
-                    }
-                    else if (member_class == HDF5Constants.H5T_ENUM && enumConverted) {
-                        try {
-                            String[] strs = H5Datatype.convertEnumValueToName(atom_tid, member_data, null);
-                            if (strs != null) {
-                                member_data = strs;
-                            }
-                        }
-                        catch (Exception ex) {
-                        	log.debug("H5Datatype.convertEnumValueToName:", ex);
-                        }
-                    }
-                }
+        				if ((member_class == HDF5Constants.H5T_STRING) && convertByteToString) {
+        					if (dname == 'B')
+        						member_data = byteToString((byte[]) member_data, member_size / memberOrders[i]);
+        				}
+        				else if (member_class == HDF5Constants.H5T_REFERENCE) {
+        					if (dname == 'B') member_data = HDFNativeData.byteToLong((byte[]) member_data);
+        				}
+        				else if (compInfo[2] != 0) {
+        					member_data = Dataset.convertFromUnsignedC(member_data, null);
+        				}
+        				else if (member_class == HDF5Constants.H5T_ENUM && enumConverted) {
+        					try {
+        						String[] strs = H5Datatype.convertEnumValueToName(atom_tid, member_data, null);
+        						if (strs != null) {
+        							member_data = strs;
+        						}
+        					}
+        					catch (Exception ex) {
+        						log.debug("H5Datatype.convertEnumValueToName:", ex);
+        					}
+        				}
+        			}
 
-                list.add(member_data);
-            } // end of for (int i=0; i<num_members; i++)
+        			list.add(member_data);
+        		} // end of for (int i=0; i<num_members; i++)
 
-        }
-        finally {
-            try {
-                H5.H5Sclose(spaceIDs[0]);
-            }
-            catch (Exception ex2) {
-            	log.debug("finally close:", ex2);
-            }
-            try {
-                H5.H5Sclose(spaceIDs[1]);
-            }
-            catch (Exception ex2) {
-            	log.debug("finally close:", ex2);
-            }
-            try {
-                H5.H5Tclose(tid);
-            }
-            catch (Exception ex2) {
-            	log.debug("finally close:", ex2);
-            }
+        	}
+        	finally {
+        		try {
+        			if(HDF5Constants.H5S_ALL != spaceIDs[0])
+        				H5.H5Sclose(spaceIDs[0]);
+        		}
+        		catch (Exception ex2) {
+        			log.debug("finally close:", ex2);
+        		}
+        		try {
+        			if(HDF5Constants.H5S_ALL != spaceIDs[1])
+        				H5.H5Sclose(spaceIDs[1]);
+        		}
+        		catch (Exception ex2) {
+        			log.debug("finally close:", ex2);
+        		}
+        		try {
+        			H5.H5Tclose(tid);
+        		}
+        		catch (Exception ex2) {
+        			log.debug("finally close:", ex2);
+        		}
 
-            // close atomic types
-            int ntypes = atomicList.size();
-            for (int i = 0; i < ntypes; i++) {
-                atom_tid = ((Integer) atomicList.get(i)).intValue();
-                try {
-                    H5.H5Tclose(atom_tid);
-                }
-                catch (Exception ex2) {
-                	log.debug("finally close:", ex2);
-                }
-            }
+        		// close atomic types
+        		int ntypes = atomicList.size();
+        		for (int i = 0; i < ntypes; i++) {
+        			atom_tid = ((Integer) atomicList.get(i)).intValue();
+        			try {
+        				H5.H5Tclose(atom_tid);
+        			}
+        			catch (Exception ex2) {
+        				log.debug("finally close:", ex2);
+        			}
+        		}
 
-            close(did);
+        		close(did);
+        	}
         }
 
         return list;
@@ -522,122 +528,126 @@ public class H5CompoundDS extends CompoundDS {
         int spaceIDs[] = { -1, -1 }; // spaceIDs[0]=mspace, spaceIDs[1]=fspace
 
         int did = open();
-        Vector<Integer> atomicList = new Vector<Integer>();
-        try { // to match finally for closing resources
-            long[] lsize = { 1 };
-            lsize[0] = selectHyperslab(did, spaceIDs);
+        if(did >= 0) {
+        	Vector<Integer> atomicList = new Vector<Integer>();
+        	try { // to match finally for closing resources
+        		long[] lsize = { 1 };
+        		lsize[0] = selectHyperslab(did, spaceIDs);
 
-            // read each of member data into a byte array, then extract
-            // it into its type such, int, long, float, etc.
-            int idx = 0;
-            int n = flatNameList.size();
-            boolean isEnum = false;
-            tid = H5.H5Dget_type(did);
+        		// read each of member data into a byte array, then extract
+        		// it into its type such, int, long, float, etc.
+        		int idx = 0;
+        		int n = flatNameList.size();
+        		boolean isEnum = false;
+        		tid = H5.H5Dget_type(did);
 
-            extractCompoundInfo(tid, null, null, atomicList);
-            for (int i = 0; i < n; i++) {
-                if (!isMemberSelected[i]) {
-                    continue; // the field is not selected
-                }
+        		extractCompoundInfo(tid, null, null, atomicList);
+        		for (int i = 0; i < n; i++) {
+        			if (!isMemberSelected[i]) {
+        				continue; // the field is not selected
+        			}
 
-                member_name = new String(memberNames[i]);
-                atom_tid = ((Integer) atomicList.get(i)).intValue();
-                member_data = list.get(idx++);
+        			member_name = new String(memberNames[i]);
+        			atom_tid = ((Integer) atomicList.get(i)).intValue();
+        			member_data = list.get(idx++);
 
-                if (member_data == null) {
-                    continue;
-                }
+        			if (member_data == null) {
+        				continue;
+        			}
 
-                boolean isVL = false;
-                try {
-                    isVL = (H5.H5Tdetect_class(atom_tid, HDF5Constants.H5T_VLEN));
-                }
-                catch (Exception ex) {
-                	log.debug("isVL:", ex);
-                }
+        			boolean isVL = false;
+        			try {
+        				isVL = (H5.H5Tdetect_class(atom_tid, HDF5Constants.H5T_VLEN));
+        			}
+        			catch (Exception ex) {
+        				log.debug("isVL:", ex);
+        			}
 
-                if (isVL) {
-                    continue;
-                }
+        			if (isVL) {
+        				continue;
+        			}
 
-                try {
-                    member_class = H5.H5Tget_class(atom_tid);
-                    member_size = H5.H5Tget_size(atom_tid);
-                    isEnum = (member_class == HDF5Constants.H5T_ENUM);
-                }
-                catch (Exception ex) {
-                	log.debug("member class - size:", ex);
-                }
+        			try {
+        				member_class = H5.H5Tget_class(atom_tid);
+        				member_size = H5.H5Tget_size(atom_tid);
+        				isEnum = (member_class == HDF5Constants.H5T_ENUM);
+        			}
+        			catch (Exception ex) {
+        				log.debug("member class - size:", ex);
+        			}
 
-                Object tmpData = member_data;
+        			Object tmpData = member_data;
 
-                int comp_tid = -1;
-                int compInfo[] = { member_class, member_size, 0 };
-                try {
-                    comp_tid = createCompoundFieldType(atom_tid, member_name, compInfo);
-                    if (compInfo[2] != 0) {
-                        tmpData = convertToUnsignedC(member_data, null);
-                    }
-                    else if ((member_class == HDF5Constants.H5T_STRING)
-                            && (Array.get(member_data, 0) instanceof String)) {
-                        tmpData = stringToByte((String[]) member_data, member_size);
-                    }
-                    else if (isEnum && (Array.get(member_data, 0) instanceof String)) {
-                        tmpData = H5Datatype.convertEnumNameToValue(atom_tid, (String[]) member_data, null);
-                    }
+        			int comp_tid = -1;
+        			int compInfo[] = { member_class, member_size, 0 };
+        			try {
+        				comp_tid = createCompoundFieldType(atom_tid, member_name, compInfo);
+        				if (compInfo[2] != 0) {
+        					tmpData = convertToUnsignedC(member_data, null);
+        				}
+        				else if ((member_class == HDF5Constants.H5T_STRING)
+        						&& (Array.get(member_data, 0) instanceof String)) {
+        					tmpData = stringToByte((String[]) member_data, member_size);
+        				}
+        				else if (isEnum && (Array.get(member_data, 0) instanceof String)) {
+        					tmpData = H5Datatype.convertEnumNameToValue(atom_tid, (String[]) member_data, null);
+        				}
 
-                    if (tmpData != null) {
-                        // BUG!!! does not write nested compound data and no
-                        // exception was caught
-                        // need to check if it is a java error or C library
-                        // error
-                        H5.H5Dwrite(did, comp_tid, spaceIDs[0], spaceIDs[1], HDF5Constants.H5P_DEFAULT, tmpData);
-                    }
-                }
-                finally {
-                    try {
-                        H5.H5Tclose(comp_tid);
-                    }
-                    catch (Exception ex2) {
-                    	log.debug("finally close:", ex2);
-                    }
-                }
-            } // end of for (int i=0; i<num_members; i++)
+        				if (tmpData != null) {
+        					// BUG!!! does not write nested compound data and no
+        					// exception was caught
+        					// need to check if it is a java error or C library
+        					// error
+        					H5.H5Dwrite(did, comp_tid, spaceIDs[0], spaceIDs[1], HDF5Constants.H5P_DEFAULT, tmpData);
+        				}
+        			}
+        			finally {
+        				try {
+        					H5.H5Tclose(comp_tid);
+        				}
+        				catch (Exception ex2) {
+        					log.debug("finally close:", ex2);
+        				}
+        			}
+        		} // end of for (int i=0; i<num_members; i++)
+        	}
+        	finally {
+        		try {
+        			if(HDF5Constants.H5S_ALL != spaceIDs[0])
+        				H5.H5Sclose(spaceIDs[0]);
+        		}
+        		catch (Exception ex2) {
+        			log.debug("finally close:", ex2);
+        		}
+        		try {
+        			if(HDF5Constants.H5S_ALL != spaceIDs[1])
+        				H5.H5Sclose(spaceIDs[1]);
+        		}
+        		catch (Exception ex2) {
+        			log.debug("finally close:", ex2);
+        		}
+        		try {
+        			H5.H5Tclose(tid);
+        		}
+        		catch (Exception ex2) {
+        			log.debug("finally close:", ex2);
+        		}
+
+        		// close atomic types
+        		int ntypes = atomicList.size();
+        		for (int i = 0; i < ntypes; i++) {
+        			atom_tid = ((Integer) atomicList.get(i)).intValue();
+        			try {
+        				H5.H5Tclose(atom_tid);
+        			}
+        			catch (Exception ex2) {
+        				log.debug("finally close:", ex2);
+        			}
+        		}
+        	}
+
+        	close(did);
         }
-        finally {
-            try {
-                H5.H5Sclose(spaceIDs[0]);
-            }
-            catch (Exception ex2) {
-            	log.debug("finally close:", ex2);
-            }
-            try {
-                H5.H5Sclose(spaceIDs[1]);
-            }
-            catch (Exception ex2) {
-            	log.debug("finally close:", ex2);
-            }
-            try {
-                H5.H5Tclose(tid);
-            }
-            catch (Exception ex2) {
-            	log.debug("finally close:", ex2);
-            }
-
-            // close atomic types
-            int ntypes = atomicList.size();
-            for (int i = 0; i < ntypes; i++) {
-                atom_tid = ((Integer) atomicList.get(i)).intValue();
-                try {
-                    H5.H5Tclose(atom_tid);
-                }
-                catch (Exception ex2) {
-                	log.debug("finally close:", ex2);
-                }
-            }
-        }
-
-        close(did);
     }
 
     /**
@@ -721,102 +731,105 @@ public class H5CompoundDS extends CompoundDS {
                 order = attrPropList[1];
             }
         }
-        try {
-            did = open();
-            attributeList = H5File.getAttribute(did, indxType, order);
+        
+        did = open();
+        if(did >= 0) {
+        	try {
+        		attributeList = H5File.getAttribute(did, indxType, order);
 
-            // get the compresson and chunk information
-            pid = H5.H5Dget_create_plist(did);
-            if (H5.H5Pget_layout(pid) == HDF5Constants.H5D_CHUNKED) {
-                chunkSize = new long[rank];
-                H5.H5Pget_chunk(pid, rank, chunkSize);
-            }
-            else {
-                chunkSize = null;
-            }
+        		// get the compresson and chunk information
+        		pid = H5.H5Dget_create_plist(did);
+        		if (H5.H5Pget_layout(pid) == HDF5Constants.H5D_CHUNKED) {
+        			chunkSize = new long[rank];
+        			H5.H5Pget_chunk(pid, rank, chunkSize);
+        		}
+        		else {
+        			chunkSize = null;
+        		}
 
-            int[] flags = { 0, 0 };
-            long[] cd_nelmts = { 2 };
-            int[] cd_values = { 0, 0 };
-            String[] cd_name = { "", "" };
-            int nfilt = H5.H5Pget_nfilters(pid);
-            int filter = -1;
-            int[] filter_config = { 1 };
-            compression = "";
+        		int[] flags = { 0, 0 };
+        		long[] cd_nelmts = { 2 };
+        		int[] cd_values = { 0, 0 };
+        		String[] cd_name = { "", "" };
+        		int nfilt = H5.H5Pget_nfilters(pid);
+        		int filter = -1;
+        		int[] filter_config = { 1 };
+        		compression = "";
 
-            for (int i = 0; i < nfilt; i++) {
-                if (i > 0) {
-                    compression += ", ";
-                }
+        		for (int i = 0; i < nfilt; i++) {
+        			if (i > 0) {
+        				compression += ", ";
+        			}
 
-                try {
-                    filter = H5.H5Pget_filter(pid, i, flags, cd_nelmts, cd_values, 120, cd_name, filter_config);
-                }
-                catch (Throwable err) {
-                    compression += "ERROR";
-                    continue;
-                }
+        			try {
+        				filter = H5.H5Pget_filter(pid, i, flags, cd_nelmts, cd_values, 120, cd_name, filter_config);
+        			}
+        			catch (Throwable err) {
+        				compression += "ERROR";
+        				continue;
+        			}
 
-                if (filter == HDF5Constants.H5Z_FILTER_DEFLATE) {
-                    compression += "GZIP: level = " + cd_values[0];
-                }
-                else if (filter == HDF5Constants.H5Z_FILTER_FLETCHER32) {
-                    compression += "Error detection filter";
-                }
-                else if (filter == HDF5Constants.H5Z_FILTER_SHUFFLE) {
-                    compression += "SHUFFLE: Nbytes = " + cd_values[0];
-                }
-                else if (filter == HDF5Constants.H5Z_FILTER_SZIP) {
-                    compression += "SZIP: Pixels per block = " + cd_values[1];
-                    int flag = -1;
-                    try {
-                        flag = H5.H5Zget_filter_info(filter);
-                    }
-                    catch (Exception ex) {
-                        flag = -1;
-                    }
-                    if (flag == HDF5Constants.H5Z_FILTER_CONFIG_DECODE_ENABLED) {
-                        compression += ": H5Z_FILTER_CONFIG_DECODE_ENABLED";
-                    }
-                    else if ((flag == HDF5Constants.H5Z_FILTER_CONFIG_ENCODE_ENABLED)
-                            || (flag >= (HDF5Constants.H5Z_FILTER_CONFIG_ENCODE_ENABLED + HDF5Constants.H5Z_FILTER_CONFIG_DECODE_ENABLED))) {
-                        compression += ": H5Z_FILTER_CONFIG_ENCODE_ENABLED";
-                    }
-                }
-            } // for (int i=0; i<nfilt; i++)
+        			if (filter == HDF5Constants.H5Z_FILTER_DEFLATE) {
+        				compression += "GZIP: level = " + cd_values[0];
+        			}
+        			else if (filter == HDF5Constants.H5Z_FILTER_FLETCHER32) {
+        				compression += "Error detection filter";
+        			}
+        			else if (filter == HDF5Constants.H5Z_FILTER_SHUFFLE) {
+        				compression += "SHUFFLE: Nbytes = " + cd_values[0];
+        			}
+        			else if (filter == HDF5Constants.H5Z_FILTER_SZIP) {
+        				compression += "SZIP: Pixels per block = " + cd_values[1];
+        				int flag = -1;
+        				try {
+        					flag = H5.H5Zget_filter_info(filter);
+        				}
+        				catch (Exception ex) {
+        					flag = -1;
+        				}
+        				if (flag == HDF5Constants.H5Z_FILTER_CONFIG_DECODE_ENABLED) {
+        					compression += ": H5Z_FILTER_CONFIG_DECODE_ENABLED";
+        				}
+        				else if ((flag == HDF5Constants.H5Z_FILTER_CONFIG_ENCODE_ENABLED)
+        						|| (flag >= (HDF5Constants.H5Z_FILTER_CONFIG_ENCODE_ENABLED + HDF5Constants.H5Z_FILTER_CONFIG_DECODE_ENABLED))) {
+        					compression += ": H5Z_FILTER_CONFIG_ENCODE_ENABLED";
+        				}
+        			}
+        		} // for (int i=0; i<nfilt; i++)
 
-            if (compression.length() == 0) {
-                compression = "NONE";
-            }
+        		if (compression.length() == 0) {
+        			compression = "NONE";
+        		}
 
-            try {
-                int[] at = { 0 };
-                H5.H5Pget_alloc_time(pid, at);
-                compression += ",         Storage allocation time: ";
-                if (at[0] == HDF5Constants.H5D_ALLOC_TIME_EARLY) {
-                    compression += "Early";
-                }
-                else if (at[0] == HDF5Constants.H5D_ALLOC_TIME_INCR) {
-                    compression += "Incremental";
-                }
-                else if (at[0] == HDF5Constants.H5D_ALLOC_TIME_LATE) {
-                    compression += "Late";
-                }
-            }
-            catch (Exception ex) {
-            	log.debug("Storage allocation time:", ex);
-            }
+        		try {
+        			int[] at = { 0 };
+        			H5.H5Pget_alloc_time(pid, at);
+        			compression += ",         Storage allocation time: ";
+        			if (at[0] == HDF5Constants.H5D_ALLOC_TIME_EARLY) {
+        				compression += "Early";
+        			}
+        			else if (at[0] == HDF5Constants.H5D_ALLOC_TIME_INCR) {
+        				compression += "Incremental";
+        			}
+        			else if (at[0] == HDF5Constants.H5D_ALLOC_TIME_LATE) {
+        				compression += "Late";
+        			}
+        		}
+        		catch (Exception ex) {
+        			log.debug("Storage allocation time:", ex);
+        		}
+        	}
+        	finally {
+        		try {
+        			H5.H5Pclose(pid);
+        		}
+        		catch (Exception ex) {
+        			log.debug("finally close:", ex);
+        		}
+
+        		close(did);
+        	}
         }
-        finally {
-            try {
-                H5.H5Pclose(pid);
-            }
-            catch (Exception ex) {
-            	log.debug("finally close:", ex);
-            }
-            
-            close(did);
-        } // if (attributeList == null)
 
         return attributeList;
     }
@@ -862,14 +875,16 @@ public class H5CompoundDS extends CompoundDS {
 
         Attribute attr = (Attribute) info;
         int did = open();
-        try {
-            H5.H5Adelete(did, attr.getName());
-            List<Attribute> attrList = getMetadata();
-            attrList.remove(attr);
-            nAttributes = attrList.size();
-        }
-        finally {
-            close(did);
+        if(did >= 0) {
+	        try {
+	            H5.H5Adelete(did, attr.getName());
+	            List<Attribute> attrList = getMetadata();
+	            attrList.remove(attr);
+	            nAttributes = attrList.size();
+	        }
+	        finally {
+	            close(did);
+	        }
         }
     }
 
@@ -886,6 +901,7 @@ public class H5CompoundDS extends CompoundDS {
             did = H5.H5Dopen(getFID(), getPath() + getName(), HDF5Constants.H5P_DEFAULT);
         }
         catch (HDF5Exception ex) {
+        	log.debug("Failed to open dataset {}", getPath() + getName());
             did = -1;
         }
 
@@ -899,18 +915,20 @@ public class H5CompoundDS extends CompoundDS {
      */
     @Override
     public void close(int did) {
-        try {
-            H5.H5Fflush(did, HDF5Constants.H5F_SCOPE_LOCAL);
-        }
-        catch (Exception ex) {
-        	log.debug("close.H5Fflush:", ex);
-        }
-        try {
-            H5.H5Dclose(did);
-        }
-        catch (HDF5Exception ex) {
-        	log.debug("close.H5Dclose:", ex);
-        }
+    	if(did >= 0) {
+	        try {
+	            H5.H5Fflush(did, HDF5Constants.H5F_SCOPE_LOCAL);
+	        }
+	        catch (Exception ex) {
+	        	log.debug("close.H5Fflush:", ex);
+	        }
+	        try {
+	            H5.H5Dclose(did);
+	        }
+	        catch (HDF5Exception ex) {
+	        	log.debug("close.H5Dclose:", ex);
+	        }
+    	}
     }
 
     /*
@@ -933,138 +951,141 @@ public class H5CompoundDS extends CompoundDS {
 
         did = open();
 
-        // check if it is an external dataset
-        int pid = -1;
-        try {
-            pid = H5.H5Dget_create_plist(did);
-            int nfiles = H5.H5Pget_external_count(pid);
-            isExternal = (nfiles > 0);
+        if(did >= 0) {
+        	// check if it is an external dataset
+        	int pid = -1;
+        	try {
+        		pid = H5.H5Dget_create_plist(did);
+        		int nfiles = H5.H5Pget_external_count(pid);
+        		isExternal = (nfiles > 0);
+        	}
+        	catch (Exception ex) {
+        		log.debug("check if it is an external dataset:", ex);
+        	}
+        	finally {
+        		try {
+        			H5.H5Pclose(pid);
+        		}
+        		catch (Exception ex) {
+        			log.debug("finally close:", ex);
+        		}
+        	}
+
+        	try {
+        		sid = H5.H5Dget_space(did);
+        		rank = H5.H5Sget_simple_extent_ndims(sid);
+
+        		if (rank == 0) {
+        			// a scalar data point
+        			rank = 1;
+        			dims = new long[1];
+        			dims[0] = 1;
+        		}
+        		else {
+        			dims = new long[rank];
+        			maxDims = new long[rank];
+        			H5.H5Sget_simple_extent_dims(sid, dims, maxDims);
+        		}
+
+        		startDims = new long[rank];
+        		selectedDims = new long[rank];
+
+        		// initialize member information
+        		tid = H5.H5Dget_type(did);
+        		tclass = H5.H5Tget_class(tid);
+
+        		int tmptid = 0;
+        		if (tclass == HDF5Constants.H5T_ARRAY) {
+        			// array of compound
+        			tmptid = tid;
+        			tid = H5.H5Tget_super(tmptid);
+        			try {
+        				H5.H5Tclose(tmptid);
+        			}
+        			catch (HDF5Exception ex) {
+        				log.debug("array of compound:", ex);
+        			}
+        		}
+
+        		extractCompoundInfo(tid, "", flatNameList, flatTypeList);
+        		numberOfMembers = flatNameList.size();
+
+        		memberNames = new String[numberOfMembers];
+        		memberTIDs = new int[numberOfMembers];
+        		memberTypes = new Datatype[numberOfMembers];
+        		memberOrders = new int[numberOfMembers];
+        		isMemberSelected = new boolean[numberOfMembers];
+        		memberDims = new Object[numberOfMembers];
+
+        		for (int i = 0; i < numberOfMembers; i++) {
+        			isMemberSelected[i] = true;
+        			memberTIDs[i] = ((Integer) flatTypeList.get(i)).intValue();
+        			memberTypes[i] = new H5Datatype(memberTIDs[i]);
+        			memberNames[i] = (String) flatNameList.get(i);
+        			memberOrders[i] = 1;
+        			memberDims[i] = null;
+
+        			try {
+        				tclass = H5.H5Tget_class(memberTIDs[i]);
+        			}
+        			catch (HDF5Exception ex) {
+        				log.debug("memberTIDs[{}]:", i, ex);
+        			}
+
+        			if (tclass == HDF5Constants.H5T_ARRAY) {
+        				int n = H5.H5Tget_array_ndims(memberTIDs[i]);
+        				long mdim[] = new long[n];
+        				H5.H5Tget_array_dims(memberTIDs[i], mdim);
+        				int idim[] = new int[n];
+        				for (int j = 0; j < n; j++)
+        					idim[j] = (int) mdim[j];
+        				memberDims[i] = idim;
+        				tmptid = H5.H5Tget_super(memberTIDs[i]);
+        				memberOrders[i] = (H5.H5Tget_size(memberTIDs[i]) / H5.H5Tget_size(tmptid));
+        				try {
+        					H5.H5Tclose(tmptid);
+        				}
+        				catch (HDF5Exception ex) {
+        					log.debug("close temp of memberTIDs[{}]:", i, ex);
+        				}
+        			}
+        		} // for (int i=0; i<numberOfMembers; i++)
+        	}
+        	catch (HDF5Exception ex) {
+        		numberOfMembers = 0;
+        		memberNames = null;
+        		memberTypes = null;
+        		memberOrders = null;
+        	}
+        	finally {
+        		try {
+        			H5.H5Tclose(tid);
+        		}
+        		catch (HDF5Exception ex2) {
+        			log.debug("finally close:", ex2);
+        		}
+        		try {
+        			H5.H5Sclose(sid);
+        		}
+        		catch (HDF5Exception ex2) {
+        			log.debug("finally close:", ex2);
+        		}
+
+        		if (memberTIDs != null) {
+        			for (int i = 0; i < memberTIDs.length; i++) {
+        				try {
+        					H5.H5Tclose(memberTIDs[i]);
+        				}
+        				catch (Exception ex) {
+        					log.debug("finally close:", ex);
+        				}
+        			}
+        		}
+        	}
+
+        	close(did);
         }
-        catch (Exception ex) {
-        	log.debug("check if it is an external dataset:", ex);
-        }
-        finally {
-            try {
-                H5.H5Pclose(pid);
-            }
-            catch (Exception ex) {
-            	log.debug("finally close:", ex);
-            }
-        }
 
-        try {
-            sid = H5.H5Dget_space(did);
-            rank = H5.H5Sget_simple_extent_ndims(sid);
-
-            if (rank == 0) {
-                // a scalar data point
-                rank = 1;
-                dims = new long[1];
-                dims[0] = 1;
-            }
-            else {
-                dims = new long[rank];
-                maxDims = new long[rank];
-                H5.H5Sget_simple_extent_dims(sid, dims, maxDims);
-            }
-
-            startDims = new long[rank];
-            selectedDims = new long[rank];
-
-            // initialize member information
-            tid = H5.H5Dget_type(did);
-            tclass = H5.H5Tget_class(tid);
-
-            int tmptid = 0;
-            if (tclass == HDF5Constants.H5T_ARRAY) {
-                // array of compound
-                tmptid = tid;
-                tid = H5.H5Tget_super(tmptid);
-                try {
-                    H5.H5Tclose(tmptid);
-                }
-                catch (HDF5Exception ex) {
-                	log.debug("array of compound:", ex);
-                }
-            }
-
-            extractCompoundInfo(tid, "", flatNameList, flatTypeList);
-            numberOfMembers = flatNameList.size();
-
-            memberNames = new String[numberOfMembers];
-            memberTIDs = new int[numberOfMembers];
-            memberTypes = new Datatype[numberOfMembers];
-            memberOrders = new int[numberOfMembers];
-            isMemberSelected = new boolean[numberOfMembers];
-            memberDims = new Object[numberOfMembers];
-
-            for (int i = 0; i < numberOfMembers; i++) {
-                isMemberSelected[i] = true;
-                memberTIDs[i] = ((Integer) flatTypeList.get(i)).intValue();
-                memberTypes[i] = new H5Datatype(memberTIDs[i]);
-                memberNames[i] = (String) flatNameList.get(i);
-                memberOrders[i] = 1;
-                memberDims[i] = null;
-
-                try {
-                    tclass = H5.H5Tget_class(memberTIDs[i]);
-                }
-                catch (HDF5Exception ex) {
-                	log.debug("memberTIDs[{}]:", i, ex);
-                }
-
-                if (tclass == HDF5Constants.H5T_ARRAY) {
-                    int n = H5.H5Tget_array_ndims(memberTIDs[i]);
-                    long mdim[] = new long[n];
-                    H5.H5Tget_array_dims(memberTIDs[i], mdim);
-                    int idim[] = new int[n];
-                    for (int j = 0; j < n; j++)
-                        idim[j] = (int) mdim[j];
-                    memberDims[i] = idim;
-                    tmptid = H5.H5Tget_super(memberTIDs[i]);
-                    memberOrders[i] = (H5.H5Tget_size(memberTIDs[i]) / H5.H5Tget_size(tmptid));
-                    try {
-                        H5.H5Tclose(tmptid);
-                    }
-                    catch (HDF5Exception ex) {
-                    	log.debug("close temp of memberTIDs[{}]:", i, ex);
-                    }
-                }
-            } // for (int i=0; i<numberOfMembers; i++)
-        }
-        catch (HDF5Exception ex) {
-            numberOfMembers = 0;
-            memberNames = null;
-            memberTypes = null;
-            memberOrders = null;
-        }
-        finally {
-            try {
-                H5.H5Tclose(tid);
-            }
-            catch (HDF5Exception ex2) {
-            	log.debug("finally close:", ex2);
-            }
-            try {
-                H5.H5Sclose(sid);
-            }
-            catch (HDF5Exception ex2) {
-            	log.debug("finally close:", ex2);
-            }
-
-            if (memberTIDs != null) {
-                for (int i = 0; i < memberTIDs.length; i++) {
-                    try {
-                        H5.H5Tclose(memberTIDs[i]);
-                    }
-                    catch (Exception ex) {
-                    	log.debug("finally close:", ex);
-                    }
-                }
-            }
-        }
-
-        close(did);
         resetSelection();
     }
 
@@ -1378,26 +1399,44 @@ public class H5CompoundDS extends CompoundDS {
                 memberSize *= memberDims[i][j];
             }
 
+            mTypes[i] = -1;
             // the member is an array
             if ((memberSize > 1) && (memberDatatypes[i].getDatatypeClass() != Datatype.CLASS_STRING)) {
                 int tmptid = -1;
-                try {
-                    tmptid = memberDatatypes[i].toNative();
-                    mTypes[i] = H5.H5Tarray_create(tmptid, memberRanks[i], memberDims[i]);
-                }
-                finally {
-                    try {
-                        H5.H5Tclose(tmptid);
-                    }
-                    catch (Exception ex) {
-                    	log.debug("finally close:", ex);
-                    }
+                if((tmptid = memberDatatypes[i].toNative()) >= 0) {
+	                try {
+	                    mTypes[i] = H5.H5Tarray_create(tmptid, memberRanks[i], memberDims[i]);
+	                }
+	                finally {
+	                    try {
+	                        H5.H5Tclose(tmptid);
+	                    }
+	                    catch (Exception ex) {
+	                    	log.debug("compound array create finally close:", ex);
+	                    }
+	                }
                 }
             }
             else {
                 mTypes[i] = memberDatatypes[i].toNative();
             }
-            typeSize += H5.H5Tget_size(mTypes[i]);
+            try {
+            	typeSize += H5.H5Tget_size(mTypes[i]);
+            }
+            catch (Exception ex) {
+            	log.debug("array create H5Tget_size:", ex);
+
+                while (i > 0) {
+                    try {
+                        H5.H5Tclose(mTypes[i]);
+                    }
+                    catch (HDF5Exception ex2) {
+                    	log.debug("compound create finally close:", ex2);
+                    }
+                    i--;
+                }
+                throw ex;
+            }
         }
 
         try {
@@ -1454,25 +1493,25 @@ public class H5CompoundDS extends CompoundDS {
                 H5.H5Pclose(plist);
             }
             catch (HDF5Exception ex) {
-            	log.debug("finally close:", ex);
+            	log.debug("compound create finally close:", ex);
             }
             try {
                 H5.H5Sclose(sid);
             }
             catch (HDF5Exception ex) {
-            	log.debug("finally close:", ex);
+            	log.debug("compound create finally close:", ex);
             }
             try {
                 H5.H5Tclose(tid);
             }
             catch (HDF5Exception ex) {
-            	log.debug("finally close:", ex);
+            	log.debug("compound create finally close:", ex);
             }
             try {
                 H5.H5Dclose(did);
             }
             catch (HDF5Exception ex) {
-            	log.debug("finally close:", ex);
+            	log.debug("compound create finally close:", ex);
             }
 
             for (int i = 0; i < nMembers; i++) {
@@ -1480,7 +1519,7 @@ public class H5CompoundDS extends CompoundDS {
                     H5.H5Tclose(mTypes[i]);
                 }
                 catch (HDF5Exception ex) {
-                	log.debug("finally close:", ex);
+                	log.debug("compound create finally close:", ex);
                 }
             }
         }

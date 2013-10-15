@@ -1032,6 +1032,10 @@ public class H5File extends FileFormat {
      */
     @Override
     public void close() throws HDF5Exception {
+    	if(fid < 0) {
+    		log.debug("file {} is not open", fullFileName);
+    		return;
+    	}
         // The current working directory may be changed at Dataset.read()
         // by H5Dchdir_ext()by this file to make it work for external
         // datasets. We need to set it back to the orginal current working
@@ -1296,7 +1300,8 @@ public class H5File extends FileFormat {
 
         try {
             H5Datatype t = (H5Datatype) createDatatype(tclass, tsize, torder, tsign, tbase);
-            tid = t.toNative();
+            if((tid = t.toNative()) < 0)
+            	throw new Exception("toNative failed");
 
             H5.H5Tcommit(fid, name, tid, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT,
                     HDF5Constants.H5P_DEFAULT);
@@ -1311,9 +1316,7 @@ public class H5File extends FileFormat {
 
         }
         finally {
-            if (tid > 0) {
-                H5.H5Tclose(tid);
-            }
+            H5.H5Tclose(tid);
         }
 
         return dtype;
@@ -1769,83 +1772,87 @@ public class H5File extends FileFormat {
             return;
         }
 
-        try {
-            tid = attr.getType().toNative();
-            sid = H5.H5Screate_simple(attr.getRank(), attr.getDataDims(), null);
+        if((tid = attr.getType().toNative()) >= 0) {
+        	try {
+        		sid = H5.H5Screate_simple(attr.getRank(), attr.getDataDims(), null);
 
-            if (attrExisted) {
-                aid = H5.H5Aopen_by_name(objID, obj_name, name, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
-            }
-            else {
-                aid = H5.H5Acreate(objID, name, tid, sid, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
-            }
+        		if (attrExisted) {
+        			aid = H5.H5Aopen_by_name(objID, obj_name, name, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+        		}
+        		else {
+        			aid = H5.H5Acreate(objID, name, tid, sid, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+        		}
 
-            // update value of the attribute
-            Object attrValue = attr.getValue();
-            if (attrValue != null) {
-                boolean isVlen = (H5.H5Tget_class(tid) == HDF5Constants.H5T_VLEN || H5.H5Tis_variable_str(tid));
-                if (isVlen) {
-                    throw (new HDF5Exception("Writing variable-length attributes is not supported"));
-                }
+        		// update value of the attribute
+        		Object attrValue = attr.getValue();
+        		if (attrValue != null) {
+        			boolean isVlen = (H5.H5Tget_class(tid) == HDF5Constants.H5T_VLEN || H5.H5Tis_variable_str(tid));
+        			if (isVlen) {
+        				throw (new HDF5Exception("Writing variable-length attributes is not supported"));
+        			}
 
-                if (attr.getType().getDatatypeClass() == Datatype.CLASS_REFERENCE && attrValue instanceof String) { // reference
-                    // is
-                    // a
-                    // path+name
-                    // to
-                    // the
-                    // object
-                    attrValue = H5.H5Rcreate(getFID(), (String) attrValue, HDF5Constants.H5R_OBJECT, -1);
-                }
-                else if (Array.get(attrValue, 0) instanceof String) {
-                    int size = H5.H5Tget_size(tid);
-                    int len = ((String[]) attrValue).length;
-                    byte[] bval = Dataset.stringToByte((String[]) attrValue, size);
-                    if (bval != null && bval.length == size * len) {
-                        bval[bval.length - 1] = 0;
-                        attrValue = bval;
-                    }
-                }
+        			if (attr.getType().getDatatypeClass() == Datatype.CLASS_REFERENCE && attrValue instanceof String) { // reference
+        				// is
+        				// a
+        				// path+name
+        				// to
+        				// the
+        				// object
+        				attrValue = H5.H5Rcreate(getFID(), (String) attrValue, HDF5Constants.H5R_OBJECT, -1);
+        			}
+        			else if (Array.get(attrValue, 0) instanceof String) {
+        				int size = H5.H5Tget_size(tid);
+        				int len = ((String[]) attrValue).length;
+        				byte[] bval = Dataset.stringToByte((String[]) attrValue, size);
+        				if (bval != null && bval.length == size * len) {
+        					bval[bval.length - 1] = 0;
+        					attrValue = bval;
+        				}
+        			}
 
-                try {
-                    /*
-                     * must use native type to write attribute data to file (see
-                     * bug 1069)
-                     */
-                    int tmptid = tid;
-                    tid = H5.H5Tget_native_type(tmptid);
-                    try {
-                        H5.H5Tclose(tmptid);
-                    }
-                    catch (Exception ex) {
-                    	log.debug("{} writeAttribute H5Tclose failure: ", name, ex);
-                    }
-                    H5.H5Awrite(aid, tid, attrValue);
-                }
-                catch (Exception ex) {
-                	log.debug("{} writeAttribute native type failure: ", name, ex);
-                }
-            } // if (attrValue != null) {
+        			try {
+        				/*
+        				 * must use native type to write attribute data to file (see
+        				 * bug 1069)
+        				 */
+        				int tmptid = tid;
+        				tid = H5.H5Tget_native_type(tmptid);
+        				try {
+        					H5.H5Tclose(tmptid);
+        				}
+        				catch (Exception ex) {
+        					log.debug("{} writeAttribute H5Tclose failure: ", name, ex);
+        				}
+        				H5.H5Awrite(aid, tid, attrValue);
+        			}
+        			catch (Exception ex) {
+        				log.debug("{} writeAttribute native type failure: ", name, ex);
+        			}
+        		} // if (attrValue != null) {
+        	}
+        	finally {
+        		try {
+        			H5.H5Tclose(tid);
+        		}
+        		catch (Exception ex) {
+        			log.debug("{} writeAttribute H5Tclose failure: ", name, ex);
+        		}
+        		try {
+        			H5.H5Sclose(sid);
+        		}
+        		catch (Exception ex) {
+        			log.debug("{} writeAttribute H5Sclose failure: ", name, ex);
+        		}
+        		try {
+        			H5.H5Aclose(aid);
+        		}
+        		catch (Exception ex) {
+        			log.debug("{} writeAttribute H5Aclose failure: ", name, ex);
+        		}
+        	}
         }
-        finally {
-            try {
-                H5.H5Tclose(tid);
-            }
-            catch (Exception ex) {
-            	log.debug("{} writeAttribute H5Tclose failure: ", name, ex);
-            }
-            try {
-                H5.H5Sclose(sid);
-            }
-            catch (Exception ex) {
-            	log.debug("{} writeAttribute H5Sclose failure: ", name, ex);
-            }
-            try {
-                H5.H5Aclose(aid);
-            }
-            catch (Exception ex) {
-            	log.debug("{} writeAttribute H5Aclose failure: ", name, ex);
-            }
+        else {
+        	log.debug("{} writeAttribute toNative failure: ", name);
         }
 
         obj.close(objID);

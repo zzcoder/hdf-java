@@ -100,6 +100,16 @@ public class H5FileTest extends TestCase {
         super(arg0);
     }
 
+    protected void closeFile() {
+        if (testFile != null) {
+            try {
+                testFile.close();
+            }
+            catch (final Exception ex) {
+            }
+            testFile = null;
+        }
+    }
     /*
      * (non-Javadoc)
      * 
@@ -132,14 +142,7 @@ public class H5FileTest extends TestCase {
     protected void tearDown() throws Exception {
         super.tearDown();
 
-        if (testFile != null) {
-            try {
-                testFile.close();
-            }
-            catch (final Exception ex) {
-            }
-            testFile = null;
-        }
+        closeFile();
     }
 
     /**
