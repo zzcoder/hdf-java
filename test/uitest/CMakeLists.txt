@@ -204,7 +204,7 @@ ADD_TEST (
         -D "TEST_FOLDER=${PROJECT_BINARY_DIR}"
         -D "TEST_OUTPUT=JUnit-gui-treeview-newmenu.out"
         -D "TEST_EXPECT=0"
-        -D "TEST_LOG_LEVEL=debug"
+        -D "TEST_MASK_FILE=TRUE"
         -D "TEST_ERRREF=JUnit-gui-treeview-newmenu.err"
         -D "TEST_REFERENCE=JUnit-gui-treeview-newmenu.txt"
         -P "${HDFJAVA_RESOURCES_DIR}/runTest.cmake"

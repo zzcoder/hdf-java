@@ -87,7 +87,7 @@ ADD_TEST (
         -D "TEST_FOLDER=${HDFJAVA_BINARY_DIR}"
         -D "TEST_OUTPUT=${HDFJAVA_TEST_OBJECT_BINARY_DIR}/JUnit-object-interface.out"
         -D "TEST_EXPECT=0"
-         -D "TEST_FILTER:STRING=${testfilter}"
+        -D "TEST_FILTER:STRING=${testfilter}"
         -D "TEST_REFERENCE=${testfilter}"
         -D "TEST_SKIP_COMPARE=TRUE"
         -P "${HDFJAVA_RESOURCES_DIR}/runTest.cmake"
