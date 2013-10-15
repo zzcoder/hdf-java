@@ -182,7 +182,6 @@ public class H5File extends FileFormat {
     public H5File(String fileName, int access) {
         // Call FileFormat ctor to set absolute path name
         super(fileName);
-
         libver = new int[2];
         attrFlag = false;
 
