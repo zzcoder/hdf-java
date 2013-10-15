@@ -836,40 +836,42 @@ public class H4SDS extends ScalarDS
             throw new HDFException("Unlimted cannot be used with chunking or compression");
         }
 
-        int sdid, sdsid, vgid;
-
-        sdid = (file).getSDAccessID();
+        int sdid = (file).getSDAccessID();
+        int sdsid = -1;
+        int vgid = -1;
         // datatype
         int tid = type.toNative();
 
-        try {
-            sdsid = HDFLibrary.SDcreate(sdid, name, tid, rank, idims);
-            // set fill value to zero.
-            int vsize = HDFLibrary.DFKNTsize(tid);
-            byte[] fill = new byte[vsize];
-            for (int i=0; i<vsize; i++) {
-                fill[i] = 0;
-            }
-            HDFLibrary.SDsetfillvalue(sdsid, fill);
-
-            // when we create a new dataset with unlimited dimension,
-            // we have to write some data into the dataset or otherwise
-            // the current dataset has zero dimensin size.
-
-            // comment out the following lines because SDwritedata fails when
-            // try to write data into a zero dimension array. 05/25/05
-            // don't know why the code was first put here ????
-            /**
-            if (idims[0] == 0 && data == null)
-            {
-                idims[0] = (int)dims[0];
-                data = new byte[tsize*vsize];
-            }
-            */
-
-        } 
-        catch (Exception ex) { 
-        	throw (ex); 
+        if(tid >= 0) {
+	        try {
+	            sdsid = HDFLibrary.SDcreate(sdid, name, tid, rank, idims);
+	            // set fill value to zero.
+	            int vsize = HDFLibrary.DFKNTsize(tid);
+	            byte[] fill = new byte[vsize];
+	            for (int i=0; i<vsize; i++) {
+	                fill[i] = 0;
+	            }
+	            HDFLibrary.SDsetfillvalue(sdsid, fill);
+	
+	            // when we create a new dataset with unlimited dimension,
+	            // we have to write some data into the dataset or otherwise
+	            // the current dataset has zero dimensin size.
+	
+	            // comment out the following lines because SDwritedata fails when
+	            // try to write data into a zero dimension array. 05/25/05
+	            // don't know why the code was first put here ????
+	            /**
+	            if (idims[0] == 0 && data == null)
+	            {
+	                idims[0] = (int)dims[0];
+	                data = new byte[tsize*vsize];
+	            }
+	            */
+	
+	        } 
+	        catch (Exception ex) { 
+	        	throw (ex); 
+	        }
         }
 
         if (sdsid < 0) {

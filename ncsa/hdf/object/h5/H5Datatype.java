@@ -101,7 +101,7 @@ public class H5Datatype extends Datatype {
                 this.oid[0] = HDFNativeData.byteToLong(ref_buf, 0);
             }
             catch (Exception ex) {
-            	log.debug("constructor:", ex);
+            	log.debug("constructor ID {} for {} failed H5Rcreate", theFile.getFID(), this.getFullName());
             }
         }
     }
@@ -198,7 +198,7 @@ public class H5Datatype extends Datatype {
         super(nativeID);
 
         description = getDatatypeDescription(nativeID);
-        fromNative(nativeID);
+      	fromNative(nativeID);
     }
 
     /*
@@ -390,123 +390,128 @@ public class H5Datatype extends Datatype {
         int tclass = -1, tsize = -1, torder=-1;
         boolean isChar = false, isUchar = false;
 
-        try {
-            tclass = H5.H5Tget_class(tid);
-            tsize = H5.H5Tget_size(tid);
-            torder = H5.H5Tget_order(tid);
-            isVLEN = (tclass == HDF5Constants.H5T_VLEN);
-        }
-        catch (Exception ex) {
+        if(tid < 0) {
             datatypeClass = CLASS_NO_CLASS;
         }
+        else {
+        	try {
+        		tclass = H5.H5Tget_class(tid);
+        		tsize = H5.H5Tget_size(tid);
+        		torder = H5.H5Tget_order(tid);
+        		isVLEN = (tclass == HDF5Constants.H5T_VLEN);
+        	}
+        	catch (Exception ex) {
+        		datatypeClass = CLASS_NO_CLASS;
+        	}
 
-        if (torder==HDF5Constants.H5T_ORDER_BE) datatypeOrder = ORDER_BE;
-        else datatypeOrder = ORDER_LE;
-        
-        try {
-            isUchar = H5.H5Tequal(tid, HDF5Constants.H5T_NATIVE_UCHAR);
-            isChar = (H5.H5Tequal(tid, HDF5Constants.H5T_NATIVE_CHAR) || isUchar);
-        }
-        catch (Exception ex) {
-        	log.debug("native char type:", ex);
-        }
+        	if (torder==HDF5Constants.H5T_ORDER_BE) datatypeOrder = ORDER_BE;
+        	else datatypeOrder = ORDER_LE;
 
-        if (tclass == HDF5Constants.H5T_ARRAY) {
-            int tmptid = -1;
-            datatypeClass = CLASS_ARRAY;
-            try {
-                int ndims = H5.H5Tget_array_ndims(tid);
-                dims = new long[ndims];
-                H5.H5Tget_array_dims(tid, dims);
-                tmptid = H5.H5Tget_super(tid);
-                baseType = new H5Datatype(tmptid);
-            }
-            catch (Exception ex) {
-            	log.debug("array type:", ex);
-            }
-            finally {
-                try {
-                    H5.H5Tclose(tmptid);
-                }
-                catch (Exception ex) {
-                	log.debug("finally close:", ex);
-                }
-            }
-        }
-        else if (isChar) {
-            datatypeClass = CLASS_CHAR;
-            if (isUchar) datatypeSign = SIGN_NONE;
-            else datatypeSign = SIGN_2;
-        }
-        else if (tclass == HDF5Constants.H5T_INTEGER) {
-            datatypeClass = CLASS_INTEGER;
-            try {
-                int tsign = H5.H5Tget_sign(tid);
-                if (tsign == HDF5Constants.H5T_SGN_NONE) {
-                    datatypeSign = SIGN_NONE;
-                }
-                else datatypeSign = SIGN_2;
-                	
-            }
-            catch (Exception ex) {
-            	log.debug("int type:", ex);
-            }
-        }
-        else if (tclass == HDF5Constants.H5T_FLOAT) {
-            datatypeClass = CLASS_FLOAT;
-        }
-        else if (tclass == HDF5Constants.H5T_STRING) {
-            try {
-                isVLEN = H5.H5Tis_variable_str(tid);
-            }
-            catch (Exception ex) {
-            	log.debug("var str type:", ex);
-            }
+        	try {
+        		isUchar = H5.H5Tequal(tid, HDF5Constants.H5T_NATIVE_UCHAR);
+        		isChar = (H5.H5Tequal(tid, HDF5Constants.H5T_NATIVE_CHAR) || isUchar);
+        	}
+        	catch (Exception ex) {
+        		log.debug("native char type:", ex);
+        	}
 
-            datatypeClass = CLASS_STRING;
+        	if (tclass == HDF5Constants.H5T_ARRAY) {
+        		int tmptid = -1;
+        		datatypeClass = CLASS_ARRAY;
+        		try {
+        			int ndims = H5.H5Tget_array_ndims(tid);
+        			dims = new long[ndims];
+        			H5.H5Tget_array_dims(tid, dims);
+        			tmptid = H5.H5Tget_super(tid);
+        			baseType = new H5Datatype(tmptid);
+        		}
+        		catch (Exception ex) {
+        			log.debug("array type:", ex);
+        		}
+        		finally {
+        			try {
+        				H5.H5Tclose(tmptid);
+        			}
+        			catch (Exception ex) {
+        				log.debug("finally close:", ex);
+        			}
+        		}
+        	}
+        	else if (isChar) {
+        		datatypeClass = CLASS_CHAR;
+        		if (isUchar) datatypeSign = SIGN_NONE;
+        		else datatypeSign = SIGN_2;
+        	}
+        	else if (tclass == HDF5Constants.H5T_INTEGER) {
+        		datatypeClass = CLASS_INTEGER;
+        		try {
+        			int tsign = H5.H5Tget_sign(tid);
+        			if (tsign == HDF5Constants.H5T_SGN_NONE) {
+        				datatypeSign = SIGN_NONE;
+        			}
+        			else datatypeSign = SIGN_2;
+
+        		}
+        		catch (Exception ex) {
+        			log.debug("int type:", ex);
+        		}
+        	}
+        	else if (tclass == HDF5Constants.H5T_FLOAT) {
+        		datatypeClass = CLASS_FLOAT;
+        	}
+        	else if (tclass == HDF5Constants.H5T_STRING) {
+        		try {
+        			isVLEN = H5.H5Tis_variable_str(tid);
+        		}
+        		catch (Exception ex) {
+        			log.debug("var str type:", ex);
+        		}
+
+        		datatypeClass = CLASS_STRING;
+        	}
+        	else if (tclass == HDF5Constants.H5T_REFERENCE) {
+        		datatypeClass = CLASS_REFERENCE;
+        	}
+        	else if (tclass == HDF5Constants.H5T_ENUM) {
+        		datatypeClass = CLASS_ENUM;
+        		try {
+        			int nMember = H5.H5Tget_nmembers(tid);
+        			String name = null;
+        			int[] val = new int[1];
+        			String enumStr = "";
+        			for (int i = 0; i < nMember; i++) {
+        				name = H5.H5Tget_member_name(tid, i);
+        				H5.H5Tget_member_value(tid, i, val);
+        				enumStr += name + "=" + val[0] + ",";
+        			}
+        			enumMembers = enumStr;
+        		}
+        		catch (Exception ex) {
+        			log.debug("enum type:", ex);
+        		}
+        	}
+        	else if (tclass == HDF5Constants.H5T_VLEN) {
+        		int tmptid = -1;
+        		datatypeClass = CLASS_VLEN;
+        		try {
+        			tmptid = H5.H5Tget_super(tid);
+        			baseType = new H5Datatype(tmptid);
+        		}
+        		catch (Exception ex) {}
+        		finally {
+        			try {
+        				H5.H5Tclose(tmptid);
+        			}
+        			catch (Exception ex) {
+        				log.debug("vlen finally close:", ex);
+        			}
+        		}
+        	}
+        	if (isVLEN)
+        		datatypeSize = -1;
+        	else
+        		datatypeSize = tsize;
         }
-        else if (tclass == HDF5Constants.H5T_REFERENCE) {
-            datatypeClass = CLASS_REFERENCE;
-        }
-        else if (tclass == HDF5Constants.H5T_ENUM) {
-            datatypeClass = CLASS_ENUM;
-            try {
-                int nMember = H5.H5Tget_nmembers(tid);
-                String name = null;
-                int[] val = new int[1];
-                String enumStr = "";
-                for (int i = 0; i < nMember; i++) {
-                    name = H5.H5Tget_member_name(tid, i);
-                    H5.H5Tget_member_value(tid, i, val);
-                    enumStr += name + "=" + val[0] + ",";
-                }
-                enumMembers = enumStr;
-            }
-            catch (Exception ex) {
-            	log.debug("enum type:", ex);
-            }
-        }
-        else if (tclass == HDF5Constants.H5T_VLEN) {
-            int tmptid = -1;
-            datatypeClass = CLASS_VLEN;
-            try {
-                tmptid = H5.H5Tget_super(tid);
-                baseType = new H5Datatype(tmptid);
-            }
-            catch (Exception ex) {}
-            finally {
-                try {
-                    H5.H5Tclose(tmptid);
-                }
-                catch (Exception ex) {
-                	log.debug("vlen finally close:", ex);
-                }
-            }
-        }
-        if (isVLEN)
-            datatypeSize = -1;
-        else
-            datatypeSize = tsize;
     }
 
     /**
@@ -569,13 +574,19 @@ public class H5Datatype extends Datatype {
         try {
             switch (datatypeClass) {
                 case CLASS_ARRAY:
-                    try {
-                        tmptid = baseType.toNative();
-                        tid = H5.H5Tarray_create(tmptid, dims.length, dims);
-                    }
-                    finally {
-                        close(tmptid);
-                    }
+                	if(baseType != null) {
+	                    if((tmptid = baseType.toNative()) >= 0) {
+		                    try {
+		                        tid = H5.H5Tarray_create(tmptid, dims.length, dims);
+		                    }
+		                    finally {
+		                        close(tmptid);
+		                    }
+	                    }
+                	}
+                	else {
+                		log.debug("CLASS_ARRAY base type is NULL");
+                	}
                     break;
                 case CLASS_INTEGER:
                 case CLASS_ENUM:
@@ -647,17 +658,24 @@ public class H5Datatype extends Datatype {
                     }
                     break;
                 case CLASS_VLEN:
-                    try {
-                        tmptid = baseType.toNative();
-                        tid = H5.H5Tvlen_create(tmptid);
-                    }
-                    finally {
-                        close(tmptid);
-                    }
+                	if(baseType != null) {
+	                    if((tmptid = baseType.toNative()) >= 0) {
+		                    try {
+		                        tid = H5.H5Tvlen_create(tmptid);
+		                    }
+		                    finally {
+		                        close(tmptid);
+		                    }
+	                    }
+                	}
+                	else {
+                		log.debug("CLASS_VLEN base type is NULL");
+                	}
                     break;
             } // switch (tclass)
         }
         catch (Exception ex) {
+        	log.debug("toNative figure the datatype", ex);
             tid = -1;
         }
 
@@ -702,6 +720,7 @@ public class H5Datatype extends Datatype {
                 }
             }
             catch (Exception ex) {
+            	log.debug("toNative set up enum members", ex);
                 tid = -1;
             }
 
@@ -709,7 +728,7 @@ public class H5Datatype extends Datatype {
                 H5.H5Tclose(ptid);
             }
             catch (Exception ex) {
-            	log.debug("enum class:", ex);
+            	log.debug("toNative enum class:", ex);
             }
         } // if (datatypeClass == CLASS_ENUM) {
 
@@ -752,34 +771,29 @@ public class H5Datatype extends Datatype {
         }
 
         // data type information
-        int tclass = -1, tsize = -1, tsign = -1;
+        int tclass = -1, tsize = -1;
 
         try {
             tclass = H5.H5Tget_class(tid);
             tsize = H5.H5Tget_size(tid);
-            tsign = H5.H5Tget_sign(tid);
         }
         catch (Exception ex) {
-        	log.debug("data type information:", ex);
+        	log.debug("H5Tget_xxxx data type information:", ex);
         }
 
         try {
             is_variable_str = H5.H5Tis_variable_str(tid);
         }
         catch (Exception ex) {
-        	log.debug("data type information:", ex);
+        	log.debug("H5Tis_variable_str data type information:", ex);
         }
-        try {
-            isVL = (tclass == HDF5Constants.H5T_VLEN);
-        }
-        catch (Exception ex) {
-        	log.debug("data type information:", ex);
-        }
+        isVL = (tclass == HDF5Constants.H5T_VLEN);
+        
         try {
             is_reg_ref = H5.H5Tequal(tid, HDF5Constants.H5T_STD_REF_DSETREG);
         }
         catch (Exception ex) {
-        	log.debug("data type information:", ex);
+        	log.debug("H5Tequal data type information:", ex);
         }
 
         if (is_variable_str || isVL || is_reg_ref) {
@@ -811,14 +825,14 @@ public class H5Datatype extends Datatype {
                 data = allocateArray(superTid, size);
             }
             catch (Exception ex) {
-            	log.debug("enum data type information:", ex);
+            	log.debug("H5T_ENUM class enum data type information:", ex);
             }
             finally {
                 try {
                     H5.H5Tclose(superTid);
                 }
                 catch (Exception ex) {
-                	log.debug("finally close:", ex);
+                	log.debug("H5T_ENUM class finally close:", ex);
                 }
             }
         }
@@ -849,13 +863,15 @@ public class H5Datatype extends Datatype {
                 superTid = H5.H5Tget_super(tid);
                 data = allocateArray(superTid, size * asize);
             }
-            catch (Exception ex) {}
+            catch (Exception ex) {
+            	log.debug("H5T_ARRAY class: ", ex);
+            }
             finally {
                 try {
                     H5.H5Tclose(superTid);
                 }
                 catch (Exception ex) {
-                	log.debug("finally close:", ex);
+                	log.debug("H5T_ARRAY class finally close:", ex);
                 }
             }
         }
@@ -900,8 +916,13 @@ public class H5Datatype extends Datatype {
     public String getDatatypeDescription() {
         if (description == null) {
             int tid = toNative();
-            description = getDatatypeDescription(tid);
-            close(tid);
+            if(tid >= 0) {
+	            description = getDatatypeDescription(tid);
+	            close(tid);
+            }
+            else {
+            	description = "Unknown";            	
+            }
         }
 
         return description;
@@ -918,18 +939,23 @@ public class H5Datatype extends Datatype {
         String description = "Unknown";
 
         // data type information
-        int tclass = -1, tsize = -1, tsign = -1, torder = -1;
+        int tclass = -1, tsize = -1, tsign = -1;
 
         try {
             tclass = H5.H5Tget_class(tid);
             tsize = H5.H5Tget_size(tid);
-            tsign = H5.H5Tget_sign(tid);
         }
         catch (Exception ex) {
-        	log.debug("Unknown:", ex);
+        	log.debug("getDatatypeDescription Unknown:");
         }
 
         if (tclass == HDF5Constants.H5T_INTEGER) {
+            try {
+            	tsign = H5.H5Tget_sign(tid);
+            }
+            catch (Exception ex) {
+            	log.debug("getDatatypeDescription H5Tget_sign failure:", ex);
+            }
             if (tsize == 1) {
                 try {
                     if (tsign == HDF5Constants.H5T_SGN_NONE) {

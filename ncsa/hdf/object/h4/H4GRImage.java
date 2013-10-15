@@ -810,15 +810,18 @@ public class H4GRImage extends ScalarDS
             }
         }
 
-        int grid, vgid;
+        int grid = -1;
+        int vgid = -1;
         int gid = (file).getGRAccessID();
         int tid = type.toNative();
 
-        try {
-            grid = HDFLibrary.GRcreate(gid, name, ncomp, tid, interlace, idims);
-        } 
-        catch (Exception ex) {  
-        	throw (ex); 
+        if(tid >= 0) {
+	        try {
+	            grid = HDFLibrary.GRcreate(gid, name, ncomp, tid, interlace, idims);
+	        } 
+	        catch (Exception ex) {  
+	        	throw (ex); 
+	        }
         }
 
         if (grid < 0) {

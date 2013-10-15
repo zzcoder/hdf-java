@@ -319,13 +319,12 @@ public class H4Datatype extends Datatype
         int tid = -1;
         int tclass = getDatatypeClass();
         int tsize = getDatatypeSize();
-        int torder = getDatatypeOrder();
-        int tsign = getDatatypeSign();
 
         // figure the datatype
         switch (tclass)
         {
             case Datatype.CLASS_INTEGER:
+                int tsign = getDatatypeSign();
                 if (tsize == 1)
                 {
                     if (tsign == Datatype.SIGN_NONE) {
@@ -369,7 +368,8 @@ public class H4Datatype extends Datatype
                 }
                 break;
             case Datatype.CLASS_CHAR:
-                if (tsign == Datatype.SIGN_NONE) {
+                int tsign2 = getDatatypeSign();
+                if (tsign2 == Datatype.SIGN_NONE) {
                     tid = HDFConstants.DFNT_UCHAR;
                 } else {
                     tid = HDFConstants.DFNT_CHAR;

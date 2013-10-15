@@ -22,6 +22,7 @@ import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 import ncsa.hdf.hdf5lib.HDFNativeData;
 import ncsa.hdf.hdf5lib.exceptions.HDF5Exception;
+import ncsa.hdf.hdf5lib.exceptions.HDF5LibraryException;
 import ncsa.hdf.hdf5lib.structs.H5O_info_t;
 import ncsa.hdf.object.Attribute;
 import ncsa.hdf.object.Dataset;
@@ -126,7 +127,7 @@ public class H5ScalarDS extends ScalarDS {
                 this.oid[0] = HDFNativeData.byteToLong(ref_buf, 0);
             }
             catch (Exception ex) {
-            	log.debug("constructor:", ex);
+            	log.debug("constructor ID {} for {} failed H5Rcreate", theFile.getFID(), this.getFullName());
             }
         }
     }
@@ -266,66 +267,74 @@ public class H5ScalarDS extends ScalarDS {
     	Object avalue = null;
     	
         try {
-            // try to find out if the dataset is an image
+            // try to find attribute name
             aid = H5.H5Aopen_by_name(oid, ".", aname, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
-            if (aid > 0) {
-                atid = H5.H5Aget_type(aid);
-                int tmptid = atid;
-                atid = H5.H5Tget_native_type(tmptid);
-                try {
-                    H5.H5Tclose(tmptid);
-                }
-                catch (Exception ex) {
-                	log.debug("try to find out if the dataset is an image:", ex);
-                }
-
-                asid = H5.H5Aget_space(aid);
-                long adims[] = null;
-
-                int arank = H5.H5Sget_simple_extent_ndims(asid);
-                if (arank > 0) {
-                    adims = new long[arank];
-                    H5.H5Sget_simple_extent_dims(asid, adims, null);
-                }
-
-                // retrieve the attribute value
-                long lsize = 1;
-                for (int j = 0; j < adims.length; j++) {
-                    lsize *= adims[j];
-                }
-                avalue = H5Datatype.allocateArray(atid, (int) lsize);
-
-                if (avalue != null) {
-                    H5.H5Aread(aid, atid, avalue);
-
-                    if (H5Datatype.isUnsigned(atid))
-                        avalue = convertFromUnsignedC(avalue, null);
-                }
-            } // if (aid > 0)
+        }
+        catch (HDF5LibraryException ex5) {
+        	log.debug("Failed to find attribute {} : Expected", aname);
         }
         catch (Exception ex) {
-        	log.debug("try to find out if the dataset is an image:", ex);
+        	log.debug("try to find attribute {}:", aname, ex);
         }
-        finally {
-            try {
-                H5.H5Tclose(atid);
-            }
-            catch (HDF5Exception ex) {
-            	log.debug("finally close:", ex);
-            }
-            try {
-                H5.H5Sclose(asid);
-            }
-            catch (HDF5Exception ex) {
-            	log.debug("finally close:", ex);
-            }
-            try {
-                H5.H5Aclose(aid);
-            }
-            catch (HDF5Exception ex) {
-            	log.debug("finally close:", ex);
-            }
-        }
+        if (aid > 0) {
+        	try {
+        		atid = H5.H5Aget_type(aid);
+        		int tmptid = atid;
+        		atid = H5.H5Tget_native_type(tmptid);
+        		try {
+        			H5.H5Tclose(tmptid);
+        		}
+        		catch (Exception ex) {
+        			log.debug("close H5Aget_type after getting H5Tget_native_type:", ex);
+        		}
+
+        		asid = H5.H5Aget_space(aid);
+        		long adims[] = null;
+
+        		int arank = H5.H5Sget_simple_extent_ndims(asid);
+        		if (arank > 0) {
+        			adims = new long[arank];
+        			H5.H5Sget_simple_extent_dims(asid, adims, null);
+        		}
+
+        		// retrieve the attribute value
+        		long lsize = 1;
+        		for (int j = 0; j < adims.length; j++) {
+        			lsize *= adims[j];
+        		}
+        		avalue = H5Datatype.allocateArray(atid, (int) lsize);
+
+        		if (avalue != null) {
+        			H5.H5Aread(aid, atid, avalue);
+
+        			if (H5Datatype.isUnsigned(atid))
+        				avalue = convertFromUnsignedC(avalue, null);
+        		}
+        	}
+        	catch (Exception ex) {
+        		log.debug("try to get value for attribute {}:", aname, ex);
+        	}
+        	finally {
+        		try {
+        			H5.H5Tclose(atid);
+        		}
+        		catch (HDF5Exception ex) {
+        			log.debug("finally close:", ex);
+        		}
+        		try {
+        			H5.H5Sclose(asid);
+        		}
+        		catch (HDF5Exception ex) {
+        			log.debug("finally close:", ex);
+        		}
+        		try {
+        			H5.H5Aclose(aid);
+        		}
+        		catch (HDF5Exception ex) {
+        			log.debug("finally close:", ex);
+        		}
+        	}
+        } // if (aid > 0)
     	
         return avalue;
     }
@@ -345,134 +354,136 @@ public class H5ScalarDS extends ScalarDS {
         int did = -1, sid = -1, tid = -1;
 
         did = open();
-        paletteRefs = getPaletteRefs(did);
+        if(did >= 0) {
+        	paletteRefs = getPaletteRefs(did);
 
-        int pid = -1;
-        try {
-            sid = H5.H5Dget_space(did);
-            tid = H5.H5Dget_type(did);
+        	int pid = -1;
+        	try {
+        		sid = H5.H5Dget_space(did);
+        		tid = H5.H5Dget_type(did);
 
-            int tclass = H5.H5Tget_class(tid);
-            rank = H5.H5Sget_simple_extent_ndims(sid);
+        		int tclass = H5.H5Tget_class(tid);
+        		rank = H5.H5Sget_simple_extent_ndims(sid);
 
-            isText = (tclass == HDF5Constants.H5T_STRING);
-            isVLEN = ((tclass == HDF5Constants.H5T_VLEN) || H5.H5Tis_variable_str(tid));
-            isEnum = (tclass == HDF5Constants.H5T_ENUM);
-            isUnsigned = H5Datatype.isUnsigned(tid);
-            isRegRef = H5.H5Tequal(tid, HDF5Constants.H5T_STD_REF_DSETREG);
+        		isText = (tclass == HDF5Constants.H5T_STRING);
+        		isVLEN = ((tclass == HDF5Constants.H5T_VLEN) || H5.H5Tis_variable_str(tid));
+        		isEnum = (tclass == HDF5Constants.H5T_ENUM);
+        		isUnsigned = H5Datatype.isUnsigned(tid);
+        		isRegRef = H5.H5Tequal(tid, HDF5Constants.H5T_STD_REF_DSETREG);
 
-            if (tclass == HDF5Constants.H5T_ARRAY) {
-                // use the base datatype to define the array
-                int basetid = H5.H5Tget_super(tid);
-                int baseclass = H5.H5Tget_class(basetid);
-                isArrayOfCompound = (baseclass == HDF5Constants.H5T_COMPOUND);
-                isArrayOfVLEN = (baseclass == HDF5Constants.H5T_VLEN);
-            }
+        		if (tclass == HDF5Constants.H5T_ARRAY) {
+        			// use the base datatype to define the array
+        			int basetid = H5.H5Tget_super(tid);
+        			int baseclass = H5.H5Tget_class(basetid);
+        			isArrayOfCompound = (baseclass == HDF5Constants.H5T_COMPOUND);
+        			isArrayOfVLEN = (baseclass == HDF5Constants.H5T_VLEN);
+        		}
 
-            // check if it is an external dataset
-            try {
-                pid = H5.H5Dget_create_plist(did);
-                int nfiles = H5.H5Pget_external_count(pid);
-                isExternal = (nfiles > 0);
-            }
-            catch (Exception ex) {
-            	log.debug("check if it is an external dataset:", ex);
-            }
+        		// check if it is an external dataset
+        		try {
+        			pid = H5.H5Dget_create_plist(did);
+        			int nfiles = H5.H5Pget_external_count(pid);
+        			isExternal = (nfiles > 0);
+        		}
+        		catch (Exception ex) {
+        			log.debug("check if it is an external dataset:", ex);
+        		}
 
-            // check if datatype in file is native datatype
-            int tmptid = 0;
-            try {
-                tmptid = H5.H5Tget_native_type(tid);
-                isNativeDatatype = H5.H5Tequal(tid, tmptid);
+        		// check if datatype in file is native datatype
+        		int tmptid = 0;
+        		try {
+        			tmptid = H5.H5Tget_native_type(tid);
+        			isNativeDatatype = H5.H5Tequal(tid, tmptid);
 
-                /* see if fill value is defined */
-                int[] fillStatus = { 0 };
-                if (H5.H5Pfill_value_defined(pid, fillStatus) >= 0) {
-                    if (fillStatus[0] == HDF5Constants.H5D_FILL_VALUE_USER_DEFINED) {
-                        fillValue = H5Datatype.allocateArray(tmptid, 1);
-                        try {
-                            H5.H5Pget_fill_value(pid, tmptid, fillValue);
-                            if (fillValue !=null) {
-                                if(isFillValueConverted)
-                                    fillValue = ScalarDS.convertToUnsignedC(fillValue, null);
-                            	
-                        		int n = Array.getLength(fillValue);
-                        		for (int i=0; i<n; i++)
-                        			addFilteredImageValue((Number)Array.get(fillValue,  i));
-                            }
-                        }
-                        catch (Exception ex2) {
-                            fillValue = null;
-                        }
-                    }
-                }
-            }
-            catch (HDF5Exception ex) {
-                ;
-            }
-            finally {
-                try {
-                    H5.H5Tclose(tmptid);
-                }
-                catch (HDF5Exception ex) {
-                	log.debug("finally close:", ex);
-                }
-                try {
-                    H5.H5Pclose(pid);
-                }
-                catch (Exception ex) {
-                	log.debug("finally close:", ex);
-                }
-            }
+        			/* see if fill value is defined */
+        			int[] fillStatus = { 0 };
+        			if (H5.H5Pfill_value_defined(pid, fillStatus) >= 0) {
+        				if (fillStatus[0] == HDF5Constants.H5D_FILL_VALUE_USER_DEFINED) {
+        					fillValue = H5Datatype.allocateArray(tmptid, 1);
+        					try {
+        						H5.H5Pget_fill_value(pid, tmptid, fillValue);
+        						if (fillValue !=null) {
+        							if(isFillValueConverted)
+        								fillValue = ScalarDS.convertToUnsignedC(fillValue, null);
 
-            if (rank == 0) {
-                // a scalar data point
-                rank = 1;
-                dims = new long[1];
-                dims[0] = 1;
-            }
-            else {
-                dims = new long[rank];
-                maxDims = new long[rank];
-                H5.H5Sget_simple_extent_dims(sid, dims, maxDims);
-            }
+        							int n = Array.getLength(fillValue);
+        							for (int i=0; i<n; i++)
+        								addFilteredImageValue((Number)Array.get(fillValue,  i));
+        						}
+        					}
+        					catch (Exception ex2) {
+        						fillValue = null;
+        					}
+        				}
+        			}
+        		}
+        		catch (HDF5Exception ex) {
+        			;
+        		}
+        		finally {
+        			try {
+        				H5.H5Tclose(tmptid);
+        			}
+        			catch (HDF5Exception ex) {
+        				log.debug("finally close:", ex);
+        			}
+        			try {
+        				H5.H5Pclose(pid);
+        			}
+        			catch (Exception ex) {
+        				log.debug("finally close:", ex);
+        			}
+        		}
+
+        		if (rank == 0) {
+        			// a scalar data point
+        			rank = 1;
+        			dims = new long[1];
+        			dims[0] = 1;
+        		}
+        		else {
+        			dims = new long[rank];
+        			maxDims = new long[rank];
+        			H5.H5Sget_simple_extent_dims(sid, dims, maxDims);
+        		}
+        	}
+        	catch (HDF5Exception ex) {
+        		log.debug("init():", ex);
+        	}
+        	finally {
+        		try {
+        			H5.H5Tclose(tid);
+        		}
+        		catch (HDF5Exception ex2) {
+        			log.debug("finally close:", ex2);
+        		}
+        		try {
+        			H5.H5Sclose(sid);
+        		}
+        		catch (HDF5Exception ex2) {
+        			log.debug("finally close:", ex2);
+        		}
+        	}
+
+        	// check for the type of image and interlace mode
+        	// it is a true color image at one of three cases:
+        	// 1) IMAGE_SUBCLASS = IMAGE_TRUECOLOR,
+        	// 2) INTERLACE_MODE = INTERLACE_PIXEL,
+        	// 3) INTERLACE_MODE = INTERLACE_PLANE
+        	if ((rank >= 3) && isImage) {
+        		interlace = -1;
+        		isTrueColor = isStringAttributeOf(did, "IMAGE_SUBCLASS", "IMAGE_TRUECOLOR");
+
+        		if (isTrueColor) {
+        			interlace = INTERLACE_PIXEL;
+        			if (isStringAttributeOf(did, "INTERLACE_MODE", "INTERLACE_PLANE")) {
+        				interlace = INTERLACE_PLANE;
+        			}
+        		}
+        	}
+
+        	close(did);
         }
-        catch (HDF5Exception ex) {
-        	log.debug("init():", ex);
-        }
-        finally {
-            try {
-                H5.H5Tclose(tid);
-            }
-            catch (HDF5Exception ex2) {
-            	log.debug("finally close:", ex2);
-            }
-            try {
-                H5.H5Sclose(sid);
-            }
-            catch (HDF5Exception ex2) {
-            	log.debug("finally close:", ex2);
-            }
-        }
-
-        // check for the type of image and interlace mode
-        // it is a true color image at one of three cases:
-        // 1) IMAGE_SUBCLASS = IMAGE_TRUECOLOR,
-        // 2) INTERLACE_MODE = INTERLACE_PIXEL,
-        // 3) INTERLACE_MODE = INTERLACE_PLANE
-        if ((rank >= 3) && isImage) {
-            interlace = -1;
-            isTrueColor = isStringAttributeOf(did, "IMAGE_SUBCLASS", "IMAGE_TRUECOLOR");
-
-            if (isTrueColor) {
-                interlace = INTERLACE_PIXEL;
-                if (isStringAttributeOf(did, "INTERLACE_MODE", "INTERLACE_PLANE")) {
-                    interlace = INTERLACE_PLANE;
-                }
-            }
-        }
-
-        close(did);
 
         startDims = new long[rank];
         selectedDims = new long[rank];
@@ -640,88 +651,96 @@ public class H5ScalarDS extends ScalarDS {
         }
         dname = path + dstName;
 
-        try {
-            srcdid = open();
-            tid = H5.H5Dget_type(srcdid);
-            sid = H5.H5Screate_simple(dims.length, dims, null);
-            plist = H5.H5Dget_create_plist(srcdid);
+        srcdid = open();
+        if(srcdid >= 0) {
+        	try {
+        		tid = H5.H5Dget_type(srcdid);
+        		sid = H5.H5Screate_simple(dims.length, dims, null);
+        		plist = H5.H5Dget_create_plist(srcdid);
 
-            long[] chunks = new long[dims.length];
-            boolean setChunkFlag = false;
-            try {
-                H5.H5Pget_chunk(plist, dims.length, chunks);
-                for (int i = 0; i < dims.length; i++) {
-                    if (dims[i] < chunks[i]) {
-                        setChunkFlag = true;
-                        if (dims[i] == 1)
-                            chunks[i] = 1;
-                        else
-                            chunks[i] = dims[i] / 2;
-                    }
-                }
-            }
-            catch (Exception ex) {
-            	log.debug("copy chunk:", ex);
-            }
+        		long[] chunks = new long[dims.length];
+        		boolean setChunkFlag = false;
+        		try {
+        			H5.H5Pget_chunk(plist, dims.length, chunks);
+        			for (int i = 0; i < dims.length; i++) {
+        				if (dims[i] < chunks[i]) {
+        					setChunkFlag = true;
+        					if (dims[i] == 1)
+        						chunks[i] = 1;
+        					else
+        						chunks[i] = dims[i] / 2;
+        				}
+        			}
+        		}
+        		catch (Exception ex) {
+        			log.debug("copy chunk:", ex);
+        		}
 
-            if (setChunkFlag) H5.H5Pset_chunk(plist, dims.length, chunks);
+        		if (setChunkFlag) H5.H5Pset_chunk(plist, dims.length, chunks);
 
-            try {
-                dstdid = H5.H5Dcreate(pgroup.getFID(), dname, tid, sid, HDF5Constants.H5P_DEFAULT, plist,
-                        HDF5Constants.H5P_DEFAULT);
-            }
-            catch (Exception e) {
-            	log.debug("copy create:", e);
-            }
-            finally {
-                try {
-                    H5.H5Dclose(dstdid);
-                }
-                catch (Exception ex2) {
-                	log.debug("finally close:", ex2);
-                }
-            }
+        		try {
+        			dstdid = H5.H5Dcreate(pgroup.getFID(), dname, tid, sid, HDF5Constants.H5P_DEFAULT, plist,
+        					HDF5Constants.H5P_DEFAULT);
+        		}
+        		catch (Exception e) {
+        			log.debug("copy create:", e);
+        		}
+        		finally {
+        			try {
+        				H5.H5Dclose(dstdid);
+        			}
+        			catch (Exception ex2) {
+        				log.debug("finally close:", ex2);
+        			}
+        		}
 
-            dataset = new H5ScalarDS(pgroup.getFileFormat(), dstName, path);
-            if (buff != null) {
-                dataset.init();
-                dataset.write(buff);
-            }
+        		dataset = new H5ScalarDS(pgroup.getFileFormat(), dstName, path);
+        		if (buff != null) {
+        			dataset.init();
+        			dataset.write(buff);
+        		}
 
-            dstdid = dataset.open();
-            H5File.copyAttributes(srcdid, dstdid);
-        }
-        finally {
-            try {
-                H5.H5Pclose(plist);
-            }
-            catch (Exception ex) {
-            	log.debug("finally close:", ex);
-            }
-            try {
-                H5.H5Sclose(sid);
-            }
-            catch (Exception ex) {
-            	log.debug("finally close:", ex);
-            }
-            try {
-                H5.H5Tclose(tid);
-            }
-            catch (Exception ex) {
-            	log.debug("finally close:", ex);
-            }
-            try {
-                H5.H5Dclose(srcdid);
-            }
-            catch (Exception ex) {
-            	log.debug("finally close:", ex);
-            }
-            try {
-                H5.H5Dclose(dstdid);
-            }
-            catch (Exception ex) {
-            	log.debug("finally close:", ex);
-            }
+        		dstdid = dataset.open();
+        		if(dstdid >= 0) {
+        			try {
+        				H5File.copyAttributes(srcdid, dstdid);
+        			}
+        			finally {
+        				try {
+        					H5.H5Dclose(dstdid);
+        				}
+        				catch (Exception ex) {
+        					log.debug("finally close:", ex);
+        				}
+        			}
+        		}
+        	}
+        	finally {
+        		try {
+        			H5.H5Pclose(plist);
+        		}
+        		catch (Exception ex) {
+        			log.debug("finally close:", ex);
+        		}
+        		try {
+        			H5.H5Sclose(sid);
+        		}
+        		catch (Exception ex) {
+        			log.debug("finally close:", ex);
+        		}
+        		try {
+        			H5.H5Tclose(tid);
+        		}
+        		catch (Exception ex) {
+        			log.debug("finally close:", ex);
+        		}
+        		try {
+        			H5.H5Dclose(srcdid);
+        		}
+        		catch (Exception ex) {
+        			log.debug("finally close:", ex);
+        		}
+        	}
         }
 
         pgroup.addToMemberList(dataset);
@@ -745,51 +764,53 @@ public class H5ScalarDS extends ScalarDS {
         }
 
         int did = open();
-        int fspace = -1, mspace = -1, tid = -1;
+        if(did >= 0) {
+        	int fspace = -1, mspace = -1, tid = -1;
 
-        try {
-            long[] lsize = { 1 };
-            for (int j = 0; j < selectedDims.length; j++) {
-                lsize[0] *= selectedDims[j];
-            }
+        	try {
+        		long[] lsize = { 1 };
+        		for (int j = 0; j < selectedDims.length; j++) {
+        			lsize[0] *= selectedDims[j];
+        		}
 
-            fspace = H5.H5Dget_space(did);
-            mspace = H5.H5Screate_simple(rank, selectedDims, null);
+        		fspace = H5.H5Dget_space(did);
+        		mspace = H5.H5Screate_simple(rank, selectedDims, null);
 
-            // set the rectangle selection
-            // HDF5 bug: for scalar dataset, H5Sselect_hyperslab gives core dump
-            if (rank * dims[0] > 1) {
-                H5.H5Sselect_hyperslab(fspace, HDF5Constants.H5S_SELECT_SET, startDims, selectedStride, selectedDims,
-                        null); // set
-                // block
-                // to 1
-            }
+        		// set the rectangle selection
+        		// HDF5 bug: for scalar dataset, H5Sselect_hyperslab gives core dump
+        		if (rank * dims[0] > 1) {
+        			H5.H5Sselect_hyperslab(fspace, HDF5Constants.H5S_SELECT_SET, startDims, selectedStride, selectedDims,
+        					null); // set
+        			// block
+        			// to 1
+        		}
 
-            tid = H5.H5Dget_type(did);
-            int size = H5.H5Tget_size(tid) * (int) lsize[0];
-            theData = new byte[size];
-            H5.H5Dread(did, tid, mspace, fspace, HDF5Constants.H5P_DEFAULT, theData);
-        }
-        finally {
-            try {
-                H5.H5Sclose(fspace);
-            }
-            catch (Exception ex2) {
-            	log.debug("finally close:", ex2);
-            }
-            try {
-                H5.H5Sclose(mspace);
-            }
-            catch (Exception ex2) {
-            	log.debug("finally close:", ex2);
-            }
-            try {
-                H5.H5Tclose(tid);
-            }
-            catch (HDF5Exception ex2) {
-            	log.debug("finally close:", ex2);
-            }
-            close(did);
+        		tid = H5.H5Dget_type(did);
+        		int size = H5.H5Tget_size(tid) * (int) lsize[0];
+        		theData = new byte[size];
+        		H5.H5Dread(did, tid, mspace, fspace, HDF5Constants.H5P_DEFAULT, theData);
+        	}
+        	finally {
+        		try {
+        			H5.H5Sclose(fspace);
+        		}
+        		catch (Exception ex2) {
+        			log.debug("finally close:", ex2);
+        		}
+        		try {
+        			H5.H5Sclose(mspace);
+        		}
+        		catch (Exception ex2) {
+        			log.debug("finally close:", ex2);
+        		}
+        		try {
+        			H5.H5Tclose(tid);
+        		}
+        		catch (HDF5Exception ex2) {
+        			log.debug("finally close:", ex2);
+        		}
+        		close(did);
+        	}
         }
 
         return theData;
@@ -823,96 +844,100 @@ public class H5ScalarDS extends ScalarDS {
         }
 
         long[] lsize = { 1 };
-        try {
-            did = open();
-            lsize[0] = selectHyperslab(did, spaceIDs);
+        did = open();
+        if(did >= 0) {
+        	try {
+        		lsize[0] = selectHyperslab(did, spaceIDs);
 
-            if (lsize[0] == 0) {
-                throw new HDF5Exception("No data to read.\nEither the dataset or the selected subset is empty.");
-            }
+        		if (lsize[0] == 0) {
+        			throw new HDF5Exception("No data to read.\nEither the dataset or the selected subset is empty.");
+        		}
 
-            // check is storage space is allocated
-            try {
-                long ssize = H5.H5Dget_storage_size(did);
-                if (ssize <= 0) {
-                    throw new HDF5Exception("Storage space is not allocated.");
-                }
-            }
-            catch (Exception ex) {
-            	log.debug("check is storage space is allocated:", ex);
-            }
+        		// check is storage space is allocated
+        		try {
+        			long ssize = H5.H5Dget_storage_size(did);
+        			if (ssize <= 0) {
+        				throw new HDF5Exception("Storage space is not allocated.");
+        			}
+        		}
+        		catch (Exception ex) {
+        			log.debug("check is storage space is allocated:", ex);
+        		}
 
-            tid = H5.H5Dget_type(did);
-            if (!isNativeDatatype) {
-                int tmptid = -1;
-                try {
-                    tmptid = tid;
-                    tid = H5.H5Tget_native_type(tmptid);
-                }
-                finally {
-                    try {
-                        H5.H5Tclose(tmptid);
-                    }
-                    catch (Exception ex2) {
-                    	log.debug("finally close:", ex2);
-                    }
-                }
-            }
+        		tid = H5.H5Dget_type(did);
+        		if (!isNativeDatatype) {
+        			int tmptid = -1;
+        			try {
+        				tmptid = tid;
+        				tid = H5.H5Tget_native_type(tmptid);
+        			}
+        			finally {
+        				try {
+        					H5.H5Tclose(tmptid);
+        				}
+        				catch (Exception ex2) {
+        					log.debug("finally close:", ex2);
+        				}
+        			}
+        		}
 
-            boolean isREF = (H5.H5Tequal(tid, HDF5Constants.H5T_STD_REF_OBJ));
+        		boolean isREF = (H5.H5Tequal(tid, HDF5Constants.H5T_STD_REF_OBJ));
 
-            if ((originalBuf == null) || isText || isREF || ((originalBuf != null) && (lsize[0] != nPoints))) {
-                try {
-                    theData = H5Datatype.allocateArray(tid, (int) lsize[0]);
-                }
-                catch (OutOfMemoryError err) {
-                    throw new HDF5Exception("Out Of Memory.");
-                }
-            }
-            else {
-                theData = originalBuf; // reuse the buffer if the size is the
-                // same
-            }
+        		if ((originalBuf == null) || isText || isREF || ((originalBuf != null) && (lsize[0] != nPoints))) {
+        			try {
+        				theData = H5Datatype.allocateArray(tid, (int) lsize[0]);
+        			}
+        			catch (OutOfMemoryError err) {
+        				throw new HDF5Exception("Out Of Memory.");
+        			}
+        		}
+        		else {
+        			theData = originalBuf; // reuse the buffer if the size is the
+        			// same
+        		}
 
-            if (theData != null) {
-                if (isVLEN) {
-                    H5.H5DreadVL(did, tid, spaceIDs[0], spaceIDs[1], HDF5Constants.H5P_DEFAULT, (Object[]) theData);
-                }
-                else {
-                    H5.H5Dread(did, tid, spaceIDs[0], spaceIDs[1], HDF5Constants.H5P_DEFAULT, theData);
+        		if (theData != null) {
+        			if (isVLEN) {
+        				H5.H5DreadVL(did, tid, spaceIDs[0], spaceIDs[1], HDF5Constants.H5P_DEFAULT, (Object[]) theData);
+        			}
+        			else {
+        				H5.H5Dread(did, tid, spaceIDs[0], spaceIDs[1], HDF5Constants.H5P_DEFAULT, theData);
 
-                    if (isText && convertByteToString) {
-                        theData = byteToString((byte[]) theData, H5.H5Tget_size(tid));
-                    }
-                    else if (isREF) {
-                        theData = HDFNativeData.byteToLong((byte[]) theData);
-                    }
-                    else if (isEnum && isEnumConverted()) {
-                        theData = H5Datatype.convertEnumValueToName(tid, theData, null);
-                    }
-                }
-            } // if (theData != null)
-        }
-        finally {
-            try {
-                H5.H5Sclose(spaceIDs[0]);
-            }
-            catch (Exception ex) {
-            	log.debug("finally close:", ex);
-            }
-            try {
-                H5.H5Sclose(spaceIDs[1]);
-            }
-            catch (Exception ex) {
-            	log.debug("finally close:", ex);
-            }
-            try {
-                H5.H5Tclose(tid);
-            }
-            catch (Exception ex2) {
-            	log.debug("finally close:", ex2);
-            }
-            close(did);
+        				if (isText && convertByteToString) {
+        					theData = byteToString((byte[]) theData, H5.H5Tget_size(tid));
+        				}
+        				else if (isREF) {
+        					theData = HDFNativeData.byteToLong((byte[]) theData);
+        				}
+        				else if (isEnum && isEnumConverted()) {
+        					theData = H5Datatype.convertEnumValueToName(tid, theData, null);
+        				}
+        			}
+        		} // if (theData != null)
+        	}
+        	finally {
+        		try {
+        			if(HDF5Constants.H5S_ALL != spaceIDs[0])
+        				H5.H5Sclose(spaceIDs[0]);
+        		}
+        		catch (Exception ex) {
+        			log.debug("finally close:", ex);
+        		}
+        		try {
+        			if(HDF5Constants.H5S_ALL != spaceIDs[1])
+        				H5.H5Sclose(spaceIDs[1]);
+        		}
+        		catch (Exception ex) {
+        			log.debug("finally close:", ex);
+        		}
+        		try {
+        			H5.H5Tclose(tid);
+        		}
+        		catch (Exception ex2) {
+        			log.debug("finally close:", ex2);
+        		}
+        		close(did);
+        	}
         }
 
         return theData;
@@ -941,73 +966,77 @@ public class H5ScalarDS extends ScalarDS {
         }
 
         long[] lsize = { 1 };
-        try {
-            did = open();
-            lsize[0] = selectHyperslab(did, spaceIDs);
-            tid = H5.H5Dget_type(did);
+        did = open();
+        if(did >= 0) {
+        	try {
+        		lsize[0] = selectHyperslab(did, spaceIDs);
+        		tid = H5.H5Dget_type(did);
 
-            if (!isNativeDatatype) {
-                int tmptid = -1;
-                try {
-                    tmptid = tid;
-                    tid = H5.H5Tget_native_type(tmptid);
-                }
-                finally {
-                    try {
-                        H5.H5Tclose(tmptid);
-                    }
-                    catch (Exception ex2) {
-                    	log.debug("finally close:", ex2);
-                    }
-                }
-            }
+        		if (!isNativeDatatype) {
+        			int tmptid = -1;
+        			try {
+        				tmptid = tid;
+        				tid = H5.H5Tget_native_type(tmptid);
+        			}
+        			finally {
+        				try {
+        					H5.H5Tclose(tmptid);
+        				}
+        				catch (Exception ex2) {
+        					log.debug("finally close:", ex2);
+        				}
+        			}
+        		}
 
-            isText = (H5.H5Tget_class(tid) == HDF5Constants.H5T_STRING);
+        		isText = (H5.H5Tget_class(tid) == HDF5Constants.H5T_STRING);
 
-            // check if need to convert integer data
-            int tsize = H5.H5Tget_size(tid);
-            String cname = buf.getClass().getName();
-            char dname = cname.charAt(cname.lastIndexOf("[") + 1);
-            boolean doConversion = (((tsize == 1) && (dname == 'S')) || ((tsize == 2) && (dname == 'I'))
-                    || ((tsize == 4) && (dname == 'J')) || (isUnsigned && unsignedConverted));
+        		// check if need to convert integer data
+        		int tsize = H5.H5Tget_size(tid);
+        		String cname = buf.getClass().getName();
+        		char dname = cname.charAt(cname.lastIndexOf("[") + 1);
+        		boolean doConversion = (((tsize == 1) && (dname == 'S')) || ((tsize == 2) && (dname == 'I'))
+        				|| ((tsize == 4) && (dname == 'J')) || (isUnsigned && unsignedConverted));
 
-            tmpData = buf;
-            if (doConversion) {
-                tmpData = convertToUnsignedC(buf, null);
-            }
-            // do not convert v-len strings, regardless of conversion request
-            // type
-            else if (isText && convertByteToString && !H5.H5Tis_variable_str(tid)) {
-                tmpData = stringToByte((String[]) buf, H5.H5Tget_size(tid));
-            }
-            else if (isEnum && (Array.get(buf, 0) instanceof String)) {
-                tmpData = H5Datatype.convertEnumNameToValue(tid, (String[]) buf, null);
-            }
+        		tmpData = buf;
+        		if (doConversion) {
+        			tmpData = convertToUnsignedC(buf, null);
+        		}
+        		// do not convert v-len strings, regardless of conversion request
+        		// type
+        		else if (isText && convertByteToString && !H5.H5Tis_variable_str(tid)) {
+        			tmpData = stringToByte((String[]) buf, H5.H5Tget_size(tid));
+        		}
+        		else if (isEnum && (Array.get(buf, 0) instanceof String)) {
+        			tmpData = H5Datatype.convertEnumNameToValue(tid, (String[]) buf, null);
+        		}
 
-            H5.H5Dwrite(did, tid, spaceIDs[0], spaceIDs[1], HDF5Constants.H5P_DEFAULT, tmpData);
+        		H5.H5Dwrite(did, tid, spaceIDs[0], spaceIDs[1], HDF5Constants.H5P_DEFAULT, tmpData);
 
-        }
-        finally {
-            tmpData = null;
-            try {
-                H5.H5Sclose(spaceIDs[0]);
-            }
-            catch (Exception ex) {
-            	log.debug("finally close:", ex);
-            }
-            try {
-                H5.H5Sclose(spaceIDs[1]);
-            }
-            catch (Exception ex) {
-            	log.debug("finally close:", ex);
-            }
-            try {
-                H5.H5Tclose(tid);
-            }
-            catch (Exception ex) {
-            	log.debug("finally close:", ex);
-            }
-            close(did);
+        	}
+        	finally {
+        		tmpData = null;
+        		try {
+        			if(HDF5Constants.H5S_ALL != spaceIDs[0])
+        				H5.H5Sclose(spaceIDs[0]);
+        		}
+        		catch (Exception ex) {
+        			log.debug("finally close:", ex);
+        		}
+        		try {
+        			if(HDF5Constants.H5S_ALL != spaceIDs[1])
+        				H5.H5Sclose(spaceIDs[1]);
+        		}
+        		catch (Exception ex) {
+        			log.debug("finally close:", ex);
+        		}
+        		try {
+        			H5.H5Tclose(tid);
+        		}
+        		catch (Exception ex) {
+        			log.debug("finally close:", ex);
+        		}
+        		close(did);
+        	}
         }
     }
 
@@ -1079,6 +1108,7 @@ public class H5ScalarDS extends ScalarDS {
             this.linkTargetObjName = H5File.getLinkTargetName(this);
         }
         catch (Exception ex) {
+        	log.debug("getLinkTargetName failed: ", ex);
         }
 
         if (attributeList != null) {
@@ -1096,101 +1126,103 @@ public class H5ScalarDS extends ScalarDS {
                 order = attrPropList[1];
             }
         }
-        try {
-            did = open();
-            attributeList = H5File.getAttribute(did, indxType, order);
+        did = open();
+        if(did >= 0) {
+        	try {
+        		attributeList = H5File.getAttribute(did, indxType, order);
 
-            // get the compression and chunk information
-            pid = H5.H5Dget_create_plist(did);
-            if (H5.H5Pget_layout(pid) == HDF5Constants.H5D_CHUNKED) {
-                chunkSize = new long[rank];
-                H5.H5Pget_chunk(pid, rank, chunkSize);
-            }
-            else {
-                chunkSize = null;
-            }
+        		// get the compression and chunk information
+        		pid = H5.H5Dget_create_plist(did);
+        		if (H5.H5Pget_layout(pid) == HDF5Constants.H5D_CHUNKED) {
+        			chunkSize = new long[rank];
+        			H5.H5Pget_chunk(pid, rank, chunkSize);
+        		}
+        		else {
+        			chunkSize = null;
+        		}
 
-            int[] flags = { 0, 0 };
-            long[] cd_nelmts = { 2 };
-            int[] cd_values = { 0, 0 };
-            String[] cd_name = { "", "" };
-            int nfilt = H5.H5Pget_nfilters(pid);
-            int filter = -1;
-            int[] filter_config = { 1 };
-            compression = "";
+        		int[] flags = { 0, 0 };
+        		long[] cd_nelmts = { 2 };
+        		int[] cd_values = { 0, 0 };
+        		String[] cd_name = { "", "" };
+        		int nfilt = H5.H5Pget_nfilters(pid);
+        		int filter = -1;
+        		int[] filter_config = { 1 };
+        		compression = "";
 
-            for (int i = 0; i < nfilt; i++) {
-                if (i > 0) {
-                    compression += ", ";
-                }
+        		for (int i = 0; i < nfilt; i++) {
+        			if (i > 0) {
+        				compression += ", ";
+        			}
 
-                try {
-                    filter = H5.H5Pget_filter(pid, i, flags, cd_nelmts, cd_values, 120, cd_name, filter_config);
-                }
-                catch (Throwable err) {
-                    compression += "ERROR";
-                    continue;
-                }
+        			try {
+        				filter = H5.H5Pget_filter(pid, i, flags, cd_nelmts, cd_values, 120, cd_name, filter_config);
+        			}
+        			catch (Throwable err) {
+        				compression += "ERROR";
+        				continue;
+        			}
 
-                if (filter == HDF5Constants.H5Z_FILTER_DEFLATE) {
-                    compression += "GZIP: level = " + cd_values[0];
-                }
-                else if (filter == HDF5Constants.H5Z_FILTER_FLETCHER32) {
-                    compression += "Error detection filter";
-                }
-                else if (filter == HDF5Constants.H5Z_FILTER_SHUFFLE) {
-                    compression += "SHUFFLE: Nbytes = " + cd_values[0];
-                }
-                else if (filter == HDF5Constants.H5Z_FILTER_SZIP) {
-                    compression += "SZIP: Pixels per block = " + cd_values[1];
-                    int flag = -1;
-                    try {
-                        flag = H5.H5Zget_filter_info(filter);
-                    }
-                    catch (Exception ex) {
-                        flag = -1;
-                    }
-                    if (flag == HDF5Constants.H5Z_FILTER_CONFIG_DECODE_ENABLED) {
-                        compression += ": H5Z_FILTER_CONFIG_DECODE_ENABLED";
-                    }
-                    else if ((flag == HDF5Constants.H5Z_FILTER_CONFIG_ENCODE_ENABLED)
-                            || (flag >= (HDF5Constants.H5Z_FILTER_CONFIG_ENCODE_ENABLED + HDF5Constants.H5Z_FILTER_CONFIG_DECODE_ENABLED))) {
-                        compression += ": H5Z_FILTER_CONFIG_ENCODE_ENABLED";
-                    }
-                }
-            } // for (int i=0; i<nfilt; i++)
+        			if (filter == HDF5Constants.H5Z_FILTER_DEFLATE) {
+        				compression += "GZIP: level = " + cd_values[0];
+        			}
+        			else if (filter == HDF5Constants.H5Z_FILTER_FLETCHER32) {
+        				compression += "Error detection filter";
+        			}
+        			else if (filter == HDF5Constants.H5Z_FILTER_SHUFFLE) {
+        				compression += "SHUFFLE: Nbytes = " + cd_values[0];
+        			}
+        			else if (filter == HDF5Constants.H5Z_FILTER_SZIP) {
+        				compression += "SZIP: Pixels per block = " + cd_values[1];
+        				int flag = -1;
+        				try {
+        					flag = H5.H5Zget_filter_info(filter);
+        				}
+        				catch (Exception ex) {
+        					flag = -1;
+        				}
+        				if (flag == HDF5Constants.H5Z_FILTER_CONFIG_DECODE_ENABLED) {
+        					compression += ": H5Z_FILTER_CONFIG_DECODE_ENABLED";
+        				}
+        				else if ((flag == HDF5Constants.H5Z_FILTER_CONFIG_ENCODE_ENABLED)
+        						|| (flag >= (HDF5Constants.H5Z_FILTER_CONFIG_ENCODE_ENABLED + HDF5Constants.H5Z_FILTER_CONFIG_DECODE_ENABLED))) {
+        					compression += ": H5Z_FILTER_CONFIG_ENCODE_ENABLED";
+        				}
+        			}
+        		} // for (int i=0; i<nfilt; i++)
 
-            if (compression.length() == 0) {
-                compression = "NONE";
-            }
+        		if (compression.length() == 0) {
+        			compression = "NONE";
+        		}
 
-            try {
-                int[] at = { 0 };
-                H5.H5Pget_alloc_time(pid, at);
-                compression += ",         Storage allocation time: ";
-                if (at[0] == HDF5Constants.H5D_ALLOC_TIME_EARLY) {
-                    compression += "Early";
-                }
-                else if (at[0] == HDF5Constants.H5D_ALLOC_TIME_INCR) {
-                    compression += "Incremental";
-                }
-                else if (at[0] == HDF5Constants.H5D_ALLOC_TIME_LATE) {
-                    compression += "Late";
-                }
-            }
-            catch (Exception ex) {
-            	log.debug("Storage allocation time:", ex);
-            }
+        		try {
+        			int[] at = { 0 };
+        			H5.H5Pget_alloc_time(pid, at);
+        			compression += ",         Storage allocation time: ";
+        			if (at[0] == HDF5Constants.H5D_ALLOC_TIME_EARLY) {
+        				compression += "Early";
+        			}
+        			else if (at[0] == HDF5Constants.H5D_ALLOC_TIME_INCR) {
+        				compression += "Incremental";
+        			}
+        			else if (at[0] == HDF5Constants.H5D_ALLOC_TIME_LATE) {
+        				compression += "Late";
+        			}
+        		}
+        		catch (Exception ex) {
+        			log.debug("Storage allocation time:", ex);
+        		}
+        	}
+        	finally {
+        		try {
+        			H5.H5Pclose(pid);
+        		}
+        		catch (Exception ex) {
+        			log.debug("finally close:", ex);
+        		}
+        		close(did);
+        	}
         }
-        finally {
-            try {
-                H5.H5Pclose(pid);
-            }
-            catch (Exception ex) {
-            	log.debug("finally close:", ex);
-            }
-            close(did);
-        } // if (attributeList == null)
 
         return attributeList;
     }
@@ -1238,14 +1270,16 @@ public class H5ScalarDS extends ScalarDS {
 
         Attribute attr = (Attribute) info;
         int did = open();
-        try {
-            H5.H5Adelete(did, attr.getName());
-            List attrList = getMetadata();
-            attrList.remove(attr);
-            nAttributes = attributeList.size();
-        }
-        finally {
-            close(did);
+        if(did >= 0) {
+	        try {
+	            H5.H5Adelete(did, attr.getName());
+	            List attrList = getMetadata();
+	            attrList.remove(attr);
+	            nAttributes = attributeList.size();
+	        }
+	        finally {
+	            close(did);
+	        }
         }
     }
 
@@ -1262,6 +1296,7 @@ public class H5ScalarDS extends ScalarDS {
             did = H5.H5Dopen(getFID(), getPath() + getName(), HDF5Constants.H5P_DEFAULT);
         }
         catch (HDF5Exception ex) {
+        	log.debug("dataset {} open failed", getPath() + getName());
             did = -1;
         }
 
@@ -1275,18 +1310,20 @@ public class H5ScalarDS extends ScalarDS {
      */
     @Override
     public void close(int did) {
-        try {
-            H5.H5Fflush(did, HDF5Constants.H5F_SCOPE_LOCAL);
-        }
-        catch (Exception ex) {
-        	log.debug("close flush:", ex);
-        }
-        try {
-            H5.H5Dclose(did);
-        }
-        catch (HDF5Exception ex) {
-        	log.debug("close:", ex);
-        }
+    	if(did >= 0) {
+	        try {
+	            H5.H5Fflush(did, HDF5Constants.H5F_SCOPE_LOCAL);
+	        }
+	        catch (Exception ex) {
+	        	log.debug("close flush:", ex);
+	        }
+	        try {
+	            H5.H5Dclose(did);
+	        }
+	        catch (HDF5Exception ex) {
+	        	log.debug("close:", ex);
+	        }
+	    }
     }
 
     /*
@@ -1328,17 +1365,19 @@ public class H5ScalarDS extends ScalarDS {
             return null;
         }
 
-        try {
-            did = open();
-            pal_id = H5.H5Rdereference(getFID(), HDF5Constants.H5R_OBJECT, ref_buf);
-            H5.H5Iget_name(pal_id, paletteName, size);
-        }
-        catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        finally {
-            close(pal_id);
-            close(did);
+        did = open();
+        if(did >= 0) {
+	        try {
+	            pal_id = H5.H5Rdereference(getFID(), HDF5Constants.H5R_OBJECT, ref_buf);
+	            H5.H5Iget_name(pal_id, paletteName, size);
+	        }
+	        catch (Exception ex) {
+	            ex.printStackTrace();
+	        }
+	        finally {
+	            close(pal_id);
+	            close(did);
+	        }
         }
 
         return paletteName[0];
@@ -1369,28 +1408,30 @@ public class H5ScalarDS extends ScalarDS {
             return null;
         }
 
-        try {
-            did = open();
-            pal_id = H5.H5Rdereference(getFID(), HDF5Constants.H5R_OBJECT, ref_buf);
-            tid = H5.H5Dget_type(pal_id);
+        did = open();
+        if(did >= 0) {
+        	try {
+        		pal_id = H5.H5Rdereference(getFID(), HDF5Constants.H5R_OBJECT, ref_buf);
+        		tid = H5.H5Dget_type(pal_id);
 
-            // support only 3*256 byte palette data
-            if (H5.H5Dget_storage_size(pal_id) <= 768) {
-                p = new byte[3 * 256];
-                H5.H5Dread(pal_id, tid, HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL, HDF5Constants.H5P_DEFAULT, p);
-            }
-        }
-        catch (HDF5Exception ex) {
-            p = null;
-        }
-        finally {
-            try {
-                H5.H5Tclose(tid);
-            }
-            catch (HDF5Exception ex2) {
-            }
-            close(pal_id);
-            close(did);
+        		// support only 3*256 byte palette data
+        		if (H5.H5Dget_storage_size(pal_id) <= 768) {
+        			p = new byte[3 * 256];
+        			H5.H5Dread(pal_id, tid, HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL, HDF5Constants.H5P_DEFAULT, p);
+        		}
+        	}
+        	catch (HDF5Exception ex) {
+        		p = null;
+        	}
+        	finally {
+        		try {
+        			H5.H5Tclose(tid);
+        		}
+        		catch (HDF5Exception ex2) {
+        		}
+        		close(pal_id);
+        		close(did);
+        	}
         }
 
         if (p != null) {
@@ -1581,67 +1622,68 @@ public class H5ScalarDS extends ScalarDS {
         // prepare the dataspace and datatype
         int rank = dims.length;
 
-        try {
-            tid = type.toNative();
-            sid = H5.H5Screate_simple(rank, dims, maxdims);
+        if((tid = type.toNative()) >= 0) {
+        	try {
+        		sid = H5.H5Screate_simple(rank, dims, maxdims);
 
-            // figure out creation properties
-            plist = HDF5Constants.H5P_DEFAULT;
+        		// figure out creation properties
+        		plist = HDF5Constants.H5P_DEFAULT;
 
-            byte[] val_fill = null;
-            try {
-                val_fill = parseFillValue(type, fillValue);
-            }
-            catch (Exception ex) {
-            	log.debug("fill value:", ex);
-            }
+        		byte[] val_fill = null;
+        		try {
+        			val_fill = parseFillValue(type, fillValue);
+        		}
+        		catch (Exception ex) {
+        			log.debug("fill value:", ex);
+        		}
 
-            if (chunks != null || val_fill != null) {
-                plist = H5.H5Pcreate(HDF5Constants.H5P_DATASET_CREATE);
+        		if (chunks != null || val_fill != null) {
+        			plist = H5.H5Pcreate(HDF5Constants.H5P_DATASET_CREATE);
 
-                if (chunks != null) {
-                    H5.H5Pset_layout(plist, HDF5Constants.H5D_CHUNKED);
-                    H5.H5Pset_chunk(plist, rank, chunks);
-                }
+        			if (chunks != null) {
+        				H5.H5Pset_layout(plist, HDF5Constants.H5D_CHUNKED);
+        				H5.H5Pset_chunk(plist, rank, chunks);
+        			}
 
-                if (val_fill != null) {
-                    H5.H5Pset_fill_value(plist, tid, val_fill);
-                }
-            }
+        			if (val_fill != null) {
+        				H5.H5Pset_fill_value(plist, tid, val_fill);
+        			}
+        		}
 
-            if (gzip > 0) {
-                H5.H5Pset_deflate(plist, gzip);
-            }
-            int fid = file.getFID();
+        		if (gzip > 0) {
+        			H5.H5Pset_deflate(plist, gzip);
+        		}
+        		int fid = file.getFID();
 
-            did = H5.H5Dcreate(fid, fullPath, tid, sid, HDF5Constants.H5P_DEFAULT, plist, HDF5Constants.H5P_DEFAULT);
-            dataset = new H5ScalarDS(file, name, path);
-        }
-        finally {
-            try {
-                H5.H5Pclose(plist);
-            }
-            catch (HDF5Exception ex) {
-            	log.debug("finally close:", ex);
-            }
-            try {
-                H5.H5Sclose(sid);
-            }
-            catch (HDF5Exception ex) {
-            	log.debug("finally close:", ex);
-            }
-            try {
-                H5.H5Tclose(tid);
-            }
-            catch (HDF5Exception ex) {
-            	log.debug("finally close:", ex);
-            }
-            try {
-                H5.H5Dclose(did);
-            }
-            catch (HDF5Exception ex) {
-            	log.debug("finally close:", ex);
-            }
+        		did = H5.H5Dcreate(fid, fullPath, tid, sid, HDF5Constants.H5P_DEFAULT, plist, HDF5Constants.H5P_DEFAULT);
+        		dataset = new H5ScalarDS(file, name, path);
+        	}
+        	finally {
+        		try {
+        			H5.H5Pclose(plist);
+        		}
+        		catch (HDF5Exception ex) {
+        			log.debug("finally close:", ex);
+        		}
+        		try {
+        			H5.H5Sclose(sid);
+        		}
+        		catch (HDF5Exception ex) {
+        			log.debug("finally close:", ex);
+        		}
+        		try {
+        			H5.H5Tclose(tid);
+        		}
+        		catch (HDF5Exception ex) {
+        			log.debug("finally close:", ex);
+        		}
+        		try {
+        			H5.H5Dclose(did);
+        		}
+        		catch (HDF5Exception ex) {
+        			log.debug("finally close:", ex);
+        		}
+        	}
         }
 
         if (dataset != null) {
@@ -1737,42 +1779,43 @@ public class H5ScalarDS extends ScalarDS {
             int did = -1, tid = -1;
 
             did = open();
+            if(did >= 0) {
+            	try {
+            		tid = H5.H5Dget_type(did);
 
-            try {
-                tid = H5.H5Dget_type(did);
-
-                if (!isNativeDatatype) {
-                    int tmptid = -1;
-                    try {
-                        tmptid = tid;
-                        tid = H5.H5Tget_native_type(tmptid);
-                    }
-                    finally {
-                        try {
-                            H5.H5Tclose(tmptid);
-                        }
-                        catch (Exception ex2) {
-                        	log.debug("finally close:", ex2);
-                        }
-                    }
-                }
-                datatype = new H5Datatype(tid);
-            }
-            catch (Exception ex) {
-            }
-            finally {
-                try {
-                    H5.H5Tclose(tid);
-                }
-                catch (HDF5Exception ex) {
-                	log.debug("finally close:", ex);
-                }
-                try {
-                    H5.H5Dclose(did);
-                }
-                catch (HDF5Exception ex) {
-                	log.debug("finally close:", ex);
-                }
+            		if (!isNativeDatatype) {
+            			int tmptid = -1;
+            			try {
+            				tmptid = tid;
+            				tid = H5.H5Tget_native_type(tmptid);
+            			}
+            			finally {
+            				try {
+            					H5.H5Tclose(tmptid);
+            				}
+            				catch (Exception ex2) {
+            					log.debug("finally close:", ex2);
+            				}
+            			}
+            		}
+            		datatype = new H5Datatype(tid);
+            	}
+            	catch (Exception ex) {
+            	}
+            	finally {
+            		try {
+            			H5.H5Tclose(tid);
+            		}
+            		catch (HDF5Exception ex) {
+            			log.debug("finally close:", ex);
+            		}
+            		try {
+            			H5.H5Dclose(did);
+            		}
+            		catch (HDF5Exception ex) {
+            			log.debug("finally close:", ex);
+            		}
+            	}
             }
         }
 
@@ -1804,26 +1847,28 @@ public class H5ScalarDS extends ScalarDS {
         int did = -1, sid = -1;
 
         did = open();
-        try {
-            H5.H5Dset_extent(did, newDims);
-            H5.H5Fflush(did, HDF5Constants.H5F_SCOPE_GLOBAL);
-            sid = H5.H5Dget_space(did);
-            long[] checkDims = new long[rank];
-            H5.H5Sget_simple_extent_dims(sid, checkDims, null);
-            for (int i = 0; i < rank; i++) {
-                if (checkDims[i] != newDims[i]) {
-                    throw new HDF5Exception("error extending dataset " + getName());
-                }
-            }
-            dims = checkDims;
-        }
-        catch (Exception e) {
-            throw new HDF5Exception(e.getMessage());
-        }
-        finally {
-            if (sid > 0) H5.H5Sclose(sid);
+        if(did >= 0) {
+        	try {
+        		H5.H5Dset_extent(did, newDims);
+        		H5.H5Fflush(did, HDF5Constants.H5F_SCOPE_GLOBAL);
+        		sid = H5.H5Dget_space(did);
+        		long[] checkDims = new long[rank];
+        		H5.H5Sget_simple_extent_dims(sid, checkDims, null);
+        		for (int i = 0; i < rank; i++) {
+        			if (checkDims[i] != newDims[i]) {
+        				throw new HDF5Exception("error extending dataset " + getName());
+        			}
+        		}
+        		dims = checkDims;
+        	}
+        	catch (Exception e) {
+        		throw new HDF5Exception(e.getMessage());
+        	}
+        	finally {
+        		if (sid > 0) H5.H5Sclose(sid);
 
-            close(did);
+        		close(did);
+        	}
         }
     }
 
