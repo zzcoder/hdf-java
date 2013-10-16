@@ -223,6 +223,9 @@ public class HDFLibrary implements java.io.Serializable
 
     public final static String HDFPATH_PROPERTY_KEY = "ncsa.hdf.hdflib.HDFLibrary.hdflib";
 
+    /** the logger reference. */
+    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(HDFLibrary.class);
+
     private final static String JHI_VERSION= "2.99";
     private static boolean isLibraryLoaded = false;
 
@@ -233,33 +236,54 @@ public class HDFLibrary implements java.io.Serializable
         if (isLibraryLoaded) // load only once
             return;
         
+        // first try loading library via full path
         String filename = System.getProperty(HDFPATH_PROPERTY_KEY, null);
-      
-        if ((filename != null) && (filename.length() > 0))
-        {
+        if ((filename != null) && (filename.length() > 0)) {
             File h4dll = new File(filename);
             if (h4dll.exists() && h4dll.canRead() && h4dll.isFile()) {
                 try {
                     System.load(filename);
                     isLibraryLoaded = true;
-                    } catch (Throwable err) { isLibraryLoaded = false; }
-            } else {
+                    } 
+                catch (Throwable err) { 
+                	isLibraryLoaded = false; 
+                }
+                finally {
+                	log.info("HDF4 library: " + filename
+                            + (isLibraryLoaded ? "" : " NOT")
+                            + " successfully loaded.");
+                }
+            } 
+            else {
                 isLibraryLoaded = false;
                 throw (new UnsatisfiedLinkError("Invalid HDF4 library, "+filename));
             }
         }
         
-        if (!isLibraryLoaded)
-        {
+        // else load standard library
+        if (!isLibraryLoaded) {
+            String mappedName = null;
+            String s_libraryName = "jhdf";
             try {
+                mappedName = System.mapLibraryName(s_libraryName);
                 System.loadLibrary("jhdf");
                 isLibraryLoaded = true;
-            } catch (Throwable err) { isLibraryLoaded = false; }
+            } 
+            catch (Throwable err) { 
+            	isLibraryLoaded = false; 
+            }
+            finally {
+            	log.info("HDF4 library: " + s_libraryName
+                        + " resolved to: " + mappedName + "; "
+                        + (isLibraryLoaded ? "" : " NOT")
+                        + " successfully loaded from java.library.path");
+            }
         }
 
         try { 
             HDFLibrary.HDdont_atexit();
-        } catch (HDFException e) {
+        } 
+        catch (HDFException e) {
             System.exit(1);
         }
         

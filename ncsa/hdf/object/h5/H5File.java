@@ -862,6 +862,7 @@ public class H5File extends FileFormat {
         }
 
         ver += vers[0] + "." + vers[1] + "." + vers[2];
+		log.info("libversion is {}", ver);
 
         return ver;
     }
@@ -926,8 +927,7 @@ public class H5File extends FileFormat {
             	H5.H5Pset_libver_bounds(fapl, HDF5Constants.H5F_LIBVER_LATEST, HDF5Constants.H5F_LIBVER_LATEST);
             }
             
-            int fileid = H5.H5Fcreate(filename, HDF5Constants.H5F_ACC_TRUNC, HDF5Constants.H5P_DEFAULT,
-                    fapl);
+            int fileid = H5.H5Fcreate(filename, HDF5Constants.H5F_ACC_TRUNC, HDF5Constants.H5P_DEFAULT, fapl);
             try {
                 H5.H5Pclose(fapl);
                 H5.H5Fclose(fileid);
@@ -2809,12 +2809,17 @@ public class H5File extends FileFormat {
             return null;
         }
 
+        if (obj.getFullName().equals("/")) {
+            return null;
+        }
+
         H5L_info_t link_info = null;
         try {
             link_info = H5.H5Lget_info(obj.getFID(), obj.getFullName(), HDF5Constants.H5P_DEFAULT);
         }
         catch (Throwable err) {
-        	log.debug("getLinkTargetName H5Lget_info failure: ", err);
+        	log.debug("H5Lget_info {} failure: ", obj.getFullName());
+        	log.trace("H5Lget_info {} failure: ", obj.getFullName(), err);
         }
         if (link_info != null) {
             if ((link_info.type == HDF5Constants.H5L_TYPE_SOFT) || (link_info.type == HDF5Constants.H5L_TYPE_EXTERNAL)) {
@@ -2822,7 +2827,7 @@ public class H5File extends FileFormat {
                     H5.H5Lget_val(obj.getFID(), obj.getFullName(), link_value, HDF5Constants.H5P_DEFAULT);
                 }
                 catch (Exception ex) {
-                	log.debug("getLinkTargetName H5Lget_val failure: ", ex);
+                	log.debug("H5Lget_val {} failure: ", obj.getFullName(), ex);
                 }
                 if (link_info.type == HDF5Constants.H5L_TYPE_SOFT)
                     targetObjName = link_value[0];
