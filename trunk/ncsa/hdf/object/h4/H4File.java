@@ -162,10 +162,10 @@ public class H4File extends FileFormat {
 		String shwAll = System.getProperty("h4showall");
 		if (shwAll != null) {
 			showAll = true;
-			// System.err.println("show all is on");
+			log.debug("show all is on");
 		} 
 		else {
-			// System.err.println("show all is off");
+			log.debug("show all is off");
 		}
 	}
 
@@ -263,7 +263,7 @@ public class H4File extends FileFormat {
 	@Override
 	public int open() throws Exception {
 		if (fid >= 0) {
-			return fid; // file is openned already
+			return fid; // file is openned already// System.err.println
 		}
 
 		// check for valid file access permission
@@ -510,12 +510,10 @@ public class H4File extends FileFormat {
 
 		if ((obj instanceof H4Group) && ((H4Group) obj).isRoot()) {
 			if (isSDglobalAttr) {
-				HDFLibrary
-						.SDsetattr(sdid, attrName, attrType, count, attrValue);
+				HDFLibrary.SDsetattr(sdid, attrName, attrType, count, attrValue);
 			} 
 			else {
-				HDFLibrary
-						.GRsetattr(grid, attrName, attrType, count, attrValue);
+				HDFLibrary.GRsetattr(grid, attrName, attrType, count, attrValue);
 			}
 			return;
 		}
@@ -841,8 +839,7 @@ public class H4File extends FileFormat {
 			pgroup = (H4Group) (pnode.getUserObject());
 		}
 
-		String fullPath = pgroup.getPath() + pgroup.getName()
-				+ HObject.separator;
+		String fullPath = pgroup.getPath() + pgroup.getName() + HObject.separator;
 		int gid = pgroup.open();
 		if (gid == HDFConstants.FAIL) {
 			return;

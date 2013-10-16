@@ -16,8 +16,6 @@ package ncsa.hdf.hdf5lib;
 import java.io.File;
 import java.nio.ByteBuffer;
 import java.util.Vector;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import ncsa.hdf.hdf5lib.callbacks.H5D_iterate_cb;
 import ncsa.hdf.hdf5lib.callbacks.H5D_iterate_t;
@@ -33,6 +31,7 @@ import ncsa.hdf.hdf5lib.structs.H5A_info_t;
 import ncsa.hdf.hdf5lib.structs.H5G_info_t;
 import ncsa.hdf.hdf5lib.structs.H5L_info_t;
 import ncsa.hdf.hdf5lib.structs.H5O_info_t;
+
 
 /**
  * This class is the Java interface for the HDF5 library.
@@ -243,6 +242,9 @@ public class H5 implements java.io.Serializable {
      */
     private static final long serialVersionUID = 6129888282117053288L;
 
+    /** the logger reference. */
+    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H5.class);
+
     /**
      * The version number of the HDF5 library: <br />
      * LIB_VERSION[0]: The major version of the library.<br />
@@ -258,11 +260,6 @@ public class H5 implements java.io.Serializable {
     // add system property to load library by name from library path, via
     // System.loadLibrary()
     public final static String H5_LIBRARY_NAME_PROPERTY_KEY = "ncsa.hdf.hdf5lib.H5.loadLibraryName";
-
-    /** logging level: 0 -- information, 1 -- warning message, 2 -- failure */
-    public static int LOGGING_LEVEL = 2;
-    
-    private static Logger s_logger;
     private static String s_libraryName;
     private static boolean isLibraryLoaded = false;
     
@@ -278,15 +275,6 @@ public class H5 implements java.io.Serializable {
         // Make sure that the library is loaded only once
         if (isLibraryLoaded)
             return;
-
-        // use default logger, since spanning sources
-        s_logger = Logger.getLogger("ncsa.hdf.hdf5lib"); 
-        if (LOGGING_LEVEL == 2)
-            s_logger.setLevel(Level.SEVERE);
-        else if (LOGGING_LEVEL == 1)
-            s_logger.setLevel(Level.WARNING);
-        else
-            s_logger.setLevel(Level.INFO);
         
         // first try loading library by name from user supplied library path
         s_libraryName = System.getProperty(H5_LIBRARY_NAME_PROPERTY_KEY, null);
@@ -302,11 +290,10 @@ public class H5 implements java.io.Serializable {
                 isLibraryLoaded = false;
             }
             finally {
-                s_logger.log(Level.INFO, "HDF5 library: " + s_libraryName
+                log.info("HDF5 library: " + s_libraryName
                         + " resolved to: " + mappedName + "; "
                         + (isLibraryLoaded ? "" : " NOT")
-                        + " successfully loaded from java.library.path");
-
+                        + " successfully loaded from system property");
             }
         }
 
@@ -325,16 +312,14 @@ public class H5 implements java.io.Serializable {
                         isLibraryLoaded = false;
                     }
                     finally {
-                        s_logger.log(Level.INFO, "HDF5 library: " + filename
+                    	log.info("HDF5 library: " + filename
                                 + (isLibraryLoaded ? "" : " NOT")
                                 + " successfully loaded.");
-
                     }
                 }
                 else {
                     isLibraryLoaded = false;
-                    throw (new UnsatisfiedLinkError("Invalid HDF5 library, "
-                            + filename));
+                    throw (new UnsatisfiedLinkError("Invalid HDF5 library, " + filename));
                 }
             }
         }
@@ -352,11 +337,10 @@ public class H5 implements java.io.Serializable {
                 isLibraryLoaded = false;
             }
             finally {
-                s_logger.log(Level.INFO, "HDF5 library: " + s_libraryName
+            	log.info("HDF5 library: " + s_libraryName
                         + " resolved to: " + mappedName + "; "
                         + (isLibraryLoaded ? "" : " NOT")
                         + " successfully loaded from java.library.path");
-
             }
         }
 
@@ -369,21 +353,18 @@ public class H5 implements java.io.Serializable {
         }
 
         /* Important! Disable error output to C stdout */
-        H5.H5error_off();
+        if(!log.isDebugEnabled())
+        	H5.H5error_off();
 
         /*
          * Optional: confirm the version This will crash immediately if not the
          * specified version.
          */
-        Integer majnum = Integer
-                .getInteger("ncsa.hdf.hdf5lib.H5.hdf5maj", null);
-        Integer minnum = Integer
-                .getInteger("ncsa.hdf.hdf5lib.H5.hdf5min", null);
-        Integer relnum = Integer
-                .getInteger("ncsa.hdf.hdf5lib.H5.hdf5rel", null);
+        Integer majnum = Integer.getInteger("ncsa.hdf.hdf5lib.H5.hdf5maj", null);
+        Integer minnum = Integer.getInteger("ncsa.hdf.hdf5lib.H5.hdf5min", null);
+        Integer relnum = Integer.getInteger("ncsa.hdf.hdf5lib.H5.hdf5rel", null);
         if ((majnum != null) && (minnum != null) && (relnum != null)) {
-            H5.H5check_version(majnum.intValue(), minnum.intValue(), relnum
-                    .intValue());
+            H5.H5check_version(majnum.intValue(), minnum.intValue(), relnum.intValue());
         }
     }
 

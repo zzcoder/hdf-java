@@ -1756,13 +1756,16 @@ public class HDFView extends JFrame implements ViewManager, ActionListener, Chan
                 }
             }
         } // else if (obj instanceof Dataset)
+        else {
+        	log.debug("obj not instanceof Group or Dataset");
+        }
 
         List<?> attrList = null;
         try {
             attrList = obj.getMetadata();
         }
         catch (Exception ex) {
-            ex.printStackTrace();
+        	log.debug("getMetadata failure: ", ex);
         }
 
         if (attrList == null) {
