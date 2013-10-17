@@ -25,8 +25,6 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
 
-import ncsa.hdf.object.h4.H4File;
-
 /**
  * FileFormat defines general interfaces for working with files whose data is
  * organized according to a supported format.
