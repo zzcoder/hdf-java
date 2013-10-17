@@ -853,15 +853,15 @@ public class H5ScalarDS extends ScalarDS {
         			throw new HDF5Exception("No data to read.\nEither the dataset or the selected subset is empty.");
         		}
 
-        		// check is storage space is allocated
-        		try {
-        			long ssize = H5.H5Dget_storage_size(did);
-        			if (ssize <= 0) {
-        				throw new HDF5Exception("Storage space is not allocated.");
-        			}
-        		}
-        		catch (Exception ex) {
-        			log.debug("check is storage space is allocated:", ex);
+        		if(log.isDebugEnabled()) {
+	        		// check is storage space is allocated
+	        		try {
+	        			long ssize = H5.H5Dget_storage_size(did);
+	       				log.debug("Storage space allocated = {}.", ssize);
+	        		}
+	        		catch (Exception ex) {
+	        			log.debug("check if storage space is allocated:", ex);
+	        		}
         		}
 
         		tid = H5.H5Dget_type(did);
