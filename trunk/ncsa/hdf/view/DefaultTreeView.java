@@ -103,7 +103,6 @@ import ncsa.hdf.view.ViewProperties.DATA_VIEW_KEY;
 public class DefaultTreeView extends JPanel implements TreeView, ActionListener {
     private static final long            serialVersionUID    = 4092566164712521186L;
 
-    /** the logger reference. */
     private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DefaultTreeView.class);
 
     /** the owner of this treeview */

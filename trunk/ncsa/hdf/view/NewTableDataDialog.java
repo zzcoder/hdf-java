@@ -67,7 +67,6 @@ import ncsa.hdf.object.HObject;
 public class NewTableDataDialog extends JDialog implements ActionListener, ItemListener {
     private static final long     serialVersionUID = -6786877503226330821L;
 
-    /** the logger reference. */
     private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NewTableDataDialog.class);
 
     private static final String[] DATATYPE_NAMES   = { 

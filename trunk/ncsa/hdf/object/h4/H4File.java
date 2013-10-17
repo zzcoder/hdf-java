@@ -49,7 +49,6 @@ public class H4File extends FileFormat {
      */
 	private static final long serialVersionUID = 8985533001471224030L;
 
-    /** the logger reference. */
     private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H4File.class);
 
 	// make sure that the library is loaded.

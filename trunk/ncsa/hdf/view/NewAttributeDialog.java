@@ -64,7 +64,6 @@ import ncsa.hdf.object.HObject;
 public class NewAttributeDialog extends JDialog implements ActionListener, ItemListener, HyperlinkListener {
     private static final long serialVersionUID                = 4883237570834215275L;
 
-    /** the logger reference. */
     private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NewAttributeDialog.class);
 
     /** the default length of a string attribute */

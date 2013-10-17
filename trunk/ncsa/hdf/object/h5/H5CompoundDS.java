@@ -50,7 +50,7 @@ import ncsa.hdf.object.HObject;
  * <p>
  * There are two basic types of compound datasets: simple compound data and
  * nested compound data. Members of a simple compound dataset have atomic
- * datatyes. Members of a nested compound dataset are compound or array of
+ * datatypes. Members of a nested compound dataset are compound or array of
  * compound data.
  * <p>
  * Since Java does not understand C structures, we cannot directly read/write
@@ -86,7 +86,6 @@ public class H5CompoundDS extends CompoundDS {
      */
     private static final long serialVersionUID = -5968625125574032736L;
 
-    /** the logger reference. */
     private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H5CompoundDS.class);
 
     /**
@@ -138,7 +137,7 @@ public class H5CompoundDS extends CompoundDS {
      * object that corresponds to the dataset,"dset1", at group "/g0/".
      * <p>
      * This object is usually constructed at FileFormat.open(), which loads the
-     * file structure and object informatoin into tree structure (TreeNode). It
+     * file structure and object information into tree structure (TreeNode). It
      * is rarely used elsewhere.
      * <p>
      * 
@@ -737,7 +736,7 @@ public class H5CompoundDS extends CompoundDS {
         	try {
         		attributeList = H5File.getAttribute(did, indxType, order);
 
-        		// get the compresson and chunk information
+        		// get the compression and chunk information
         		pid = H5.H5Dget_create_plist(did);
         		if (H5.H5Pget_layout(pid) == HDF5Constants.H5D_CHUNKED) {
         			chunkSize = new long[rank];
@@ -944,7 +943,6 @@ public class H5CompoundDS extends CompoundDS {
         }
 
         int did = -1, sid = -1, tid = -1, tclass = -1;
-        String fullName = getPath() + getName();
         flatNameList = new Vector<String>();
         flatTypeList = new Vector<Integer>();
         int[] memberTIDs = null;
@@ -1241,7 +1239,7 @@ public class H5CompoundDS extends CompoundDS {
     /**
      * @deprecated Not for public use in the future. <br>
      *             Using
-     *             {@link #create(String, Group, long[], long[], long[], int, String[], Datatype[], int[], int[][], Object)}
+     *             {@link #create(String, Group, long[], long[], long[], int, String[], Datatype[], int[], long[][], Object)}
      */
     @Deprecated
     public static Dataset create(String name, Group pgroup, long[] dims, String[] memberNames,
@@ -1265,7 +1263,7 @@ public class H5CompoundDS extends CompoundDS {
     /**
      * @deprecated Not for public use in the future. <br>
      *             Using
-     *             {@link #create(String, Group, long[], long[], long[], int, String[], Datatype[], int[], int[][], Object)}
+     *             {@link #create(String, Group, long[], long[], long[], int, String[], Datatype[], int[], long[][], Object)}
      */
     @Deprecated
     public static Dataset create(String name, Group pgroup, long[] dims, String[] memberNames,
@@ -1281,7 +1279,7 @@ public class H5CompoundDS extends CompoundDS {
      * This function provides an easy way to create a simple compound dataset in
      * file by hiding tedious details of creating a compound dataset from users.
      * <p>
-     * This functoin calls H5.H5Dcreate() to create a simple compound dataset in
+     * This function calls H5.H5Dcreate() to create a simple compound dataset in
      * file. Nested compound dataset is not supported. The required information
      * to create a compound dataset includes the name, the parent group and data
      * space of the dataset, the names, datatypes and data spaces of the

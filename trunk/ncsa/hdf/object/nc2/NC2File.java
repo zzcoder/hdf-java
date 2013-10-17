@@ -45,7 +45,6 @@ public class NC2File extends FileFormat {
      */
     private static final long serialVersionUID = 6941235662108358451L;
 
-    /** the logger reference. */
 //    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NC2File.class);
 
     /**

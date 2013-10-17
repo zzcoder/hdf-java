@@ -51,7 +51,6 @@ public class H5ScalarDS extends ScalarDS {
      */
     private static final long serialVersionUID  = 2887517608230611642L;
 
-    /** the logger reference. */
     private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H5ScalarDS.class);
 
     /**

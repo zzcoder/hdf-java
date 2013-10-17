@@ -129,7 +129,6 @@ import ncsa.hdf.view.ViewProperties.BITMASK_OP;
 public class DefaultTableView extends JInternalFrame implements TableView, ActionListener, MouseListener {
     private static final long       serialVersionUID = -7452459299532863847L;
 
-    /** the logger reference. */
     private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DefaultTableView.class);
 
     /**
