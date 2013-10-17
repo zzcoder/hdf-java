@@ -331,6 +331,7 @@ INSTALL (
     PATTERN "javadocs" EXCLUDE
 )
 
+#SET (CREATE_JAVADOCS "TRUE")
 #-----------------------------------------------------------------------------
 # Add Required JavaDocs
 #-----------------------------------------------------------------------------
@@ -345,10 +346,11 @@ IF (CREATE_JAVADOCS)
       ncsa.hdf.object.h4
       ncsa.hdf.object.h5
   )
+  SET (HDFVIEW_TEST_CLASSPATH "${${HDFJAVA_NCSA_VIEW_LIB_TARGET}_JAR_FILE}${CMAKE_JAVA_INCLUDE_FLAG_SEP}${HDFJAVA_LOGGING_SIMPLE_JAR}${CMAKE_JAVA_INCLUDE_FLAG_SEP}${HDFJAVA_LOGGING_JAR}${CMAKE_JAVA_INCLUDE_FLAG_SEP}${HDFJAVA_LIB_DIR}")
   CREATE_JAVADOC (hdf_java_doc
       PACKAGES ${HDFJAVA_SOURCE_PACKAGES}
       SOURCEPATH "${CMAKE_CURRENT_SOURCE_DIR}"
-      CLASSPATH ${CMAKE_JAVA_INCLUDE_PATH}
+      CLASSPATH ${HDFVIEW_TEST_CLASSPATH}
       INSTALLPATH ${HJAVA_INSTALL_DATA_DIR}
       WINDOWTITLE "HDFJava 2.99"
       DOCTITLE "<h1>HDFJava 2.99</h1>"
