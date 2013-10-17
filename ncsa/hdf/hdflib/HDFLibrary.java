@@ -13,6 +13,9 @@ package ncsa.hdf.hdflib;
 
 import java.io.File;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  *  This is the Java interface for the HDF 4.1 library.
  *  <p>
@@ -223,8 +226,7 @@ public class HDFLibrary implements java.io.Serializable
 
     public final static String HDFPATH_PROPERTY_KEY = "ncsa.hdf.hdflib.HDFLibrary.hdflib";
 
-    /** the logger reference. */
-    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(HDFLibrary.class);
+    private final static Logger log = LoggerFactory.getLogger(HDFLibrary.class);
 
     private final static String JHI_VERSION= "2.99";
     private static boolean isLibraryLoaded = false;

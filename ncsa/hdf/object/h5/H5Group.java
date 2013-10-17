@@ -50,7 +50,6 @@ public class H5Group extends Group {
      */
     private static final long serialVersionUID = -951164512330444150L;
 
-    /** the logger reference. */
     private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H5Group.class);
 
     /**
@@ -229,7 +228,6 @@ public class H5Group extends Group {
 
         boolean attrExisted = false;
         Attribute attr = (Attribute) info;
-        String name = attr.getName();
 
         if (attributeList == null) {
             this.getMetadata();

@@ -100,7 +100,6 @@ import ncsa.hdf.object.ScalarDS;
 public class HDFView extends JFrame implements ViewManager, ActionListener, ChangeListener, DropTargetListener {
     private static final long     serialVersionUID = 2211017444445918998L;
 
-    /** the logger reference. */
     private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(HDFView.class);
 
     /** a list of tree view implementation. */

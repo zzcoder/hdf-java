@@ -96,11 +96,11 @@ SET (HDFJAVA_JAVA_OBJECT_SRC_DIR ${HDFJAVA_SOURCE_DIR}/ncsa/hdf/object)
 SET (HDFJAVA_TEST_SRC_DIR        ${HDFJAVA_SOURCE_DIR}/test)
 SET (HDFJAVA_EXAMPLES_SOURCE_DIR ${HDFJAVA_SOURCE_DIR}/examples)
 SET (HDFJAVA_LIB_DIR             ${HDFJAVA_SOURCE_DIR}/lib)
-SET (HDFJAVA_FITS_JAR            ${HDFJAVA_LIB_DIR}/fits.jar)
-SET (HDFJAVA_NETCDF_JAR          ${HDFJAVA_LIB_DIR}/netcdf.jar)
-SET (HDFJAVA_LOGGING_JAR         ${HDFJAVA_LIB_DIR}/slf4j-api-1.7.5.jar)
-SET (HDFJAVA_LOGGING_NOP_JAR     ${HDFJAVA_LIB_DIR}/ext/slf4j-nop-1.7.5.jar)
-SET (HDFJAVA_LOGGING_SIMPLE_JAR  ${HDFJAVA_LIB_DIR}/ext/slf4j-simple-1.7.5.jar)
+SET (HDFJAVA_FITS_JAR            ${HDFJAVA_SOURCE_DIR}/lib/fits.jar)
+SET (HDFJAVA_NETCDF_JAR          ${HDFJAVA_SOURCE_DIR}/lib/netcdf.jar)
+SET (HDFJAVA_LOGGING_JAR         ${HDFJAVA_SOURCE_DIR}/lib/slf4j-api-1.7.5.jar)
+SET (HDFJAVA_LOGGING_NOP_JAR     ${HDFJAVA_SOURCE_DIR}/lib/ext/slf4j-nop-1.7.5.jar)
+SET (HDFJAVA_LOGGING_SIMPLE_JAR  ${HDFJAVA_SOURCE_DIR}/lib/ext/slf4j-simple-1.7.5.jar)
 
 IF (NOT HJAVA_INSTALL_BIN_DIR)
   SET (HJAVA_INSTALL_BIN_DIR bin)
@@ -328,7 +328,35 @@ INSTALL (
     USE_SOURCE_PERMISSIONS 
     COMPONENT docs
     PATTERN ".svn" EXCLUDE
+    PATTERN "javadocs" EXCLUDE
 )
+
+#-----------------------------------------------------------------------------
+# Add Required JavaDocs
+#-----------------------------------------------------------------------------
+IF (CREATE_JAVADOCS)
+  SET (HDFJAVA_SOURCE_PACKAGES
+      ncsa.hdf.hdflib
+      ncsa.hdf.hdf5lib.callbacks
+      ncsa.hdf.hdf5lib.exceptions
+      ncsa.hdf.hdf5lib.structs
+      ncsa.hdf.hdf5lib 
+      ncsa.hdf.object
+      ncsa.hdf.object.h4
+      ncsa.hdf.object.h5
+  )
+  CREATE_JAVADOC (hdf_java_doc
+      PACKAGES ${HDFJAVA_SOURCE_PACKAGES}
+      SOURCEPATH "${CMAKE_CURRENT_SOURCE_DIR}"
+      CLASSPATH ${CMAKE_JAVA_INCLUDE_PATH}
+      INSTALLPATH ${HJAVA_INSTALL_DATA_DIR}
+      WINDOWTITLE "HDFJava 2.99"
+      DOCTITLE "<h1>HDFJava 2.99</h1>"
+      AUTHOR TRUE
+      USE TRUE
+      VERSION TRUE
+  )
+ENDIF (CREATE_JAVADOCS)
 
 #-----------------------------------------------------------------------------
 # Add Target(s) to CMake Install for import into other projects

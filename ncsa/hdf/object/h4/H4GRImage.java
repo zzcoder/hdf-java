@@ -107,7 +107,6 @@ public class H4GRImage extends ScalarDS
      */
     private static final long serialVersionUID = 1029672744963360976L;
 
-    /** the logger reference. */
     private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H4GRImage.class);
 
     /**

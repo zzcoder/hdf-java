@@ -47,7 +47,6 @@ public class FitsFile extends FileFormat
 {
     private static final long serialVersionUID = -1965689032980605791L;
 
-    /** the logger reference. */
     private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FitsFile.class);
 
     /**

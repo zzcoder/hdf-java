@@ -36,7 +36,7 @@ import java.util.Vector;
 public abstract class ScalarDS extends Dataset {
     // The following constant strings are copied from
     // http://hdf.ncsa.uiuc.edu/HDF5/doc/ADGuide/ImageSpec.html
-    // to make the defination consistent with the image specs.
+    // to make the definition consistent with the image specs.
 
     /**
      * 
@@ -379,7 +379,8 @@ public abstract class ScalarDS extends Dataset {
     /**
      * Sets data range for an image.
      * 
-     * @param minmax the data range.
+     * @param min the data range start.
+     * @param max the data range end.
      */
     public final void setImageDataRange(double min, double max) {
         if (max<=min)

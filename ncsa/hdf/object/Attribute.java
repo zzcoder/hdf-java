@@ -35,7 +35,7 @@ import java.util.Map;
  * elements.
  * 
  * <pre>
- * // Example of creatinge a new attribute
+ * // Example of creating a new attribute
  * // The name of the new attribute
  * String name = "Data range";
  * // Creating an unsigned 1-byte integer datatype
@@ -294,7 +294,7 @@ public class Attribute implements Metadata {
     /**
      * Return the name of the attribute.
      * 
-     * @see toString(String delimiter)
+     * @see #toString(String delimiter)
      */
     @Override
     public String toString() {

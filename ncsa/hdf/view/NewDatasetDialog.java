@@ -70,7 +70,6 @@ import ncsa.hdf.object.ScalarDS;
 public class NewDatasetDialog extends JDialog implements ActionListener, ItemListener, HyperlinkListener {
     private static final long serialVersionUID = 5381164938654184532L;
 
-    /** the logger reference. */
     private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NewDatasetDialog.class);
 
     private JTextField        nameField, currentSizeField, maxSizeField, chunkSizeField, stringLengthField,

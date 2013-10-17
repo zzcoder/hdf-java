@@ -52,7 +52,6 @@ import ncsa.hdf.view.ViewProperties.BITMASK_OP;
  * @version 2.4 9/6/2007
  */
 public final class Tools {
-    /** the logger reference. */
     private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Tools.class);
     
     public static final long       MAX_INT8        = 127;

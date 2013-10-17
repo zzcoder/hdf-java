@@ -132,7 +132,6 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
         ActionListener {
     private static final long serialVersionUID = -6534336542813587242L;
 
-    /** the logger reference. */
     private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DefaultImageView.class);
 
     /** Horizontal direction to flip an image. */

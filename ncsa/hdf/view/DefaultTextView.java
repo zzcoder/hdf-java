@@ -84,7 +84,6 @@ public class DefaultTextView extends JInternalFrame implements TextView,
         ActionListener, KeyListener {
     private static final long serialVersionUID = 3892752752951438428L;
 
-    /** the logger reference. */
     private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DefaultTextView.class);
 
     /**

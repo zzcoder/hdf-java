@@ -72,7 +72,6 @@ import ncsa.hdf.object.ScalarDS;
 public class DefaultMetaDataView extends JDialog implements ActionListener, MetaDataView {
     private static final long serialVersionUID = 7891048909810508761L;
 
-    /** the logger reference. */
     private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DefaultMetaDataView.class);
 
     /**

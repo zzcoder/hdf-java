@@ -65,7 +65,6 @@ import ncsa.hdf.object.HObject;
 public class NewLinkDialog extends JDialog implements ActionListener,DocumentListener, ItemListener {
     private static final long serialVersionUID = 7100424106041533918L;
 
-    /** the logger reference. */
     private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NewLinkDialog.class);
 
     private JTextField nameField;

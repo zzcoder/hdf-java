@@ -94,7 +94,6 @@ public class H4Vdata extends CompoundDS
      */
     private static final long serialVersionUID = -5978700886955419959L;
 
-    /** the logger reference. */
     private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H4Vdata.class);
 
     /**

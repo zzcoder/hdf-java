@@ -105,7 +105,6 @@ public class H4SDS extends ScalarDS
      */
     private static final long serialVersionUID = 2557157923292438696L;
 
-    /** the logger reference. */
     private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H4SDS.class);
 
     /** tag for netCDF datasets.

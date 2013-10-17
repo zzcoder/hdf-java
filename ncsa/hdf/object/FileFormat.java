@@ -61,7 +61,6 @@ public abstract class FileFormat extends File {
      */
     private static final long                    serialVersionUID   = -4700692313888420796L;
 
-    /** the logger reference. */
     private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FileFormat.class);
 
     /**

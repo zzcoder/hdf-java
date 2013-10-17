@@ -86,7 +86,6 @@ import ncsa.hdf.object.ScalarDS;
 public class H5File extends FileFormat {
     private static final long      serialVersionUID = 6247335559471526045L;
 
-    /** the logger reference. */
     private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H5File.class);
 
     /**
@@ -1038,7 +1037,7 @@ public class H5File extends FileFormat {
     	}
         // The current working directory may be changed at Dataset.read()
         // by H5Dchdir_ext()by this file to make it work for external
-        // datasets. We need to set it back to the orginal current working
+        // datasets. We need to set it back to the original current working
         // directory (when hdf-java application started) before the file
         // is closed/opened. Otherwise, relative path, e.g. "./test.h5" may
         // not work
@@ -1452,7 +1451,7 @@ public class H5File extends FileFormat {
      * group creation properties list, gplist.
      * 
      * @see ncsa.hdf.object.h5.H5Group#create(java.lang.String,
-     *      ncsa.hdf.object.Group, int)
+     *      ncsa.hdf.object.Group, int...)
      * 
      */
     public Group createGroup(String name, Group pgroup, int... gplist) throws Exception {
@@ -1522,7 +1521,7 @@ public class H5File extends FileFormat {
      *            The name of the link.
      * @param currentObj
      *            The existing object the new link will reference.
-     * @param type
+     * @param lType
      *            The type of link to be created. It can be a hard link, a soft
      *            link or an external link.
      * @return The object pointed to by the new link if successful; otherwise
@@ -1606,7 +1605,7 @@ public class H5File extends FileFormat {
      * @param currentObj
      *            The name of the object the new link will reference. The object
      *            doesn't have to exist.
-     * @param type
+     * @param lType
      *            The type of link to be created.
      * @return The H5Link object pointed to by the new link if successful;
      *         otherwise returns null.
@@ -2497,10 +2496,10 @@ public class H5File extends FileFormat {
     }
 
     /**
-     * Constructs a dataset for specified dataset idenfitier.
+     * Constructs a dataset for specified dataset identifier.
      * 
      * @param did
-     *            the dataset idenfifier
+     *            the dataset identifier
      * @param name
      *            the name of the dataset
      * @param path
