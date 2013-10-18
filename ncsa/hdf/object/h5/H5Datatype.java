@@ -715,6 +715,7 @@ public class H5Datatype extends Datatype {
                         memname = memstr;
                         memval++;
                     }
+                	log.debug("toNative H5Tenum_insert {} {}", memname, memval);
                     H5.H5Tenum_insert(tid, memname, memval);
                 }
             }
