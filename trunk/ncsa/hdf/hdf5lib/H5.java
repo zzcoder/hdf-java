@@ -289,9 +289,9 @@ public class H5 implements java.io.Serializable {
                 isLibraryLoaded = false;
             }
             finally {
-                log.info("HDF5 library: " + s_libraryName
-                        + " resolved to: " + mappedName + "; "
-                        + (isLibraryLoaded ? "" : " NOT")
+                log.info("HDF5 library: " + s_libraryName);
+                log.debug(" resolved to: " + mappedName + "; ");
+                log.info((isLibraryLoaded ? "" : " NOT")
                         + " successfully loaded from system property");
             }
         }
@@ -311,8 +311,9 @@ public class H5 implements java.io.Serializable {
                         isLibraryLoaded = false;
                     }
                     finally {
-                    	log.info("HDF5 library: " + filename
-                                + (isLibraryLoaded ? "" : " NOT")
+                    	log.info("HDF5 library: ");
+                    	log.debug(filename);
+                    	log.info((isLibraryLoaded ? "" : " NOT")
                                 + " successfully loaded.");
                     }
                 }
@@ -336,9 +337,9 @@ public class H5 implements java.io.Serializable {
                 isLibraryLoaded = false;
             }
             finally {
-            	log.info("HDF5 library: " + s_libraryName
-                        + " resolved to: " + mappedName + "; "
-                        + (isLibraryLoaded ? "" : " NOT")
+            	log.info("HDF5 library: " + s_libraryName);
+            	log.debug(" resolved to: " + mappedName + "; ");
+            	log.info((isLibraryLoaded ? "" : " NOT")
                         + " successfully loaded from java.library.path");
             }
         }
