@@ -251,8 +251,9 @@ public class HDFLibrary implements java.io.Serializable
                 	isLibraryLoaded = false; 
                 }
                 finally {
-                	log.info("HDF4 library: " + filename
-                            + (isLibraryLoaded ? "" : " NOT")
+                	log.info("HDF4 library: ");
+                	log.debug(filename);
+                	log.info((isLibraryLoaded ? "" : " NOT")
                             + " successfully loaded.");
                 }
             } 
@@ -275,9 +276,9 @@ public class HDFLibrary implements java.io.Serializable
             	isLibraryLoaded = false; 
             }
             finally {
-            	log.info("HDF4 library: " + s_libraryName
-                        + " resolved to: " + mappedName + "; "
-                        + (isLibraryLoaded ? "" : " NOT")
+            	log.info("HDF4 library: " + s_libraryName);
+            	log.debug(" resolved to: " + mappedName + "; ");
+            	log.info((isLibraryLoaded ? "" : " NOT")
                         + " successfully loaded from java.library.path");
             }
         }
