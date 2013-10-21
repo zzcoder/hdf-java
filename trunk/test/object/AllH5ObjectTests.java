@@ -7,7 +7,6 @@ import junit.framework.Test;
 import junit.framework.TestResult;
 import junit.framework.TestSuite;
 import ncsa.hdf.hdf5lib.H5;
-import ncsa.hdf.object.h5.H5File;
 
 /**
  * Test suite for all unit tests of HDF5 objects.
@@ -16,9 +15,6 @@ import ncsa.hdf.object.h5.H5File;
  * 
  */
 public class AllH5ObjectTests {
-
-    /** the logger reference. */
-    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H5File.class);
 
     public static Test suite() {
 		try {

@@ -561,7 +561,7 @@ public class H5Datatype extends Datatype {
                 tid = H5.H5Topen(getFID(), getPath() + getName(), HDF5Constants.H5P_DEFAULT);
             }
             catch (Exception ex) {
-            	log.debug("toNative name open:", ex);
+            	log.debug("toNative name {} open failure:", getPath() + getName(), ex);
             }
         }
 
@@ -690,9 +690,11 @@ public class H5Datatype extends Datatype {
                 // using "0" and "1" as default
                 if (enumMembers == null) {
                     token = new StringTokenizer("0,1", ",");
+                	log.debug("toNative default string");
                 }
                 else {
                     token = new StringTokenizer(enumMembers, ",");
+                	log.debug("toNative string {}", enumMembers);
                 }
 
                 while (token.hasMoreTokens()) {
@@ -1164,14 +1166,19 @@ public class H5Datatype extends Datatype {
     public static final boolean isUnsigned(int datatype) {
         boolean unsigned = false;
 
-        try {
-            int tsign = H5.H5Tget_sign(datatype);
-            if (tsign == HDF5Constants.H5T_SGN_NONE) {
-                unsigned = true;
-            }
-        }
-        catch (Exception ex) {
-            unsigned = false;
+        if(datatype >= 0) {
+	        try {
+	            if(HDF5Constants.H5T_INTEGER==H5.H5Tget_class(datatype)) {
+		            int tsign = H5.H5Tget_sign(datatype);
+		            if (tsign == HDF5Constants.H5T_SGN_NONE) {
+		                unsigned = true;
+		            }
+	            }
+	        }
+	        catch (Exception ex) {
+	        	log.debug("Datatype {} failure", datatype, ex);
+	            unsigned = false;
+	        }
         }
 
         return unsigned;

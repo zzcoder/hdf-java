@@ -21,6 +21,7 @@ import ncsa.hdf.object.h5.H5File;
  * 
  */
 public class H5TestFile {
+    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H5TestFile.class);
     public final static String NAME_FILE_H5 = "TestHDF5.h5";
     public final static String NAME_GROUP = "/g0";
     public final static String NAME_GROUP_ATTR = "/g0_attr";
@@ -127,6 +128,7 @@ public class H5TestFile {
      * @throws Exception
      */
     public static final H5File createTestFile(String fileName) throws Exception {
+    	log.debug("createTestFile {}", fileName);
         H5File file = null;
         Group g0, g1, g00;
         final Dataset[] dsets = new Dataset[11];

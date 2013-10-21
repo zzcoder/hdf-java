@@ -17,6 +17,7 @@ import ncsa.hdf.object.h5.H5File;
  * 
  */
 public class DatasetTest extends TestCase {
+    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DatasetTest.class);
     private static final H5File H5FILE = new H5File();
 
     private H5File testFile = null;
@@ -89,6 +90,7 @@ public class DatasetTest extends TestCase {
      * </ul>
      */
     public final void testMetadataAssociatedWithDataset() {
+    	log.debug("testMetadataAssociatedWithDataset");
         for (int i = 0; i < dsetNames.length; i++) {
             assertNull(dSets[i].getChunkSize());
             assertTrue(dSets[i].getCompression().equals("NONE"));
@@ -165,6 +167,7 @@ public class DatasetTest extends TestCase {
      * </ul>
      */
     public final void testConvertFromUnsignedC() {
+    	log.debug("testConvertFromUnsignedC");
         byte[] int8 = { -1, -128, 127, 0 };
         short[] int16 = { -1, -32768, 32767, 0 };
         int[] int32 = { -1, -2147483648, 2147483647, 0 };

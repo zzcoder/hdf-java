@@ -16,6 +16,7 @@ import ncsa.hdf.object.h5.H5Group;
  * 
  */
 public class ScalarDSTest extends TestCase {
+    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ScalarDSTest.class);
     private static final H5File H5FILE = new H5File();
 
     private H5File testFile = null;
@@ -115,6 +116,7 @@ public class ScalarDSTest extends TestCase {
      * </ul>
      */
     public final void testImageFunctionality() {
+    	log.debug("testImageFunctionality");
         assertTrue(imageDset.hasAttribute());
         assertTrue(imageDset.isImage());
         assertTrue(imageDset.isImageDisplay());
@@ -163,6 +165,7 @@ public class ScalarDSTest extends TestCase {
      * </ul>
      */
     public final void testIsText() {
+    	log.debug("testIsText");
         assertTrue(strDset.isText());
         assertFalse(imageDset.isText());
         assertFalse(intDset.isText());
