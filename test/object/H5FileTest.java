@@ -79,6 +79,7 @@ import ncsa.hdf.object.h5.H5ScalarDS;
  * @author Peter Cao, The HDF Group
  */
 public class H5FileTest extends TestCase {
+    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H5FileTest.class);
     private static final H5File H5FILE = new H5File();
     private static final int NLOOPS = 10;
     private static final int TEST_VALUE_INT = Integer.MAX_VALUE;
@@ -156,6 +157,7 @@ public class H5FileTest extends TestCase {
      * </ul>
      */
     public final void testOpen() {
+    	log.debug("testOpen");
         try {
             testFile.close();
         }
@@ -232,6 +234,7 @@ public class H5FileTest extends TestCase {
      * </ul>
      */
     public final void testCreateString() {
+    	log.debug("testCreateString");
         final String nameNew = "testH5File.h5";
         H5File file = null;
 
@@ -269,6 +272,7 @@ public class H5FileTest extends TestCase {
      * </ul>
      */
     public final void testGetRootNode() {
+    	log.debug("testGetRootNode");
         final javax.swing.tree.TreeNode root = testFile.getRootNode();
         assertNotNull(root);
         assertTrue(root.getChildCount() > 0);
@@ -287,6 +291,7 @@ public class H5FileTest extends TestCase {
      * Test method for {@link ncsa.hdf.object.h5.H5File#isReadOnly()}.
      */
     public final void testIsReadOnly() {
+    	log.debug("testIsReadOnly");
         assertFalse(testFile.isReadOnly());
         int nObjs = 0;
         try {
@@ -313,6 +318,7 @@ public class H5FileTest extends TestCase {
      * </ul>
      */
     public final void testCreateGroup() {
+    	log.debug("testCreateGroup");
         final String nameNew = "testH5File.h5";
         H5File file = null;
 
@@ -378,6 +384,7 @@ public class H5FileTest extends TestCase {
      * </ul>
      */
     public final void testCreateGroupWithGroupplist() {
+    	log.debug("testCreateGroupWithGroupplist");
         final String nameNew = "testH5File2.h5";
         H5File file = null;
         int fid = -1;
@@ -489,6 +496,7 @@ public class H5FileTest extends TestCase {
      */
     
     public final void testcreateGcpl() {
+    	log.debug("testcreateGcpl");
         final String nameNew = "test8.h5";
         H5File file = null;
         int fid = -1;
@@ -588,6 +596,7 @@ public class H5FileTest extends TestCase {
      * </ul>
      */
     public final void testCreateObjects() {
+    	log.debug("testCreateObjects");
         final String nameNew = "testH5File.h5";
         H5File file = null;
 
@@ -641,6 +650,7 @@ public class H5FileTest extends TestCase {
      * </ul>
      */
     public final void testIsThisTypeString() {
+    	log.debug("testIsThisTypeString");
         assertTrue(H5FILE.isThisType(H5TestFile.NAME_FILE_H5));
         assertFalse(H5FILE.isThisType("No such file"));
         int nObjs = 0;
@@ -665,6 +675,7 @@ public class H5FileTest extends TestCase {
      * </ul>
      */
     public final void testIsThisTypeFileFormat() {
+    	log.debug("testIsThisTypeFileFormat");
         assertTrue(H5FILE.isThisType(testFile));
         int nObjs = 0;
         try {
@@ -692,6 +703,7 @@ public class H5FileTest extends TestCase {
      * </ul>
      */
     public final void testCopyHObjectGroup() {
+    	log.debug("testCopyHObjectGroup");
         Group root = null;
         HObject srcObj = null, dstObj = null;
         final String nameNewFile = "testH5File.h5";
@@ -793,6 +805,7 @@ public class H5FileTest extends TestCase {
      * </ul>
      */
     public final void testDeleteHObject() {
+    	log.debug("testDeleteHObject");
         Group root = null;
         HObject obj = null;
         final String nameNewFile = "testH5File.h5";
@@ -871,6 +884,7 @@ public class H5FileTest extends TestCase {
      * </ul>
      */
     public final void testGet() {
+    	log.debug("testGet");
         int nObjs = 0; // number of object left open
         HObject obj = null;
 
@@ -939,6 +953,7 @@ public class H5FileTest extends TestCase {
      * </ul>
      */
     public final void testGetFromOpen() {
+    	log.debug("testGetFromOpen");
         int nObjs = 0; // number of object left open
         HObject obj = null;
 
@@ -1013,6 +1028,7 @@ public class H5FileTest extends TestCase {
      * </ul>
      */
     public final void testH5FileStringInt() {
+    	log.debug("testH5FileStringInt");
         Dataset dset = null;
         final String nameNewFile = "testH5File.h5";
         H5File file = null;
@@ -1137,6 +1153,7 @@ public class H5FileTest extends TestCase {
      * </ul>
      */
     public final void testOpenInt() {
+    	log.debug("testOpenInt");
         try {
             testFile.close();
         }
@@ -1227,6 +1244,7 @@ public class H5FileTest extends TestCase {
      * </ul>
      */
     public final void testUpdateReferenceDataset() {
+    	log.debug("testUpdateReferenceDataset");
         Group root = null;
         HObject srcObj = null, dstObj = null;
         final String nameNewFile = "testH5File.h5";
@@ -1359,6 +1377,7 @@ public class H5FileTest extends TestCase {
      * .
      */
     public final void testCreateImageAttributes() {
+    	log.debug("testCreateImageAttributes");
         H5ScalarDS img = null;
 
         try {
@@ -1387,6 +1406,7 @@ public class H5FileTest extends TestCase {
      * {@link ncsa.hdf.object.h5.H5File#getLibBounds()}
      */
     public final void testSetLibBounds() {
+    	log.debug("testSetLibBounds");
         int low = HDF5Constants.H5F_LIBVER_LATEST;
         int high = HDF5Constants.H5F_LIBVER_LATEST;
 
@@ -1444,6 +1464,7 @@ public class H5FileTest extends TestCase {
      * </ul>
      */
     public final void testCreateLink() {
+    	log.debug("testCreateLink");
         final String nameNew = "testH5FileLinks1.h5";
         H5File file = null;
         int fid = -1;
@@ -1605,6 +1626,7 @@ public class H5FileTest extends TestCase {
      * </ul>
      */
     public final void testCreateLinkExternal() {
+    	log.debug("testCreateLinkExternal");
         final String nameNew = "TESTFILE1.h5";
         H5File file1 = null;
         H5File file2 = null;
@@ -1773,6 +1795,7 @@ public class H5FileTest extends TestCase {
      * </ul>
      */
     public final void testCreateAttribute() {
+    	log.debug("testCreateAttribute");
         final String nameNew = "TESTFILEAttr1.h5";
         H5File file = null;
         int fid = -1;
@@ -1870,6 +1893,7 @@ public class H5FileTest extends TestCase {
      * </ul>
      */
     public final void testDatatypehasAttribute() {
+    	log.debug("testDatatypehasAttribute");
         final String nameNew = "testH5FileDatatype.h5";
         H5File file = null;
         int fid = -1;
@@ -1930,6 +1954,7 @@ public class H5FileTest extends TestCase {
      * </ul>
      */
     public final void testrenameAttribute() {
+    	log.debug("testrenameAttribute");
         final String nameNew = "testAttrName.h5";
         H5File file = null;
         int fid = -1;
@@ -1999,6 +2024,7 @@ public class H5FileTest extends TestCase {
      * Test method for {@link ncsa.hdf.object.h5.H5File} IsSerializable.
      */
     public final void testIsSerializable() {
+    	log.debug("testIsSerializable");
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         ObjectOutputStream oos;
         try {
@@ -2028,6 +2054,7 @@ public class H5FileTest extends TestCase {
      */
     public final void testSerializeToDisk()
     {
+    	log.debug("testSerializeToDisk");
         try {
 
             FileOutputStream fos = new FileOutputStream("temph5file.ser");

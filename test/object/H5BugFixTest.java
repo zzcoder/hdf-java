@@ -45,6 +45,7 @@ import ncsa.hdf.object.h5.H5File;
  *@author Peter Cao, The HDF Group
  */
 public class H5BugFixTest extends TestCase {
+    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H5BugFixTest.class);
     private static final int NLOOPS = 10;
     private static final H5File H5FILE = new H5File();
     private H5File testFile = null;
@@ -125,6 +126,7 @@ public class H5BugFixTest extends TestCase {
      * <p>
      */
     public final void testBug847() throws Exception {
+    	log.debug("testBug847");
         Vector data = null;
 
         final H5CompoundDS dset = (H5CompoundDS) testFile
@@ -270,6 +272,7 @@ public class H5BugFixTest extends TestCase {
      * </pre>
      */
     public final void testBug863() throws Exception {
+    	log.debug("testBug863");
         int nObjs = 0; // number of object left open
         Dataset dset = null;
         final String dnames[] = { H5TestFile.NAME_DATASET_CHAR,

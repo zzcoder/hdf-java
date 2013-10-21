@@ -16,6 +16,7 @@ import ncsa.hdf.object.h5.H5File;
  * 
  */
 public class FileFormatTest extends TestCase {
+    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FileFormatTest.class);
     private static final H5File H5FILE = new H5File();
 
     private FileFormat testFile = null;
@@ -99,6 +100,7 @@ public class FileFormatTest extends TestCase {
      * </ul>
      */
     public final void testGetNumberOfMembers() {
+    	log.debug("testGetNumberOfMembers");
         assertEquals(testFile.getNumberOfMembers(), 21);
         int nObjs = 0;
         try {
@@ -120,6 +122,7 @@ public class FileFormatTest extends TestCase {
      * </ul>
      */
     public final void testGetFileFormat() {
+    	log.debug("testGetFileFormat");
         FileFormat f = FileFormat.getFileFormat("HDF5");
         assertNotNull(f);
         int nObjs = 0;
@@ -141,6 +144,7 @@ public class FileFormatTest extends TestCase {
      * </ul>
      */
     public final void testGetFileFormatKeys() {
+    	log.debug("testGetFileFormatKeys");
      	
     	Enumeration<String> e = FileFormat.getFileFormatKeys();
 
@@ -166,6 +170,7 @@ public class FileFormatTest extends TestCase {
      * </ul>
      */
     public final void testGetFID() {
+    	log.debug("testGetFID");
         assertTrue((testFile.getFID() != -1));
         int nObjs = 0;
         try {
@@ -188,6 +193,7 @@ public class FileFormatTest extends TestCase {
      * </ul>
      */
     public final void testGetInstance() {
+    	log.debug("testGetInstance");
         H5File f = null;
         try {
             f = (H5File) FileFormat.getInstance("test_hdf5.h5");
@@ -223,6 +229,7 @@ public class FileFormatTest extends TestCase {
      * </ul>
      */
     public final void testGetFileFormats() {
+    	log.debug("testGetFileFormats");
         FileFormat f = FileFormat.getFileFormat("HDF5");
         assertNotNull(f);
         FileFormat f1 = FileFormat.getFileFormat("ALL");

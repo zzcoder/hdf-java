@@ -140,71 +140,76 @@ public class H5ScalarDS extends ScalarDS {
         obj_info.num_attrs = nAttributes;
 
         if (obj_info.num_attrs < 0) {
-
-            // test if it is an image
-            int did=open(), tid=0;
-            obj_info.num_attrs = 0;
-
-            try {
-                obj_info = H5.H5Oget_info(did);
-                nAttributes = (int) obj_info.num_attrs;
-
-                tid = H5.H5Dget_type(did);
-
-                int tclass = H5.H5Tget_class(tid);
-                isText = (tclass == HDF5Constants.H5T_STRING);
-                isVLEN = ((tclass == HDF5Constants.H5T_VLEN) || H5.H5Tis_variable_str(tid));
-                isEnum = (tclass == HDF5Constants.H5T_ENUM);
+            int did = open();
+            if(did >= 0) {
+	            // test if it is an image
+	            int tid = -1;
+	            obj_info.num_attrs = 0;
+	
+	            try {
+	                obj_info = H5.H5Oget_info(did);
+	                nAttributes = (int) obj_info.num_attrs;
+	
+	                tid = H5.H5Dget_type(did);
+	
+	                int tclass = H5.H5Tget_class(tid);
+	                isText = (tclass == HDF5Constants.H5T_STRING);
+	                isVLEN = ((tclass == HDF5Constants.H5T_VLEN) || H5.H5Tis_variable_str(tid));
+	                isEnum = (tclass == HDF5Constants.H5T_ENUM);
+	            }
+	            catch (Exception ex) {
+	            	log.debug("test if it is an image:", ex);
+	            }
+	            finally {
+	                try { 
+	                	H5.H5Tclose(tid); 
+	                }
+	                catch (HDF5Exception ex) {
+	                	log.debug("finally close:", ex);
+	                }
+	            }
+	
+	            // check image 
+	            Object avalue = getAttrValue(did, "CLASS");
+	            if (avalue!=null) {
+	            	try { 
+	                	isImageDisplay = isImage =  "IMAGE".equalsIgnoreCase(new String((byte[])avalue).trim());
+	            	} 
+	            	catch (Throwable err) {
+	            		log.debug("check image:", err);
+	            	}
+	            }
+	            
+	            // retrieve the IMAGE_MINMAXRANGE
+	            avalue = getAttrValue(did, "IMAGE_MINMAXRANGE");
+	            if (avalue!=null) {
+	                double x0 = 0, x1 = 0;
+	                try {
+	                    x0 = Double.valueOf(java.lang.reflect.Array.get(avalue, 0).toString()).doubleValue();
+	                    x1 = Double.valueOf(java.lang.reflect.Array.get(avalue, 1).toString()).doubleValue();
+	                }
+	                catch (Exception ex2) {
+	                    x0 = x1 = 0;
+	                }
+	                if (x1 > x0) {
+	                    imageDataRange = new double[2];
+	                    imageDataRange[0] = x0;
+	                    imageDataRange[1] = x1;
+	                }
+	            }
+	
+	            try { 
+	                checkCFconvention(did);
+	            } 
+	            catch (Exception ex) {
+	            	log.debug("checkCFconvention({}):", did, ex);
+	            }
+	
+	            close(did);
+	            }
+            else {
+            	log.debug("could not open dataset");
             }
-            catch (Exception ex) {
-            	log.debug("test if it is an image:", ex);
-            }
-            finally {
-                try { 
-                	H5.H5Tclose(tid); 
-                }
-                catch (HDF5Exception ex) {
-                	log.debug("finally close:", ex);
-                }
-            }
-
-            // check image 
-            Object avalue = getAttrValue(did, "CLASS");
-            if (avalue!=null) {
-            	try { 
-                	isImageDisplay = isImage =  "IMAGE".equalsIgnoreCase(new String((byte[])avalue).trim());
-            	} 
-            	catch (Throwable err) {
-            		log.debug("check image:", err);
-            	}
-            }
-            
-            // retrieve the IMAGE_MINMAXRANGE
-            avalue = getAttrValue(did, "IMAGE_MINMAXRANGE");
-            if (avalue!=null) {
-                double x0 = 0, x1 = 0;
-                try {
-                    x0 = Double.valueOf(java.lang.reflect.Array.get(avalue, 0).toString()).doubleValue();
-                    x1 = Double.valueOf(java.lang.reflect.Array.get(avalue, 1).toString()).doubleValue();
-                }
-                catch (Exception ex2) {
-                    x0 = x1 = 0;
-                }
-                if (x1 > x0) {
-                    imageDataRange = new double[2];
-                    imageDataRange[0] = x0;
-                    imageDataRange[1] = x1;
-                }
-            }
-
-            try { 
-                checkCFconvention(did);
-            } 
-            catch (Exception ex) {
-            	log.debug("checkCFconvention({}):", did, ex);
-            }
-
-            close(did);
         }
 
         return (obj_info.num_attrs > 0);
@@ -1741,6 +1746,7 @@ public class H5ScalarDS extends ScalarDS {
             H5.H5Aread(aid, atype, ref_buf);
         }
         catch (HDF5Exception ex) {
+        	log.debug("Palette attribute search failed: Expected");
             ref_buf = null;
         }
         finally {

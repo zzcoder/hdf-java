@@ -31,6 +31,7 @@ import ncsa.hdf.object.h5.H5Group;
  * 
  */
 public class H5GroupTest extends TestCase {
+    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H5GroupTest.class);
     private static final H5File H5FILE = new H5File();
     private static final int NLOOPS = 5;
     private static final int TEST_VALUE_INT = Integer.MAX_VALUE;
@@ -120,6 +121,7 @@ public class H5GroupTest extends TestCase {
      * </ul>
      */
     public final void testSetName() {
+    	log.debug("testSetName");
         final String newName = "tmpName";
 
         // test set name to null
@@ -198,6 +200,7 @@ public class H5GroupTest extends TestCase {
      * {@link ncsa.hdf.object.h5.H5Group#setPath(java.lang.String)}.
      */
     public final void testSetPath() {
+    	log.debug("testSetPath");
         final String newPath = "tmpName";
 
         try {
@@ -229,6 +232,7 @@ public class H5GroupTest extends TestCase {
      * </ul>
      */
     public final void testOpen() {
+    	log.debug("testOpen");
         int gid = -1;
 
         for (int loop = 0; loop < NLOOPS; loop++) {
@@ -267,6 +271,7 @@ public class H5GroupTest extends TestCase {
      * </ul>
      */
     public final void testClose() {
+    	log.debug("testClose");
         testOpen();
         int nObjs = 0;
         try {
@@ -290,6 +295,7 @@ public class H5GroupTest extends TestCase {
      * </ul>
      */
     public final void testClear() {
+    	log.debug("testClear");
         Vector attrs = null;
         try {
             attrs = (Vector) testGroup.getMetadata();
@@ -338,6 +344,7 @@ public class H5GroupTest extends TestCase {
      * </ul>
      */
     public final void testH5GroupFileFormatStringStringGroup() {
+    	log.debug("testH5GroupFileFormatStringStringGroup");
         Group pgroup = null;
         final String[] names = { null, GNAME_SUB, GNAME_SUB.substring(4) };
         final String[] paths = { GNAME_SUB, null, H5TestFile.NAME_GROUP };
@@ -394,6 +401,7 @@ public class H5GroupTest extends TestCase {
      */
     public final void testH5GroupFileFormatStringStringGroupLongArray() {
         // RISHI SINHA Why are we testing a deprecated API.
+    	log.debug("testH5GroupFileFormatStringStringGroupLongArray");
         Group pgroup = null;
         final String[] names = { null, GNAME_SUB, GNAME_SUB.substring(4) };
         final String[] paths = { GNAME_SUB, null, H5TestFile.NAME_GROUP };
@@ -465,6 +473,7 @@ public class H5GroupTest extends TestCase {
      * </ul>
      */
     public final void testGetMetadata() {
+    	log.debug("testGetMetadata");
         Vector attrs = null;
 
         try {
@@ -523,6 +532,7 @@ public class H5GroupTest extends TestCase {
      * </ul>
      */
     public final void testWriteMetadata() {
+    	log.debug("testWriteMetadata");
         Vector attrs = null;
         Attribute attr = null;
 
@@ -673,6 +683,7 @@ public class H5GroupTest extends TestCase {
      * </ul>
      */
     public final void testRemoveMetadata() {
+    	log.debug("testRemoveMetadata");
         Vector attrs = null;
         try {
             attrs = (Vector) testGroup.getMetadata();
@@ -749,6 +760,7 @@ public class H5GroupTest extends TestCase {
      * </ul>
      */
     public final void testCreate() {
+    	log.debug("testCreate");
         Group grp = null;
         final String nameNew = "/tmpH5Group";
         try {
@@ -829,6 +841,7 @@ public class H5GroupTest extends TestCase {
      * </ul>
      */
     public final void testCreateWithGroupplist() {
+    	log.debug("testCreateWithGroupplist");
         Group grp = null;
         final String nameNew = "/Group1";
         int gcpl = -1;
@@ -949,6 +962,7 @@ public class H5GroupTest extends TestCase {
      * Test method for {@link ncsa.hdf.object.h5.H5Group} IsSerializable.
      */
     public final void testIsSerializable() {
+    	log.debug("testIsSerializable");
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         ObjectOutputStream oos;
         try {
@@ -977,6 +991,7 @@ public class H5GroupTest extends TestCase {
      */
     public final void testSerializeToDisk()
     {
+    	log.debug("testSerializeToDisk");
         try {
             FileOutputStream fos = new FileOutputStream("temph5grp.ser");
             ObjectOutputStream oos = new ObjectOutputStream(fos);
