@@ -1366,6 +1366,7 @@ public final class Tools {
 
         String cname = data.getClass().getName();
         char dname = cname.charAt(cname.lastIndexOf("[") + 1);
+    	log.debug("findMinMax() cname={} : dname={}", cname, dname);
 
         minmax[0] = Float.MAX_VALUE;
         minmax[1] = -Float.MAX_VALUE;
@@ -1535,6 +1536,7 @@ public final class Tools {
 
         String cname = data.getClass().getName();
         char dname = cname.charAt(cname.lastIndexOf("[") + 1);
+    	log.debug("computeStatistics() cname={} : dname={}", cname, dname);
 
         npoints = 0;
         switch (dname) {

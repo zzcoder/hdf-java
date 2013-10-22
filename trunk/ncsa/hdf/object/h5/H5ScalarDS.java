@@ -354,6 +354,7 @@ public class H5ScalarDS extends ScalarDS {
             resetSelection();
             return; // already called. Initialize only once
         }
+		log.debug("init() start");
 
         int did = -1, sid = -1, tid = -1;
 
@@ -374,6 +375,7 @@ public class H5ScalarDS extends ScalarDS {
         		isEnum = (tclass == HDF5Constants.H5T_ENUM);
         		isUnsigned = H5Datatype.isUnsigned(tid);
         		isRegRef = H5.H5Tequal(tid, HDF5Constants.H5T_STD_REF_DSETREG);
+        		log.debug("init() tid={} is tclass={} has isText={} : isVLEN={} : isEnum={} : isUnsigned={} : isRegRef={}", tid, tclass, isText, isVLEN, isEnum, isUnsigned, isRegRef);
 
         		if (tclass == HDF5Constants.H5T_ARRAY) {
         			// use the base datatype to define the array
@@ -416,13 +418,14 @@ public class H5ScalarDS extends ScalarDS {
         						}
         					}
         					catch (Exception ex2) {
+        						log.debug("fill value was defined :", ex2);
         						fillValue = null;
         					}
         				}
         			}
         		}
         		catch (HDF5Exception ex) {
-        			;
+					log.debug("check if datatype in file is native datatype :", ex);
         		}
         		finally {
         			try {
@@ -488,9 +491,13 @@ public class H5ScalarDS extends ScalarDS {
 
         	close(did);
         }
+    	else {
+    		log.debug("init() failed to open dataset");
+    	}
 
         startDims = new long[rank];
         selectedDims = new long[rank];
+		log.debug("init() finish");
         resetSelection();
     }
 
