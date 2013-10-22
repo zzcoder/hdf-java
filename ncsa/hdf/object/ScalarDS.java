@@ -34,15 +34,16 @@ import java.util.Vector;
  * @author Peter X. Cao
  */
 public abstract class ScalarDS extends Dataset {
-    // The following constant strings are copied from
-    // http://hdf.ncsa.uiuc.edu/HDF5/doc/ADGuide/ImageSpec.html
-    // to make the definition consistent with the image specs.
-
     /**
      * 
      */
     private static final long serialVersionUID = 8925371455928203981L;
 
+    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ScalarDS.class);
+
+    // The following constant strings are copied from
+    // http://hdf.ncsa.uiuc.edu/HDF5/doc/ADGuide/ImageSpec.html
+    // to make the definition consistent with the image specs.
     /**
      * Indicates that the pixel RGB values are contiguous.
      */
@@ -192,9 +193,9 @@ public abstract class ScalarDS extends Dataset {
             unsignedConverted = true;
             
             if (fillValue != null) {
-                if(!isFillValueConverted){
-                fillValue = convertFromUnsignedC(fillValue, null);
-                isFillValueConverted = true;
+                if(!isFillValueConverted) {
+	                fillValue = convertFromUnsignedC(fillValue, null);
+	                isFillValueConverted = true;
                 }
             }
                 

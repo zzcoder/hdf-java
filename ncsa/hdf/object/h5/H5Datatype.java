@@ -521,7 +521,7 @@ public class H5Datatype extends Datatype {
      *             datatype identifier on disk
      *             <p>
      * @param tid
-     *            the datatype identifieron disk.
+     *            the datatype identification disk.
      * @return the memory datatype identifier if successful, and negative
      *         otherwise.
      */
@@ -846,7 +846,8 @@ public class H5Datatype extends Datatype {
                 data = new double[size];
             }
         }
-        else if ((tclass == HDF5Constants.H5T_STRING) || (tclass == HDF5Constants.H5T_REFERENCE)
+        else if ((tclass == HDF5Constants.H5T_STRING)
+        		|| (tclass == HDF5Constants.H5T_REFERENCE)
                 || (tclass == HDF5Constants.H5T_BITFIELD)) {
             data = new byte[size * tsize];
         }
@@ -1168,17 +1169,21 @@ public class H5Datatype extends Datatype {
 
         if(datatype >= 0) {
 	        try {
-	            if(HDF5Constants.H5T_INTEGER==H5.H5Tget_class(datatype)) {
 		            int tsign = H5.H5Tget_sign(datatype);
 		            if (tsign == HDF5Constants.H5T_SGN_NONE) {
 		                unsigned = true;
 		            }
-	            }
+		            else {
+		            	log.debug("isUnsigned() not unsigned");
+		            }
 	        }
 	        catch (Exception ex) {
 	        	log.debug("Datatype {} failure", datatype, ex);
 	            unsigned = false;
 	        }
+        }
+        else {
+        	log.debug("isUnsigned() not a valid datatype");
         }
 
         return unsigned;
