@@ -21,6 +21,7 @@ import ncsa.hdf.object.h5.H5Group;
  * 
  */
 public class AttributeTest extends TestCase {
+    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(AttributeTest.class);
     private static final H5File H5FILE = new H5File();
 
     private H5File testFile = null;
@@ -44,8 +45,7 @@ public class AttributeTest extends TestCase {
 	protected void setUp() throws Exception {
         super.setUp();
 
-        testFile = (H5File) H5FILE.open(H5TestFile.NAME_FILE_H5,
-                FileFormat.WRITE);
+        testFile = (H5File) H5FILE.open(H5TestFile.NAME_FILE_H5, FileFormat.WRITE);
         assertNotNull(testFile);
         testGroup = (H5Group) testFile.get(H5TestFile.NAME_GROUP_ATTR);
         assertNotNull(testGroup);
@@ -71,6 +71,7 @@ public class AttributeTest extends TestCase {
                 testFile.close();
             }
             catch (final Exception ex) {
+            	log.debug("testfile close failure: ", ex);
             }
             testFile = null;
         }
@@ -89,11 +90,12 @@ public class AttributeTest extends TestCase {
      * 
      */
     public final void testAttributeStringDatatypeLongArray() {
+    	log.debug("testAttributeStringDatatypeLongArray");
         long[] attrDims = { 1 };
         String attrName = "CLASS";
         String[] classValue = { "IMAGE" };
-        Datatype attrType = new H5Datatype(Datatype.CLASS_STRING, classValue[0]
-                .length() + 1, -1, -1);
+        Datatype attrType = new H5Datatype(Datatype.CLASS_STRING, 
+        		classValue[0].length() + 1, -1, -1);
         Attribute attr = new Attribute(attrName, attrType, attrDims);
         attr.setValue(classValue);
         assertNotNull(attr);
@@ -120,6 +122,7 @@ public class AttributeTest extends TestCase {
      * </ul>
      */
     public final void testAttributeStringDatatypeLongArrayObject() {
+    	log.debug("testAttributeStringDatatypeLongArrayObject");
         long[] attrDims = { 1 };
         String attrName = "CLASS";
         String[] classValue = { "IMAGE" };
@@ -149,6 +152,7 @@ public class AttributeTest extends TestCase {
      * </ul>
      */
     public final void testGetValue() {
+    	log.debug("testGetValue");
         assertEquals(((String[]) strAttr.getValue())[0], "String attribute.");
         assertTrue(Arrays.equals((int[]) arrayIntAttr.getValue(), new int[] {
                 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 }));
@@ -174,6 +178,7 @@ public class AttributeTest extends TestCase {
      * </ul>
      */
     public final void testSetValue() {
+    	log.debug("testSetValue");
         String[] prevValue = (String[]) strAttr.getValue();
         strAttr.setValue("Temp String Value");
         assertEquals(((String) strAttr.getValue()), "Temp String Value");
@@ -205,6 +210,7 @@ public class AttributeTest extends TestCase {
      * </ul>
      */
     public final void testGetName() {
+    	log.debug("testGetName");
         assertTrue(strAttr.getName().equals("strAttr"));
         assertTrue(arrayIntAttr.getName().equals("arrayInt"));
         int nObjs = 0;
@@ -228,6 +234,7 @@ public class AttributeTest extends TestCase {
      * </ul>
      */
     public final void testGetRank() {
+    	log.debug("testGetRank");
         assertEquals(strAttr.getRank(), 1);
         assertEquals(arrayIntAttr.getRank(), 1);
         int nObjs = 0;
@@ -251,6 +258,7 @@ public class AttributeTest extends TestCase {
      * </ul>
      */
     public final void testGetDataDims() {
+    	log.debug("testGetDataDims");
         assertEquals(strAttr.getDataDims()[0], 1);
         assertEquals(arrayIntAttr.getDataDims()[0], 10);
         int nObjs = 0;
@@ -274,6 +282,7 @@ public class AttributeTest extends TestCase {
      * </ul>
      */
     public final void testGetType() {
+    	log.debug("testGetType");
         assertTrue(strAttr.getType().getDatatypeDescription().equals(
                 "String, length = 20"));
         assertTrue(arrayIntAttr.getType().getDatatypeDescription().equals(
@@ -299,6 +308,7 @@ public class AttributeTest extends TestCase {
      * </ul>
      */
     public final void testIsUnsigned() {
+    	log.debug("testIsUnsigned");
         assertFalse(strAttr.isUnsigned());
         assertFalse(arrayIntAttr.isUnsigned());
         int nObjs = 0;
@@ -323,6 +333,7 @@ public class AttributeTest extends TestCase {
      * </ul>
      */
     public final void testToStringString() {
+    	log.debug("testToStringString");
         assertTrue(strAttr.toString(",").equals("String attribute."));
         assertTrue(arrayIntAttr.toString(",").equals("1,2,3,4,5,6,7,8,9,10"));
         int nObjs = 0;

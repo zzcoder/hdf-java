@@ -20,7 +20,6 @@ import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.DataBufferInt;
 import java.awt.image.DirectColorModel;
-import java.awt.image.IndexColorModel;
 import java.awt.image.MemoryImageSource;
 import java.awt.image.PixelGrabber;
 import java.io.BufferedInputStream;
@@ -53,6 +52,8 @@ import ncsa.hdf.view.ViewProperties.BITMASK_OP;
  * @version 2.4 9/6/2007
  */
 public final class Tools {
+    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Tools.class);
+    
     public static final long       MAX_INT8        = 127;
     public static final long       MAX_UINT8       = 255;
     public static final long       MAX_INT16       = 32767;
@@ -406,6 +407,7 @@ public final class Tools {
             in = new BufferedReader(new FileReader(filename));
         }
         catch (Exception ex) {
+        	log.debug("input file:", ex);
             in = null;
         }
 
@@ -418,6 +420,7 @@ public final class Tools {
                 line = in.readLine();
             }
             catch (Exception ex) {
+            	log.debug("input file:", ex);
                 line = null;
             }
 
@@ -437,6 +440,7 @@ public final class Tools {
                 b = Float.valueOf(st.nextToken());
             }
             catch (NumberFormatException ex) {
+            	log.debug("input file:", ex);
                 continue;
             }
 
@@ -468,6 +472,7 @@ public final class Tools {
             in.close();
         }
         catch (Exception ex) {
+        	log.debug("input file:", ex);
         }
 
         nentries = idx;
@@ -554,6 +559,7 @@ public final class Tools {
             pg.grabPixels();
         }
         catch (InterruptedException e) {
+        	log.debug("transparent pixels:", e);
         }
         ColorModel cm = pg.getColorModel();
 
@@ -842,7 +848,8 @@ public final class Tools {
     		out = 0;
     		if (list!=null)
     			list.add(idx);
-    	} else
+    	} 
+    	else
     		out = (byte) ((in-min)*ratio);
     	
     	return out;
@@ -1359,6 +1366,7 @@ public final class Tools {
 
         String cname = data.getClass().getName();
         char dname = cname.charAt(cname.lastIndexOf("[") + 1);
+    	log.debug("findMinMax() cname={} : dname={}", cname, dname);
 
         minmax[0] = Float.MAX_VALUE;
         minmax[1] = -Float.MAX_VALUE;
@@ -1528,6 +1536,7 @@ public final class Tools {
 
         String cname = data.getClass().getName();
         char dname = cname.charAt(cname.lastIndexOf("[") + 1);
+    	log.debug("computeStatistics() cname={} : dname={}", cname, dname);
 
         npoints = 0;
         switch (dname) {

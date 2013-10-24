@@ -14,7 +14,7 @@ INCLUDE_DIRECTORIES(
 # TestH5Object
 ###########################################################################
 
-SET (CMAKE_JAVA_INCLUDE_PATH ${HDFJAVA_OBJECT_JARS})
+SET (CMAKE_JAVA_INCLUDE_PATH "${HDFJAVA_OBJECT_JARS};${HDFJAVA_HDF5_JARS};${HDFJAVA_LOGGING_JAR};${HDFJAVA_LOGGING_SIMPLE_JAR}")
 
 FILE (WRITE ${PROJECT_BINARY_DIR}/TestH5Object_Manifest.txt
 "Main-Class: test.object.misc.TestH5Object
@@ -55,6 +55,8 @@ ADD_TEST (
 ###########################################################################
 # TestH5Table
 ###########################################################################
+
+SET (CMAKE_JAVA_INCLUDE_PATH "${HDFJAVA_OBJECT_JARS};${HDFJAVA_HDF5_JARS};${HDFJAVA_LOGGING_JAR};${HDFJAVA_LOGGING_SIMPLE_JAR}")
 
 FILE (WRITE ${PROJECT_BINARY_DIR}/TestH5Table_Manifest.txt
 "Main-Class: test.object.misc.TestH5Table
@@ -98,6 +100,8 @@ ENDIF (HDFJAVA_TEST_H5TABLE)
 # TestDebugHDF
 ###########################################################################
 
+SET (CMAKE_JAVA_INCLUDE_PATH "${HDFJAVA_OBJECT_JARS};${HDFJAVA_HDF4_JARS};${HDFJAVA_HDF5_JARS};${HDFJAVA_LOGGING_JAR};${HDFJAVA_LOGGING_SIMPLE_JAR}")
+
 FILE (WRITE ${PROJECT_BINARY_DIR}/TestDebugHDF_Manifest.txt
 "Main-Class: test.object.misc.DebugHDF
 "
@@ -139,6 +143,8 @@ ENDIF (HDFJAVA_TEST_DEBUGHDF)
 ###########################################################################
 # TestH5File
 ###########################################################################
+
+SET (CMAKE_JAVA_INCLUDE_PATH "${HDFJAVA_OBJECT_JARS};${HDFJAVA_HDF5_JARS};${HDFJAVA_LOGGING_JAR};${HDFJAVA_LOGGING_SIMPLE_JAR}")
 
 FILE (WRITE ${PROJECT_BINARY_DIR}/TestH5File_Manifest.txt
 "Main-Class: test.object.misc.TestH5File
@@ -182,6 +188,8 @@ ENDIF (HDFJAVA_TEST_H5FILE)
 # TestH5MemoryLeak
 ###########################################################################
 
+SET (CMAKE_JAVA_INCLUDE_PATH "${HDFJAVA_OBJECT_JARS};${HDFJAVA_HDF5_JARS};${HDFJAVA_LOGGING_JAR};${HDFJAVA_LOGGING_SIMPLE_JAR}")
+
 FILE (WRITE ${PROJECT_BINARY_DIR}/TestH5MemoryLeak_Manifest.txt
 "Main-Class: test.object.misc.TestH5MemoryLeak
 "
@@ -223,6 +231,8 @@ ENDIF (HDFJAVA_TEST_MEMORYLEAK)
 ###########################################################################
 # TestH4File
 ###########################################################################
+
+SET (CMAKE_JAVA_INCLUDE_PATH "${HDFJAVA_OBJECT_JARS};${HDFJAVA_HDF4_JARS};${HDFJAVA_LOGGING_JAR};${HDFJAVA_LOGGING_SIMPLE_JAR}")
 
 FILE (WRITE ${PROJECT_BINARY_DIR}/TestH4File_Manifest.txt
 "Main-Class: test.object.misc.TestH4File

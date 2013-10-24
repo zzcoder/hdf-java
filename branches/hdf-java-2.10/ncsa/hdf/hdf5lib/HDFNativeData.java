@@ -35,16 +35,6 @@ import ncsa.hdf.hdf5lib.exceptions.HDF5JavaException;
 
 public class HDFNativeData {
 
-    static {
-        int plist = HDF5Constants.H5P_DEFAULT;
-        int[] version_info = new int[4];
-        try {
-            H5.H5Pget_version(plist, version_info);
-        }
-        catch (Exception ex) {
-        }
-    }
-
     /**
      * Convert an array of bytes into an array of ints
      * 

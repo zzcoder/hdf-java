@@ -84,6 +84,8 @@ public class DefaultTextView extends JInternalFrame implements TextView,
         ActionListener, KeyListener {
     private static final long serialVersionUID = 3892752752951438428L;
 
+    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DefaultTextView.class);
+
     /**
      * The main HDFView.
      */
@@ -401,7 +403,6 @@ public class DefaultTextView extends JInternalFrame implements TextView,
                 + dataset.getName());
 
         File choosedFile = new File(dataset.getName() + ".txt");
-        ;
         fchooser.setSelectedFile(choosedFile);
         int returnVal = fchooser.showSaveDialog(this);
 
@@ -464,6 +465,7 @@ public class DefaultTextView extends JInternalFrame implements TextView,
             viewer.showStatus("File size (bytes): " + size);
         }
         catch (Exception ex) {
+        	log.debug("raf file size:", ex);
         }
     }
 
@@ -507,6 +509,7 @@ public class DefaultTextView extends JInternalFrame implements TextView,
             System.out.println(docFlavors[i]);
         }
 
+        // TODO: windows url
         // Get a text DocFlavor
         InputStream is = null;
         try {
@@ -514,6 +517,7 @@ public class DefaultTextView extends JInternalFrame implements TextView,
                     "e:\\temp\\t.html"));
         }
         catch (Exception ex) {
+        	log.debug("Get a text DocFlavor:", ex);
         }
         DocFlavor flavor = DocFlavor.STRING.TEXT_HTML;
 

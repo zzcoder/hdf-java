@@ -16,6 +16,7 @@ import ncsa.hdf.object.h5.H5File;
  * 
  */
 public class CompoundDSTest extends TestCase {
+    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CompoundDSTest.class);
     private static final H5File H5FILE = new H5File();
 
     private H5File testFile = null;
@@ -74,6 +75,7 @@ public class CompoundDSTest extends TestCase {
      * </ul>
      */
     public final void testFieldsHaveCorrectNameTypeOrderAndDims() {
+    	log.debug("testFieldsHaveCorrectNameTypeOrderAndDims");
         int correctMemberCount = H5TestFile.COMPOUND_MEMBER_NAMES.length;
         assertEquals(testDS.getMemberCount(), correctMemberCount);
         String[] names = testDS.getMemberNames();
@@ -131,6 +133,7 @@ public class CompoundDSTest extends TestCase {
      * </ul>
      */
     public final void testSelectionDeselectionCountWorks() {
+    	log.debug("testSelectionDeselectionCountWorks");
         if (testDS.getSelectedMemberCount() != H5TestFile.COMPOUND_MEMBER_NAMES.length) {
             fail("Right after init getSelectedMemberCount returns"
                     + testDS.getSelectedMemberCount()

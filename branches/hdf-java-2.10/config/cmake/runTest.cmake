@@ -25,7 +25,17 @@ IF (NOT TEST_REFERENCE)
   MESSAGE (FATAL_ERROR "Require TEST_REFERENCE to be defined")
 ENDIF (NOT TEST_REFERENCE)
 
-MESSAGE (STATUS "COMMAND: ${TEST_TESTER} -Xmx1024M -Djava.library.path=\"${TEST_LIBRARY_DIRECTORY}\" -cp \"${TEST_CLASSPATH}\" ${TEST_ARGS} ${TEST_PROGRAM} ${ARGN}")
+IF (NOT TEST_ERRREF)
+  SET (ERROR_APPEND 1)
+ENDIF (NOT TEST_ERRREF)
+
+IF (NOT TEST_LOG_LEVEL)
+  SET (LOG_LEVEL "info")
+ELSE (NOT TEST_LOG_LEVEL)
+  SET (LOG_LEVEL "${TEST_LOG_LEVEL}")
+ENDIF (NOT TEST_LOG_LEVEL)
+
+MESSAGE (STATUS "COMMAND: ${TEST_TESTER} -Xmx1024M -Dorg.slf4j.simpleLogger.defaultLog=${LOG_LEVEL} -Djava.library.path=\"${TEST_LIBRARY_DIRECTORY}\" -cp \"${TEST_CLASSPATH}\" ${TEST_ARGS} ${TEST_PROGRAM} ${ARGN}")
 
 IF (WIN32 AND NOT MINGW)
   SET (ENV{PATH} "$ENV{PATH}\\;${TEST_LIBRARY_DIRECTORY}")
@@ -34,6 +44,7 @@ ENDIF (WIN32 AND NOT MINGW)
 # run the test program, capture the stdout/stderr and the result var
 EXECUTE_PROCESS (
     COMMAND ${TEST_TESTER} -Xmx1024M
+    -Dorg.slf4j.simpleLogger.defaultLogLevel=${LOG_LEVEL}
     -Djava.library.path=${TEST_LIBRARY_DIRECTORY}
     -cp "${TEST_CLASSPATH}" ${TEST_ARGS} ${TEST_PROGRAM}
     ${ARGN}
@@ -48,9 +59,15 @@ MESSAGE (STATUS "COMMAND Result: ${TEST_RESULT}")
 
 IF (EXISTS ${TEST_FOLDER}/${TEST_OUTPUT}.err)
   FILE (READ ${TEST_FOLDER}/${TEST_OUTPUT}.err TEST_STREAM)
-  IF (TEST_APPEND)
+  IF (TEST_MASK_FILE)
+    STRING(REGEX REPLACE "CurrentDir is [^\n]+\n" "CurrentDir is (dir name)\n" TEST_STREAM "${TEST_STREAM}") 
+  ENDIF (TEST_MASK_FILE)
+
+  IF (ERROR_APPEND)
     FILE (APPEND ${TEST_FOLDER}/${TEST_OUTPUT} "${TEST_STREAM}") 
-  ENDIF (TEST_APPEND)
+  ELSE (ERROR_APPEND)
+    FILE (WRITE ${TEST_FOLDER}/${TEST_OUTPUT}.err "${TEST_STREAM}")
+  ENDIF (ERROR_APPEND)
 ENDIF (EXISTS ${TEST_FOLDER}/${TEST_OUTPUT}.err)
 
 # if the return value is !=0 bail out
@@ -102,6 +119,50 @@ IF (NOT TEST_SKIP_COMPARE)
   IF (NOT ${TEST_RESULT} STREQUAL 0)
     MESSAGE (FATAL_ERROR "Failed: The output of ${TEST_OUTPUT} did not match ${TEST_REFERENCE}")
   ENDIF (NOT ${TEST_RESULT} STREQUAL 0)
+  
+  IF (TEST_ERRREF)
+    IF (WIN32 AND NOT MINGW)
+      FILE (READ ${TEST_FOLDER}/${TEST_ERRREF} TEST_STREAM)
+      FILE (WRITE ${TEST_FOLDER}/${TEST_ERRREF} "${TEST_STREAM}")
+    ENDIF (WIN32 AND NOT MINGW)
+
+    # now compare the error output with the error reference
+    EXECUTE_PROCESS (
+        COMMAND ${CMAKE_COMMAND} -E compare_files ${TEST_FOLDER}/${TEST_OUTPUT}.err ${TEST_FOLDER}/${TEST_ERRREF}
+        RESULT_VARIABLE TEST_RESULT
+    )
+    IF (NOT ${TEST_RESULT} STREQUAL 0)
+    SET (TEST_RESULT 0)
+    FILE (STRINGS ${TEST_FOLDER}/${TEST_OUTPUT}.err test_act)
+    LIST (LENGTH test_act len_act)
+    FILE (STRINGS ${TEST_FOLDER}/${TEST_ERRREF} test_ref)
+    LIST (LENGTH test_ref len_ref)
+    MATH (EXPR _FP_LEN "${len_ref} - 1")
+    IF (NOT ${len_act} STREQUAL "0")
+      MATH (EXPR _FP_LEN "${len_ref} - 1")
+      FOREACH (line RANGE 0 ${_FP_LEN})
+        LIST (GET test_act ${line} str_act)
+        LIST (GET test_ref ${line} str_ref)
+        IF (NOT "${str_act}" STREQUAL "${str_ref}")
+          IF (NOT "${str_act}" STREQUAL "")
+            SET (TEST_RESULT 1)
+            MESSAGE ("line = ${line}\n***ACTUAL: ${str_act}\n****REFER: ${str_ref}\n")
+           ENDIF (NOT "${str_act}" STREQUAL "")
+        ENDIF (NOT "${str_act}" STREQUAL "${str_ref}")
+      ENDFOREACH (line RANGE 0 ${_FP_LEN})
+    ENDIF (NOT ${len_act} STREQUAL "0")
+    IF (NOT ${len_act} STREQUAL ${len_ref})
+      SET (TEST_RESULT 1)
+    ENDIF (NOT ${len_act} STREQUAL ${len_ref})
+    ENDIF (NOT ${TEST_RESULT} STREQUAL 0)
+
+    MESSAGE (STATUS "COMPARE Result: ${TEST_RESULT}")
+
+    # again, if return value is !=0 scream and shout
+    IF (NOT ${TEST_RESULT} STREQUAL 0)
+      MESSAGE (FATAL_ERROR "Failed: The error output of ${TEST_OUTPUT}.err did not match ${TEST_ERRREF}")
+    ENDIF (NOT ${TEST_RESULT} STREQUAL 0)
+  ENDIF (TEST_ERRREF)
 ENDIF (NOT TEST_SKIP_COMPARE)
 
 IF (TEST_GREP_COMPARE)

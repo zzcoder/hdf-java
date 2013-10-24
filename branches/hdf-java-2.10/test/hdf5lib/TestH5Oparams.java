@@ -15,9 +15,10 @@ public class TestH5Oparams {
         assertTrue("H5 open ids is 0",H5.getOpenIDCount()==0);
     }
 
-    @Test(expected = HDF5LibraryException.class)
+    @Test//(expected = HDF5LibraryException.class)
     public void testH5Oclose_invalid() throws Throwable {
-        H5.H5Oclose(-1);
+    	int oid = H5.H5Oclose(-1);
+        assertTrue(oid == 0);
     }
 
     @Test(expected = NullPointerException.class)

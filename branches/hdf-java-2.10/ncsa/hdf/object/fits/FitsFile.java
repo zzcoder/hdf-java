@@ -47,6 +47,8 @@ public class FitsFile extends FileFormat
 {
     private static final long serialVersionUID = -1965689032980605791L;
 
+    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FitsFile.class);
+
     /**
      * The root node of the file hierearchy.
      */
@@ -73,8 +75,13 @@ public class FitsFile extends FileFormat
         isReadOnly = true;
         isFileOpen = false;
         this.fid = -1;
-        try { fitsFile = new Fits(fullFileName); }
-        catch (Exception ex) {}
+        try { 
+        	fitsFile = new Fits(fullFileName); 
+        }
+        catch (Exception ex) {
+            if(!pathname.isEmpty())
+            	log.debug("Fits({}):", fullFileName, ex);
+        }
     }
 
 
@@ -100,37 +107,64 @@ public class FitsFile extends FileFormat
     {
         boolean is_fits = false;
         RandomAccessFile raf = null;
-        try { raf = new RandomAccessFile(filename, "r"); }
-        catch (Exception ex) { raf = null; }
+        try { 
+        	raf = new RandomAccessFile(filename, "r"); 
+        }
+        catch (Exception ex) { 
+        	raf = null; 
+        }
 
         if (raf == null) {
-            try { raf.close();} catch (Exception ex) {}
+            try { 
+            	raf.close();
+            } 
+            catch (Exception ex) {
+            	log.debug("closing RandomAccessFile({}):", filename, ex);
+            }
             return false;
         }
 
         byte[] header = new byte[80];
-        try { raf.read(header); }
-        catch (Exception ex) { header = null; }
+        try { 
+        	raf.read(header); 
+        }
+        catch (Exception ex) { 
+        	header = null; 
+        }
 
-        if (header != null)
-        {
+        if (header != null) {
             String front = new String(header, 0, 9);
             if (!front.startsWith("SIMPLE  =")) {
-                try { raf.close();} catch (Exception ex) {}
+                try { 
+                	raf.close();
+                } 
+                catch (Exception ex) {
+                	log.debug("closing RandomAccessFile({}):", filename, ex);
+                }
                 return false;
             }
 
             String back = new String(header, 9, 70);
             back = back.trim();
             if ((back.length() < 1) || (back.charAt(0) != 'T')) {
-                try { raf.close();} catch (Exception ex) {}
+                try { 
+                	raf.close();
+                } 
+                catch (Exception ex) {
+                	log.debug("closing RandomAccessFile({}):", filename, ex);
+                }
                 return false;
             }
 
             is_fits = true;;
         }
 
-        try { raf.close();} catch (Exception ex) {}
+        try { 
+        	raf.close();
+        } 
+        catch (Exception ex) {
+        	log.debug("closing RandomAccessFile({}):", filename, ex);
+        }
 
         return is_fits;
     }
@@ -186,8 +220,12 @@ public class FitsFile extends FileFormat
 
         BasicHDU[] hdus = null;
 
-        try { hdus = fitsFile.read(); }
-        catch (Exception ex) {}
+        try { 
+        	hdus = fitsFile.read(); 
+        }
+        catch (Exception ex) {
+        	log.debug("fitsFile.read():", ex);
+        }
 
         if (hdus == null) {
             return root;
@@ -204,14 +242,18 @@ public class FitsFile extends FileFormat
             // only deal with ImageHDU and TableHDU
             if (hdu instanceof ImageHDU) {
                 hduName = "ImageHDU #"+nImageHDU++;
-            } else if (hdu instanceof RandomGroupsHDU) {
+            } 
+            else if (hdu instanceof RandomGroupsHDU) {
                 hduName = "RandomGroupsHDU #"+nImageHDU++;
-            } else if (hdu instanceof TableHDU) {
+            } 
+            else if (hdu instanceof TableHDU) {
                 if (hdu instanceof AsciiTableHDU) {
                     hduName = "AsciiTableHDU #"+nTableHDU++;
-                } else if (hdu instanceof BinaryTableHDU) {
+                } 
+                else if (hdu instanceof BinaryTableHDU) {
                     hduName = "BinaryTableHDU #"+nTableHDU++;
-                } else {
+                } 
+                else {
                     hduName = "TableHDU #"+nTableHDU++;
                 }
             }

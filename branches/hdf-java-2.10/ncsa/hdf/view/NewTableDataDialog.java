@@ -67,6 +67,8 @@ import ncsa.hdf.object.HObject;
 public class NewTableDataDialog extends JDialog implements ActionListener, ItemListener {
     private static final long     serialVersionUID = -6786877503226330821L;
 
+    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NewTableDataDialog.class);
+
     private static final String[] DATATYPE_NAMES   = { 
         "byte (8-bit)", // 0
         "short (16-bit)", // 1
@@ -393,6 +395,7 @@ public class NewTableDataDialog extends JDialog implements ActionListener, ItemL
                 n = Integer.valueOf((String) nFieldBox.getSelectedItem()).intValue();
             }
             catch (Exception ex) {
+            	log.debug("Change number of members:", ex);
             }
 
             if (n == numberOfMembers) {
@@ -537,6 +540,7 @@ public class NewTableDataDialog extends JDialog implements ActionListener, ItemL
                 dset.getMetadata();
             } // get chunking and compression info
             catch (Exception ex) {
+            	log.debug("get chunking and compression info:", ex);
             }
             long[] chunks = dset.getChunkSize();
             if (chunks != null) {
@@ -708,6 +712,7 @@ public class NewTableDataDialog extends JDialog implements ActionListener, ItemL
                     order = Integer.parseInt(orderStr);
                 }
                 catch (Exception ex) {
+                	log.debug("compound order:", ex);
                 }
             }
             mOrders[i] = order;

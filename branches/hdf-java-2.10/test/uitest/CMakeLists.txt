@@ -36,7 +36,7 @@ FILE (WRITE ${PROJECT_BINARY_DIR}/Manifest.txt
 "
 )
 
-SET (CMAKE_JAVA_INCLUDE_PATH "${HDFJAVA_LIB_DIR}/junit.jar;${HDFJAVA_JARS_TO_EXPORT};${HDFJAVA_HDFVIEWJAR_TO_EXPORT};${HDFJAVA_FEST_JARS}")
+SET (CMAKE_JAVA_INCLUDE_PATH "${HDFJAVA_LIB_DIR}/junit.jar;${HDFJAVA_JARS_TO_EXPORT};${HDFJAVA_HDFVIEWJAR_TO_EXPORT};${HDFJAVA_FEST_JARS};${HDFJAVA_LOGGING_JAR};${HDFJAVA_LOGGING_SIMPLE_JAR}")
 
 ADD_JAR (${HDFJAVA_TEST_UITEST_TARGET} MANIFEST ${PROJECT_BINARY_DIR}/Manifest.txt ${HDFJAVA_TEST_UITEST_SRCS})
 
@@ -58,15 +58,25 @@ SET (HDF_JAVA_TEST_FILES
 
 SET (HDF_JAVA_TEST_REFERENCE
 #      JUnit-gui-CL-geom.txt
+#      JUnit-gui-CL-geom.err
       JUnit-gui-CL-multi.txt
+      JUnit-gui-CL-multi.err
       JUnit-gui-CL-root-multi.txt
+      JUnit-gui-CL-root-multi.err
       JUnit-gui-menu.txt
+      JUnit-gui-menu.err
       JUnit-gui-treeview-groups.txt
+      JUnit-gui-treeview-groups.err
       JUnit-gui-treeview-files.txt
+      JUnit-gui-treeview-files.err
       JUnit-gui-treeview-export.txt
+      JUnit-gui-treeview-export.err
       JUnit-gui-treeview-newmenu.txt
+      JUnit-gui-treeview-newmenu.err
       JUnit-gui-tableview-menu.txt
+      JUnit-gui-tableview-menu.err
       JUnit-gui-treeview-newvldt.txt
+      JUnit-gui-treeview-newvldt.err
       DU64BITS.xbin
 )
 
@@ -173,7 +183,8 @@ ADD_TEST (
         -D "TEST_FOLDER=${PROJECT_BINARY_DIR}"
         -D "TEST_OUTPUT=JUnit-gui-menu.out"
         -D "TEST_EXPECT=0"
-        -D "TEST_APPEND=TRUE"
+        -D "TEST_MASK_FILE=TRUE"
+        -D "TEST_ERRREF=JUnit-gui-menu.err"
         -D "TEST_REFERENCE=JUnit-gui-menu.txt"
         -P "${HDFJAVA_RESOURCES_DIR}/runTest.cmake"
 )
@@ -193,7 +204,8 @@ ADD_TEST (
         -D "TEST_FOLDER=${PROJECT_BINARY_DIR}"
         -D "TEST_OUTPUT=JUnit-gui-treeview-newmenu.out"
         -D "TEST_EXPECT=0"
-        -D "TEST_APPEND=TRUE"
+        -D "TEST_MASK_FILE=TRUE"
+        -D "TEST_ERRREF=JUnit-gui-treeview-newmenu.err"
         -D "TEST_REFERENCE=JUnit-gui-treeview-newmenu.txt"
         -P "${HDFJAVA_RESOURCES_DIR}/runTest.cmake"
 )
@@ -213,7 +225,8 @@ ADD_TEST (
         -D "TEST_FOLDER=${PROJECT_BINARY_DIR}"
         -D "TEST_OUTPUT=JUnit-gui-treeview-groups.out"
         -D "TEST_EXPECT=0"
-        -D "TEST_APPEND=TRUE"
+        -D "TEST_MASK_FILE=TRUE"
+        -D "TEST_ERRREF=JUnit-gui-treeview-groups.err"
         -D "TEST_REFERENCE=JUnit-gui-treeview-groups.txt"
         -P "${HDFJAVA_RESOURCES_DIR}/runTest.cmake"
 )
@@ -243,7 +256,8 @@ ADD_TEST (
         -D "TEST_FOLDER=${PROJECT_BINARY_DIR}"
         -D "TEST_OUTPUT=JUnit-gui-treeview-files.out"
         -D "TEST_EXPECT=0"
-        -D "TEST_APPEND=TRUE"
+        -D "TEST_MASK_FILE=TRUE"
+        -D "TEST_ERRREF=JUnit-gui-treeview-files.err"
         -D "TEST_REFERENCE=JUnit-gui-treeview-files.txt"
         -P "${HDFJAVA_RESOURCES_DIR}/runTest.cmake"
 )
@@ -263,7 +277,8 @@ ADD_TEST (
         -D "TEST_FOLDER=${PROJECT_BINARY_DIR}"
         -D "TEST_OUTPUT=JUnit-gui-treeview-export.out"
         -D "TEST_EXPECT=0"
-        -D "TEST_APPEND=TRUE"
+        -D "TEST_MASK_FILE=TRUE"
+        -D "TEST_ERRREF=JUnit-gui-treeview-export.err"
         -D "TEST_REFERENCE=JUnit-gui-treeview-export.txt"
         -P "${HDFJAVA_RESOURCES_DIR}/runTest.cmake"
 )
@@ -301,7 +316,8 @@ ADD_TEST (
         -D "TEST_FOLDER=${PROJECT_BINARY_DIR}"
         -D "TEST_OUTPUT=JUnit-gui-tableview-menu.out"
         -D "TEST_EXPECT=0"
-        -D "TEST_APPEND=TRUE"
+        -D "TEST_MASK_FILE=TRUE"
+        -D "TEST_ERRREF=JUnit-gui-tableview-menu.err"
         -D "TEST_REFERENCE=JUnit-gui-tableview-menu.txt"
         -P "${HDFJAVA_RESOURCES_DIR}/runTest.cmake"
 )
@@ -321,7 +337,8 @@ ADD_TEST (
         -D "TEST_FOLDER=${PROJECT_BINARY_DIR}"
         -D "TEST_OUTPUT=JUnit-gui-treeview-newvldt.out"
         -D "TEST_EXPECT=0"
-        -D "TEST_APPEND=TRUE"
+        -D "TEST_MASK_FILE=TRUE"
+        -D "TEST_ERRREF=JUnit-gui-treeview-newvldt.err"
         -D "TEST_REFERENCE=JUnit-gui-treeview-newvldt.txt"
         -P "${HDFJAVA_RESOURCES_DIR}/runTest.cmake"
 )
@@ -341,7 +358,8 @@ ADD_TEST (
         -D "TEST_FOLDER=${PROJECT_BINARY_DIR}"
         -D "TEST_OUTPUT=JUnit-gui-CL-multi.out"
         -D "TEST_EXPECT=0"
-        -D "TEST_APPEND=TRUE"
+        -D "TEST_MASK_FILE=TRUE"
+        -D "TEST_ERRREF=JUnit-gui-CL-multi.err"
         -D "TEST_REFERENCE=JUnit-gui-CL-multi.txt"
         -P "${HDFJAVA_RESOURCES_DIR}/runTest.cmake"
 )
@@ -361,7 +379,8 @@ ADD_TEST (
         -D "TEST_FOLDER=${PROJECT_BINARY_DIR}"
         -D "TEST_OUTPUT=JUnit-gui-CL-root-multi.out"
         -D "TEST_EXPECT=0"
-        -D "TEST_APPEND=TRUE"
+        -D "TEST_MASK_FILE=TRUE"
+        -D "TEST_ERRREF=JUnit-gui-CL-root-multi.err"
         -D "TEST_REFERENCE=JUnit-gui-CL-root-multi.txt"
         -P "${HDFJAVA_RESOURCES_DIR}/runTest.cmake"
 )
@@ -381,7 +400,8 @@ SET_TESTS_PROPERTIES (JUnit-gui-CL-root-multi PROPERTIES
 #        -D "TEST_FOLDER=${PROJECT_BINARY_DIR}"
 #        -D "TEST_OUTPUT=JUnit-gui-CL-geom.out"
 #        -D "TEST_EXPECT=0"
-#        -D "TEST_APPEND=TRUE"
+#        -D "TEST_MASK_FILE=TRUE"
+#        -D "TEST_ERRREF=JUnit-gui-CL-geom.err"
 #        -D "TEST_REFERENCE=JUnit-gui-CL-geom.txt"
 #        -P "${HDFJAVA_RESOURCES_DIR}/runTest.cmake"
 #)

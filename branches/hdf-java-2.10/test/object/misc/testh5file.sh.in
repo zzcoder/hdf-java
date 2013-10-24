@@ -10,7 +10,7 @@ export HDFBLD_HOME
 JAVAPATH=@JAVABIN@
 export JAVAPATH
 
-CLASSPATH=$HDFBLD_HOME"/lib/jh4toh5.jar:"$HDFBLD_HOME"/lib/jhdf.jar:"$HDFBLD_HOME"/lib/jhdf5.jar:"$HDFBLD_HOME"/lib/jhdf5obj.jar:"$HDFBLD_HOME"/lib/jhdfobj.jar:../../.."
+CLASSPATH=$HDFBLD_HOME"/lib/jh4toh5.jar:"$HDFBLD_HOME"/lib/jhdf.jar:"$HDFBLD_HOME"/lib/jhdf5.jar:"$HDFBLD_HOME"/lib/jhdf5obj.jar:"$HDFBLD_HOME"/lib/jhdfobj.jar:"$HDFBLD_HOME"/lib/slf4j-api-1.7.5.jar:"$HDFBLD_HOME"/lib/ext/slf4j-nop-1.7.5.jar:../../.."
 
 LD_LIBRARY_PATH=$HDFBLD_HOME"/lib/@JAVATARG@"
 

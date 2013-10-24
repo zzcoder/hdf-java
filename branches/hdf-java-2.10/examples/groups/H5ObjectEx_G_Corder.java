@@ -75,8 +75,7 @@ public class H5ObjectEx_G_Corder {
 		}
 		finally {
 			// Close and release resources.
-			if (gcpl_id >= 0)
-				H5.H5Pclose (gcpl_id);
+			// Group property lists closed during createGroup
 			if (group_id >= 0)
 				grp.close (group_id);
             file.close();

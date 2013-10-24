@@ -12,6 +12,7 @@ import ncsa.hdf.object.h5.H5Datatype;
  * 
  */
 public class DatatypeTest extends TestCase {
+    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DatatypeTest.class);
 
     private Datatype[] baseTypes = null;
     private int[] classes = { Datatype.CLASS_BITFIELD, Datatype.CLASS_CHAR,
@@ -147,6 +148,7 @@ public class DatatypeTest extends TestCase {
      * We test for every combination of class, size and possible signs.
      */
     public final void testGetDatatypeClass() {
+    	log.debug("testGetDatatypeClass");
         int counter = 0;
         for (int i = 0; i < n_classes; i++) {
             for (int j = 0; j < n_orders; j++) {
@@ -180,6 +182,7 @@ public class DatatypeTest extends TestCase {
      * We test for every combination of class, size and possible signs.
      */
     public final void testGetDatatypeSize() {
+    	log.debug("testGetDatatypeSize");
         int counter = 0;
         for (int i = 0; i < n_classes; i++) {
             for (int j = 0; j < n_orders; j++) {
@@ -213,6 +216,7 @@ public class DatatypeTest extends TestCase {
      * We test for every combination of class, size and possible signs.
      */
     public final void testGetDatatypeOrder() {
+    	log.debug("testGetDatatypeOrder");
         int counter = 0;
         for (int i = 0; i < n_classes; i++) {
             for (int j = 0; j < n_orders; j++) {
@@ -246,6 +250,7 @@ public class DatatypeTest extends TestCase {
      * We test for every combination of class, size and possible signs.
      */
     public final void testGetDatatypeSign() {
+    	log.debug("testGetDatatypeSign");
         int counter = 0;
         for (int i = 0; i < n_classes; i++) {
             for (int j = 0; j < n_orders; j++) {
@@ -280,6 +285,7 @@ public class DatatypeTest extends TestCase {
      * create a new enum data type set it to two different values and check it.
      */
     public final void testSetEnumMembers() {
+    	log.debug("testSetEnumMembers");
         Datatype ed = new H5Datatype(Datatype.CLASS_ENUM, 2,
                 Datatype.ORDER_NONE, Datatype.NSGN);
         ed.setEnumMembers("low=20, high=40");
@@ -292,6 +298,7 @@ public class DatatypeTest extends TestCase {
      * look at {@link ncsa.hdf.object.Datatype#setEnumMembers(java.lang.String)}.
      */
     public final void testGetEnumMembers() {
+    	log.debug("testGetEnumMembers");
         testSetEnumMembers();
     }
 
@@ -303,6 +310,7 @@ public class DatatypeTest extends TestCase {
      * We test for every combination of class, size and possible signs.
      */
     public final void testGetDatatypeDescription() {
+    	log.debug("testGetDatatypeDescription");
         int counter = 0;
         for (int i = 0; i < n_classes; i++) {
             for (int j = 0; j < n_orders; j++) {
@@ -338,6 +346,7 @@ public class DatatypeTest extends TestCase {
      * We test for every combination of class, size and possible signs.
      */
     public final void testIsUnsigned() {
+    	log.debug("testIsUnsigned");
         int counter = 0;
         for (int i = 0; i < n_classes; i++) {
             for (int j = 0; j < n_orders; j++) {

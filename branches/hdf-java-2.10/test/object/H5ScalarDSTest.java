@@ -77,6 +77,7 @@ import ncsa.hdf.object.h5.H5ScalarDS;
  * @author Peter Cao, The HDF Group
  */
 public class H5ScalarDSTest extends TestCase {
+    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H5ScalarDSTest.class);
     private static final H5File H5FILE = new H5File();
     private static final int NLOOPS = 10;
     private static final int TEST_VALUE_INT = Integer.MAX_VALUE;
@@ -168,6 +169,7 @@ public class H5ScalarDSTest extends TestCase {
      * </ul>
      */
     public final void testSetName() {
+    	log.debug("testSetName");
         final String newName = "tmpName";
 
         // test set name to null
@@ -252,14 +254,17 @@ public class H5ScalarDSTest extends TestCase {
      * </ul>
      */
     public final void testOpen() {
+    	log.debug("testOpen");
         int did = -1, tid = -1, sid = -1;
 
         for (int loop = 0; loop < NLOOPS; loop++) {
             did = tid = sid = -1;
             try {
                 did = testDataset.open();
-                tid = H5.H5Dget_type(did);
-                sid = H5.H5Dget_space(did);
+                if(did >= 0) {
+	                tid = H5.H5Dget_type(did);
+	                sid = H5.H5Dget_space(did);
+                }
             }
             catch (final Exception ex) {
                 fail("open() failed. " + ex);
@@ -309,14 +314,17 @@ public class H5ScalarDSTest extends TestCase {
      * </ul>
      */
     public final void testClose() {
+    	log.debug("testClose");
         int did = -1, tid = -1, sid = -1;
 
         for (int loop = 0; loop < NLOOPS; loop++) {
             did = tid = sid = -1;
             try {
                 did = testDataset.open();
-                tid = H5.H5Dget_type(did);
-                sid = H5.H5Dget_space(did);
+                if(did >= 0) {
+	                tid = H5.H5Dget_type(did);
+	                sid = H5.H5Dget_space(did);
+                }
             }
             catch (final Exception ex) {
                 fail("open() failed. " + ex);
@@ -384,6 +392,7 @@ public class H5ScalarDSTest extends TestCase {
      * </ul>
      */
     public final void testClear() {
+    	log.debug("testClear");
         Object data = null;
 
         try {
@@ -436,6 +445,7 @@ public class H5ScalarDSTest extends TestCase {
      * </ul>
      */
     public final void testInit() {
+    	log.debug("testInit");
         for (int loop = 0; loop < NLOOPS; loop++) {
 
             try {
@@ -528,6 +538,7 @@ public class H5ScalarDSTest extends TestCase {
      * </ul>
      */
     public final void testRead() {
+    	log.debug("testRead");
         for (int loop = 0; loop < NLOOPS; loop++) {
             testDataset.init();
             int[] ints = null;
@@ -604,6 +615,7 @@ public class H5ScalarDSTest extends TestCase {
      * </ul>
      */
     public final void testReadExt() {
+    	log.debug("testReadExt");
         
         Dataset dset = null;
         H5File file = null;
@@ -638,6 +650,7 @@ public class H5ScalarDSTest extends TestCase {
      * </ul>
      */
     public final void testReadByRow() {
+    	log.debug("testReadByRow");
         int[] data = null;
 
         for (int loop = 0; loop < NLOOPS; loop++) {
@@ -694,6 +707,7 @@ public class H5ScalarDSTest extends TestCase {
      * </ul>
      */
     public final void testReadBytes() {
+    	log.debug("testReadBytes");
         byte[] data = null;
 
         try {
@@ -731,6 +745,7 @@ public class H5ScalarDSTest extends TestCase {
      * </ul>
      */
     public final void testWriteObject() {
+    	log.debug("testWriteObject");
         int[] data = null;
 
         for (int loop = 0; loop < NLOOPS; loop++) {
@@ -818,6 +833,7 @@ public class H5ScalarDSTest extends TestCase {
      * </ul>
      */
     public final void testWriteSubset() {
+    	log.debug("testWriteSubset");
         int[] data = null;
 
         for (int loop = 0; loop < NLOOPS; loop++) {
@@ -917,6 +933,7 @@ public class H5ScalarDSTest extends TestCase {
      * </ul>
      */
     public final void testReadWriteNullStr() {
+    	log.debug("testReadWriteNullStr");
         String[] data = null;
         String[] nullStrs = null;
         H5ScalarDS dset = null;
@@ -1013,6 +1030,7 @@ public class H5ScalarDSTest extends TestCase {
      * </ul>
      */
     public final void testCopy() {
+    	log.debug("testCopy");
         int nObjs = 0;
         Dataset dset = null, dsetNew = null;
         H5File tmpFile = null;
@@ -1124,6 +1142,7 @@ public class H5ScalarDSTest extends TestCase {
      * </ul>
      */
     public final void testGetDatatype() {
+    	log.debug("testGetDatatype");
         H5Datatype dtype = null;
 
         try {
@@ -1157,6 +1176,7 @@ public class H5ScalarDSTest extends TestCase {
      * </ul>
      */
     public final void testGetPalette() {
+    	log.debug("testGetPalette");
         ScalarDS img = null;
 
         try {
@@ -1196,6 +1216,7 @@ public class H5ScalarDSTest extends TestCase {
      * </ul>
      */
     public final void testReadPalette() {
+    	log.debug("testReadPalette");
         ScalarDS img = null;
 
         try {
@@ -1235,6 +1256,7 @@ public class H5ScalarDSTest extends TestCase {
      * </ul>
      */
     public final void testGetPaletteRefs() {
+    	log.debug("testGetPaletteRefs");
         ScalarDS img = null;
 
         try {
@@ -1275,6 +1297,7 @@ public class H5ScalarDSTest extends TestCase {
      * </ul>
      */
     public final void testH5ScalarDSFileFormatStringString() {
+    	log.debug("testH5ScalarDSFileFormatStringString");
         int[] data = null;
         final String[] names = { null, DNAME_SUB, DNAME.substring(1) };
         final String[] paths = { DNAME_SUB, null, H5TestFile.NAME_GROUP };
@@ -1349,6 +1372,7 @@ public class H5ScalarDSTest extends TestCase {
      * </ul>
      */
     public final void testH5ScalarDSFileFormatStringStringLongArray() {
+    	log.debug("testH5ScalarDSFileFormatStringStringLongArray");
         int[] data = null;
         final String[] names = { null, DNAME_SUB, DNAME.substring(1) };
         final String[] paths = { DNAME_SUB, null, H5TestFile.NAME_GROUP };
@@ -1430,6 +1454,7 @@ public class H5ScalarDSTest extends TestCase {
      * </ul>
      */
     public final void testGetMetadata() {
+    	log.debug("testGetMetadata");
         Vector attrs = null;
 
         try {
@@ -1488,6 +1513,7 @@ public class H5ScalarDSTest extends TestCase {
      * </ul>
      */
     public final void testWriteMetadata() {
+    	log.debug("testWriteMetadata");
         Vector attrs = null;
         Attribute attr = null;
 
@@ -1638,6 +1664,7 @@ public class H5ScalarDSTest extends TestCase {
      * </ul>
      */
     public final void testRemoveMetadata() {
+    	log.debug("testRemoveMetadata");
         Vector attrs = null;
         try {
             attrs = (Vector) testDataset.getMetadata();
@@ -1714,6 +1741,7 @@ public class H5ScalarDSTest extends TestCase {
      * </ul>
      */
     public final void testCreate() {
+    	log.debug("testCreate");
         ScalarDS dset = null;
         final String nameNew = "/tmpH5ScalarDS";
         float[] data = null;
@@ -1764,6 +1792,7 @@ public class H5ScalarDSTest extends TestCase {
      * Test method for {@link ncsa.hdf.object.h5.H5ScalarDS} IsSerializable.
      */
     public final void testIsSerializable() {
+    	log.debug("testIsSerializable");
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         ObjectOutputStream oos;
         try {
@@ -1791,6 +1820,7 @@ public class H5ScalarDSTest extends TestCase {
      */
     public final void testSerializeToDisk()
     {
+    	log.debug("testSerializeToDisk");
         try {
             FileOutputStream fos = new FileOutputStream("temph5dset.ser");
             ObjectOutputStream oos = new ObjectOutputStream(fos);
@@ -1821,8 +1851,10 @@ public class H5ScalarDSTest extends TestCase {
             did = tid = sid = -1;
             try {
                 did = test.open();
-                tid = H5.H5Dget_type(did);
-                sid = H5.H5Dget_space(did);
+                if(did >= 0) {
+	                tid = H5.H5Dget_type(did);
+	                sid = H5.H5Dget_space(did);
+                }
             }
             catch (final Exception ex) {
                 fail("open() failed. " + ex);

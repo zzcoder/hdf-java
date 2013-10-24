@@ -50,6 +50,8 @@ public class H5Group extends Group {
      */
     private static final long serialVersionUID = -951164512330444150L;
 
+    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H5Group.class);
+
     /**
      * The list of attributes of this data object. Members of the list are
      * instance of Attribute.
@@ -181,20 +183,25 @@ public class H5Group extends Group {
     public List getMetadata(int... attrPropList) throws HDF5Exception {
         if (attributeList == null) {
             int gid = open();
-            int indxType = fileFormat.getIndexType(null);
-            int order = fileFormat.getIndexOrder(null);
+            if(gid >= 0) {
+            	int indxType = fileFormat.getIndexType(null);
+            	int order = fileFormat.getIndexOrder(null);
 
-            if (attrPropList.length > 0) {
-                indxType = attrPropList[0];
-                if (attrPropList.length > 1) {
-                    order = attrPropList[1];
-                }
+            	if (attrPropList.length > 0) {
+            		indxType = attrPropList[0];
+            		if (attrPropList.length > 1) {
+            			order = attrPropList[1];
+            		}
+            	}
+            	try {
+            		attributeList = H5File.getAttribute(gid, indxType, order);
+            	}
+            	finally {
+            		close(gid);
+            	}
             }
-            try {
-                attributeList = H5File.getAttribute(gid, indxType, order);
-            }
-            finally {
-                close(gid);
+            else {
+            	log.debug("failed to open group");
             }
         }
 
@@ -202,6 +209,7 @@ public class H5Group extends Group {
             this.linkTargetObjName = H5File.getLinkTargetName(this);
         }
         catch (Exception ex) {
+        	log.debug("getLinkTargetName:", ex);
         }
 
         return attributeList;
@@ -220,7 +228,6 @@ public class H5Group extends Group {
 
         boolean attrExisted = false;
         Attribute attr = (Attribute) info;
-        String name = attr.getName();
 
         if (attributeList == null) {
             this.getMetadata();
@@ -243,21 +250,26 @@ public class H5Group extends Group {
      */
     public void removeMetadata(Object info) throws HDF5Exception {
         // only attribute metadata is supported.
-        if (!(info instanceof Attribute)) {
-            return;
-        }
+    	if (!(info instanceof Attribute)) {
+    		return;
+    	}
 
-        Attribute attr = (Attribute) info;
-        int gid = open();
-        try {
-            H5.H5Adelete(gid, attr.getName());
-            List attrList = getMetadata();
-            attrList.remove(attr);
-            nAttributes = attributeList.size();
-        }
-        finally {
-            close(gid);
-        }
+    	Attribute attr = (Attribute) info;
+    	int gid = open();
+    	if(gid >= 0) {
+    		try {
+    			H5.H5Adelete(gid, attr.getName());
+    			List attrList = getMetadata();
+    			attrList.remove(attr);
+    			nAttributes = attributeList.size();
+    		}
+    		finally {
+    			close(gid);
+    		}
+    	}
+    	else {
+    		log.debug("failed to open group");
+    	}
     }
 
     /*
@@ -295,7 +307,9 @@ public class H5Group extends Group {
         try {
             H5.H5Gclose(gid);
         }
-        catch (HDF5Exception ex) {}
+        catch (HDF5Exception ex) {
+        	log.debug("H5Gclose:", ex);
+        }
     }
 
     /**
@@ -373,6 +387,7 @@ public class H5Group extends Group {
             H5.H5Gclose(gid);
         }
         catch (Exception ex) {
+        	log.debug("H5Gcreate {} H5Gclose:", fullPath, ex);
         }
 
         byte[] ref_buf = H5.H5Rcreate(file.open(), fullPath, HDF5Constants.H5R_OBJECT, -1);
@@ -390,6 +405,7 @@ public class H5Group extends Group {
                 H5.H5Pclose(gcpl);
             }
             catch (final Exception ex) {
+            	log.debug("create prop H5Pclose:", ex);
             }
         }
 

@@ -14,9 +14,37 @@
 
 package ncsa.hdf.view;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.awt.image.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.GridLayout;
+import java.awt.Image;
+import java.awt.Insets;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.RenderingHints;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
+import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.DataBufferInt;
+import java.awt.image.FilteredImageSource;
+import java.awt.image.ImageFilter;
+import java.awt.image.ImageProducer;
+import java.awt.image.PixelGrabber;
+import java.awt.image.RGBImageFilter;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.BufferedWriter;
@@ -27,7 +55,6 @@ import java.io.RandomAccessFile;
 import java.lang.reflect.Array;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -35,7 +62,26 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JFileChooser;
+import javax.swing.JFormattedTextField;
+import javax.swing.JFrame;
+import javax.swing.JInternalFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollBar;
+import javax.swing.JScrollPane;
+import javax.swing.JSlider;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
@@ -45,9 +91,6 @@ import javax.swing.text.NumberFormatter;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 
-import sun.awt.image.ToolkitImage;
-
-import ncsa.hdf.object.CompoundDS;
 import ncsa.hdf.object.Datatype;
 import ncsa.hdf.object.Group;
 import ncsa.hdf.object.HObject;
@@ -88,6 +131,8 @@ import ncsa.hdf.view.ViewProperties.BITMASK_OP;
 public class DefaultImageView extends JInternalFrame implements ImageView,
         ActionListener {
     private static final long serialVersionUID = -6534336542813587242L;
+
+    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DefaultImageView.class);
 
     /** Horizontal direction to flip an image. */
     public static final int FLIP_HORIZONTAL = 0;
@@ -1377,6 +1422,7 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
             viewer.showStatus("File size (bytes): " + size);
         }
         catch (Exception ex) {
+        	log.debug("File {} size:", choosedFile.getName(), ex);
         }
     }
 
@@ -1461,6 +1507,7 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
                         treeView.addObject(obj, pgroup);
                     }
                     catch (Exception ex) {
+                    	log.debug("Write selection to image:", ex);
                     }
                 }
 
@@ -1530,7 +1577,10 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
                 
                 try {
                     out = new PrintWriter(new BufferedWriter(new FileWriter(choosedFile)));
-                } catch (Exception ex) { out = null; }
+                } 
+                catch (Exception ex) { 
+                	out = null; 
+                }
                 
                 if (out == null)
                     return;
@@ -1538,11 +1588,9 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
                 int cols = 3;
                 int rows = 256;
                 int rgb = 0;
-                for (int i=0; i<rows; i++)
-                {
+                for (int i=0; i<rows; i++) {
                     out.print(i);
-                    for (int j=0; j<cols; j++)
-                    {
+                    for (int j=0; j<cols; j++) {
                         out.print(' ');
                         rgb = imagePalette[j][i];
                         if (rgb<0) rgb += 256;
@@ -1801,8 +1849,7 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
                 }
             }
         }
-        else // indexed image
-        {
+        else { // indexed image
             for (int i = 0; i < rows; i++) {
                 idx_src = (r0 + i) * w + c0;
                 System.arraycopy(data, idx_src, selectedData, idx_dst, cols);
@@ -1865,7 +1912,8 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
                 rc++;
             }
             
-        } else {
+        } 
+        else {
             if (origin == 1)
                 flip(FLIP_VERTICAL);
             else if (origin == 2)
@@ -2041,7 +2089,8 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
     private void applyDataRange(double[] newRange) {
         if (doAutoGainContrast && gainBias!= null) {
             applyAutoGain(gainBias_current, newRange);
-        } else {
+        } 
+        else {
             int w = dataset.getWidth();
             int h = dataset.getHeight();
 
@@ -2195,7 +2244,8 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
                 Image scaledImg = multiBiliner(image, imageSize.width, imageSize.height, true);
                 g2.drawImage(scaledImg, 0, 0, imageSize.width, imageSize.height, this);
                 
-            } else
+            } 
+            else
                 g.drawImage(image, 0, 0, imageSize.width, imageSize.height, this);
             
             if ((selectedArea.width > 0) && (selectedArea.height > 0)) {
@@ -2295,8 +2345,8 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
                 Thread.sleep(20);
             }
             catch (Exception ex) {
+            	log.debug("thread sleep:", ex);
             }
-
             currentPosition = e.getPoint();
 
             if ((e.getModifiersEx() & InputEvent.SHIFT_DOWN_MASK) == InputEvent.SHIFT_DOWN_MASK) {
@@ -3361,6 +3411,7 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
                     Thread.sleep(sleepTime);
                 }
                 catch (InterruptedException e) {
+                	log.debug("Thread.sleep({}):", sleepTime, e);
                 }
             }
         } // public void run() {
@@ -3816,7 +3867,7 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
         }
 
         private void applyBrightContrast(int blevel, int clevel) {
-            // do not separate autodain and simple contrast process
+            // do not separate autogain and simple contrast process
 //            ImageFilter filter = new BrightnessFilter(blevel, clevel);
 //            image = createImage(new FilteredImageSource(imageProducer, filter));
 //            imageComponent.setImage(image);
@@ -3827,7 +3878,8 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
                 autoGainBias[0] = gainBias[0]*(1+((double)clevel)/100.0);
                 autoGainBias[1] = gainBias[1]*(1+((double)blevel)/100.0);
                 applyAutoGain(autoGainBias, null);
-            } else {
+            } 
+            else {
                 ImageFilter filter = new BrightnessFilter(blevel, clevel);
                 image = createImage(new FilteredImageSource(imageProducer, filter));
                 imageComponent.setImage(image);

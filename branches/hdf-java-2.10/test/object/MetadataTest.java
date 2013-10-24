@@ -20,6 +20,7 @@ import ncsa.hdf.object.h5.H5Group;
  * 
  */
 public class MetadataTest extends TestCase {
+    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MetadataTest.class);
     private static final H5File H5FILE = new H5File();
 
     private H5File testFile = null;
@@ -90,6 +91,7 @@ public class MetadataTest extends TestCase {
      * Test method for {@link ncsa.hdf.object.Metadata#getValue()}.
      */
     public final void testGetValue() {
+    	log.debug("testGetValue");
         String[] value = (String[]) strAttr.getValue();
         if (!value[0].equals("String attribute.")) {
             fail("getValue() fails.");
@@ -109,6 +111,7 @@ public class MetadataTest extends TestCase {
      * {@link ncsa.hdf.object.Metadata#setValue(java.lang.Object)}.
      */
     public final void testSetValue() {
+    	log.debug("testSetValue");
         String[] tempValue = { "Temp String Value" };
         String[] prevValue = (String[]) strAttr.getValue();
         strAttr.setValue(tempValue);

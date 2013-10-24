@@ -46,6 +46,8 @@ public class FitsDataset extends ScalarDS
 {
     private static final long serialVersionUID = 3944770379558335171L;
 
+    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FitsDataset.class);
+
     /**
      * The list of attributes of this data object. Members of the list are
      * instance of Attribute.
@@ -113,7 +115,8 @@ public class FitsDataset extends ScalarDS
 
         try { 
             fitsData = nativeDataset.getData().getData();
-        } catch (Exception ex) {
+        } 
+        catch (Exception ex) {
             throw new UnsupportedOperationException("This implementation only supports integer and float dataset. " +
                     "It may not work for other datatypes. \n"+ex);
         }
@@ -228,8 +231,12 @@ public class FitsDataset extends ScalarDS
         }
 
         int[] axes= null;
-        try { axes = nativeDataset.getAxes(); }
-        catch (Exception ex) {}
+        try {
+        	axes = nativeDataset.getAxes(); 
+        }
+        catch (Exception ex) {
+        	log.debug("nativeDataset.getAxes():", ex);
+        }
 
         if (axes == null) {
             return;
