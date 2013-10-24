@@ -129,6 +129,8 @@ import ncsa.hdf.view.ViewProperties.BITMASK_OP;
 public class DefaultTableView extends JInternalFrame implements TableView, ActionListener, MouseListener {
     private static final long       serialVersionUID = -7452459299532863847L;
 
+    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DefaultTableView.class);
+
     /**
      * The main HDFView.
      */
@@ -813,7 +815,9 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
                     try {
                         treeView.addObject(obj, pgroup);
                     }
-                    catch (Exception ex) {}
+                    catch (Exception ex) {
+                    	log.debug("Write selection to dataset:", ex);
+                    }
                 }
 
                 list.setSize(0);
@@ -1216,7 +1220,9 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
                         yRange[0] = Math.min(yRange[0], value);
                         yRange[1] = Math.max(yRange[1], value);
                     }
-                    catch (NumberFormatException ex) {}
+                    catch (NumberFormatException ex) {
+                    	log.debug("rows[{}]:", i, ex);
+                    }
                 } // for (int j = 0; j < ncols; j++)
             } // for (int i = 0; i < rows.length; i++)
 
@@ -1228,7 +1234,9 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
                         value = Double.parseDouble(table.getValueAt(xIndex, cols[j]).toString());
                         xData[j] = value;
                     }
-                    catch (NumberFormatException ex) {}
+                    catch (NumberFormatException ex) {
+                    	log.debug("xIndex of {}:", xIndex, ex);
+                    }
                 }
             }
         } // if (isRowPlot)
@@ -1254,7 +1262,9 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
                         yRange[0] = Math.min(yRange[0], value);
                         yRange[1] = Math.max(yRange[1], value);
                     }
-                    catch (NumberFormatException ex) {}
+                    catch (NumberFormatException ex) {
+                    	log.debug("cols[{}]:", j, ex);
+                    }
                 } // for (int j=0; j<ncols; j++)
             } // for (int i=0; i<rows.length; i++)
 
@@ -1266,7 +1276,9 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
                         value = Double.parseDouble(table.getValueAt(rows[j], xIndex).toString());
                         xData[j] = value;
                     }
-                    catch (NumberFormatException ex) {}
+                    catch (NumberFormatException ex) {
+                    	log.debug("xIndex of {}:", xIndex, ex);
+                    }
                 }
             }
         } // else
@@ -1469,6 +1481,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
             colData = ((List) dataset.getData()).get(table.getSelectedColumn());
         }
         catch (Exception ex) {
+        	log.debug("colData:", ex);
             return null;
         }
 
@@ -1623,7 +1636,8 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
             for (int i = 0; i < cols; i++) {
             	columnNames[i] = String.valueOf(start + indexBase + i * stride);
             }
-        } else {
+        } 
+        else {
         	columnNames[0] = "  ";
         }
 
@@ -2301,6 +2315,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
             in = new BufferedReader(new FileReader(fname));
         }
         catch (FileNotFoundException ex) {
+        	log.debug("import data values from text file {}:", fname, ex);
             return;
         }
 
@@ -2314,7 +2329,10 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
             try {
                 in.close();
             }
-            catch (IOException ex2) {}
+            catch (IOException ex2) {
+            	log.debug("close text file {}:", fname, ex2);
+            }
+        	log.debug("read text file {}:", fname, ex);
             return;
         }
 
@@ -2384,7 +2402,9 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
                     try {
                         in.close();
                     }
-                    catch (IOException ex2) {}
+                    catch (IOException ex2) {
+                    	log.debug("close text file {}:", fname, ex2);
+                    }
                     return;
                 }
             }
@@ -2393,6 +2413,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
                 line = in.readLine();
             }
             catch (IOException ex) {
+            	log.debug("read text file {}:", fname, ex);
                 line = null;
             }
             c = 0;
@@ -2402,7 +2423,9 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
         try {
             in.close();
         }
-        catch (IOException ex) {}
+        catch (IOException ex) {
+        	log.debug("close text file {}:", fname, ex);
+        }
 
         table.updateUI();
     }
@@ -2669,7 +2692,9 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
                 in.close();
                 inputFile.close();
             }
-            catch (IOException ex) {}
+            catch (IOException ex) {
+            	log.debug("close binary file {}:", fname, ex);
+            }
         }
         table.updateUI();
     }
@@ -2773,7 +2798,6 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
         fchooser.setDialogTitle("Save Current Data To Binary File --- " + dataset.getName());
 
         File choosedFile = new File(dataset.getName() + ".bin");
-        ;
         fchooser.setSelectedFile(choosedFile);
         int returnVal = fchooser.showSaveDialog(this);
 
@@ -3090,7 +3114,9 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
                 try {
                     colData = ((List) dataset.getData()).get(table.getSelectedColumn());
                 }
-                catch (Exception ex) {}
+                catch (Exception ex) {
+                	log.debug("colData:", ex);
+                }
 
                 if (colData != null) {
                     int size = Array.getLength(theData);
@@ -3828,6 +3854,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
                 }
             }
             catch (IOException ex) {
+            	log.debug("string read:", ex);
             }
 
             if ((column / nSubcolumns) * nSubcolumns == column) {

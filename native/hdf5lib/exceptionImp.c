@@ -58,7 +58,7 @@ typedef struct H5E_num_t {
 
 int getMajorErrorNumber();
 int getMinorErrorNumber();
-int getErrorNumbers(H5E_num_t*);
+int getErrorNumbers(hid_t stk_id, H5E_num_t*);
 
 /* get the major and minor error numbers on the top of the error stack */
 static
@@ -175,12 +175,11 @@ int getMinorErrorNumber()
     return (int) err_nums.min_num;
 }
 
-int getErrorNumbers(H5E_num_t *err_nums)
+int getErrorNumbers(hid_t stk_id, H5E_num_t *err_nums)
 {
     err_nums->maj_num = 0;
     err_nums->min_num = 0;
-
-    return H5Ewalk2(H5E_DEFAULT, H5E_WALK_DOWNWARD, walk_error_callback, err_nums);
+    return H5Ewalk2(stk_id, H5E_WALK_DOWNWARD, walk_error_callback, err_nums);
 }
 
 /*
@@ -415,10 +414,10 @@ jboolean h5libraryError( JNIEnv *env )
     
     /* Save current stack contents for future use */
     stk_id = H5Eget_current_stack(); /* This will clear current stack  */ 
-    
-    getErrorNumbers(&exceptionNumbers);
+    getErrorNumbers(stk_id, &exceptionNumbers);
     maj_num = exceptionNumbers.maj_num;
     min_num = exceptionNumbers.min_num;
+
     exception = (char *)defineHDF5LibraryException(maj_num);
     jc = ENVPTR->FindClass(ENVPAR exception);
     if (jc == NULL) {

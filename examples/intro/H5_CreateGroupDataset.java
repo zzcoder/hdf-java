@@ -22,6 +22,8 @@ public class H5_CreateGroupDataset {
 		int dataspace_id = -1;
 		int dataset_id = -1;
 		int group_id = -1;
+		int group1_id = -1;
+		int group2_id = -1;
 		int[][] dset1_data = new int[DIM1_X][DIM1_Y];
 		int[][] dset2_data = new int[DIM2_X][DIM2_Y];
 		long[] dims1 = { DIM1_X, DIM1_Y };
@@ -37,10 +39,24 @@ public class H5_CreateGroupDataset {
 			for (int jndx = 0; jndx < DIM2_Y; jndx++)
 				dset2_data[indx][jndx] = jndx + 1;
 
-		// Open an existing file.
+		// Create a file.
 		try {
-			file_id = H5.H5Fopen(FILENAME, HDF5Constants.H5F_ACC_RDWR,
-					HDF5Constants.H5P_DEFAULT);
+			file_id = H5.H5Fcreate(FILENAME, HDF5Constants.H5F_ACC_TRUNC,
+					HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+			// Create a group named "/MyGroup" in the file.
+			if (file_id >= 0) {
+				group1_id = H5.H5Gcreate(file_id, "/" + GROUPNAME,
+				        HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+				// Create group "Group_A" in group "MyGroup" using absolute name.
+				if (group1_id >= 0) {
+					group2_id = H5.H5Gcreate(file_id, "/" + GROUPNAME + "/" + GROUPNAME_A,
+					        HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+					if (group2_id >= 0)
+						H5.H5Gclose(group2_id);
+				}
+				if (group1_id >= 0)
+					H5.H5Gclose(group1_id);
+			}
 		}
 		catch (Exception e) {
 			e.printStackTrace();

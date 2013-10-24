@@ -1580,8 +1580,10 @@ int h5str_dump_simple_dset(FILE *stream, hid_t dset, int binary_order)
     /* VL data special information */
     unsigned int        vl_data = 0; /* contains VL datatypes */
     hid_t               p_type = -1;
-    hid_t               f_type = H5Dget_type(dset);
+    hid_t               f_type = -1;
 
+    if(dset < 0) return -1;
+    f_type = H5Dget_type(dset);
     if (binary_order == 1)
         p_type = h5str_get_native_type(f_type);
     else if (binary_order == 2)

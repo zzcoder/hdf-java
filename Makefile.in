@@ -1,12 +1,14 @@
-#****************************************************************************
-#* NCSA HDF                                                                 *
-#* National Comptational Science Alliance                                   *
-#* University of Illinois at Urbana-Champaign                               *
-#* 605 E. Springfield, Champaign IL 61820                                   *
-#*                                                                          *
-#* For conditions of distribution and use, see the accompanying             *
-#* COPYING file.                                                            *
-#*                                                                          *
+#/****************************************************************************
+#* Copyright by The HDF Group.                                               *
+#* Copyright by the Board of Trustees of the University of Illinois.         *
+#* All rights reserved.                                                      *
+#*                                                                           *
+#* This file is part of HDF Java Products. The full HDF Java copyright       *
+#* notice, including terms governing use, modification, and redistribution,  *
+#* is contained in the file, COPYING.  COPYING can be found at the root of   *
+#* the source code distribution tree. You can also access it online  at      *
+#* http://www.hdfgroup.org/products/licenses.html.  If you do not have       *
+#* access to the file, you may request a copy from help@hdfgroup.org.        *
 #****************************************************************************/
  
 TOP = .
@@ -53,6 +55,7 @@ H5OBJDISTFILES= ./ncsa/hdf/object/h5/*.java ./ncsa/hdf/object/h5/Makefile.in ./n
 FITSDISTJARFILE = $(CLASS_DIR)/fits.jar
 NC2SDISTJARFILE = $(CLASS_DIR)/netcdf.jar
 JUNITSDISTJARFILE = $(CLASS_DIR)/junit.jar
+LOGGINGDISTJARFILE = $(CLASS_DIR)/slf4j-api-1.7.5.jar $(CLASS_DIR)/slf4j-nop-1.7.5.jar
 
 NC2OBJDISTFILES= ./ncsa/hdf/object/nc2/*.java ./ncsa/hdf/object/nc2/Makefile.in ./ncsa/hdf/object/nc2/CMakeLists.txt $(CLASS_DIR)/netcdf.jar 
 
@@ -367,6 +370,8 @@ install-jhdfview: ncsa.hdf.view
 	cp lib/netcdf.jar $(LIBDIR)
 	cp lib/fits.jar $(LIBDIR)
 	cp lib/junit.jar $(LIBDIR)
+	cp lib/slf4j-api-1.7.5.jar $(LIBDIR)
+	cp lib/ext/slf4j-nop-1.7.5.jar $(LIBDIR)
 	cp bin/hdfview.sh $(BINDIR)
 	chmod a+x $(BINDIR)/hdfview.sh
 	@echo "Install HDFVIEW complete"

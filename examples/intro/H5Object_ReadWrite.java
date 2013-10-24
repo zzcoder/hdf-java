@@ -21,6 +21,7 @@ public class H5Object_ReadWrite {
         H5File file = null;
         Dataset dset = null;
 		int[][] dset_data = new int[DIM_X][DIM_Y];
+		int[] dset_data_read = new int[DIM_X*DIM_Y];
         long[] dims = { DIM_X, DIM_Y };
         final H5Datatype typeInt = new H5Datatype(Datatype.CLASS_INTEGER,
                 DATATYPE_SIZE, Datatype.ORDER_BE, -1);
@@ -51,7 +52,7 @@ public class H5Object_ReadWrite {
 
 		try {
 		    dset.init();
-		    dset_data = (int[][]) dset.getData();
+		    dset_data_read = (int[]) dset.getData();
 		}
 		catch (Exception e) {
 			e.printStackTrace();

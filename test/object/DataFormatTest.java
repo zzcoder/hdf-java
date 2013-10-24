@@ -20,6 +20,7 @@ import ncsa.hdf.object.h5.H5File;
  * 
  */
 public class DataFormatTest extends TestCase {
+    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DataFormatTest.class);
     private static final H5File H5FILE = new H5File();
 
     private H5File testFile = null;
@@ -73,6 +74,7 @@ public class DataFormatTest extends TestCase {
      * </ul>
      */
     public final void testGetFile() {
+    	log.debug("testGetFile");
         if (!testGroup.getFile().equals(H5TestFile.NAME_FILE_H5)) {
             fail("getFile() fails.");
         }
@@ -95,6 +97,7 @@ public class DataFormatTest extends TestCase {
      * </ul>
      */
     public final void testGetMetadata() {
+    	log.debug("testGetMetadata");
         Attribute strAttr = null;
         Attribute arrayIntAttr = null;
         List mdataList = null;
@@ -139,6 +142,7 @@ public class DataFormatTest extends TestCase {
      * </ul>
      */
     public final void testWriteMetadata() {
+    	log.debug("testWriteMetadata");
         long[] attrDims = { 1 };
         String attrName = "CLASS";
         String[] classValue = { "IMAGE" };
@@ -208,6 +212,7 @@ public class DataFormatTest extends TestCase {
      * </ul>
      */
     public final void testRemoveMetadata() {
+    	log.debug("testRemoveMetadata");
         List mdataList = null;
         try {
             mdataList = testGroup.getMetadata();

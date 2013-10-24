@@ -15,7 +15,8 @@ import ncsa.hdf.hdf5lib.H5;
  * 
  */
 public class AllH5ObjectTests {
-	public static Test suite() {
+
+    public static Test suite() {
 		try {
 			H5TestFile.createTestFile(null);
 		}
@@ -50,7 +51,6 @@ public class AllH5ObjectTests {
 	}
 
 	public static void main(final String[] args) {
-
 		TestResult results = junit.textui.TestRunner.run(suite());
 		if (!results.wasSuccessful())
 			System.out.println("FAILED***:\tobject unit tests.\n");
@@ -59,7 +59,8 @@ public class AllH5ObjectTests {
 			int openID = H5.getOpenIDCount();
 			if(openID>0)
 				System.out.println("Number of IDs still open: "+ openID);
-		} catch (Exception ex) {
+		} 
+		catch (Exception ex) {
 			ex.printStackTrace();
 		}
 	}

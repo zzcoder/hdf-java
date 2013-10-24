@@ -16,8 +16,6 @@ package ncsa.hdf.hdf5lib;
 import java.io.File;
 import java.nio.ByteBuffer;
 import java.util.Vector;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import ncsa.hdf.hdf5lib.callbacks.H5D_iterate_cb;
 import ncsa.hdf.hdf5lib.callbacks.H5D_iterate_t;
@@ -33,6 +31,7 @@ import ncsa.hdf.hdf5lib.structs.H5A_info_t;
 import ncsa.hdf.hdf5lib.structs.H5G_info_t;
 import ncsa.hdf.hdf5lib.structs.H5L_info_t;
 import ncsa.hdf.hdf5lib.structs.H5O_info_t;
+
 
 /**
  * This class is the Java interface for the HDF5 library.
@@ -243,13 +242,15 @@ public class H5 implements java.io.Serializable {
      */
     private static final long serialVersionUID = 6129888282117053288L;
 
+    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H5.class);
+
     /**
      * The version number of the HDF5 library: <br />
      * LIB_VERSION[0]: The major version of the library.<br />
      * LIB_VERSION[1]: The minor version of the library.<br />
      * LIB_VERSION[2]: The release number of the library.<br />
      * 
-     * Make sure to update the verions number when a different library is used.
+     * Make sure to update the versions number when a different library is used.
      */
     public final static int LIB_VERSION[] = { 1, 8, 12 };
 
@@ -258,11 +259,6 @@ public class H5 implements java.io.Serializable {
     // add system property to load library by name from library path, via
     // System.loadLibrary()
     public final static String H5_LIBRARY_NAME_PROPERTY_KEY = "ncsa.hdf.hdf5lib.H5.loadLibraryName";
-
-    /** logging level: 0 -- information, 1 -- warning message, 2 -- failure */
-    public static int LOGGING_LEVEL = 2;
-    
-    private static Logger s_logger;
     private static String s_libraryName;
     private static boolean isLibraryLoaded = false;
     
@@ -278,15 +274,6 @@ public class H5 implements java.io.Serializable {
         // Make sure that the library is loaded only once
         if (isLibraryLoaded)
             return;
-
-        // use default logger, since spanning sources
-        s_logger = Logger.getLogger("ncsa.hdf.hdf5lib"); 
-        if (LOGGING_LEVEL == 2)
-            s_logger.setLevel(Level.SEVERE);
-        else if (LOGGING_LEVEL == 1)
-            s_logger.setLevel(Level.WARNING);
-        else
-            s_logger.setLevel(Level.INFO);
         
         // first try loading library by name from user supplied library path
         s_libraryName = System.getProperty(H5_LIBRARY_NAME_PROPERTY_KEY, null);
@@ -302,11 +289,10 @@ public class H5 implements java.io.Serializable {
                 isLibraryLoaded = false;
             }
             finally {
-                s_logger.log(Level.INFO, "HDF5 library: " + s_libraryName
-                        + " resolved to: " + mappedName + "; "
-                        + (isLibraryLoaded ? "" : " NOT")
-                        + " successfully loaded from java.library.path");
-
+                log.info("HDF5 library: " + s_libraryName);
+                log.debug(" resolved to: " + mappedName + "; ");
+                log.info((isLibraryLoaded ? "" : " NOT")
+                        + " successfully loaded from system property");
             }
         }
 
@@ -325,16 +311,15 @@ public class H5 implements java.io.Serializable {
                         isLibraryLoaded = false;
                     }
                     finally {
-                        s_logger.log(Level.INFO, "HDF5 library: " + filename
-                                + (isLibraryLoaded ? "" : " NOT")
+                    	log.info("HDF5 library: ");
+                    	log.debug(filename);
+                    	log.info((isLibraryLoaded ? "" : " NOT")
                                 + " successfully loaded.");
-
                     }
                 }
                 else {
                     isLibraryLoaded = false;
-                    throw (new UnsatisfiedLinkError("Invalid HDF5 library, "
-                            + filename));
+                    throw (new UnsatisfiedLinkError("Invalid HDF5 library, " + filename));
                 }
             }
         }
@@ -352,11 +337,10 @@ public class H5 implements java.io.Serializable {
                 isLibraryLoaded = false;
             }
             finally {
-                s_logger.log(Level.INFO, "HDF5 library: " + s_libraryName
-                        + " resolved to: " + mappedName + "; "
-                        + (isLibraryLoaded ? "" : " NOT")
+            	log.info("HDF5 library: " + s_libraryName);
+            	log.debug(" resolved to: " + mappedName + "; ");
+            	log.info((isLibraryLoaded ? "" : " NOT")
                         + " successfully loaded from java.library.path");
-
             }
         }
 
@@ -369,21 +353,18 @@ public class H5 implements java.io.Serializable {
         }
 
         /* Important! Disable error output to C stdout */
-        H5.H5error_off();
+        if(!log.isDebugEnabled())
+        	H5.H5error_off();
 
         /*
          * Optional: confirm the version This will crash immediately if not the
          * specified version.
          */
-        Integer majnum = Integer
-                .getInteger("ncsa.hdf.hdf5lib.H5.hdf5maj", null);
-        Integer minnum = Integer
-                .getInteger("ncsa.hdf.hdf5lib.H5.hdf5min", null);
-        Integer relnum = Integer
-                .getInteger("ncsa.hdf.hdf5lib.H5.hdf5rel", null);
+        Integer majnum = Integer.getInteger("ncsa.hdf.hdf5lib.H5.hdf5maj", null);
+        Integer minnum = Integer.getInteger("ncsa.hdf.hdf5lib.H5.hdf5min", null);
+        Integer relnum = Integer.getInteger("ncsa.hdf.hdf5lib.H5.hdf5rel", null);
         if ((majnum != null) && (minnum != null) && (relnum != null)) {
-            H5.H5check_version(majnum.intValue(), minnum.intValue(), relnum
-                    .intValue());
+            H5.H5check_version(majnum.intValue(), minnum.intValue(), relnum.intValue());
         }
     }
 
@@ -461,7 +442,7 @@ public synchronized static native int H5open() throws HDF5LibraryException;
  * should not be installed. In order to be effective, this routine must be
  * called before any other HDF function calls, and must be called each time
  * the library is loaded/linked into the application (the first time and
- * after it's been un-loaded).
+ * after it's been unloaded).
  * <P>
  * This is called by the static initializer, so this should never need to be
  * explicitly called by a Java program.
@@ -556,7 +537,7 @@ public synchronized static native void H5export_dataset(String file_export_name,
 public static int H5Aclose(int attr_id) throws HDF5LibraryException
 {
     if (attr_id < 0)
-        throw new HDF5LibraryException("Negative ID");;
+    	return 0; // throw new HDF5LibraryException("Negative ID");;
     
     OPEN_IDS.removeElement(attr_id);
     return _H5Aclose(attr_id);
@@ -571,7 +552,7 @@ private synchronized static native int _H5Aclose(int attr_id)
  * @param src_aid
  *            the identifier of the source attribute
  * @param dst_aid
- *            the identifier of the destinaiton attribute
+ *            the identifier of the destination attribute
  */
 public synchronized static native int H5Acopy(int src_aid, int dst_aid)
         throws HDF5LibraryException;
@@ -620,9 +601,9 @@ private synchronized static native int _H5Acreate(int loc_id, String name,
 * H5Acreate creates an attribute, attr_name, which is attached to the object specified by the identifier loc_id.  
 * 
 * @param loc_id            IN: Location or object identifier; may be dataset or group 
-* @param attr_name          IN: Attribute name 
+* @param attr_name         IN: Attribute name 
 * @param type_id           IN: Attribute datatype identifier 
-* @param space_id           IN: Attribute dataspace identifier
+* @param space_id          IN: Attribute dataspace identifier
 * @param acpl_id           IN: Attribute creation property list identifier 
 * @param aapl_id           IN: Attribute access property list identifier 
 * 
@@ -653,13 +634,13 @@ private synchronized static native int _H5Acreate2( int loc_id, String attr_name
 /**
 * H5Acreate_by_name creates an attribute, attr_name, which is attached to the object specified by loc_id and obj_name.
 *
-* @param loc_id                IN: Location or object identifier; may be dataset or group
-* @param obj_name            IN: Name, relative to loc_id, of object that attribute is to be attached to
-* @param attr_name            IN: Attribute name 
+* @param loc_id             IN: Location or object identifier; may be dataset or group
+* @param obj_name           IN: Name, relative to loc_id, of object that attribute is to be attached to
+* @param attr_name          IN: Attribute name 
 * @param type_id            IN: Attribute datatype identifier
-* @param space_id             IN: Attribute dataspace identifier 
-* @param acpl_id             IN: Attribute creation property list identifier (currently not used).
-* @param aapl_id             IN: Attribute access property list identifier (currently not used).
+* @param space_id           IN: Attribute dataspace identifier 
+* @param acpl_id            IN: Attribute creation property list identifier (currently not used).
+* @param aapl_id            IN: Attribute access property list identifier (currently not used).
 * @param lapl_id            IN: Link access property list 
 *
 * @return  An attribute identifier if successful; otherwise returns a negative value.
@@ -703,13 +684,11 @@ public synchronized static native int H5Adelete(int loc_id, String name)
 *  H5Adelete_by_idx removes an attribute, specified by its location in an index, from an object.
 *
 *  @param loc_id             IN: Location or object identifier; may be dataset or group 
-*  @param obj_name            IN: Name of object, relative to location, from which attribute is to be removed 
-*  @param idx_type            IN: Type of index  
-*  @param order                IN: Order in which to iterate over index
-*  @param n                    IN: Offset within index  
+*  @param obj_name           IN: Name of object, relative to location, from which attribute is to be removed 
+*  @param idx_type           IN: Type of index  
+*  @param order              IN: Order in which to iterate over index
+*  @param n                  IN: Offset within index  
 *  @param lapl_id            IN: Link access property list identifier 
-*
-*  @return none
 *
 *  @exception HDF5LibraryException - Error from the HDF-5 Library.
 *  @exception NullPointerException - obj_name is null.
@@ -720,9 +699,9 @@ public synchronized static native void H5Adelete_by_idx(int loc_id, String obj_n
 /**
 * H5Adelete_by_name removes the attribute attr_name from an object specified by location and name, loc_id and obj_name, respectively. 
 *
-* @param loc_id                IN: Location or object identifier; may be dataset or group
-* @param obj_name            IN: Name of object, relative to location, from which attribute is to be removed
-* @param attr_name            IN: Name of attribute to delete
+* @param loc_id             IN: Location or object identifier; may be dataset or group
+* @param obj_name           IN: Name of object, relative to location, from which attribute is to be removed
+* @param attr_name          IN: Name of attribute to delete
 * @param lapl_id            IN: Link access property list identifier.
 *
 * @return a non-negative value if successful; otherwise returns a negative value.
@@ -736,7 +715,7 @@ public synchronized static native int H5Adelete_by_name(int loc_id, String obj_n
 /**
 * H5Aexists determines whether the attribute attr_name exists on the object specified by obj_id.
 *
-* @param obj_id                IN: Object identifier.
+* @param obj_id               IN: Object identifier.
 * @param attr_name            IN: Name of the attribute.
 *
 * @return boolean true if an attribute with a given name exists.
@@ -751,9 +730,9 @@ public synchronized static native boolean H5Aexists(int obj_id, String attr_name
 * H5Aexists_by_name determines whether the attribute attr_name exists on an object. That object is specified by its location and name, 
 * loc_id and obj_name, respectively.
 *
-* @param loc_id                IN: Location of object to which attribute is attached .
-* @param obj_name            IN: Name, relative to loc_id, of object that attribute is attached to.
-* @param attr_name            IN: Name of attribute.
+* @param loc_id             IN: Location of object to which attribute is attached .
+* @param obj_name           IN: Name, relative to loc_id, of object that attribute is attached to.
+* @param attr_name          IN: Name of attribute.
 * @param lapl_id            IN: Link access property list identifier.
 *
 * @return boolean true if an attribute with a given name exists, otherwise returns false.
@@ -761,7 +740,7 @@ public synchronized static native boolean H5Aexists(int obj_id, String attr_name
 * @exception HDF5LibraryException - Error from the HDF-5 Library.
 * @exception NullPointerException - name is null.
 **/
-public synchronized static native boolean H5Aexists_by_name(int obj_id, String obj_name, String attr_name, int lapl_id)
+public synchronized static native boolean H5Aexists_by_name(int loc_id, String obj_name, String attr_name, int lapl_id)
         throws HDF5LibraryException, NullPointerException;
 
 /**
@@ -779,11 +758,11 @@ public synchronized static native H5A_info_t H5Aget_info(int attr_id)
 /**
 * H5Aget_info_by_idx Retrieves attribute information, by attribute index position. 
 * 
-* @param loc_id            IN: Location of object to which attribute is attached 
-* @param obj_name        IN: Name of object to which attribute is attached, relative to location
-* @param idx_type        IN: Type of index 
-* @param order            IN: Index traversal order
-* @param n                 IN: Attribute's position in index 
+* @param loc_id         IN: Location of object to which attribute is attached 
+* @param obj_name       IN: Name of object to which attribute is attached, relative to location
+* @param idx_type       IN: Type of index 
+* @param order          IN: Index traversal order
+* @param n              IN: Attribute's position in index 
 * @param lapl_id        IN: Link access property list
 *  
 * @return  A buffer(H5A_info_t) for Attribute information 
@@ -797,9 +776,9 @@ public synchronized static native H5A_info_t H5Aget_info_by_idx(int loc_id, Stri
 /**
 * H5Aget_info_by_name Retrieves attribute information, by attribute name. 
 * 
-* @param loc_id            IN: Location of object to which attribute is attached 
-* @param obj_name        IN: Name of object to which attribute is attached, relative to location
-* @param attr_name        IN: Attribute name
+* @param loc_id         IN: Location of object to which attribute is attached 
+* @param obj_name       IN: Name of object to which attribute is attached, relative to location
+* @param attr_name      IN: Attribute name
 * @param lapl_id        IN: Link access property list
 *  
 * @return  A buffer(H5A_info_t) for Attribute information 
@@ -855,10 +834,10 @@ public static long H5Aget_name(int attr_id, String[] name)
 * loc_id and obj_name, respectively.
 * 
 * @param attr_id            IN: Attribute identifier 
-* @param obj_name            IN: Name of object to which attribute is attached, relative to location  
-* @param idx_type            IN: Type of index 
-* @param order                IN: Index traversal order  
-* @param n                    IN: Attribute's position in index
+* @param obj_name           IN: Name of object to which attribute is attached, relative to location  
+* @param idx_type           IN: Type of index 
+* @param order              IN: Index traversal order  
+* @param n                  IN: Attribute's position in index
 * @param lapl_id            IN: Link access property list 
 * 
 * @return  String for Attribute name. 
@@ -866,7 +845,7 @@ public static long H5Aget_name(int attr_id, String[] name)
 * @exception HDF5LibraryException - Error from the HDF-5 Library.
 * @exception NullPointerException - obj_name is null.
 **/
-public synchronized static native String H5Aget_name_by_idx(int loc_id, String obj_name, int idx_type, int order, long n, int lapl_id)
+public synchronized static native String H5Aget_name_by_idx(int attr_id, String obj_name, int idx_type, int order, long n, int lapl_id)
         throws HDF5LibraryException, NullPointerException;
 
 /**
@@ -946,8 +925,8 @@ private synchronized static native int _H5Aget_type(int attr_id)
 /**
  * H5Aopen opens an existing attribute, attr_name, that is attached to an object specified an object identifier, object_id.
  * 
- * @param obj_id            IN: Identifer for object to which attribute is attached 
- * @param attr_name          IN: Name of attribute to open  
+ * @param obj_id            IN: Identifier for object to which attribute is attached 
+ * @param attr_name         IN: Name of attribute to open  
  * @param aapl_id           IN: Attribute access property list identifier 
  * 
  * @return  An attribute identifier if successful; otherwise returns a negative value. 
@@ -972,8 +951,8 @@ private synchronized static native int _H5Aopen(int obj_id, String attr_name, in
  * 
  * @param loc_id            IN: Location of object to which attribute is attached  
  * @param obj_name          IN: Name of object to which attribute is attached, relative to location  
- * @param idx_type           IN: Type of index
- * @param order              IN: Index traversal order  
+ * @param idx_type          IN: Type of index
+ * @param order             IN: Index traversal order  
  * @param n                 IN: Attribute's position in index 
  * @param aapl_id           IN: Attribute access property list 
  * @param lapl_id           IN: Link access property list 
@@ -999,8 +978,8 @@ private synchronized static native int _H5Aopen_by_idx(int loc_id, String obj_na
 *  H5Aopen_by_name Opens an attribute for an object by object name and attribute name
 *
 *  @param loc_id             IN: Location from which to find object to which attribute is attached  
-*  @param obj_name            IN: Name of object to which attribute is attached, relative to loc_id 
-*  @param attr_name            IN: Name of attribute to open  
+*  @param obj_name           IN: Name of object to which attribute is attached, relative to loc_id 
+*  @param attr_name          IN: Name of attribute to open  
 *  @param aapl_id            IN: Attribute access property list 
 *  @param lapl_id            IN: Link access property list identifier 
 *
@@ -1026,8 +1005,7 @@ throws HDF5LibraryException, NullPointerException
  * @deprecated As of HDF5 1.8,  replaced by {@link #H5Aopen_by_idx(int, String, int, int, long, int, int)  }
  * 
  * @param loc_id
- *            IN: Identifier of the group, dataset, or named datatype
- *            attribute
+ *            IN: Identifier of the group, dataset, or named datatype attribute
  * @param idx
  *            IN: Index of the attribute to open.
  * 
@@ -1056,8 +1034,7 @@ private synchronized static native int _H5Aopen_idx(int loc_id, int idx)
  * @deprecated As of HDF5 1.8, replaced by {@link #H5Aopen_by_name(int, String, String, int, int)}
  *  
  * @param loc_id
- *            IN: Identifier of a group, dataset, or named datatype
- *            atttribute
+ *            IN: Identifier of a group, dataset, or named datatype atttribute
  * @param name
  *            IN: Attribute name.
  * 
@@ -1165,9 +1142,9 @@ public synchronized static native int H5Arename(int loc_id, String old_attr_name
 * The attribute named old_attr_name is renamed new_attr_name.
 * 
 * @param loc_id            IN: Location or object identifier; may be dataset or group   
-* @param obj_name            IN: Name of object, relative to location, whose attribute is to be renamed  
+* @param obj_name          IN: Name of object, relative to location, whose attribute is to be renamed  
 * @param old_attr_name     IN: Prior attribute name 
-* @param new_attr_name       IN: New attribute name 
+* @param new_attr_name     IN: New attribute name 
 * @param lapl_id           IN: Link access property list 
 * 
 * @return  A non-negative value if successful; otherwise returns a negative value. 
@@ -1275,7 +1252,7 @@ public synchronized static native int H5Dcopy(int src_did, int dst_did)
 public static int H5Dclose(int dataset_id) throws HDF5LibraryException
 {
     if (dataset_id < 0)
-        throw new HDF5LibraryException("Negative ID");
+    	return 0; // throw new HDF5LibraryException("Negative ID");
     
     OPEN_IDS.removeElement(dataset_id);
     return _H5Dclose(dataset_id);
@@ -1366,7 +1343,6 @@ private synchronized static native int _H5Dcreate2(int loc_id, String name, int 
  *  @param loc_id   IN: Location identifier 
  *  @param type_id  IN: Datatype identifier
  *  @param space_id IN: Dataspace identifier 
- *  @param lcpl_id  IN: Identifier of link creation property list.
  *  @param dcpl_id  IN: Identifier of dataset creation property list.
  *  @param dapl_id  IN: Identifier of dataset access property list.
  *
@@ -1440,8 +1416,6 @@ public synchronized static int H5Dextend(int dataset_id, long[] size)
  *  @param buf   IN/OUT: Pointer to the memory buffer containing the selection to be filled.
  *  @param buf_type  IN: Datatype of dataspace elements to be filled.
  *  @param space     IN: Dataspace describing memory buffer and containing the selection to be filled.
- *
- *  @return none
  *
  *  @exception HDF5LibraryException - Error from the HDF-5 Library.
  *  @exception NullPointerException - buf is null.
@@ -1607,7 +1581,7 @@ public synchronized static native int H5Dgetdir_ext(String[] dir_name,
  *  @exception HDF5LibraryException - Error from the HDF-5 Library.
  *  @exception NullPointerException - buf is null.
  **/
-public synchronized static native int H5Diterate(byte[] buff, int buf_type, int space,
+public synchronized static native int H5Diterate(byte[] buf, int buf_type, int space,
         H5D_iterate_cb op, H5D_iterate_t op_data)
         throws HDF5LibraryException, NullPointerException;
 
@@ -1916,8 +1890,6 @@ public synchronized static native int H5DreadVL(int dataset_id,
  *  @param dset_id  IN: Chunked dataset identifier.
  *  @param size     IN: Array containing the new magnitude of each dimension of the dataset. 
  *
- *  @return none
- *
  *  @exception HDF5LibraryException - Error from the HDF-5 Library.
  *  @exception NullPointerException - size is null.
  **/
@@ -2182,6 +2154,8 @@ public synchronized static int H5Dwrite_short(int dataset_id,
  * specified by its identifier dataset_id, from the application memory
  * buffer buf into the file.
  * 
+ * ---- contributed by Rosetta Biosoftware
+ * 
  * @param dataset_id
  *            Identifier of the dataset read from.
  * @param mem_type_id
@@ -2196,8 +2170,6 @@ public synchronized static int H5Dwrite_short(int dataset_id,
  *            Buffer with data to be written to the file.
  * 
  * @return a non-negative value if successful
- * 
- * @author contributed by Rosetta Biosoftware
  * 
  * @exception HDF5LibraryException
  *                - Error from the HDF-5 Library.
@@ -2236,7 +2208,7 @@ public synchronized static native int H5DwriteString(int dataset_id,
 * @exception HDF5LibraryException
 *                - Error from the HDF-5 Library.
 **/
-public synchronized static native boolean H5Eauto_is_v2(int err_stack)
+public synchronized static native boolean H5Eauto_is_v2(int stack_id)
      throws HDF5LibraryException;
 
 /**
@@ -2264,23 +2236,21 @@ public static int H5Eclear() throws HDF5LibraryException
  * @param stack_id
  *            IN: Error stack identifier.
  * 
- * @return none
- * 
  * @exception HDF5LibraryException
  *                - Error from the HDF-5 Library.
  **/
-public static void H5Eclear(int err_stack) throws HDF5LibraryException
+public static void H5Eclear(int stack_id) throws HDF5LibraryException
 {
-    H5Eclear2(err_stack);
+    H5Eclear2(stack_id);
 }
 
 /**
  * H5Eclear2 clears the error stack specified by estack_id, or, if estack_id
  * is set to H5E_DEFAULT, the error stack for the current thread.
  * 
- * @see public static void H5Eclear(int err_stack)
+ * @see #H5Eclear
  **/
-public synchronized static native void H5Eclear2(int err_stack)
+public synchronized static native void H5Eclear2(int stack_id)
         throws HDF5LibraryException;
 
 /**
@@ -2289,8 +2259,6 @@ public synchronized static native void H5Eclear2(int err_stack)
  * 
  * @param err_id
  *            IN: Error message identifier.
- * 
- * @return none
  * 
  * @exception HDF5LibraryException
  *                - Error from the HDF-5 Library.
@@ -2304,8 +2272,6 @@ public synchronized static native void H5Eclose_msg(int err_id)
  * 
  * @param stack_id
  *            IN: Error stack identifier.
- * 
- * @return none
  * 
  * @exception HDF5LibraryException
  *                - Error from the HDF-5 Library.
@@ -2339,8 +2305,6 @@ public synchronized static native int H5Ecreate_msg(int cls_id,
  * H5Ecreate_stack creates a new empty error stack and returns the new
  * stack's identifier.
  * 
- * @param none
- * 
  * @return an error stack identifier
  * 
  * @exception HDF5LibraryException
@@ -2369,8 +2333,6 @@ public synchronized static native String H5Eget_class_name(int class_id)
  * H5Eget_current_stack copies the current error stack and returns an error
  * stack identifier for the new copy.
  * 
- * @param none
- * 
  * @return an error stack identifier
  * 
  * @exception HDF5LibraryException
@@ -2386,8 +2348,6 @@ public synchronized static native int H5Eget_current_stack()
  * @param stack_id
  *            IN: Error stack identifier.
  * 
- * @return none
- * 
  * @exception HDF5LibraryException
  *                - Error from the HDF-5 Library.
  **/
@@ -2399,7 +2359,7 @@ public synchronized static native void H5Eset_current_stack(int stack_id)
  * 
  * @param msg_id
  *            IN: Name of the error class.
- * @param type
+ * @param type_list
  *            OUT: The type of the error message. Valid values are H5E_MAJOR
  *            and H5E_MINOR.
  * 
@@ -2434,8 +2394,6 @@ public synchronized static native long H5Eget_num(int stack_id)
  * @param stream
  *            IN: File pointer, or stderr if null.
  * 
- * @return none
- * 
  * @exception HDF5LibraryException
  *                - Error from the HDF-5 Library.
  * 
@@ -2455,12 +2413,10 @@ public synchronized static native void H5Eprint1(Object stream)
  * @param stream
  *            IN: File pointer, or stderr if null.
  * 
- * @return none
- * 
  * @exception HDF5LibraryException
  *                - Error from the HDF-5 Library.
  **/
-public synchronized static native void H5Eprint2(int err_stack,
+public synchronized static native void H5Eprint2(int stack_id,
         Object stream) throws HDF5LibraryException;
 
 /**
@@ -2473,8 +2429,6 @@ public synchronized static native void H5Eprint2(int err_stack,
 * @param count
 *            IN: Version of the client library or application to which the
 *            error class belongs.
-* 
-* @return none
 * 
 * @exception HDF5LibraryException
 *                - Error from the HDF-5 Library.
@@ -2512,8 +2466,6 @@ public synchronized static native int H5Eregister_class(String cls_name,
  * 
  * @param class_id
  *            IN: Error class identifier.
- * 
- * @return none
  * 
  * @exception HDF5LibraryException
  *                - Error from the HDF-5 Library.
@@ -2581,7 +2533,7 @@ public synchronized static native void H5Eunregister_class(int class_id)
 public static int H5Fclose(int file_id) throws HDF5LibraryException
 {
     if (file_id <0)
-        throw new HDF5LibraryException("Negative ID");;
+    	return 0; // throw new HDF5LibraryException("Negative ID");;
     
     OPEN_IDS.removeElement(file_id);
     return _H5Fclose(file_id);
@@ -2950,7 +2902,7 @@ public synchronized static native long H5Fget_obj_count_long(int file_id,
  *                - obj_id_list is null.
  **/
 public synchronized static native int H5Fget_obj_ids(int file_id,
-        int types, int max, int[] obj_id_list)
+        int types, int max_objs, int[] obj_id_list)
         throws HDF5LibraryException, NullPointerException;
 
 /**
@@ -3046,8 +2998,6 @@ public synchronized static native int H5Funmount(int loc_id, String name)
  * 
  * @param file_id
  *            IN: Identifier of the target file.
- * 
- * @return none
  * 
  * @exception HDF5LibraryException
  *                - Error from the HDF-5 Library.
@@ -3146,7 +3096,7 @@ public synchronized static native void H5Freset_mdc_hit_rate_stats(
 public static int H5Gclose(int group_id) throws HDF5LibraryException
 {
     if (group_id < 0)
-        throw new HDF5LibraryException("Negative ID");;
+    	return 0; // throw new HDF5LibraryException("Negative ID");;
     
     OPEN_IDS.removeElement(group_id);
     return _H5Gclose(group_id);
@@ -3467,6 +3417,8 @@ public synchronized static native int H5Gget_num_objs(int loc_id,
  *            OUT: Names of all objects under the group, name.
  * @param objTypes
  *            OUT: Types of all objects under the group, name.
+ * @param objRef
+ *            OUT: Reference number of all objects under the group, name.
  * 
  * @return the number of items found
  * 
@@ -3476,15 +3428,15 @@ public synchronized static native int H5Gget_num_objs(int loc_id,
  *                - name is null.
  */
 public synchronized static int H5Gget_obj_info_all(int loc_id, String name,
-        String[] oname, int[] otype, long[] ref)
+        String[] objNames, int[] objTypes, long[] objRef)
         throws HDF5LibraryException, NullPointerException
 {
-    if (oname == null) {
+    if (objNames == null) {
         throw new NullPointerException(
                 "H5Gget_obj_info_all(): name array is null");
     }
     
-   return H5Gget_obj_info_all(loc_id, name, oname, otype, null, null, ref, HDF5Constants.H5_INDEX_NAME);
+   return H5Gget_obj_info_all(loc_id, name, objNames, objTypes, null, null, objRef, HDF5Constants.H5_INDEX_NAME);
 }
 
 public synchronized static int H5Gget_obj_info_all(int loc_id, String name,
@@ -3600,12 +3552,14 @@ public synchronized static int H5Gget_obj_info_idx(int loc_id, String name,
  * 
  * @param loc_id
  *            IN: File or group identifier
- * @param name
- *            IN: Name of group for which information is to be retrieved
  * @param objNames
  *            OUT: Names of all objects under the group, name.
  * @param objTypes
  *            OUT: Types of all objects under the group, name.
+ * @param lnkTypes
+ *            OUT: Types of all links under the group, name.
+ * @param objRef
+ *            OUT: Reference number of all objects under the group, name.
  * @param objMax
  *            IN: Maximum number of all objects under the group, name.
  * 
@@ -3617,7 +3571,7 @@ public synchronized static int H5Gget_obj_info_idx(int loc_id, String name,
  *                - name is null.
  */
 public synchronized static int H5Gget_obj_info_max(int loc_id,
-        String[] objNames, int[] objTypes, int[] lnkTypes, long[] ref, int objMax)
+        String[] objNames, int[] objTypes, int[] lnkTypes, long[] objRef, int objMax)
         throws HDF5LibraryException, NullPointerException
 {
     if (objNames == null) {
@@ -3650,7 +3604,7 @@ public synchronized static int H5Gget_obj_info_max(int loc_id,
                 "H5Gget_obj_info_max(): name and type array sizes are different");
     }
 
-    return H5Gget_obj_info_max(loc_id, objNames, objTypes, lnkTypes, ref, objMax,
+    return H5Gget_obj_info_max(loc_id, objNames, objTypes, lnkTypes, objRef, objMax,
             objNames.length);
 }
 
@@ -4121,8 +4075,6 @@ public synchronized static native int H5INquery(int dset_id, String keys[],
  *  @param lcpl_id   IN: Link creation property list identifier
  *  @param lapl_id   IN: Link access property list identifier
  *
- *  @return none
- *
  *  @exception HDF5LibraryException - Error from the HDF-5 Library.
  *  @exception NullPointerException - name is null.
  **/
@@ -4141,8 +4093,6 @@ public synchronized static native void H5Lcopy(int src_loc, String src_name, int
  *  @param lcpl_id     IN: Link creation property list identifier
  *  @param lapl_id     IN: Link access property list identifier
  *
- *  @return none
- *
  *  @exception HDF5LibraryException - Error from the HDF-5 Library.
  *  @exception NullPointerException - name is null.
  **/
@@ -4160,8 +4110,6 @@ public synchronized static native void H5Lcreate_external(String file_name, Stri
  *  @param lcpl_id   IN: Link creation property list identifier
  *  @param lapl_id   IN: Link access property list identifier
  *
- *  @return none
- *
  *  @exception HDF5LibraryException - Error from the HDF-5 Library.
  *  @exception NullPointerException - cur_name or dst_name is null.
  **/
@@ -4178,8 +4126,6 @@ public synchronized static native void H5Lcreate_hard(int cur_loc, String cur_na
  *  @param lcpl_id     IN: Link creation property list identifier
  *  @param lapl_id     IN: Link access property list identifier
  *
- *  @return none
- *
  *  @exception HDF5LibraryException - Error from the HDF-5 Library.
  *  @exception NullPointerException - link_name is null.
  **/
@@ -4193,8 +4139,6 @@ public synchronized static native void H5Lcreate_soft(String link_target, int li
  *  @param loc_id  IN: Identifier of the file or group containing the object.
  *  @param name    IN: Name of the link to delete.
  *  @param lapl_id IN: Link access property list identifier
- *
- *  @return none
  *
  *  @exception HDF5LibraryException - Error from the HDF-5 Library.
  *  @exception NullPointerException - name is null.
@@ -4212,8 +4156,6 @@ public synchronized static native void H5Ldelete(int loc_id, String name, int la
  *  @param order      IN: Order within field or index
  *  @param n          IN: Link for which to retrieve information 
  *  @param lapl_id    IN: Link access property list identifier 
- *
- *  @return none
  *
  *  @exception HDF5LibraryException - Error from the HDF-5 Library.
  *  @exception NullPointerException - group_name is null.
@@ -4367,7 +4309,7 @@ public synchronized static native int H5Literate(int grp_id,
 *  @exception HDF5LibraryException - Error from the HDF-5 Library.
 *  @exception NullPointerException - group_name is null.
 **/
-public synchronized static native int H5Literate_by_name(int loc_id, String group_name,
+public synchronized static native int H5Literate_by_name(int grp_id, String group_name,
         int idx_type, int order, long idx,
         H5L_iterate_cb op, H5L_iterate_t op_data, int lapl_id)
         throws HDF5LibraryException, NullPointerException;
@@ -4381,8 +4323,6 @@ public synchronized static native int H5Literate_by_name(int loc_id, String grou
  *  @param dst_name  IN: New link name.
  *  @param lcpl_id   IN: Link creation property list identifier to be associated with the new link.
  *  @param lapl_id   IN: Link access property list identifier to be associated with the new link.
- *
- *  @return none
  *
  *  @exception HDF5LibraryException - Error from the HDF-5 Library.
  *  @exception NullPointerException - name is null.
@@ -4456,14 +4396,14 @@ public synchronized static native void H5Lmove(int src_loc, String src_name, int
 *
 *  @param object_id  IN: Object identifier 
 *
-*  @return none
+*  @return non-negative on success
 *
 *  @exception HDF5LibraryException - Error from the HDF-5 Library.
 **/
 public static int H5Oclose(int object_id) throws HDF5LibraryException
 {
     if (object_id < 0)
-        throw new HDF5LibraryException("Negative ID");;
+    	return 0; // throw new HDF5LibraryException("Negative ID");;
     
     OPEN_IDS.removeElement(object_id);
     return _H5Oclose(object_id);
@@ -4484,8 +4424,6 @@ private synchronized static native int _H5Oclose(int object_id)
 *  @param dst_name    IN: Name to be assigned to the new copy 
 *  @param ocpypl_id   IN: Object copy property list  
 *  @param lcpl_id     IN: Link creation property list for the new hard link  
-*
-*  @return none
 *
 *  @exception HDF5LibraryException - Error from the HDF-5 Library.
 *  @exception NullPointerException - name is null.
@@ -4511,8 +4449,6 @@ public synchronized static native String H5Oget_comment(int obj_id)
 *
 *  @param obj_id  IN: Identifier of the target object
 *  @param comment IN: The new comment.
-*
-*  @return none
 *
 *  @exception HDF5LibraryException - Error from the HDF-5 Library.
 * 
@@ -4545,8 +4481,6 @@ public synchronized static native String H5Oget_comment_by_name(int loc_id, Stri
 *  @param name    IN: Relative name of the object whose comment is to be set or reset.
 *  @param comment IN: The new comment.
 *  @param lapl_id IN: Link access property list identifier. 
-*
-*  @return none
 *
 *  @exception HDF5LibraryException - Error from the HDF-5 Library.
 *  @exception NullPointerException - name is null.
@@ -4610,11 +4544,9 @@ public synchronized static native H5O_info_t H5Oget_info_by_name(int loc_id, Str
 *
 *  @param obj_id      IN: Object to be linked.
 *  @param new_loc_id  IN: File or group identifier specifying location at which object is to be linked. 
-*  @param name        IN: Relative name of link to be created.
+*  @param new_name    IN: Relative name of link to be created.
 *  @param lcpl_id     IN: Link creation property list identifier. 
 *  @param lapl_id     IN: Access property list identifier.
-*
-*  @return none
 *
 *  @exception HDF5LibraryException - Error from the HDF-5 Library.
 *  @exception NullPointerException - name is null.
@@ -4671,10 +4603,10 @@ public synchronized static native int H5Ovisit(int obj_id, int idx_type, int ord
 *
 *  @param loc_id    IN: File or group identifier 
 *  @param obj_name  IN: Relative path to the object
-*  @param idx_type   IN: Type of index  
-*  @param order      IN: Order of iteration within index 
-*  @param op         IN: Callback function passing data regarding the object to the calling application  
-*  @param op_data    IN: User-defined pointer to data required by the application for its processing of the object 
+*  @param idx_type  IN: Type of index  
+*  @param order     IN: Order of iteration within index 
+*  @param op        IN: Callback function passing data regarding the object to the calling application  
+*  @param op_data   IN: User-defined pointer to data required by the application for its processing of the object 
 *  @param lapl_id   IN: Link access property list identifier
 *
 *  @return returns the return value of the first operator that returns a positive value, or zero if all members 
@@ -4768,7 +4700,7 @@ public synchronized static native boolean H5Pall_filters_avail(int dcpl_id)
 public static int H5Pclose(int plist) throws HDF5LibraryException
 {
     if (plist < 0)
-        throw new HDF5LibraryException("Negative ID");;
+    	return 0; // throw new HDF5LibraryException("Negative ID");;
     
     OPEN_IDS.removeElement(plist);
     return _H5Pclose(plist);
@@ -5107,19 +5039,10 @@ public synchronized static native long H5Pget_buffer_size(int plist)
  * 100x200x300x150 hyperslab of a simple data space, the buffer must be
  * large enough to hold 1x200x300x150 data elements.
  * 
- * If tconv and/or bkg are null pointers, then buffers will be allocated and
- * freed during the data transfer.
- * 
  * @param plist
  *            Identifier for the dataset transfer property list.
  * @param size
  *            Size, in bytes, of the type conversion and background buffers.
- * @param tconv
- *            byte array of application-allocated type conversion buffer.
- * @param bkg
- *            byte array of application-allocated background buffer.
- * 
- * @return a non-negative value if successful
  * 
  * @exception HDF5LibraryException
  *                - Error from the HDF-5 Library.
@@ -5270,8 +5193,6 @@ public synchronized static int H5Pset_chunk(int plist, int ndims, long[] dim)
  * @param rdcc_nbytes IN/OUT: Total size of the raw data chunk cache, in bytes.
  * @param rdcc_w0     IN/OUT: Preemption policy.
  * 
- * @return none
- * 
  * @exception HDF5LibraryException
  *                - Error from the HDF-5 Library.
  * @exception NullPointerException
@@ -5289,8 +5210,6 @@ public synchronized static native void H5Pget_chunk_cache(int dapl_id,
  * @param rdcc_nslots IN: Number of elements (objects) in the raw data chunk cache.
  * @param rdcc_nbytes IN: Total size of the raw data chunk cache, in bytes.
  * @param rdcc_w0     IN: Preemption policy.
- * 
- * @return none
  * 
  * @exception HDF5LibraryException
  *                - Error from the HDF-5 Library.
@@ -5352,11 +5271,9 @@ public synchronized static native int H5Pget_copy_object(int ocp_plist_id)
 
 /**
 * H5Pset_copy_object Sets properties to be used when an object is copied.  
-* @param ocp_plist_id            IN: Object copy property list identifier
+* @param ocp_plist_id          IN: Object copy property list identifier
 * @param copy_options          IN: Copy option(s) to be set
 *  
-* @return none 
-* 
 *  @exception HDF5LibraryException - Error from the HDF-5 Library.
 *  
 **/
@@ -5377,7 +5294,7 @@ public synchronized static native boolean H5Pget_create_intermediate_group(int l
 
 /**
 * H5Pset_create_intermediate_group specifies in property list whether to create missing intermediate groups 
-* @param lcpl_id                IN: Link creation property list identifier
+* @param lcpl_id               IN: Link creation property list identifier
 * @param crt_intermed_group    IN: Flag specifying whether to create intermediate groups upon the creation of an object 
 *  
 * @return a non-negative valule if successful; otherwise returns a negative value.
@@ -5390,8 +5307,8 @@ public synchronized static native int H5Pset_create_intermediate_group(int lcpl_
 
 /**
 * H5Pget_data_transform retrieves the data transform expression previously set in the dataset transfer property list plist_id by H5Pset_data_transform.
-* @param plist_id                IN: Identifier of the property list or class
-* @param size                    IN: Number of bytes of the transform expression to copy to
+* @param plist_id               IN: Identifier of the property list or class
+* @param size                   IN: Number of bytes of the transform expression to copy to
 * @param expression            OUT: A data transform expression
 * 
 * @return The size of the transform expression if successful; 0(zero) if no transform expression exists. Otherwise returns a negative value. 
@@ -5406,7 +5323,7 @@ public synchronized static native long H5Pget_data_transform( int plist_id, Stri
 
 /**
 * H5Pset_data_transform sets a data transform expression 
-* @param plist_id                IN: Identifier of the property list or class
+* @param plist_id              IN: Identifier of the property list or class
 * @param expression            IN: Pointer to the null-terminated data transform expression 
 *  
 * @return a non-negative valule if successful; otherwise returns a negative value.
@@ -5451,7 +5368,7 @@ public synchronized static native int H5Pget_elink_acc_flags(int lapl_id)
 
 /**
 * H5Pset_elink_acc_flags Sets the external link traversal file access flag in a link access property list. 
-* @param lapl_id                    IN: Link access property list identifier
+* @param lapl_id                   IN: Link access property list identifier
 * @param flags                     IN: The access flag for external link traversal.  
 *  
 * @return a non-negative value if successful; otherwise returns a negative value.
@@ -5518,8 +5435,6 @@ public synchronized static native int H5Pget_elink_file_cache_size(int fapl_id)
  * @param fapl_id                 IN: File access property list identifier
  * @param efc_size                IN: External link open file cache size in number of files. 
  *  
- * @return none.
- * 
  * @exception HDF5LibraryException - Error from the HDF-5 Library.
  *  
  **/
@@ -5579,8 +5494,8 @@ public synchronized static native int H5Pget_est_link_info(int gcpl_id, int []li
 /**
 * H5Pset_est_link_info Sets estimated number of links and length of link names in a group.  
 * @param gcpl_id                IN: Group creation property list identifier
-* @param est_num_entries         IN: Estimated number of links to be inserted into group
-* @param est_name_len            IN: Estimated average length of link names
+* @param est_num_entries        IN: Estimated number of links to be inserted into group
+* @param est_name_len           IN: Estimated average length of link names
 *  
 * @return a non-negative value if successful; otherwise returns a negative value.
 * 
@@ -5686,10 +5601,11 @@ public synchronized static native int H5Pset_fapl_core(int fapl_id,
 
 /**
 * H5Pget_fapl_direct   Retrieve direct I/O settings.
-* @param fapl_id        IN: File access property list identifier 
-* @param info[0] = alignment        OUT: Required memory alignment boundary 
-* @param info[1] = block_size        OUT: File system block size 
-* @param info[2] = cbuf_size        OUT: Copy buffer size 
+* @param fapl_id                     IN: File access property list identifier 
+* @param info                       OUT: Returned property list information 
+*        info[0] = alignment   Required memory alignment boundary 
+*        info[1] = block_size  File system block size 
+*        info[2] = cbuf_size   Copy buffer size 
 *  
 * @return a non-negative value if successful; otherwise returns a negative value.
 * 
@@ -5701,9 +5617,9 @@ public synchronized static native int H5Pget_fapl_direct(int fapl_id, long[]info
 /**
 * H5Pset_fapl_direct Sets up use of the direct I/O driver.   
 * @param fapl_id        IN: File access property list identifier 
-* @param alignment        IN: Required memory alignment boundary 
-* @param block_size        IN: File system block size 
-* @param cbuf_size        IN: Copy buffer size 
+* @param alignment      IN: Required memory alignment boundary 
+* @param block_size     IN: File system block size 
+* @param cbuf_size      IN: Copy buffer size 
 *  
 * @return a non-negative value if successful; otherwise returns a negative value.
 * 
@@ -5874,7 +5790,7 @@ public synchronized static int H5Pset_fill_value(int plist_id, int type_id,
  * number, in a filter pipeline, specified by the property list with which
  * it is associated.
  * 
- * @deprecated As of HDF5 1.8, replaced by {@link #H5Pget_filter(int, int, int[], int[], int[], int, String[], int[]) }
+ * @deprecated As of HDF5 1.8, replaced by {@link #H5Pget_filter(int, int, int[], long[], int[], long, String[], int[]) }
  * 
  * @param plist
  *            IN: Property list identifier.
@@ -5915,15 +5831,15 @@ public synchronized static native int H5Pget_filter(int plist, int filter_number
  * number, in a filter pipeline, specified by the property list with which
  * it is associated.
  * 
- * @param plist            IN: Property list identifier.
- * @param filter_number    IN: Sequence number within the filter pipeline of the filter
+ * @param plist             IN: Property list identifier.
+ * @param filter_number     IN: Sequence number within the filter pipeline of the filter
  *                                 for which information is sought.
  * @param flags            OUT: Bit vector specifying certain general properties of the
  *                                 filter.
- * @param cd_nelmts        IN/OUT: Number of elements in cd_values
+ * @param cd_nelmts     IN/OUT: Number of elements in cd_values
  * @param cd_values        OUT: Auxiliary data for the filter.
- * @param namelen            IN: Anticipated number of characters in name.
- * @param name                OUT: Name of the filter.
+ * @param namelen           IN: Anticipated number of characters in name.
+ * @param name             OUT: Name of the filter.
  * @param filter_config    OUT:A bit field encoding the returned filter information 
  * 
  * @return the filter identification number if successful. Otherwise returns
@@ -6000,15 +5916,15 @@ public synchronized static native int H5Pset_filter(int plist, int filter,
  * specified in filter_id is not set for the property list, an error will be returned and 
  * H5Pget_filter_by_id1 will fail.
  * 
- * @deprecated As of HDF5 1.8, replaced by {@link #H5Pget_filter_by_id(int, int, int[], int[], int[], int, String[], int[]) }
+ * @deprecated As of HDF5 1.8, replaced by {@link #H5Pget_filter_by_id(int, int, int[], long[], int[], long, String[], int[]) }
  * 
- * @param plist_id         IN: Property list identifier.
- * @param filter_id        IN: Filter identifier.
+ * @param plist_id          IN: Property list identifier.
+ * @param filter_id         IN: Filter identifier.
  * @param flags            OUT: Bit vector specifying certain general properties of the
  *                                 filter.
- * @param cd_nelmts        IN/OUT: Number of elements in cd_values
+ * @param cd_nelmts     IN/OUT: Number of elements in cd_values
  * @param cd_values        OUT: Auxiliary data for the filter.
- * @param namelen          IN: Anticipated number of characters in name.
+ * @param namelen           IN: Anticipated number of characters in name.
  * @param name             OUT: Name of the filter.
  * 
  * @return the filter identification number if successful. Otherwise returns
@@ -6044,13 +5960,13 @@ public synchronized static native int H5Pget_filter_by_id(int plist_id,
  * 
  * @param plist_id         IN: Property list identifier.
  * @param filter_id        IN: Filter identifier.
- * @param flags            OUT: Bit vector specifying certain general properties of the
+ * @param flags           OUT: Bit vector specifying certain general properties of the
  *                                 filter.
- * @param cd_nelmts        IN/OUT: Number of elements in cd_values
- * @param cd_values        OUT: Auxiliary data for the filter.
+ * @param cd_nelmts     N/OUT: Number of elements in cd_values
+ * @param cd_values       OUT: Auxiliary data for the filter.
  * @param namelen          IN: Anticipated number of characters in name.
- * @param name             OUT: Name of the filter.
- * @param filter_config    OUT:A bit field encoding the returned filter information 
+ * @param name            OUT: Name of the filter.
+ * @param filter_config   OUT: A bit field encoding the returned filter information 
  * 
  * @return the filter identification number if successful. Otherwise returns
  *         H5Z_FILTER_ERROR (-1).
@@ -6077,9 +5993,7 @@ public static int H5Pget_filter_by_id(int plist_id,
  * id, in a filter pipeline, specified by the property list with which
  * it is associated.
  * 
- * @see public static int H5Pget_filter_by_id(int plist,
-        int filter_id, int[] flags, int[] cd_nelmts, int[] cd_values,
-        int namelen, String[] name, int[] filter_config)
+ * @see #H5Pget_filter_by_id
  **/
 public synchronized static native int H5Pget_filter_by_id2(int plist_id,
         int filter_id, int[] flags, long[] cd_nelmts, int[] cd_values,
@@ -6236,7 +6150,7 @@ public synchronized static native int H5Pget_libver_bounds(int fapl_id, int []li
 /**
 * H5Pset_libver_bounds Sets bounds on library versions, and indirectly format versions, to be used when creating objects
 * @param fapl_id   IN: File access property list identifier
-* @param low          IN: The earliest version of the library that will be used for writing objects
+* @param low       IN: The earliest version of the library that will be used for writing objects
 * @param high      IN: The latest version of the library that will be used for writing objects.
 * 
 *      
@@ -6300,7 +6214,7 @@ public synchronized static native int H5Pget_link_phase_change(int gcpl_id, int 
 * H5Pset_link_phase_change Sets the parameters for conversion between compact and dense groups. 
 * @param gcpl_id                IN: Group creation property list identifier
 * @param max_compact            IN: Maximum number of links for compact storage(Default: 8) 
-* @param min_dense                IN: Minimum number of links for dense storage(Default: 6)
+* @param min_dense              IN: Minimum number of links for dense storage(Default: 6)
 *  
 * @return a non-negative value if successful; otherwise returns a negative value.
 * 
@@ -6369,8 +6283,6 @@ public synchronized static native long H5Pget_meta_block_size(int fapl_id)
  * @param fapl_id             IN: File access property list identifier
  * @param size                IN: Minimum size, in bytes, of metadata block allocations.
  *  
- * @return none.
- * 
  * @exception HDF5LibraryException - Error from the HDF-5 Library.
  *  
  **/
@@ -6406,7 +6318,7 @@ public synchronized static native long H5Pget_nlinks(int lapl_id)
 
 /**
 * H5Pset_nlinks sets the maximum number of soft or user-defined link traversals allowed, nlinks, before the library assumes it has found a cycle and aborts the traversal. This value is set in the link access property list lapl_id. 
-* @param fapl_id     IN: File access property list identifier
+* @param lapl_id    IN: File access property list identifier
 * @param nlinks     IN: Maximum number of links to traverse
 * 
 * @return Returns a non-negative value if successful; otherwise returns a negative value. 
@@ -6492,8 +6404,6 @@ public synchronized static native boolean H5Pget_obj_track_times(int ocpl_id)
  * 
  * @param track_times IN: TRUE or FALSE, specifying whether object times are to be tracked 
  * 
- * @return none
- * 
  * @exception HDF5LibraryException - Error from the HDF-5 Library.
  * 
  **/
@@ -6502,7 +6412,7 @@ public synchronized static native void H5Pset_obj_track_times(int ocpl_id, boole
 
 /**
 * H5Pget_shared_mesg_index Retrieves the configuration settings for a shared message index.  
-* @param fcpl_id            IN: File creation property list identifier 
+* @param fcpl_id          IN: File creation property list identifier 
 * @param index_num        IN: Index being configured.
 * @param mesg_info
 *               The message type and minimum message size            
@@ -6519,13 +6429,13 @@ public synchronized static native void H5Pset_obj_track_times(int ocpl_id, boole
 * @exception IllegalArgumentException - Invalid value of nindexes
 *  
 **/
-public synchronized static native int H5Pget_shared_mesg_index(int fcpl_id, int index_num,  int []mesg_info) 
+public synchronized static native int H5Pget_shared_mesg_index(int fcpl_id, int index_num, int[] mesg_info) 
         throws HDF5LibraryException, NullPointerException, IllegalArgumentException;
 
 /**
 * H5Pset_shared_mesg_index Configures the specified shared object header message index 
 * @param fcpl_id                IN: File creation property list identifier.
-* @param index_num            IN: Index being configured.
+* @param index_num              IN: Index being configured.
 * @param mesg_type_flags        IN: Types of messages that should be stored in this index.
 * @param min_mesg_size          IN: Minimum message size.
 *  
@@ -6553,7 +6463,7 @@ public synchronized static native int H5Pget_shared_mesg_nindexes(int fcpl_id)
 /**
 * H5Pset_shared_mesg_nindexes sets the number of shared object header message indexes in the specified file creation property list. 
 * @param plist_id                IN: File creation property list 
-* @param nindexes                  IN: Number of shared object header message indexes to be available in files created with this property list
+* @param nindexes                IN: Number of shared object header message indexes to be available in files created with this property list
 *  
 * @return a non-negative value if successful; otherwise returns a negative value.
 * 
@@ -6582,7 +6492,7 @@ public synchronized static native int H5Pset_shared_mesg_nindexes(int plist_id, 
 * @exception NullPointerException - size is null.
 *  
 **/
-public synchronized static native int H5Pget_shared_mesg_phase_change(int fcpl_id, int []size) 
+public synchronized static native int H5Pget_shared_mesg_phase_change(int fcpl_id, int[] size) 
         throws HDF5LibraryException, NullPointerException;
 
 /**
@@ -6712,8 +6622,7 @@ public synchronized static native int H5Pset_small_data_block_size(
  * @param plist
  *            IN: Property list to query.
  * @param size
- *            OUT: the symbol table's B-tree 1/2 rank and leaf node 1/2
- *            size.
+ *            OUT: the symbol table's B-tree 1/2 rank and leaf node 1/2size.
  * 
  *            <pre>
  *      size[0] = ik // the symbol table's B-tree 1/2 rank
@@ -6887,7 +6796,7 @@ public synchronized static native int H5Pset_deflate(int plist, int level)
  *  The logging virtual file driver (VFD) is a clone of the standard SEC2 (H5FD_SEC2) driver 
  *  with additional facilities for logging VFD metrics and activity to a file. 
  *
- *  @deprecated As of HDF5 1.8.7, replaced by {@link #H5Pset_fapl_log(int, String, long, int)}
+ *  @deprecated As of HDF5 1.8.7, replaced by {@link #H5Pset_fapl_log(int, String, long, long)}
  *
  *  @param fapl_id  IN: File access property list identifier. 
  *  @param logfile  IN: logfile is the name of the file in which the logging entries are to be recorded.
@@ -7264,7 +7173,7 @@ private synchronized static native int _H5Rget_region(int loc_id,
 public static int H5Sclose(int space_id) throws HDF5LibraryException
 {
     if (space_id < 0)
-        throw new HDF5LibraryException("Negative ID");;
+    	return 0; // throw new HDF5LibraryException("Negative ID");;
     
     OPEN_IDS.removeElement(space_id);
     return _H5Sclose(space_id);
@@ -7982,7 +7891,7 @@ throws HDF5LibraryException, NullPointerException;
 public static int H5Tclose(int type_id) throws HDF5LibraryException
 {
     if (type_id < 0)
-        throw new HDF5LibraryException("Negative ID");;
+    	return 0; // throw new HDF5LibraryException("Negative ID");;
     
     OPEN_IDS.removeElement(type_id);
     return _H5Tclose(type_id);
@@ -8007,9 +7916,9 @@ private synchronized static native int _H5Tclose(int type_id)
 **/
 @Deprecated
 public static int H5Tcommit(int loc_id, String name,
-       int type) throws HDF5LibraryException, NullPointerException
+       int type_id) throws HDF5LibraryException, NullPointerException
 {
-   return H5Tcommit1(loc_id, name, type);
+   return H5Tcommit1(loc_id, name, type_id);
 }
 @Deprecated
 public synchronized static native int H5Tcommit1(int loc_id, String name,
@@ -8024,8 +7933,6 @@ public synchronized static native int H5Tcommit1(int loc_id, String name,
  *  @param lcpl_id  IN: Link creation property list.
  *  @param tcpl_id  IN: Datatype creation property list.
  *  @param tapl_id  IN: Datatype access property list.
- *
- *  @return none
  *
  *  @exception HDF5LibraryException - Error from the HDF-5 Library.
  *  @exception NullPointerException - name is null.
@@ -8043,8 +7950,6 @@ public synchronized static native void H5Tcommit(int loc_id, String name, int ty
  *  @param tcpl_id  IN: Datatype creation property list.
  *  @param tapl_id  IN: Datatype access property list.
  *
- *  @return none
- *
  *  @exception HDF5LibraryException - Error from the HDF-5 Library.
  **/
 public synchronized static native void H5Tcommit_anon(int loc_id, int type_id, int tcpl_id, int tapl_id)
@@ -8060,7 +7965,7 @@ public synchronized static native void H5Tcommit_anon(int loc_id, int type_id, i
 * 
 * @exception HDF5LibraryException - Error from the HDF-5 Library.
 **/
-public synchronized static native boolean H5Tcommitted(int type)
+public synchronized static native boolean H5Tcommitted(int type_id)
         throws HDF5LibraryException;
 
 /**
@@ -8069,8 +7974,6 @@ public synchronized static native boolean H5Tcommitted(int type)
  *
  *  @param src_id     IN: Identifier of source datatype.
  *  @param dst_id     IN: Identifier of destination datatype.
- *
- *  @return none
  *
  *  @exception HDF5LibraryException - Error from the HDF-5 Library.
  **/
@@ -8086,8 +7989,6 @@ throws HDF5LibraryException;
  *  @param buf        IN: Array containing pre- and post-conversion values.
  *  @param background IN: Optional background buffer.
  *  @param plist_id   IN: Dataset transfer property list identifier.
- *
- *  @return none
  *
  *  @exception HDF5LibraryException - Error from the HDF-5 Library.
  *  @exception NullPointerException - buf is null.
@@ -8123,8 +8024,8 @@ private synchronized static native int _H5Tcopy(int type_id)
  * H5Tcreate creates a new dataype of the specified class with the specified
  * number of bytes.
  * 
- * @param type IN: Class of datatype to create.
- * @param size IN: The number of bytes in the datatype to create.
+ * @param dclass IN: Class of datatype to create.
+ * @param size   IN: The number of bytes in the datatype to create.
  * 
  * @return datatype identifier if successful
  * 
@@ -8140,17 +8041,17 @@ public static int H5Tcreate(int dclass, int size)
  *  H5Tcreate creates a new dataype of the specified class with
  *  the specified number of bytes.
  *
- *  @param type IN: Class of datatype to create.
- *  @param size IN: The number of bytes in the datatype to create.
+ *  @param tclass IN: Class of datatype to create.
+ *  @param size   IN: The number of bytes in the datatype to create.
  *
  *  @return datatype identifier
  *
  *  @exception HDF5LibraryException - Error from the HDF-5 Library.
  **/
-public static int H5Tcreate(int type, long size)
+public static int H5Tcreate(int tclass, long size)
     throws HDF5LibraryException
 {
-    int id = _H5Tcreate(type, size);
+    int id = _H5Tcreate(tclass, size);
     if (id > 0)
         OPEN_IDS.addElement(id);
     return id;
@@ -8243,8 +8144,6 @@ private synchronized static native int _H5Tenum_create(int base_id)
  *  @param name  IN: The name of the member
  *  @param value IN: The value of the member, data of the correct type
  *
- *  @return none
- *
  *  @exception HDF5LibraryException - Error from the HDF-5 Library.
  *  @exception NullPointerException - name is null.
  **/
@@ -8329,8 +8228,6 @@ private synchronized static native int H5Tenum_nameof_int(int type, int[] value,
  *  @param name   IN: The name of the member
  *  @param value OUT: The value of the member
  *
- *  @return the value of the enumeration datatype.
- *
  *  @exception HDF5LibraryException - Error from the HDF-5 Library.
  **/
 public synchronized static native void H5Tenum_valueof(int type, String name, byte[] value)
@@ -8381,7 +8278,7 @@ public synchronized static native boolean H5Tequal(int type_id1,
  *
  *  @param type_id  IN: Datatype identifier of array object.
  *  @param dims    OUT: Sizes of array dimensions.
- *  @param perm[]  OUT: Dimension permutations. (This parameter is not used.)
+ *  @param perm    OUT: Dimension permutations. (This parameter is not used.)
  *
  *  @return the non-negative number of dimensions of the array type
  *
@@ -8389,8 +8286,8 @@ public synchronized static native boolean H5Tequal(int type_id1,
  *  @exception NullPointerException - dims is null.
  **/
 @Deprecated
-public synchronized static native int H5Tget_array_dims(int dt, int[] dims,
-        int[] perms) throws HDF5LibraryException, NullPointerException;
+public synchronized static native int H5Tget_array_dims(int type_id, int[] dims,
+        int[] perm) throws HDF5LibraryException, NullPointerException;
 
 /**
  *  H5Tget_array_dims returns the sizes of the dimensions of the specified array datatype object. 
@@ -8441,7 +8338,7 @@ throws HDF5LibraryException, NullPointerException
 /**
  *  H5Tget_array_dims2 returns the sizes of the dimensions of the specified array datatype object. 
  *
- *  @see public static int H5Tget_array_dims(int type_id, long[] dims)
+ *  @see #H5Tget_array_dims
  **/
 public synchronized static native int H5Tget_array_dims2(int type_id, long[] dims)
 throws HDF5LibraryException, NullPointerException;
@@ -8600,8 +8497,6 @@ throws HDF5LibraryException;
  *  @param type_id  IN: Identifier of datatype to set.
  *  @param ebias    IN: Exponent bias value.
  *
- *  @return none
- *
  *  @exception HDF5LibraryException - Error from the HDF-5 Library.
  **/
 public synchronized static native void H5Tset_ebias(int type_id, long ebias)
@@ -8620,8 +8515,6 @@ throws HDF5LibraryException;
  *      <li>fields[3] = mpos  OUT: location to return mantissa bit-position.</li>
  *      <li>fields[4] = msize OUT: location to return size of mantissa in bits.</li>
  *  </ul>
- *
- *  @return none.
  *
  *  @exception HDF5LibraryException - Error from the HDF-5 Library.
  *  @exception NullPointerException - fields is null.
@@ -8671,8 +8564,6 @@ private synchronized static native int H5Tget_fields_int(int type_id,
  *  @param esize    IN: Size of exponent in bits.
  *  @param mpos     IN: Mantissa bit position.
  *  @param msize    IN: Size of mantissa in bits.
- *
- *  @return none
  *
  *  @exception HDF5LibraryException - Error from the HDF-5 Library.
  **/
@@ -8824,8 +8715,6 @@ private synchronized static native int _H5Tget_member_type(int type_id,
  *  @param membno   IN: Number of the enumeration datatype member.
  *  @param value   OUT: The value of the member
  *
- *  @return none.
- *
  *  @exception HDF5LibraryException - Error from the HDF-5 Library.
  *  @exception NullPointerException - value is null.
  **/
@@ -8865,10 +8754,10 @@ private synchronized static native int H5Tget_member_value_int(int type_id,
  *
  *  @exception HDF5LibraryException - Error from the HDF-5 Library.
  **/
-public synchronized static int H5Tget_native_type(int tid)
+public synchronized static int H5Tget_native_type(int type_id)
         throws HDF5LibraryException 
 {
-    return H5Tget_native_type(tid, HDF5Constants.H5T_DIR_ASCEND);
+    return H5Tget_native_type(type_id, HDF5Constants.H5T_DIR_ASCEND);
 }
 
 /**
@@ -8881,10 +8770,10 @@ public synchronized static int H5Tget_native_type(int tid)
  *
  *  @exception HDF5LibraryException - Error from the HDF-5 Library.
  **/
-public static int H5Tget_native_type(int tid, int direction)
+public static int H5Tget_native_type(int type_id, int direction)
         throws HDF5LibraryException
 {
-    int id = _H5Tget_native_type(tid, direction);
+    int id = _H5Tget_native_type(type_id, direction);
     if (id > 0)
         OPEN_IDS.addElement(id);
     return id;
@@ -8967,8 +8856,6 @@ public static int H5Tset_offset(int type_id, int offset)
  *
  *  @param type_id  IN: Identifier of datatype to set.
  *  @param offset   IN: Offset of first significant bit.
- *
- *  @return none
  *
  *  @exception HDF5LibraryException - Error from the HDF-5 Library.
  **/
@@ -9088,8 +8975,6 @@ throws HDF5LibraryException;
  *  @param type_id    IN: Identifier of datatype to set.
  *  @param precision  IN: Number of bits of precision for datatype.
  *
- *  @return none
- *
  *  @exception HDF5LibraryException - Error from the HDF-5 Library.
  **/
 public synchronized static native void H5Tset_precision(int type_id, long precision)
@@ -9174,8 +9059,6 @@ throws HDF5LibraryException;
  *
  *  @param type_id  IN: Identifier of datatype to change size.
  *  @param size     IN: Size in bytes to modify datatype.
- *
- *  @return none
  *
  *  @exception HDF5LibraryException - Error from the HDF-5 Library.
  **/

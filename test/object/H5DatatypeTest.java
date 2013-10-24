@@ -70,6 +70,7 @@ import ncsa.hdf.object.h5.H5File;
  * @author Peter Cao, The HDF Group
  */
 public class H5DatatypeTest extends TestCase {
+    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H5DatatypeTest.class);
     private static final H5File H5FILE = new H5File();
     private static final int NLOOPS = 10;
     private static final int TEST_VALUE_INT = Integer.MAX_VALUE;
@@ -150,6 +151,7 @@ public class H5DatatypeTest extends TestCase {
      * </ul>
      */
     public final void testOpen() {
+    	log.debug("testOpen");
         int tid = -1, tclass = -1, tsize = -1;
 
         for (int loop = 0; loop < NLOOPS; loop++) {
@@ -204,6 +206,7 @@ public class H5DatatypeTest extends TestCase {
      * </ul>
      */
     public final void testClose() {
+    	log.debug("testClose");
         int tid = -1, tclass = -1, tsize = -1;
 
         for (int loop = 0; loop < NLOOPS; loop++) {
@@ -263,6 +266,7 @@ public class H5DatatypeTest extends TestCase {
      * </ul>
      */
     public final void testToNative() {
+    	log.debug("testToNative");
         int tid = -1, tclass = -1, tsize = -1;
 
         // test integer datatype
@@ -355,6 +359,7 @@ public class H5DatatypeTest extends TestCase {
      * </ul>
      */
     public final void testFromNative() {
+    	log.debug("testFromNative");
         int tid = -1;
         H5Datatype type = new H5Datatype(-1);
 
@@ -412,6 +417,7 @@ public class H5DatatypeTest extends TestCase {
      * </ul>
      */
     public final void testIsUnsigned() {
+    	log.debug("testIsUnsigned");
         assertFalse(typeInt.isUnsigned());
         assertFalse(typeFloat.isUnsigned());
         assertFalse(typeStr.isUnsigned());
@@ -428,6 +434,7 @@ public class H5DatatypeTest extends TestCase {
      * </ul>
      */
     public final void testGetMetadata() {
+    	log.debug("testGetMetadata");
         Vector attrs = null;
 
         try {
@@ -486,6 +493,7 @@ public class H5DatatypeTest extends TestCase {
      * </ul>
      */
     public final void testWriteMetadata() {
+    	log.debug("testWriteMetadata");
         Vector attrs = null;
         Attribute attr = null;
 
@@ -635,6 +643,7 @@ public class H5DatatypeTest extends TestCase {
      * </ul>
      */
     public final void testRemoveMetadata() {
+    	log.debug("testRemoveMetadata");
         Vector attrs = null;
         try {
             attrs = (Vector) testDatatype.getMetadata();
@@ -700,6 +709,7 @@ public class H5DatatypeTest extends TestCase {
      * Test method for {@link ncsa.hdf.object.h5.H5Datatype} IsSerializable.
      */
     public final void testIsSerializable() {
+    	log.debug("testIsSerializable");
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         ObjectOutputStream oos;
         try {
@@ -728,6 +738,7 @@ public class H5DatatypeTest extends TestCase {
      */
     public final void testSerializeToDisk()
     {
+    	log.debug("testSerializeToDisk");
         try {
             FileOutputStream fos = new FileOutputStream("temph5dtype.ser");
             ObjectOutputStream oos = new ObjectOutputStream(fos);

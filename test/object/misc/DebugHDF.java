@@ -21,10 +21,8 @@ import javax.swing.tree.DefaultMutableTreeNode;
 
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
-import ncsa.hdf.hdf5lib.HDFArray;
 import ncsa.hdf.hdf5lib.HDFNativeData;
 import ncsa.hdf.hdf5lib.exceptions.HDF5Exception;
-import ncsa.hdf.hdf5lib.structs.H5O_info_t;
 import ncsa.hdf.object.Attribute;
 import ncsa.hdf.object.CompoundDS;
 import ncsa.hdf.object.Dataset;

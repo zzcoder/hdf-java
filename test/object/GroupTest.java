@@ -20,6 +20,7 @@ import ncsa.hdf.object.h5.H5Group;
  * 
  */
 public class GroupTest extends TestCase {
+    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GroupTest.class);
 
     private H5File testFile = null;
     private Group testGroup = null;
@@ -76,6 +77,7 @@ public class GroupTest extends TestCase {
      * </ul>
      */
     public void testClear() {
+    	log.debug("testClear");
         testGroup.clear();
         assertEquals(testGroup.getMemberList().size(), 0);
         int nObjs = 0;
@@ -110,6 +112,7 @@ public class GroupTest extends TestCase {
      * </ul>
      */
     public void testAddToMemberList() {
+    	log.debug("testAddToMemberList");
         int previous_size = testGroup.getMemberList().size();
         testGroup.addToMemberList(null);
         assertEquals(testGroup.getMemberList().size(), previous_size);
@@ -161,6 +164,7 @@ public class GroupTest extends TestCase {
      * </ul>
      */
     public void testRemoveFromMemberList() {
+    	log.debug("testRemoveFromMemberList");
         int previous_size = testGroup.getMemberList().size();
         List memberList = testGroup.getMemberList();
 
@@ -202,6 +206,7 @@ public class GroupTest extends TestCase {
      * <ul>
      */
     public void testGetMemberList() {
+    	log.debug("testGetMemberList");
         String objs[] = { "a_link_to_the_image", "dataset_comp", "dataset_int",
                 "datatype_float", "datatype_int", "datatype_str", "datatype_uint", "g00" };
         List memberList = testGroup.getMemberList();
@@ -230,6 +235,7 @@ public class GroupTest extends TestCase {
      * </ul>
      */
     public void testGetParent() {
+    	log.debug("testGetParent");
         assertEquals(testGroup.getParent().getName(), "/");
         int nObjs = 0;
         try {
@@ -250,6 +256,7 @@ public class GroupTest extends TestCase {
      * </ul>
      */
     public void testIsRoot() {
+    	log.debug("testIsRoot");
         assertFalse(testGroup.isRoot());
         int nObjs = 0;
         try {
@@ -270,6 +277,7 @@ public class GroupTest extends TestCase {
      * <ul>
      */
     public void testGetNumberOfMembersInFile() {
+    	log.debug("testGetNumberOfMembersInFile");
         assertEquals(testGroup.getNumberOfMembersInFile(), 8);
         int nObjs = 0;
         try {

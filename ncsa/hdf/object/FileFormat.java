@@ -61,6 +61,8 @@ public abstract class FileFormat extends File {
      */
     private static final long                    serialVersionUID   = -4700692313888420796L;
 
+    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FileFormat.class);
+
     /**
      * File first time access flag for open file. With this access flag, added
      * to the regular value, indicates this file has no existing state.
@@ -218,7 +220,7 @@ public abstract class FileFormat extends File {
                 }
             }
             catch (Throwable err) {
-                ;
+                log.debug("FILE_TYPE_HDF4 instance failure: ", err);
             }
         }
 
@@ -232,7 +234,7 @@ public abstract class FileFormat extends File {
                 }
             }
             catch (Throwable err) {
-                ;
+                log.debug("FILE_TYPE_HDF5 instance failure: ", err);
             }
         }
         
@@ -246,7 +248,7 @@ public abstract class FileFormat extends File {
                 }
             }
             catch (Throwable err) {
-                ;
+                log.debug("NetCDF instance failure: ", err);
             }
         }
         
@@ -260,7 +262,7 @@ public abstract class FileFormat extends File {
                 }
             }
             catch (Throwable err) {
-                ;
+                log.debug("FITS instance failure: ", err);
             }
         }
         
@@ -304,7 +306,8 @@ public abstract class FileFormat extends File {
                 fullFileName = this.getAbsolutePath();
             }
             catch (Exception ex) {
-            }
+                log.debug("File {} getAbsolutePath failure: ", filename, ex);
+           }
         }
         isReadOnly = false;
     }
@@ -357,7 +360,7 @@ public abstract class FileFormat extends File {
         }
     }
 
-    /**
+	/**
      * Returns the FileFormat with specified key from the list of supported
      * formats.
      * <p>
@@ -563,6 +566,7 @@ public abstract class FileFormat extends File {
                     fileFormat = knownFormat.createInstance(filename, WRITE);
                 }
                 catch (Exception ex) {
+                    log.debug("File {} createInstance failure: ", filename, ex);
                 }
                 break;
             }
@@ -1386,10 +1390,10 @@ public abstract class FileFormat extends File {
             String[] memberNames, Datatype[] memberDatatypes, int[] memberSizes, Object data) throws Exception
             // REVIEW DOCS for createCompoundDS(). Check and document exceptions.
             {
-        // If the implementing subclass doesn't have this method then that
-        // format doesn't support Compound DataSets and we throw an
-        // exception.
-        throw new UnsupportedOperationException("Dataset FileFormat.createCompoundDS(...) is not implemented.");
+		    	// If the implementing subclass doesn't have this method then that
+		    	// format doesn't support Compound DataSets and we throw an
+		    	// exception.
+		    	throw new UnsupportedOperationException("Dataset FileFormat.createCompoundDS(...) is not implemented.");
             }
 
     /**
@@ -1823,8 +1827,8 @@ public abstract class FileFormat extends File {
      * 
      * @param file
      *            the file containing the object
-     * @param oid
-     *            the path the full path of the object to search for
+     * @param path
+     *            the full path of the object to search for
      * @return the object that has the given path; otherwise returns null
      */
     public final static HObject findObject(FileFormat file, String path) {

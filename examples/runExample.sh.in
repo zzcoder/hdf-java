@@ -12,7 +12,7 @@ export JAVAPATH
 
 RM=@RM@
 
-CPATH="..:"$HDFBLD_HOME"/lib/jhdf5.jar"
+CPATH="..:"$HDFBLD_HOME"/lib/jhdf5.jar:"$HDFBLD_HOME"/lib/slf4j-api-1.7.5.jar:"$HDFBLD_HOME"/lib/ext/slf4j-nop-1.7.5.jar"
 
 TEST=/usr/bin/test
 if [ ! -x /usr/bin/test ]

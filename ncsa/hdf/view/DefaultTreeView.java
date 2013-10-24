@@ -103,6 +103,8 @@ import ncsa.hdf.view.ViewProperties.DATA_VIEW_KEY;
 public class DefaultTreeView extends JPanel implements TreeView, ActionListener {
     private static final long            serialVersionUID    = 4092566164712521186L;
 
+    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DefaultTreeView.class);
+
     /** the owner of this treeview */
     private ViewManager                  viewer;
 
@@ -590,8 +592,7 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
         }
         catch (Exception ex) {
             toolkit.beep();
-            JOptionPane
-            .showMessageDialog(this, ex.getMessage() + "\n" + filename, "HDFView", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, ex.getMessage() + "\n" + filename, "HDFView", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -603,6 +604,7 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
                 bi.close();
             }
             catch (Exception ex2) {
+            	log.debug("output file force input close:", ex2);
             }
             toolkit.beep();
             JOptionPane.showMessageDialog(this, ex, "HDFView", JOptionPane.ERROR_MESSAGE);
@@ -630,16 +632,19 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
             bo.flush();
         }
         catch (Exception ex) {
+        	log.debug("output file:", ex);
         }
         try {
             bi.close();
         }
         catch (Exception ex) {
+        	log.debug("input file:", ex);
         }
         try {
             bo.close();
         }
         catch (Exception ex) {
+        	log.debug("output file:", ex);
         }
 
         try {
@@ -647,8 +652,7 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
         }
         catch (Exception ex) {
             toolkit.beep();
-            JOptionPane
-            .showMessageDialog(this, ex.getMessage() + "\n" + filename, "HDFView", JOptionPane.ERROR_MESSAGE);
+            JOptionPane .showMessageDialog(this, ex.getMessage() + "\n" + filename, "HDFView", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -696,8 +700,7 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
         }
         catch (Exception ex) {
             toolkit.beep();
-            JOptionPane
-            .showMessageDialog(this, ex.getMessage() + "\n" + filename, "HDFView", JOptionPane.ERROR_MESSAGE);
+            JOptionPane .showMessageDialog(this, ex.getMessage() + "\n" + filename, "HDFView", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -1783,6 +1786,7 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
                     }
                 }
                 catch (Throwable err) {
+                	log.debug("retrieves the file structure of {}:", filename, err);
                 }
                 continue;
             }
@@ -1795,6 +1799,7 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
                     }
                 }
                 catch (Throwable err) {
+                	log.debug("retrieves the file structure of {}:", filename, err);
                 }
                 continue;
             }
@@ -1808,6 +1813,7 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
                     }
                 }
                 catch (Throwable err) {
+                	log.debug("retrieves the file structure of {}:", filename, err);
                 }
             }
         }
@@ -1832,6 +1838,7 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
             fileFormat.open();
         }
         catch (Exception ex) {
+        	log.debug("fileformat init and open:", ex);
         	fileFormat = null;
         }
         finally {
@@ -1840,7 +1847,8 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
 
         if (fileFormat == null) {
             throw new java.io.IOException("Failed to open file - " + filename);
-        } else  {
+        } 
+        else  {
             fileRoot = (MutableTreeNode) fileFormat.getRootNode();
             if (fileRoot != null) {
                 insertNode(fileRoot, root);
@@ -1853,7 +1861,6 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
                 fileList.add(fileFormat);
             }       	
         }
-
 
         return fileFormat;
     }
@@ -1884,7 +1891,7 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
                     theFile.close();
                 }
                 catch (Exception ex) {
-                    ;
+                	log.debug("close {}:", theFile.getFilePath(), ex);
                 }
                 fileList.remove(theFile);
                 if (theFile.equals(selectedFile)) {

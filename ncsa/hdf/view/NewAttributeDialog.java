@@ -64,6 +64,8 @@ import ncsa.hdf.object.HObject;
 public class NewAttributeDialog extends JDialog implements ActionListener, ItemListener, HyperlinkListener {
     private static final long serialVersionUID                = 4883237570834215275L;
 
+    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NewAttributeDialog.class);
+
     /** the default length of a string attribute */
     public static final int   DEFAULT_STRING_ATTRIBUTE_LENGTH = 256;
 
@@ -361,7 +363,9 @@ public class NewAttributeDialog extends JDialog implements ActionListener, ItemL
                 HObject obj = fileFormat.get(objName);
                 ref = obj.getOID()[0];
             }
-            catch (Exception ex) {}
+            catch (Exception ex) {
+            	log.debug("object id:", ex);
+            }
 
             if (ref > 0) {
                 if (valueField.getText().length() > 1) {
@@ -790,17 +794,23 @@ public class NewAttributeDialog extends JDialog implements ActionListener, ItemL
             try {
                 url = new URL("file:" + rootPath + "/lib/jhdfview.jar");
             }
-            catch (java.net.MalformedURLException mfu) {}
+            catch (java.net.MalformedURLException mfu) {
+            	log.debug("help information:", mfu);
+            }
 
             try {
                 url2 = new URL("file:" + rootPath + "/");
             }
-            catch (java.net.MalformedURLException mfu) {}
+            catch (java.net.MalformedURLException mfu) {
+            	log.debug("help information:", mfu);
+            }
 
             try {
                 url3 = new URL("file:" + rootPath + "/src/");
             }
-            catch (java.net.MalformedURLException mfu) {}
+            catch (java.net.MalformedURLException mfu) {
+            	log.debug("help information:", mfu);
+            }
 
             URL uu[] = { url, url2, url3 };
             URLClassLoader cl = new URLClassLoader(uu);
@@ -841,7 +851,9 @@ public class NewAttributeDialog extends JDialog implements ActionListener, ItemL
                 try {
                     pane.setPage(e.getURL());
                 }
-                catch (Throwable t) {}
+                catch (Throwable t) {
+                	log.debug("JEditorPane hyper link:", t);
+                }
             }
         }
     }

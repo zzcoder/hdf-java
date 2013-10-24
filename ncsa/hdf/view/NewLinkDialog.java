@@ -65,6 +65,8 @@ import ncsa.hdf.object.HObject;
 public class NewLinkDialog extends JDialog implements ActionListener,DocumentListener, ItemListener {
     private static final long serialVersionUID = 7100424106041533918L;
 
+    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NewLinkDialog.class);
+
     private JTextField nameField;
 
     private JComboBox parentChoice, targetObject;
@@ -308,28 +310,28 @@ public class NewLinkDialog extends JDialog implements ActionListener,DocumentLis
 
     private String openTargetFile()
     {
-        JFileChooser fchooser = new JFileChooser(currentDir);
-        fchooser.setFileFilter(DefaultFileFilter.getFileFilter());
+    	JFileChooser fchooser = new JFileChooser(currentDir);
+    	fchooser.setFileFilter(DefaultFileFilter.getFileFilter());
 
-        int returnVal = fchooser.showOpenDialog(this);
-        if(returnVal != JFileChooser.APPROVE_OPTION) {
-           return null;
-       }
+    	int returnVal = fchooser.showOpenDialog(this);
+    	if(returnVal != JFileChooser.APPROVE_OPTION) {
+    		return null;
+    	}
 
-       File choosedFile = fchooser.getSelectedFile();
-       
-       if (choosedFile == null) {
-           return null;
-       }
-       
-       if (choosedFile.isDirectory()) {
-           currentDir = choosedFile.getPath();
-       } else {
-           currentDir = choosedFile.getParent();
-       }
+    	File choosedFile = fchooser.getSelectedFile();
 
-       return choosedFile.getAbsolutePath();
-       
+    	if (choosedFile == null) {
+    		return null;
+    	}
+
+    	if (choosedFile.isDirectory()) {
+    		currentDir = choosedFile.getPath();
+    	} 
+    	else {
+    		currentDir = choosedFile.getParent();
+    	}
+
+    	return choosedFile.getAbsolutePath();
     }
    
     private final List breadthFirstUserObjects(TreeNode node)
@@ -341,8 +343,7 @@ public class NewLinkDialog extends JDialog implements ActionListener,DocumentLis
         Vector list = new Vector();
         DefaultMutableTreeNode theNode = null;
         Enumeration local_enum = ((DefaultMutableTreeNode)node).breadthFirstEnumeration();
-        while(local_enum.hasMoreElements())
-        {
+        while(local_enum.hasMoreElements()) {
             theNode = (DefaultMutableTreeNode)local_enum.nextElement();
             list.add(theNode.getUserObject());
         }
@@ -421,17 +422,18 @@ public class NewLinkDialog extends JDialog implements ActionListener,DocumentLis
             }
 
             HObject targetObj = null;
-            try{
+            try {
                 targetObj = fileFormat.get(targetObject.getEditor().getItem().toString());
-            }catch (Exception ex) {
             } 
+            catch (Exception ex) {
+            	log.debug("softlink:", ex);
+            }
                    
             String tObj = null;
             if(targetObj==null){
                 tObj = targetObject.getEditor().getItem().toString();
                 
-                if (!tObj.startsWith(HObject.separator))
-                {
+                if (!tObj.startsWith(HObject.separator)) {
                     tObj = HObject.separator + tObj;
                 }
             }
@@ -458,7 +460,6 @@ public class NewLinkDialog extends JDialog implements ActionListener,DocumentLis
                 return null;
             }
         }
-        
         else if (externalLink.isSelected()){
             String TargetFileName = targetFile.getText();
             FileFormat TargetFileFormat = null;
@@ -474,21 +475,26 @@ public class NewLinkDialog extends JDialog implements ActionListener,DocumentLis
                 //h5format.close();
                 TargetFileFormat = h5format.createInstance(TargetFileName, fileAccessID);
                 TargetFileFormat.open(); //open the file
-            } catch (Exception ex) {
+            } 
+            catch (Exception ex) {
+            	log.debug("external link:", ex);
                 return null;
             } 
             
             HObject targetObj = null;
             try{
                 targetObj = TargetFileFormat.get(targetObject.getEditor().getItem().toString());
-            }catch (Exception ex) {
+            }
+            catch (Exception ex) {
                 ex.printStackTrace();
             } 
             
             try {                            
                 TargetFileFormat.close();
-            } catch (Exception ex) {
             } 
+            catch (Exception ex) {
+            	log.debug("external link:", ex);
+            }
                  
             String tFileObj = null;         
             if(targetObj==null){
@@ -570,8 +576,7 @@ public class NewLinkDialog extends JDialog implements ActionListener,DocumentLis
             targetObject.setEnabled(false);
 
         //Check if the target File is open in treeView
-        if (isFileOpen(filename))
-        {
+        if (isFileOpen(filename)) {
             return;
         }
 
@@ -587,7 +592,8 @@ public class NewLinkDialog extends JDialog implements ActionListener,DocumentLis
             fileFormatC = h5format.createInstance(filename, fileAccessID);
             fileFormatC.open(); //open the file
 
-        } catch (Exception ex) {
+        } 
+        catch (Exception ex) {
             targetObject.setEnabled(false);
             toolkit.beep();
             JOptionPane.showMessageDialog(this,"Invalid File Format", getTitle(),
@@ -600,34 +606,33 @@ public class NewLinkDialog extends JDialog implements ActionListener,DocumentLis
 
         try {             
             fileFormatC.close();    
-
-        } catch (Exception ex) {
         } 
+        catch (Exception ex) {
+        	log.debug("FileFormat close:", ex);
+        }
     }
     
     //Function to check if the target File is open in treeView
-      private boolean isFileOpen(String filename)
-        {
-            boolean isOpen = false;
-            FileFormat theFile = null;
-            
-            Iterator iterator = fileList.iterator();
-            while(iterator.hasNext())
-            {
-                theFile = (FileFormat)iterator.next();
-                if (theFile.getFilePath().equals(filename))
-                {
-                    isOpen = true;
-                    if(!theFile.isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5))){
-                        targetObject.setEnabled(false);       
-                    }
-                    retriveObjects(theFile);
-                    break;
-                }
-            } // while(iterator.hasNext())
+    private boolean isFileOpen(String filename)
+    {
+    	boolean isOpen = false;
+    	FileFormat theFile = null;
 
-            return isOpen;
-        }
+    	Iterator iterator = fileList.iterator();
+    	while(iterator.hasNext()) {
+    		theFile = (FileFormat)iterator.next();
+    		if (theFile.getFilePath().equals(filename)) {
+    			isOpen = true;
+    			if(!theFile.isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5))){
+    				targetObject.setEnabled(false);       
+    			}
+    			retriveObjects(theFile);
+    			break;
+    		}
+    	} // while(iterator.hasNext())
+
+    	return isOpen;
+    }
 
     public void itemStateChanged(ItemEvent e) {
         Object source = e.getSource();
@@ -641,7 +646,6 @@ public class NewLinkDialog extends JDialog implements ActionListener,DocumentLis
                     targetObject.setEditable(false);                    
                     retriveObjects(fileFormat);
                 }
-                
                 else if (softLink.isSelected()) {
                     targetFile.setEnabled(false);
                     targetFileButton.setEnabled(false);
@@ -649,7 +653,6 @@ public class NewLinkDialog extends JDialog implements ActionListener,DocumentLis
                     targetObject.setEditable(true);
                     retriveObjects(fileFormat);
                 }
-                
                 else if (externalLink.isSelected()) {
                     targetFile.setEnabled(true);
                     targetFileButton.setEnabled(true);
