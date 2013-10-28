@@ -125,7 +125,7 @@ public class HDFView extends JFrame implements ViewManager, ActionListener, Chan
 
     private static final String   aboutHDFView     = "HDF Viewer, " + "Version " + ViewProperties.VERSION + "\n"
             + "For " + System.getProperty("os.name") + "\n\n"
-            + "Copyright " + '\u00a9' + " 2006-2012 The HDF Group.\n"
+            + "Copyright " + '\u00a9' + " 2006-2013 The HDF Group.\n"
             + "All rights reserved.";
 
     private static final String   JAVA_COMPILER    = "jdk 1.7";
