@@ -75,7 +75,7 @@
                 <key>apple.laf.useScreenMenuBar</key>
                 <string>true</string>
                 <key>java.library.path</key>
-                <string>$JAVAROOT</string>
+                <string>$APP_PACKAGE/Contents/Resources/lib</string>
                 <key>hdfview.root</key>
                 <string>$JAVAROOT</string>
             </dict>
