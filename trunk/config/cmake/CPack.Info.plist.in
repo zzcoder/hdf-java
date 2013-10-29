@@ -64,5 +64,27 @@
     <string>org.@CPACK_PACKAGE_VENDOR@.@CPACK_PACKAGE_NAME@@CPACK_MODULE_VERSION_SUFFIX@</string>
     <key>NSHumanReadableCopyright</key>
     <string>@CPACK_APPLE_GUI_COPYRIGHT@</string>
+    <key>Java</key>
+    <dict>
+        <key>JVMVersion</key>
+        <string>1.5+</string>
+        <key>MainClass</key>
+        <string>ncsa.hdf.view..HDFView</string>
+        <key>Properties</key>
+            <dict>
+                <key>apple.laf.useScreenMenuBar</key>
+                <string>true</string>
+                <key>java.library.path</key>
+                <string>$JAVAROOT</string>
+                <key>hdfview.root</key>
+                <string>$JAVAROOT</string>
+            </dict>
+        <key>VMOptions</key>
+        <string>-Xmx1024m</string>
+        <key>WorkingDirectory</key>
+        <string>$APP_PACKAGE/Contents/Resources</string>
+        <key>ClassPath</key>
+        <string>$JAVAROOT</string>
+    </dict>
 </dict>
 </plist>
