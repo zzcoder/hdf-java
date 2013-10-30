@@ -69,7 +69,7 @@
         <key>JVMVersion</key>
         <string>1.5+</string>
         <key>MainClass</key>
-        <string>ncsa.hdf.view..HDFView</string>
+        <string>ncsa.hdf.view.HDFView</string>
         <key>Properties</key>
             <dict>
                 <key>apple.laf.useScreenMenuBar</key>
