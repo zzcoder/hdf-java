@@ -520,8 +520,13 @@ ELSEIF (APPLE)
       ${HDFJAVA_RESOURCES_DIR}/PkgInfo.in
       ${HDFJAVA_BINARY_DIR}/CMakeFiles/PkgInfo @ONLY
   )
+  CONFIGURE_FILE (
+      ${HDFJAVA_RESOURCES_DIR}/version.plist.in
+      ${HDFJAVA_BINARY_DIR}/CMakeFiles/version.plist @ONLY
+  )
   INSTALL (
       FILES ${HDFJAVA_BINARY_DIR}/CMakeFiles/PkgInfo
+            ${HDFJAVA_BINARY_DIR}/CMakeFiles/version.plist
       DESTINATION ..
   )
 ELSE (WIN32)
