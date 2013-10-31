@@ -6,7 +6,7 @@
     <key>CFBundleDevelopmentRegion</key>
     <string>English</string>
     <key>CFBundleExecutable</key>
-    <string>JavaApplicationStub</string>
+    <string>@CPACK_PACKAGE_FILE_NAME@</string>
     <key>CFBundleIconFile</key>
     <string>@CPACK_PACKAGE_FILE_NAME@.icns</string>
     <key>CFBundleIdentifier</key>
