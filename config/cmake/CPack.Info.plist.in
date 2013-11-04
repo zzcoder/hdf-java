@@ -52,7 +52,7 @@
         <string>-Dapple.laf.useScreenMenuBar=true</string>
         <string>-Dcom.apple.macos.use-file-dialog-packages=true</string>
         <string>-Dcom.apple.macos.useScreenMenuBar=true</string>
-        <string>-Dcom.apple.mrj.application.apple.menu.about.name=${bundle.name}</string>
+        <string>-Dcom.apple.mrj.application.apple.menu.about.name=@CPACK_APPLE_GUI_BUNDLE_NAME@</string>
         <string>-Dcom.apple.smallTabs=true</string>
     </array>
     <key>Java</key>
