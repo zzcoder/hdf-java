@@ -38,15 +38,35 @@
         <string>Editor</string>
         </dict>
     </array>
+    <key>JVMRuntime</key>
+    <string>jre7</string>
+    <key>JVMMainClassName</key>
+    <string>ncsa.hdf.view.HDFView</string>
+    <key>JVMOptions</key>
+    <array>
+        <string>-Xmx1024m</string>
+        <string>-cp</string>
+        <string>$JAVAROOT/jhdfview.jar;$JAVAROOT</string>
+        <string>-Djava.library.path=$APP_PACKAGE/Contents/Resources/lib</string>
+        <string>-Dhdfview.root=$JAVAROOT</string>
+    </array>
     <key>Java</key>
     <dict>
         <key>JVMVersion</key>
-        <string>1.5+</string>
+        <string>1.5*</string>
         <key>MainClass</key>
         <string>ncsa.hdf.view.HDFView</string>
         <key>Properties</key>
             <dict>
                 <key>apple.laf.useScreenMenuBar</key>
+                <string>true</string>
+                <key>com.apple.macos.use-file-dialog-packages</key>
+                <string>true</string>
+                <key>apple.awt.application.name</key>
+                <string>@CPACK_APPLE_GUI_BUNDLE_NAME@</string>
+                <key>com.apple.macos.useScreenMenuBar</key>
+                <string>true</string>
+                <key>com.apple.smallTabs</key>
                 <string>true</string>
                 <key>java.library.path</key>
                 <string>$APP_PACKAGE/Contents/Resources/lib</string>
@@ -65,5 +85,7 @@
     </dict>
     <key>NSHumanReadableCopyright</key>
     <string>@CPACK_APPLE_GUI_COPYRIGHT@</string>
+    <key>LSApplicationCategoryType</key>
+    <string>public.app-category.developer-tools</string>
 </dict>
 </plist>
