@@ -46,9 +46,9 @@
     <array>
         <string>-Xmx1024m</string>
         <string>-cp</string>
-        <string>$JAVAROOT/jhdfview.jar;$JAVAROOT</string>
-        <string>-Djava.library.path=$APP_PACKAGE/Contents/Resources/lib</string>
-        <string>-Dhdfview.root=$JAVAROOT</string>
+        <string>$APP_ROOT/Contents/Resources/Java/jhdfview.jar;$APP_ROOT/Contents/Resources/Java</string>
+        <string>-Djava.library.path=$APP_ROOT/Contents/Resources/lib</string>
+        <string>-Dhdfview.root=$APP_ROOT/Contents/Resources/Java</string>
     </array>
     <key>Java</key>
     <dict>
