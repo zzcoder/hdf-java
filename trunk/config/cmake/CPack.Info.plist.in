@@ -49,6 +49,11 @@
         <string>$APP_ROOT/Contents/Resources/Java/jhdfview.jar;$APP_ROOT/Contents/Resources/Java</string>
         <string>-Djava.library.path=$APP_ROOT/Contents/Resources/lib</string>
         <string>-Dhdfview.root=$APP_ROOT/Contents/Resources/Java</string>
+        <string>-Dapple.laf.useScreenMenuBar=true</string>
+        <string>-Dcom.apple.macos.use-file-dialog-packages=true</string>
+        <string>-Dcom.apple.macos.useScreenMenuBar=true</string>
+        <string>-Dcom.apple.mrj.application.apple.menu.about.name=${bundle.name}</string>
+        <string>-Dcom.apple.smallTabs=true</string>
     </array>
     <key>Java</key>
     <dict>
