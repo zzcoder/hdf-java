@@ -1980,7 +1980,6 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
                     // BUG 573: rowIdx = row * orders[fieldIdx] + colIdx * nRows
                     // * orders[fieldIdx];
                     rowIdx = row * orders[fieldIdx] * nSubColumns + colIdx * orders[fieldIdx];
-                    ;
                 }
                 else {
                     rowIdx = row * orders[fieldIdx];

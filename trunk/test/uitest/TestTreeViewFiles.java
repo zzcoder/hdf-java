@@ -563,6 +563,86 @@ public class TestTreeViewFiles {
             catch (Exception ex) {}
         }
     }
+
+    @Test 
+    public void openHDF5CompoundDSints() {
+        File hdf_file = openHDF5File("tcmpdints", 3);
+
+        try {
+            JTreeFixture filetree = mainFrameFixture.tree().focus();
+            filetree.requireVisible();
+            assertTrue("openHDF5Group filetree shows:", filetree.target.getRowCount()==3);
+            assertTrue("openHDF5Group filetree has file", (filetree.valueAt(0)).compareTo("tcmpdints.h5")==0);
+            assertTrue("openHDF5Group filetree has group1", (filetree.valueAt(1)).compareTo("CompoundInts")==0);
+            assertTrue("openHDF5Group filetree has group2", (filetree.valueAt(2)).compareTo("CompoundRInts")==0);
+
+            JMenuItemFixture dataset1MenuItem = filetree.showPopupMenuAt(1).menuItemWithPath("Open");
+            mainFrameFixture.robot.waitForIdle();
+            
+            dataset1MenuItem.requireVisible();
+            dataset1MenuItem.click();
+            mainFrameFixture.robot.waitForIdle();
+            
+            JTableFixture dataset1table = mainFrameFixture.table("data");
+            JTableCellFixture cell = dataset1table.cell(row(0).column(4));
+            cell.requireValue("-1");
+            cell = dataset1table.cell(row(1).column(5));
+            cell.requireValue("-2");
+            cell = dataset1table.cell(row(2).column(6));
+            cell.requireValue("-4");
+            cell = dataset1table.cell(row(3).column(7));
+            cell.requireValue("-8");
+            cell = dataset1table.cell(row(0).column(0));
+            cell.requireValue("255");
+            cell = dataset1table.cell(row(1).column(1));
+            cell.requireValue("65534");
+            cell = dataset1table.cell(row(2).column(2));
+            cell.requireValue("4294967292");
+            cell = dataset1table.cell(row(3).column(3));
+            cell.requireValue("18446744073709551608");
+            mainFrameFixture.menuItemWithPath("Table", "Close").click();
+            mainFrameFixture.robot.waitForIdle();
+
+            JMenuItemFixture dataset2MenuItem = filetree.showPopupMenuAt(2).menuItemWithPath("Open");
+            mainFrameFixture.robot.waitForIdle();
+            
+            dataset2MenuItem.requireVisible();
+            dataset2MenuItem.click();
+            mainFrameFixture.robot.waitForIdle();
+            
+            JTableFixture dataset2table = mainFrameFixture.table("data");
+            cell = dataset2table.cell(row(27).column(7));
+            cell.requireValue("-8");
+            cell = dataset2table.cell(row(26).column(6));
+            cell.requireValue("-1024");
+            cell = dataset2table.cell(row(25).column(5));
+            cell.requireValue("-33554432");
+            cell = dataset2table.cell(row(24).column(4));
+            cell.requireValue("-16777216");
+            cell = dataset2table.cell(row(23).column(3));
+            cell.requireValue("128");
+            cell = dataset2table.cell(row(22).column(2));
+            cell.requireValue("65472");
+            cell = dataset2table.cell(row(21).column(1));
+            cell.requireValue("4292870144");
+            cell = dataset2table.cell(row(20).column(0));
+            cell.requireValue("18446744073708503040");
+            mainFrameFixture.menuItemWithPath("Table", "Close").click();
+            mainFrameFixture.robot.waitForIdle();
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        catch (AssertionError ae) {
+            ae.printStackTrace();
+        }
+        finally {
+            try {
+                closeHDFFile(hdf_file, false);
+            }
+            catch (Exception ex) {}
+        }
+    }
     
     @Test 
     public void openHDF5CompoundAttribute() {

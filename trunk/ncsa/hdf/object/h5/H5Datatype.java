@@ -778,6 +778,7 @@ public class H5Datatype extends Datatype {
         try {
             tclass = H5.H5Tget_class(tid);
             tsize = H5.H5Tget_size(tid);
+        	log.debug("allocateArray class={} : size={}", tclass, tsize);
         }
         catch (Exception ex) {
         	log.debug("H5Tget_xxxx data type information:", ex);
@@ -799,12 +800,14 @@ public class H5Datatype extends Datatype {
         }
 
         if (is_variable_str || isVL || is_reg_ref) {
+        	log.debug("allocateArray is_variable_str || isVL || is_reg_ref");
             data = new String[size];
             for (int i = 0; i < size; i++) {
                 ((String[]) data)[i] = "";
             }
         }
         else if (tclass == HDF5Constants.H5T_INTEGER) {
+        	log.debug("allocateArray class.H5T_INTEGER={}", tclass);
             if (tsize == 1) {
                 data = new byte[size];
             }
@@ -819,6 +822,7 @@ public class H5Datatype extends Datatype {
             }
         }
         else if (tclass == HDF5Constants.H5T_ENUM) {
+        	log.debug("allocateArray class.H5T_ENUM={}", tclass);
             // can be any integer
             // data = new int[size];
             int superTid = -1;
@@ -839,6 +843,7 @@ public class H5Datatype extends Datatype {
             }
         }
         else if (tclass == HDF5Constants.H5T_FLOAT) {
+        	log.debug("allocateArray class.H5T_FLOAT={}", tclass);
             if (tsize == 4) {
                 data = new float[size];
             }
@@ -849,6 +854,7 @@ public class H5Datatype extends Datatype {
         else if ((tclass == HDF5Constants.H5T_STRING)
         		|| (tclass == HDF5Constants.H5T_REFERENCE)
                 || (tclass == HDF5Constants.H5T_BITFIELD)) {
+        	log.debug("allocateArray class.H5T_STRING || H5T_REFERENCE || H5T_BITFIELD={}", tclass);
             data = new byte[size * tsize];
         }
         else if (tclass == HDF5Constants.H5T_ARRAY) {
@@ -862,6 +868,7 @@ public class H5Datatype extends Datatype {
                 for (int j = 0; j < mn; j++) {
                     asize *= marray[j];
                 }
+                log.debug("allocateArray class.H5T_ARRAY={} : members={} : asize={}", tclass, mn, asize);
 
                 superTid = H5.H5Tget_super(tid);
                 data = allocateArray(superTid, size * asize);
@@ -1094,13 +1101,7 @@ public class H5Datatype extends Datatype {
             try {
                 description += "{";
                 int n = H5.H5Tget_nmembers(tid);
-                int mtid = 0;
-                try {
-                    H5.H5Tclose(mtid);
-                }
-                catch (Exception ex2) {
-                	log.debug("H5T_COMPOUND close:", ex2);
-                }
+                int mtid = -1;
                 
                 for (int i = 0; i < n; i++) {
                     mtid = H5.H5Tget_member_type(tid, i);
@@ -1111,10 +1112,13 @@ public class H5Datatype extends Datatype {
                     catch (Exception ex2) {
                     	log.debug("H5T_COMPOUND member close:", ex2);
                     }
+                    mtid = -1;
                 }
                 description += "}";
             }
-            catch (Exception ex) {}
+            catch (Exception ex) {
+            	log.debug("H5T_COMPOUND:", ex);
+            }
         }
         else if (tclass == HDF5Constants.H5T_VLEN) {
             int tmptid = -1;
@@ -1169,6 +1173,8 @@ public class H5Datatype extends Datatype {
 
         if(datatype >= 0) {
 	        try {
+	        	int tclass = H5.H5Tget_class(datatype);
+	        	if(tclass != HDF5Constants.H5T_FLOAT && tclass != HDF5Constants.H5T_STRING) {
 		            int tsign = H5.H5Tget_sign(datatype);
 		            if (tsign == HDF5Constants.H5T_SGN_NONE) {
 		                unsigned = true;
@@ -1176,9 +1182,13 @@ public class H5Datatype extends Datatype {
 		            else {
 		            	log.debug("isUnsigned() not unsigned");
 		            }
+	        	}
+	            else {
+	            	log.debug("float isUnsigned() not unsigned");
+	            }
 	        }
 	        catch (Exception ex) {
-	        	log.debug("Datatype {} failure", datatype, ex);
+	        	log.debug("{} Datatype {} failure", getDatatypeDescription(datatype), datatype, ex);
 	            unsigned = false;
 	        }
         }
