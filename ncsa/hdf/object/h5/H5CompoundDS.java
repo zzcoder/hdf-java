@@ -354,6 +354,7 @@ public class H5CompoundDS extends CompoundDS {
         			boolean isVL = false;
 
         			if (!isMemberSelected[i]) {
+        				log.debug("read: Member[{}] is not selected", i);
         				continue; // the field is not selected
         			}
 
@@ -369,6 +370,7 @@ public class H5CompoundDS extends CompoundDS {
         			catch (Exception ex) {
         				member_data = null;
         			}
+    				log.debug("read: {} Member[{}] is class {} of size={}", member_name, i, member_class, member_size);
 
         			if (member_data == null || H5.H5Tequal(atom_tid, HDF5Constants.H5T_STD_REF_DSETREG)) {
         				String[] nullValues = new String[(int) lsize[0]];
@@ -378,19 +380,6 @@ public class H5CompoundDS extends CompoundDS {
         				}
         				list.add(nullValues);
         				continue;
-        			}
-
-        			if (member_class == HDF5Constants.H5T_ARRAY) {
-        				int tmptid = H5.H5Tget_super(atom_tid);
-        				isVL = H5.H5Tis_variable_str(tmptid);
-
-        				member_class = H5.H5Tget_class(tmptid);
-        				try {
-        					H5.H5Tclose(tmptid);
-        				}
-        				catch (Exception ex) {
-        					log.debug("close temp:", ex);
-        				}
         			}
 
         			int comp_tid = -1;
@@ -404,7 +393,7 @@ public class H5CompoundDS extends CompoundDS {
         					isVL = isVL || H5.H5Tdetect_class(atom_tid, HDF5Constants.H5T_VLEN);
         				}
         				catch (Exception ex) {
-        					log.debug("detection of varstr:", ex);
+        					log.debug("read: detection of varstr:", ex);
         				}
 
         				if (isVL) {
@@ -421,14 +410,15 @@ public class H5CompoundDS extends CompoundDS {
         					nullValues[j] = "";
         				}
         				list.add(nullValues);
+    					log.debug("read: {} Member[{}] createCompoundFieldType and read failure:", member_name, i, ex2);
         				continue;
         			}
         			finally {
         				try {
         					H5.H5Tclose(comp_tid);
         				}
-        				catch (Exception ex2) {
-        					log.debug("finally close:", ex2);
+        				catch (Exception ex3) {
+        					log.debug("read: finally close:", ex3);
         				}
         			}
 
@@ -454,7 +444,7 @@ public class H5CompoundDS extends CompoundDS {
         						}
         					}
         					catch (Exception ex) {
-        						log.debug("H5Datatype.convertEnumValueToName:", ex);
+        						log.debug("read: H5Datatype.convertEnumValueToName:", ex);
         					}
         				}
         			}
@@ -469,20 +459,20 @@ public class H5CompoundDS extends CompoundDS {
         				H5.H5Sclose(spaceIDs[0]);
         		}
         		catch (Exception ex2) {
-        			log.debug("finally close:", ex2);
+        			log.debug("read: finally close:", ex2);
         		}
         		try {
         			if(HDF5Constants.H5S_ALL != spaceIDs[1])
         				H5.H5Sclose(spaceIDs[1]);
         		}
         		catch (Exception ex2) {
-        			log.debug("finally close:", ex2);
+        			log.debug("read: finally close:", ex2);
         		}
         		try {
         			H5.H5Tclose(tid);
         		}
         		catch (Exception ex2) {
-        			log.debug("finally close:", ex2);
+        			log.debug("read: finally close:", ex2);
         		}
 
         		// close atomic types
@@ -543,6 +533,7 @@ public class H5CompoundDS extends CompoundDS {
         		extractCompoundInfo(tid, null, null, atomicList);
         		for (int i = 0; i < n; i++) {
         			if (!isMemberSelected[i]) {
+        				log.debug("write: Member[{}] is not selected", i);
         				continue; // the field is not selected
         			}
 
@@ -551,6 +542,7 @@ public class H5CompoundDS extends CompoundDS {
         			member_data = list.get(idx++);
 
         			if (member_data == null) {
+        				log.debug("write: Member[{}] data is null", i);
         				continue;
         			}
 
@@ -563,6 +555,7 @@ public class H5CompoundDS extends CompoundDS {
         			}
 
         			if (isVL) {
+        				log.debug("write: Member[{}] is VL", i);
         				continue;
         			}
 
@@ -572,8 +565,9 @@ public class H5CompoundDS extends CompoundDS {
         				isEnum = (member_class == HDF5Constants.H5T_ENUM);
         			}
         			catch (Exception ex) {
-        				log.debug("member class - size:", ex);
+        				log.debug("write: member class - size:", ex);
         			}
+    				log.debug("write: {} Member[{}] is class {} of size={}", member_name, i, member_class, member_size);
 
         			Object tmpData = member_data;
 
@@ -605,7 +599,7 @@ public class H5CompoundDS extends CompoundDS {
         					H5.H5Tclose(comp_tid);
         				}
         				catch (Exception ex2) {
-        					log.debug("finally close:", ex2);
+        					log.debug("write: finally close:", ex2);
         				}
         			}
         		} // end of for (int i=0; i<num_members; i++)
@@ -616,20 +610,20 @@ public class H5CompoundDS extends CompoundDS {
         				H5.H5Sclose(spaceIDs[0]);
         		}
         		catch (Exception ex2) {
-        			log.debug("finally close:", ex2);
+        			log.debug("write: finally close:", ex2);
         		}
         		try {
         			if(HDF5Constants.H5S_ALL != spaceIDs[1])
         				H5.H5Sclose(spaceIDs[1]);
         		}
         		catch (Exception ex2) {
-        			log.debug("finally close:", ex2);
+        			log.debug("write: finally close:", ex2);
         		}
         		try {
         			H5.H5Tclose(tid);
         		}
         		catch (Exception ex2) {
-        			log.debug("finally close:", ex2);
+        			log.debug("write: finally close:", ex2);
         		}
 
         		// close atomic types
@@ -640,7 +634,7 @@ public class H5CompoundDS extends CompoundDS {
         				H5.H5Tclose(atom_tid);
         			}
         			catch (Exception ex2) {
-        				log.debug("finally close:", ex2);
+        				log.debug("write: finally close:", ex2);
         			}
         		}
         	}
@@ -1170,6 +1164,7 @@ public class H5CompoundDS extends CompoundDS {
                 mtype = H5.H5Tget_member_type(tid, i);
             }
             catch (Exception ex) {
+            	log.debug("continue H5Tget_member_type[{}]:", i, ex);
                 continue;
             }
 
@@ -1178,6 +1173,7 @@ public class H5CompoundDS extends CompoundDS {
                 mtype = H5.H5Tget_native_type(tmptid);
             }
             catch (HDF5Exception ex) {
+            	log.debug("continue H5Tget_native_type[{}]:", i, ex);
                 continue;
             }
             finally {
@@ -1193,6 +1189,7 @@ public class H5CompoundDS extends CompoundDS {
                 mclass = H5.H5Tget_class(mtype);
             }
             catch (HDF5Exception ex) {
+            	log.debug("continue H5Tget_class[{}]:", i, ex);
                 continue;
             }
 
@@ -1201,6 +1198,7 @@ public class H5CompoundDS extends CompoundDS {
             }
 
             if (mclass == HDF5Constants.H5T_COMPOUND) {
+            	log.debug("continue after recursive H5T_COMPOUND[{}]:", i);
                 extractCompoundInfo(mtype, mname + CompoundDS.separator, names, types);
                 continue;
             }
@@ -1212,10 +1210,12 @@ public class H5CompoundDS extends CompoundDS {
                     // cannot deal with ARRAY of COMPOUND or ARRAY of ARRAY
                     // support only ARRAY of atomic types
                     if ((tmpclass == HDF5Constants.H5T_COMPOUND) || (tmpclass == HDF5Constants.H5T_ARRAY)) {
+                    	log.debug("continue unsupported ARRAY of COMPOUND or ARRAY of ARRAY[{}]:", i);
                         continue;
                     }
                 }
                 catch (Exception ex) {
+                	log.debug("continue H5T_ARRAY id or class failure[{}]:", i, ex);
                     continue;
                 }
                 finally {
@@ -1223,7 +1223,7 @@ public class H5CompoundDS extends CompoundDS {
                         H5.H5Tclose(tmptid);
                     }
                     catch (Exception ex) {
-                    	log.debug("finally close:", ex);
+                    	log.debug("finally close[{}]:", i, ex);
                     }
                 }
             }
@@ -1598,21 +1598,21 @@ public class H5CompoundDS extends CompoundDS {
 
         int arrayType = member_tid;
         int baseType = arrayType;
-        int tmp_tid1 = -1, tmp_tid2 = -1, tmp_tid3 = -1, tmp_tid4 = -1;
+        int tmp_tid1 = -1, tmp_tid4 = -1;
 
         try {
             int member_class = compInfo[0];
             int member_size = compInfo[1];
 
+			log.debug("{} Member is class {} of size={} with baseType={}", member_name, member_class, member_size, baseType);
             if (member_class == HDF5Constants.H5T_ARRAY) {
                 int mn = H5.H5Tget_array_ndims(member_tid);
                 long[] marray = new long[mn];
                 H5.H5Tget_array_dims(member_tid, marray);
                 baseType = H5.H5Tget_super(member_tid);
-                tmp_tid2 = baseType;
                 tmp_tid4 = H5.H5Tget_native_type(baseType);
                 arrayType = H5.H5Tarray_create(tmp_tid4, mn, marray);
-                tmp_tid3 = arrayType;
+				log.debug("H5T_ARRAY {} Member is class {} of size={} with baseType={}", member_name, member_class, member_size, baseType);
             }
 
             try {
@@ -1653,18 +1653,6 @@ public class H5CompoundDS extends CompoundDS {
         finally {
             try {
                 H5.H5Tclose(tmp_tid1);
-            }
-            catch (HDF5Exception ex3) {
-            	log.debug("finally close:", ex3);
-            }
-            try {
-                H5.H5Tclose(tmp_tid2);
-            }
-            catch (HDF5Exception ex3) {
-            	log.debug("finally close:", ex3);
-            }
-            try {
-                H5.H5Tclose(tmp_tid3);
             }
             catch (HDF5Exception ex3) {
             	log.debug("finally close:", ex3);
