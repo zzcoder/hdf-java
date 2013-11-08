@@ -47,8 +47,6 @@
     <key>JVMOptions</key>
     <array>
         <string>-Xmx1024m</string>
-        <string>-cp</string>
-        <string>$APP_ROOT/Contents/Java/jhdfview.jar;$APP_ROOT/Contents/Java</string>
         <string>-Djava.library.path=$APP_ROOT/Contents/Resources/lib</string>
         <string>-Dhdfview.root=$APP_ROOT/Contents/Java</string>
         <string>-Dapple.laf.useScreenMenuBar=true</string>
@@ -56,6 +54,8 @@
         <string>-Dcom.apple.macos.useScreenMenuBar=true</string>
         <string>-Dcom.apple.mrj.application.apple.menu.about.name=@CPACK_APPLE_GUI_BUNDLE_NAME@</string>
         <string>-Dcom.apple.smallTabs=true</string>
+        <string>-jar</string>
+        <string>$APP_ROOT/Contents/Java/jhdfview.jar</string>
     </array>
     <key>NSHumanReadableCopyright</key>
     <string>@CPACK_APPLE_GUI_COPYRIGHT@</string>
