@@ -735,6 +735,9 @@ public class TestTreeViewFiles {
             cell4.requireValue("4292870144");
             cell4 = dataset4table.cell(row(20).column(0));
             cell4.requireValue("18446744073708503040");
+            
+            JTableCellFixture cell8 = dataset4table.cell(row(0).column(1));
+            cell8.requireValue("0");
 
             mainFrameFixture.menuItemWithPath("Table", "Close").click();
             mainFrameFixture.robot.waitForIdle();
