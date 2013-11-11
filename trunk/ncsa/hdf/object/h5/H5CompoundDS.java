@@ -575,9 +575,19 @@ public class H5CompoundDS extends CompoundDS {
         			int compInfo[] = { member_class, member_size, 0 };
         			try {
         				comp_tid = createCompoundFieldType(atom_tid, member_name, compInfo);
-        				log.debug("write: {} Member[{}] compInfo[class]={} compInfo[size]={} compInfo[2]={}", member_name, i, compInfo[0], compInfo[1], compInfo[2]);
+        				log.debug("write: {} Member[{}] compInfo[class]={} compInfo[size]={} compInfo[unsigned]={}", member_name, i, compInfo[0], compInfo[1], compInfo[2]);
         				if (compInfo[2] != 0) {
-        					tmpData = convertToUnsignedC(member_data, null);
+        	        		// check if need to convert integer data
+        	        		int tsize = H5.H5Tget_size(comp_tid);
+        	        		String cname = member_data.getClass().getName();
+        	        		char dname = cname.charAt(cname.lastIndexOf("[") + 1);
+        	        		boolean doConversion = (((tsize == 1) && (dname == 'S')) || ((tsize == 2) && (dname == 'I'))
+        	        				|| ((tsize == 4) && (dname == 'J')));
+
+        	        		tmpData = member_data;
+        	        		if (doConversion) {
+        	        			tmpData = convertToUnsignedC(member_data, null);
+        	        		}
             				log.debug("write: {} Member[{}] convertToUnsignedC", member_name, i);
         				}
         				else if ((member_class == HDF5Constants.H5T_STRING)
