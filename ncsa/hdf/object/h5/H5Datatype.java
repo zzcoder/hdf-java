@@ -1180,11 +1180,11 @@ public class H5Datatype extends Datatype {
 		                unsigned = true;
 		            }
 		            else {
-		            	log.debug("isUnsigned() not unsigned");
+		            	log.trace("isUnsigned() not unsigned");
 		            }
 	        	}
 	            else {
-	            	log.debug("float isUnsigned() not unsigned");
+	            	log.trace("float isUnsigned() not unsigned");
 	            }
 	        }
 	        catch (Exception ex) {
@@ -1193,7 +1193,7 @@ public class H5Datatype extends Datatype {
 	        }
         }
         else {
-        	log.debug("isUnsigned() not a valid datatype");
+        	log.trace("isUnsigned() not a valid datatype");
         }
 
         return unsigned;
