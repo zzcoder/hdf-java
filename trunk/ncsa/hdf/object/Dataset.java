@@ -38,6 +38,8 @@ public abstract class Dataset extends HObject {
      */
     private static final long serialVersionUID    = -3360885430038261178L;
 
+    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Dataset.class);
+
     /**
      * The memory buffer that holds the raw data of the dataset.
      */
@@ -970,6 +972,7 @@ public abstract class Dataset extends HObject {
         String cname = data_class.getName();
         char dname = cname.charAt(cname.lastIndexOf("[") + 1);
         int size = Array.getLength(data_in);
+        log.debug("convertFromUnsignedC: cname={} dname={} size={}", cname, dname, size);
 
         if (dname == 'B') {
             short[] sdata = null;
@@ -1021,7 +1024,7 @@ public abstract class Dataset extends HObject {
         }
         else {
             data_out = data_in;
-            // Java does not support unsigned long
+            log.debug("convertFromUnsignedC: Java does not support unsigned long");
         }
 
         return data_out;
@@ -1073,6 +1076,7 @@ public abstract class Dataset extends HObject {
         String cname = data_class.getName();
         char dname = cname.charAt(cname.lastIndexOf("[") + 1);
         int size = Array.getLength(data_in);
+        log.debug("convertToUnsignedC: cname={} dname={} size={}", cname, dname, size);
 
         if (dname == 'S') {
             byte[] bdata = null;
@@ -1118,7 +1122,7 @@ public abstract class Dataset extends HObject {
         }
         else {
             data_out = data_in;
-            // Java does not support unsigned long
+            log.debug("convertToUnsignedC: Java does not support unsigned long");
         }
 
         return data_out;
@@ -1158,6 +1162,7 @@ public abstract class Dataset extends HObject {
         }
 
         int n = bytes.length / length;
+        log.debug("byteToString: n={} from length of {}", n, length);
         // String bigstr = new String(bytes);
         String[] strArray = new String[n];
         String str = null;
@@ -1213,7 +1218,7 @@ public abstract class Dataset extends HObject {
 
         int size = strings.length;
         byte[] bytes = new byte[size * length];
-
+        log.debug("stringToByte: size={} length={}", size, length);
         StringBuffer strBuff = new StringBuffer(length);
         for (int i = 0; i < size; i++) {
             // initialize the string with spaces
