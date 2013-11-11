@@ -575,15 +575,19 @@ public class H5CompoundDS extends CompoundDS {
         			int compInfo[] = { member_class, member_size, 0 };
         			try {
         				comp_tid = createCompoundFieldType(atom_tid, member_name, compInfo);
+        				log.debug("write: {} Member[{}] compInfo[class]={} compInfo[size]={} compInfo[2]={}", member_name, i, compInfo[0], compInfo[1], compInfo[2]);
         				if (compInfo[2] != 0) {
         					tmpData = convertToUnsignedC(member_data, null);
+            				log.debug("write: {} Member[{}] convertToUnsignedC", member_name, i);
         				}
         				else if ((member_class == HDF5Constants.H5T_STRING)
         						&& (Array.get(member_data, 0) instanceof String)) {
         					tmpData = stringToByte((String[]) member_data, member_size);
+            				log.debug("write: {} Member[{}] stringToByte", member_name, i);
         				}
         				else if (isEnum && (Array.get(member_data, 0) instanceof String)) {
         					tmpData = H5Datatype.convertEnumNameToValue(atom_tid, (String[]) member_data, null);
+            				log.debug("write: {} Member[{}] convertEnumNameToValue", member_name, i);
         				}
 
         				if (tmpData != null) {
@@ -592,8 +596,11 @@ public class H5CompoundDS extends CompoundDS {
         					// need to check if it is a java error or C library
         					// error
         					H5.H5Dwrite(did, comp_tid, spaceIDs[0], spaceIDs[1], HDF5Constants.H5P_DEFAULT, tmpData);
-        				}
+            			}
         			}
+            		catch (Exception ex1) {
+            			log.debug("write: H5Dwrite process failure:", ex1);
+            		}
         			finally {
         				try {
         					H5.H5Tclose(comp_tid);
