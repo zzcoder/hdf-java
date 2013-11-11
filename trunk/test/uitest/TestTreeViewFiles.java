@@ -567,6 +567,7 @@ public class TestTreeViewFiles {
     @Test 
     public void openHDF5CompoundDSints() {
         File hdf_file = openHDF5File("tcmpdints", 3);
+        File hdf_save_file = new File("testintsfile2.h5");
 
         try {
             JTreeFixture filetree = mainFrameFixture.tree().focus();
@@ -611,24 +612,134 @@ public class TestTreeViewFiles {
             mainFrameFixture.robot.waitForIdle();
             
             JTableFixture dataset2table = mainFrameFixture.table("data");
-            cell = dataset2table.cell(row(27).column(7));
-            cell.requireValue("-8");
-            cell = dataset2table.cell(row(26).column(6));
-            cell.requireValue("-1024");
-            cell = dataset2table.cell(row(25).column(5));
-            cell.requireValue("-33554432");
-            cell = dataset2table.cell(row(24).column(4));
-            cell.requireValue("-16777216");
-            cell = dataset2table.cell(row(23).column(3));
-            cell.requireValue("128");
-            cell = dataset2table.cell(row(22).column(2));
-            cell.requireValue("65472");
-            cell = dataset2table.cell(row(21).column(1));
-            cell.requireValue("4292870144");
-            cell = dataset2table.cell(row(20).column(0));
-            cell.requireValue("18446744073708503040");
+            JTableCellFixture cell2 = dataset2table.cell(row(27).column(7));
+            cell2.requireValue("-8");
+            cell2 = dataset2table.cell(row(26).column(6));
+            cell2.requireValue("-1024");
+            cell2 = dataset2table.cell(row(25).column(5));
+            cell2.requireValue("-33554432");
+            cell2 = dataset2table.cell(row(24).column(4));
+            cell2.requireValue("-16777216");
+            cell2 = dataset2table.cell(row(23).column(3));
+            cell2.requireValue("128");
+            cell2 = dataset2table.cell(row(22).column(2));
+            cell2.requireValue("65472");
+            cell2 = dataset2table.cell(row(21).column(1));
+            cell2.requireValue("4292870144");
+            cell2 = dataset2table.cell(row(20).column(0));
+            cell2.requireValue("18446744073708503040");
+
             mainFrameFixture.menuItemWithPath("Table", "Close").click();
             mainFrameFixture.robot.waitForIdle();
+
+            if (hdf_save_file.exists())
+                hdf_save_file.delete();
+
+            JMenuItemFixture fileMenuItem = mainFrameFixture.menuItemWithPath("File", "Save As");
+            mainFrameFixture.robot.waitForIdle();
+            
+            fileMenuItem.requireVisible();
+            fileMenuItem.click();
+            mainFrameFixture.robot.waitForIdle();
+            
+            JFileChooserFixture fileChooser = JFileChooserFinder.findFileChooser().using(mainFrameFixture.robot);
+            fileChooser.fileNameTextBox().setText("testintsfile2.h5");
+            fileChooser.approve();
+            mainFrameFixture.robot.waitForIdle();
+            
+            filetree = mainFrameFixture.tree().focus();
+            filetree.requireVisible();
+            assertTrue("openHDF5Group filetree shows:", filetree.target.getRowCount()==6);
+            assertTrue("openHDF5Group filetree has file", (filetree.valueAt(0)).compareTo("tcmpdints.h5")==0);
+            assertTrue("openHDF5Group filetree has group1", (filetree.valueAt(1)).compareTo("CompoundInts")==0);
+            assertTrue("openHDF5Group filetree has group2", (filetree.valueAt(2)).compareTo("CompoundRInts")==0);
+            assertTrue("openHDF5Group filetree has file", (filetree.valueAt(3)).compareTo("testintsfile2.h5")==0);
+            assertTrue("openHDF5Group filetree has group1", (filetree.valueAt(4)).compareTo("CompoundInts")==0);
+            assertTrue("openHDF5Group filetree has group2", (filetree.valueAt(5)).compareTo("CompoundRInts")==0);
+
+            JMenuItemFixture dataset3MenuItem = filetree.showPopupMenuAt(5).menuItemWithPath("Open");
+            mainFrameFixture.robot.waitForIdle();
+            
+            dataset3MenuItem.requireVisible();
+            dataset3MenuItem.click();
+            mainFrameFixture.robot.waitForIdle();
+            
+            JTableFixture dataset3table = mainFrameFixture.table("data");
+            JTableCellFixture cell3 = dataset3table.cell(row(27).column(7));
+            cell3.requireValue("-8");
+            cell3 = dataset3table.cell(row(26).column(6));
+            cell3.requireValue("-1024");
+            cell3 = dataset3table.cell(row(25).column(5));
+            cell3.requireValue("-33554432");
+            cell3 = dataset3table.cell(row(24).column(4));
+            cell3.requireValue("-16777216");
+            cell3 = dataset3table.cell(row(23).column(3));
+            cell3.requireValue("128");
+            cell3 = dataset3table.cell(row(22).column(2));
+            cell3.requireValue("65472");
+            cell3 = dataset3table.cell(row(21).column(1));
+            cell3.requireValue("4292870144");
+            cell3 = dataset3table.cell(row(20).column(0));
+            cell3.requireValue("18446744073708503040");
+
+            JTableCellFixture cell7 = dataset3table.cell(row(0).column(1));
+            cell7.enterValue("0");
+            mainFrameFixture.robot.waitForIdle();
+            
+            cell7.requireValue("0");
+
+            mainFrameFixture.menuItemWithPath("Table", "Save Changes to File").click();
+            mainFrameFixture.robot.waitForIdle();
+
+            mainFrameFixture.menuItemWithPath("Table", "Close").click();
+            mainFrameFixture.robot.waitForIdle();
+
+            filetree = mainFrameFixture.tree().focus();
+            filetree.requireVisible();
+            assertTrue("openHDF5Group filetree shows:", filetree.target.getRowCount()==6);
+            assertTrue("openHDF5Group filetree has file", (filetree.valueAt(0)).compareTo("tcmpdints.h5")==0);
+            assertTrue("openHDF5Group filetree has group1", (filetree.valueAt(1)).compareTo("CompoundInts")==0);
+            assertTrue("openHDF5Group filetree has group2", (filetree.valueAt(2)).compareTo("CompoundRInts")==0);
+            assertTrue("openHDF5Group filetree has file", (filetree.valueAt(3)).compareTo("testintsfile2.h5")==0);
+            assertTrue("openHDF5Group filetree has group1", (filetree.valueAt(4)).compareTo("CompoundInts")==0);
+            assertTrue("openHDF5Group filetree has group2", (filetree.valueAt(5)).compareTo("CompoundRInts")==0);
+
+            JMenuItemFixture reloadMenuItem = filetree.showPopupMenuAt(3).menuItemWithPath("Reload File");
+            mainFrameFixture.robot.waitForIdle();
+            
+            reloadMenuItem.requireVisible();
+            reloadMenuItem.click();
+            mainFrameFixture.robot.waitForIdle();
+
+            JMenuItemFixture dataset4MenuItem = filetree.showPopupMenuAt(5).menuItemWithPath("Open");
+            mainFrameFixture.robot.waitForIdle();
+            
+            dataset4MenuItem.requireVisible();
+            dataset4MenuItem.click();
+            mainFrameFixture.robot.waitForIdle();
+            
+            JTableFixture dataset4table = mainFrameFixture.table("data");
+            JTableCellFixture cell4 = dataset4table.cell(row(27).column(7));
+            cell4.requireValue("-8");
+            cell4 = dataset4table.cell(row(26).column(6));
+            cell4.requireValue("-1024");
+            cell4 = dataset4table.cell(row(25).column(5));
+            cell4.requireValue("-33554432");
+            cell4 = dataset4table.cell(row(24).column(4));
+            cell4.requireValue("-16777216");
+            cell4 = dataset4table.cell(row(23).column(3));
+            cell4.requireValue("128");
+            cell4 = dataset4table.cell(row(22).column(2));
+            cell4.requireValue("65472");
+            cell4 = dataset4table.cell(row(21).column(1));
+            cell4.requireValue("4292870144");
+            cell4 = dataset4table.cell(row(20).column(0));
+            cell4.requireValue("18446744073708503040");
+
+            mainFrameFixture.menuItemWithPath("Table", "Close").click();
+            mainFrameFixture.robot.waitForIdle();
+
+            closeHDFFile(hdf_save_file, false);
         }
         catch (Exception ex) {
             ex.printStackTrace();
@@ -637,6 +748,10 @@ public class TestTreeViewFiles {
             ae.printStackTrace();
         }
         finally {
+            try {
+                closeHDFFile(hdf_save_file, false);
+            }
+            catch (Exception ex) {}
             try {
                 closeHDFFile(hdf_file, false);
             }
