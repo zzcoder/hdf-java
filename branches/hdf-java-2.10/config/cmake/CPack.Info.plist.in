@@ -3,36 +3,24 @@
 
 <plist version="1.0">
 <dict>
-    <key>IFMajorVersion</key>
-    <integer>@CPACK_PACKAGE_VERSION_MAJOR@</integer>
-    <key>IFMinorVersion</key>
-    <integer>@CPACK_PACKAGE_VERSION_MINOR@</integer>
-    <key>IFPkgFlagAllowBackRev</key>
-    <false/>
-    <key>IFPkgFlagAuthorizationAction</key>
-    <string>AdminAuthorization</string>
-    <key>IFPkgFlagDefaultLocation</key>
-    <string>@CPACK_PACKAGE_DEFAULT_LOCATION@</string>
-    <key>IFPkgFlagInstallFat</key>
-    <false/>
-    <key>IFPkgFlagIsRequired</key>
-    <false/>
-    <key>IFPkgFlagOverwritePermissions</key>
-    <true/>
-    <key>IFPkgFlagRelocatable</key>
-    <@CPACK_PACKAGE_RELOCATABLE@/>
-    <key>IFPkgFlagRestartAction</key>
-    <string>NoRestart</string>
-    <key>IFPkgFlagRootVolumeOnly</key>
-    <false/>
-    <key>IFPkgFlagUpdateInstalledLanguages</key>
-    <false/>
-    <key>IFPkgFlagUseUserMask</key>
-    <false/>
-    <key>IFPkgFormatVersion</key>
-    <real>0.10000000149011612</real>
     <key>CFBundleDevelopmentRegion</key>
     <string>English</string>
+    <key>CFBundleExecutable</key>
+    <string>@CPACK_PACKAGE_FILE_NAME@</string>
+    <key>CFBundleIconFile</key>
+    <string>@CPACK_PACKAGE_FILE_NAME@.icns</string>
+    <key>CFBundleIdentifier</key>
+    <string>org.@CPACK_PACKAGE_VENDOR@.@CPACK_PACKAGE_NAME@@CPACK_MODULE_VERSION_SUFFIX@</string>
+    <key>CFBundleName</key>
+    <string>@CPACK_APPLE_GUI_BUNDLE_NAME@</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>CFBundleShortVersionString</key>
+    <string>@CPACK_APPLE_GUI_SHORT_VERSION_STRING@</string>
+    <key>CFBundleSignature</key>
+    <string>????</string>
+    <key>CFBundleVersion</key>
+    <string>@CPACK_APPLE_GUI_SHORT_VERSION_STRING@</string>
     <key>CFBundleDocumentTypes</key>
     <array>
         <dict>
@@ -50,19 +38,28 @@
         <string>Editor</string>
         </dict>
     </array>
-    <key>CFBundleExecutable</key>
-    <string>@CPACK_PACKAGE_FILE_NAME@</string>
-    <key>CFBundleName</key>
-    <string>@CPACK_APPLE_GUI_BUNDLE_NAME@</string>
-    <key>CFBundlePackageType</key>
-    <string>APPL</string>
-    <key>CFBundleShortVersionString</key>
-    <string>@CPACK_APPLE_GUI_SHORT_VERSION_STRING@</string>
-    <key>CFBundleSignature</key>
-    <string>????</string>
-    <key>CFBundleIdentifier</key>
-    <string>org.@CPACK_PACKAGE_VENDOR@.@CPACK_PACKAGE_NAME@@CPACK_MODULE_VERSION_SUFFIX@</string>
+<!--
+    <key>JVMRuntime</key>
+    <string>jre7</string>
+-->
+    <key>JVMMainClassName</key>
+    <string>ncsa.hdf.view.HDFView</string>
+    <key>JVMOptions</key>
+    <array>
+        <string>-Xmx1024m</string>
+        <string>-Djava.library.path=$APP_ROOT/Contents/Resources/lib</string>
+        <string>-Dhdfview.root=$APP_ROOT/Contents/Java</string>
+        <string>-Dapple.laf.useScreenMenuBar=true</string>
+        <string>-Dcom.apple.macos.use-file-dialog-packages=true</string>
+        <string>-Dcom.apple.macos.useScreenMenuBar=true</string>
+        <string>-Dcom.apple.mrj.application.apple.menu.about.name=@CPACK_APPLE_GUI_BUNDLE_NAME@</string>
+        <string>-Dcom.apple.smallTabs=true</string>
+        <string>-jar</string>
+        <string>$APP_ROOT/Contents/Java/jhdfview.jar</string>
+    </array>
     <key>NSHumanReadableCopyright</key>
     <string>@CPACK_APPLE_GUI_COPYRIGHT@</string>
+    <key>LSApplicationCategoryType</key>
+    <string>public.app-category.developer-tools</string>
 </dict>
 </plist>
