@@ -49,6 +49,7 @@ SET (HDF_JAVA_TEST_FILES
       tattrintsize.h5
       tintsize.h5
       tcmpdattrintsize.h5
+      tcmpdints.h5
       tcmpdintsize.h5
       tscalarattrintsize.h5
       tscalarintsize.h5
