@@ -495,41 +495,41 @@ ELSEIF (APPLE)
   SET (CPACK_PACKAGE_ICON "${HDFJAVA_RESOURCES_DIR}/hdf.gif")
   SET (CPACK_SET_DESTDIR TRUE) # Required when packaging, and set CMAKE_INSTALL_PREFIX to "/".
     
-  LIST (APPEND CPACK_GENERATOR "Bundle")
-  SET (CPACK_BUNDLE_NAME "${HDFJAVA_PACKAGE_STRING}")
-  SET (CPACK_BUNDLE_LOCATION "/")    # make sure CMAKE_INSTALL_PREFIX ends in "/"
-  SET (CMAKE_INSTALL_PREFIX "/${CPACK_BUNDLE_NAME}.app/Contents/Resources")
-  SET (CPACK_BUNDLE_ICON "${HDFJAVA_RESOURCES_DIR}/hdf.gif")
-  SET (CPACK_BUNDLE_PLIST "${HDFJAVA_BINARY_DIR}/CMakeFiles/Info.plist")
-#  SET (CPACK_BUNDLE_STARTUP_COMMAND "/System/Library/Frameworks/JavaVM.framework/Resources/MacOS/JavaApplicationStub")
-  SET (CPACK_BUNDLE_STARTUP_COMMAND "${HDFJAVA_RESOURCES_DIR}/JavaAppLauncher")
-  SET (CPACK_APPLE_GUI_BUNDLE_NAME "HDF Viewer")
-  SET (CPACK_APPLE_GUI_COPYRIGHT "Copyright © 2006-2013 by The HDF Group. All rights reserved.")
-  SET (CPACK_APPLE_GUI_SHORT_VERSION_STRING "${CPACK_PACKAGE_VERSION}")
-  #-----------------------------------------------------------------------------
-  # Configure the HDFJAVA-startup.sh and Info.plist file for the install bundle
-  #-----------------------------------------------------------------------------
-  CONFIGURE_FILE (
-      ${HDFJAVA_RESOURCES_DIR}/SetupFromAppBundle.sh.in
-      ${HDFJAVA_BINARY_DIR}/CMakeFiles/${HDFJAVA_PACKAGE}${HDF_PACKAGE_EXT}-startup.sh @ONLY
-  )
-  CONFIGURE_FILE (
-      ${HDFJAVA_RESOURCES_DIR}/CPack.Info.plist.in
-      ${HDFJAVA_BINARY_DIR}/CMakeFiles/Info.plist @ONLY
-  )
-  CONFIGURE_FILE (
-      ${HDFJAVA_RESOURCES_DIR}/PkgInfo.in
-      ${HDFJAVA_BINARY_DIR}/CMakeFiles/PkgInfo @ONLY
-  )
-  CONFIGURE_FILE (
-      ${HDFJAVA_RESOURCES_DIR}/version.plist.in
-      ${HDFJAVA_BINARY_DIR}/CMakeFiles/version.plist @ONLY
-  )
-  INSTALL (
-      FILES ${HDFJAVA_BINARY_DIR}/CMakeFiles/PkgInfo
-            ${HDFJAVA_BINARY_DIR}/CMakeFiles/version.plist
-      DESTINATION ..
-  )
+  IF (HDF5_PACK_MACOSX_BUNDLE)
+    LIST (APPEND CPACK_GENERATOR "Bundle")
+    SET (CPACK_BUNDLE_NAME "${HDFJAVA_PACKAGE_STRING}")
+    SET (CPACK_BUNDLE_LOCATION "/")    # make sure CMAKE_INSTALL_PREFIX ends in "/"
+    IF(NOT DEFINED CMAKE_INSTALL_PREFIX)
+      SET (CMAKE_INSTALL_PREFIX "/${CPACK_BUNDLE_NAME}.app/Contents/Resources")
+    ENDIF(NOT DEFINED CMAKE_INSTALL_PREFIX)
+    SET (CPACK_BUNDLE_ICON "${HDFJAVA_RESOURCES_DIR}/hdf.gif")
+    SET (CPACK_BUNDLE_PLIST "${HDFJAVA_BINARY_DIR}/CMakeFiles/Info.plist")
+#    SET (CPACK_BUNDLE_STARTUP_COMMAND "/System/Library/Frameworks/JavaVM.framework/Resources/MacOS/JavaApplicationStub")
+    SET (CPACK_BUNDLE_STARTUP_COMMAND "${HDFJAVA_RESOURCES_DIR}/JavaAppLauncher")
+    SET (CPACK_APPLE_GUI_BUNDLE_NAME "HDF Viewer")
+    SET (CPACK_APPLE_GUI_COPYRIGHT "Copyright © 2006-2013 by The HDF Group. All rights reserved.")
+    SET (CPACK_APPLE_GUI_SHORT_VERSION_STRING "${CPACK_PACKAGE_VERSION}")
+    #-----------------------------------------------------------------------------
+    # Configure the HDFJAVA-startup.sh and Info.plist file for the install bundle
+    #-----------------------------------------------------------------------------
+    CONFIGURE_FILE (
+        ${HDFJAVA_RESOURCES_DIR}/CPack.Info.plist.in
+        ${HDFJAVA_BINARY_DIR}/CMakeFiles/Info.plist @ONLY
+    )
+    CONFIGURE_FILE (
+        ${HDFJAVA_RESOURCES_DIR}/PkgInfo.in
+        ${HDFJAVA_BINARY_DIR}/CMakeFiles/PkgInfo @ONLY
+    )
+    CONFIGURE_FILE (
+        ${HDFJAVA_RESOURCES_DIR}/version.plist.in
+        ${HDFJAVA_BINARY_DIR}/CMakeFiles/version.plist @ONLY
+    )
+    INSTALL (
+        FILES ${HDFJAVA_BINARY_DIR}/CMakeFiles/PkgInfo
+              ${HDFJAVA_BINARY_DIR}/CMakeFiles/version.plist
+        DESTINATION ..
+    )
+  ENDIF (HDF5_PACK_MACOSX_BUNDLE)
 ELSE (WIN32)
   LIST (APPEND CPACK_GENERATOR "STGZ") 
   SET (CPACK_PACKAGING_INSTALL_PREFIX "/usr")
