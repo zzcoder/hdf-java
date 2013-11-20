@@ -13,13 +13,15 @@
     <string>org.@CPACK_PACKAGE_VENDOR@.@CPACK_PACKAGE_NAME@@CPACK_MODULE_VERSION_SUFFIX@</string>
     <key>CFBundleName</key>
     <string>@CPACK_APPLE_GUI_BUNDLE_NAME@</string>
+    <key>CFBundleDisplayName</key>
+    <string>@CPACK_APPLE_GUI_BUNDLE_NAME@</string>
     <key>CFBundlePackageType</key>
     <string>APPL</string>
-    <key>CFBundleShortVersionString</key>
-    <string>@CPACK_APPLE_GUI_SHORT_VERSION_STRING@</string>
     <key>CFBundleSignature</key>
     <string>????</string>
     <key>CFBundleVersion</key>
+    <string>@CPACK_APPLE_GUI_SHORT_VERSION_STRING@</string>
+    <key>CFBundleShortVersionString</key>
     <string>@CPACK_APPLE_GUI_SHORT_VERSION_STRING@</string>
     <key>CFBundleDocumentTypes</key>
     <array>
