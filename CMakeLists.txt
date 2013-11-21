@@ -454,12 +454,19 @@ IF (HDFJAVA_PACK_JREFILE)
   IF (WIN32)
     SET (CPACK_NSIS_EXTRA_INSTALL_COMMANDS "
         SetOutPath \\\"$INSTDIR\\\\bin\\\\JRE\\\"
-        ExecWait '\\\"$INSTDIR\\\\${HJAVA_INSTALL_CMAKE_DIR}\\\\${HDFJAVA_PACKAGE}\\\\JRE\\\\${HDFJAVA_PACK_JREFILE}\\\" /s /v\\\"INSTALLDIR=\\\\\"$INSTDIR\\\\bin\\\\JRE\\\\\" JAVAUPDATE=0\\\" /qn'
+        ExecWait '\\\"$INSTDIR\\\\${HJAVA_INSTALL_CMAKE_DIR}\\\\${HDFJAVA_PACKAGE}\\\\JRE\\\\${HDFJAVA_PACK_JREFILE}\\\" /s /v\\\\\"INSTALLDIR=\\\\\"$INSTDIR\\\\bin\\\\JRE\\\\\\\" JAVAUPDATE=0\\\" /qn'
     ")
-    SET (CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS "
-        ExecWait '\\\"$SYSDIR\\\\MsiExec.exe\\\" /x \\\"{26A24AE4-039D-4CA4-87B4-2F83217045FF}\\\" /qn'
-        RMDir \\\"/r\\\" \\\"$INSTDIR\\\\bin\\\\JRE\\\"
-    ")
+    IF (CMAKE_CL_64)
+      SET (CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS "
+          ExecWait '\\\"$SYSDIR\\\\MsiExec.exe\\\" /x \\\"{26A24AE4-039D-4CA4-87B4-2F86417045FF}\\\" /qn'
+          RMDir \\\"/r\\\" \\\"$INSTDIR\\\\bin\\\\JRE\\\"
+      ")
+    ELSE (CMAKE_CL_64)
+      SET (CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS "
+          ExecWait '\\\"$SYSDIR\\\\MsiExec.exe\\\" /x \\\"{26A24AE4-039D-4CA4-87B4-2F83217045FF}\\\" /qn'
+          RMDir \\\"/r\\\" \\\"$INSTDIR\\\\bin\\\\JRE\\\"
+      ")
+    ENDIF (CMAKE_CL_64)
   ENDIF (WIN32)
 ENDIF (HDFJAVA_PACK_JREFILE)
 
