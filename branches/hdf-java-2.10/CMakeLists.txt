@@ -458,12 +458,12 @@ IF (HDFJAVA_PACK_JREFILE)
     ")
     IF (CMAKE_CL_64)
       SET (CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS "
-          ExecWait '\\\"$SYSDIR\\\\MsiExec.exe\\\" /x \\\"{26A24AE4-039D-4CA4-87B4-2F83217045FF}\\\" /qn'
+          ExecWait '\\\"$SYSDIR\\\\MsiExec.exe\\\" /x \\\"{26A24AE4-039D-4CA4-87B4-2F86417045FF}\\\" /qn'
           RMDir \\\"/r\\\" \\\"$INSTDIR\\\\bin\\\\JRE\\\"
       ")
     ELSE (CMAKE_CL_64)
       SET (CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS "
-          ExecWait '\\\"$SYSDIR\\\\MsiExec.exe\\\" /x \\\"{26A24AE4-039D-4CA4-87B4-2F86417045FF}\\\" /qn'
+          ExecWait '\\\"$SYSDIR\\\\MsiExec.exe\\\" /x \\\"{26A24AE4-039D-4CA4-87B4-2F83217045FF}\\\" /qn'
           RMDir \\\"/r\\\" \\\"$INSTDIR\\\\bin\\\\JRE\\\"
       ")
     ENDIF (CMAKE_CL_64)
