@@ -2020,6 +2020,7 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
      * @throws Exception
      */
     public DataView showDataContent(HObject dataObject) throws Exception {
+        log.debug("showDataContent: start");
 
         if ((dataObject == null) || !(dataObject instanceof Dataset)) {
             return null; // can only display dataset
@@ -2037,6 +2038,7 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
         boolean isIndexBase1 = ViewProperties.isIndexBase1();
         BitSet bitmask = null;
         String dataViewName = null;
+        log.debug("showDataContent: inited");
 
         JInternalFrame theFrame = (JInternalFrame) viewer.getDataView(d);
 
@@ -2073,6 +2075,7 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
             isIndexBase1 = dialog.isIndexBase1();
             isApplyBitmaskOnly = dialog.isApplyBitmaskOnly();
         }
+        log.debug("showDataContent: {}", dataViewName);
 
         // enables use of JHDF5 in JNLP (Web Start) applications, the system
         // class loader with reflection first.
@@ -2091,6 +2094,7 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
 
         // use default dataview
         if (theClass == null) {
+            log.debug("showDataContent: use default dataview");
             if (isText)
                 dataViewName = "ncsa.hdf.view.DefaultTextView";
             else if (isImage)
@@ -2101,6 +2105,7 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
                 theClass = Class.forName(dataViewName);
             }
             catch (Exception ex) {
+            	log.debug("Class.forName {} failuere: ", dataViewName, ex);
             }
         }
         Object theView = null;
@@ -2134,6 +2139,7 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
             if (d_copy != null) {
                 try {
                     d_copy.init();
+                    log.debug("showDataContent: d_copy inited");
                     int rank = d.getRank();
                     System.arraycopy(d.getDims(), 0, d_copy.getDims(), 0, rank);
                     System.arraycopy(d.getStartDims(), 0, d_copy.getStartDims(), 0, rank);
@@ -2163,6 +2169,7 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
         ((JFrame) viewer).setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         try {
             theView = Tools.newInstance(theClass, initargs);
+            log.debug("showDataContent: Tools.newInstance");
 
             viewer.addDataView((DataView) theView);
         }
@@ -2170,6 +2177,7 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
             ((JFrame) viewer).setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         }
 
+        log.debug("showDataContent: finish");
         return (DataView) theView;
     }
 

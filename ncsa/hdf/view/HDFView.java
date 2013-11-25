@@ -1555,6 +1555,7 @@ public class HDFView extends JFrame implements ViewManager, ActionListener, Chan
         if (dataView == null) {
             return;
         }
+        log.debug("addDataView: start");
 
         if (!(dataView instanceof JInternalFrame)) {
             toolkit.beep();
@@ -1587,6 +1588,7 @@ public class HDFView extends JFrame implements ViewManager, ActionListener, Chan
 
             return;
         }
+        log.debug("addDataView: not already displayed");
 
         JInternalFrame frame = (JInternalFrame) dataView;
         contentPane.add(frame);
@@ -1608,11 +1610,9 @@ public class HDFView extends JFrame implements ViewManager, ActionListener, Chan
 
         }
         String fullPath = dataObject.getPath() + dataObject.getName();
-        String cmd = "SHOW WINDOW" + dataObject.getFID() + fullPath; // make the
-        // window
-        // to be
-        // uniquie:
-        // fid+path
+        String cmd = "SHOW WINDOW" + dataObject.getFID() + fullPath; 
+        // make the window to be unique: fid+path
+        log.debug("addDataView: cmd={}", cmd);
 
         frame.setName(cmd); // data windows are identified by full path the file
         // id
@@ -1643,6 +1643,7 @@ public class HDFView extends JFrame implements ViewManager, ActionListener, Chan
 
         Dimension d = contentPane.getSize();
         frame.setSize(d.width - 60, d.height - 60);
+        log.debug("addDataView: finish");
 
         frame.show();
     }
@@ -1709,6 +1710,7 @@ public class HDFView extends JFrame implements ViewManager, ActionListener, Chan
             return;
         }
 
+        log.debug("showMetaData: start");
         metadata.setLength(0);
         metadata.append(obj.getName());
 
@@ -1725,15 +1727,18 @@ public class HDFView extends JFrame implements ViewManager, ActionListener, Chan
         metadata.append(")");
 
         if (obj instanceof Group) {
+            log.debug("showMetaData: instanceof Group");
             Group g = (Group) obj;
             metadata.append("\n    Group size = ");
             metadata.append(g.getMemberList().size());
         }
         else if (obj instanceof Dataset) {
+            log.debug("showMetaData: instanceof Dataset");
             Dataset d = (Dataset) obj;
             if (d.getRank() <= 0) {
                 d.init();
             }
+            log.debug("showMetaData: inited");
 
             metadata.append("\n    ");
             if (d instanceof ScalarDS) {
@@ -1761,6 +1766,7 @@ public class HDFView extends JFrame implements ViewManager, ActionListener, Chan
 
         List<?> attrList = null;
         try {
+            log.debug("showMetaData: getMetadata");
             attrList = obj.getMetadata();
         }
         catch (Exception ex) {
@@ -1772,10 +1778,12 @@ public class HDFView extends JFrame implements ViewManager, ActionListener, Chan
         }
         else {
             int n = attrList.size();
+            log.debug("showMetaData: append {} attributes", n);
             metadata.append("\n    Number of attributes = ");
             metadata.append(n);
 
             for (int i = 0; i < n; i++) {
+                log.debug("showMetaData: append Object[{}]", i);
                 Object attrObj = attrList.get(i);
                 if (!(attrObj instanceof Attribute)) {
                     continue;
@@ -1790,6 +1798,7 @@ public class HDFView extends JFrame implements ViewManager, ActionListener, Chan
 
         attributeArea.setText(metadata.toString());
         attributeArea.setCaretPosition(0);
+        log.debug("showMetaData: finish");
     }
 
     /**
