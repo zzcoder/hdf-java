@@ -399,6 +399,7 @@ public class H5File extends FileFormat {
         List<Attribute> attributeList = null;
         int aid = -1, sid = -1, tid = -1;
         H5O_info_t obj_info = null;
+    	log.trace("getAttribute: start");
 
         try {
             obj_info = H5.H5Oget_info(objID);
@@ -412,9 +413,11 @@ public class H5File extends FileFormat {
 
         int n = (int) obj_info.num_attrs;
         attributeList = new Vector<Attribute>(n);
+    	log.debug("getAttribute: num_attrs={}", n);
 
         for (int i = 0; i < n; i++) {
             long lsize = 1;
+        	log.trace("getAttribute: attribute[{}]", i);
 
             try {
                 aid = H5.H5Aopen_by_idx(objID, ".", idx_type, order, i, HDF5Constants.H5P_DEFAULT,
@@ -433,6 +436,7 @@ public class H5File extends FileFormat {
                 }
                 String[] nameA = { "" };
                 H5.H5Aget_name(aid, H5File.attrNameLen, nameA);
+            	log.trace("getAttribute: attribute[{}] is {}", i, nameA);
 
                 int tmptid = -1;
                 try {
@@ -450,6 +454,7 @@ public class H5File extends FileFormat {
                 Datatype attrType = new H5Datatype(tid);
                 Attribute attr = new Attribute(nameA[0], attrType, dims);
                 attributeList.add(attr);
+            	log.debug("getAttribute: attribute[{}] Datatype={}", i, attrType.getDatatypeDescription());
 
                 boolean is_variable_str = false;
                 boolean isVLEN = false;
@@ -467,6 +472,7 @@ public class H5File extends FileFormat {
                 }
                 isVLEN = ( tclass == HDF5Constants.H5T_VLEN);
                 isCompound = ( tclass == HDF5Constants.H5T_COMPOUND);
+            	log.debug("getAttribute: attribute[{}] has size={} isCompound={} isScalar={} is_variable_str={} isVLEN={}", i, lsize, isCompound, isScalar, is_variable_str, isVLEN);
 
                 // retrieve the attribute value
                 if (lsize <= 0) {
@@ -481,6 +487,7 @@ public class H5File extends FileFormat {
                         strs[j] = "";
                     }
                     try {
+                    	log.trace("getAttribute: attribute[{}] H5AreadVL", i);
                         H5.H5AreadVL(aid, tid, strs);
                     }
                     catch (Exception ex) {ex.printStackTrace();}
@@ -497,6 +504,7 @@ public class H5File extends FileFormat {
                         try {
                             tmptid1 = H5.H5Tget_super(tid);
                             tmptid2 = H5.H5Tget_native_type(tmptid1);
+                        	log.trace("getAttribute: attribute[{}] H5Aread ARRAY", i);
                             H5.H5Aread(aid, tmptid2, value);
                         }
                         catch (Exception ex) {ex.printStackTrace();}
@@ -516,14 +524,17 @@ public class H5File extends FileFormat {
                         }
                     }
                     else {
+                    	log.trace("getAttribute: attribute[{}] H5Aread", i);
                         H5.H5Aread(aid, tid, value);
                     }
 
                     int typeClass = H5.H5Tget_class(tid);
                     if (typeClass == HDF5Constants.H5T_STRING) {
+                    	log.trace("getAttribute: attribute[{}] byteToString", i);
                         value = Dataset.byteToString((byte[]) value, H5.H5Tget_size(tid));
                     }
                     else if (typeClass == HDF5Constants.H5T_REFERENCE) {
+                    	log.trace("getAttribute: attribute[{}] byteToLong", i);
                         value = HDFNativeData.byteToLong((byte[]) value);
                     }
                 }
@@ -556,6 +567,7 @@ public class H5File extends FileFormat {
             }
         } // for (int i=0; i<obj_info.num_attrs; i++)
 
+    	log.trace("getAttribute: finish");
         return attributeList;
     }
 
@@ -771,7 +783,7 @@ public class H5File extends FileFormat {
         int sid = -1, size = 0, rank = 0;
         int n = refDatasets.size();
         for (int i = 0; i < n; i++) {
-        	log.debug("Update the references in the scalar datasets in the dest file");
+        	log.trace("Update the references in the scalar datasets in the dest file");
             d = (H5ScalarDS) refDatasets.get(i);
             byte[] buf = null;
             long[] refs = null;
@@ -1795,13 +1807,8 @@ public class H5File extends FileFormat {
         				throw (new HDF5Exception("Writing variable-length attributes is not supported"));
         			}
 
-        			if (attr.getType().getDatatypeClass() == Datatype.CLASS_REFERENCE && attrValue instanceof String) { // reference
-        				// is
-        				// a
-        				// path+name
-        				// to
-        				// the
-        				// object
+        			if (attr.getType().getDatatypeClass() == Datatype.CLASS_REFERENCE && attrValue instanceof String) { 
+        				// reference is a path+name to the object
         				attrValue = H5.H5Rcreate(getFID(), (String) attrValue, HDF5Constants.H5R_OBJECT, -1);
         			}
         			else if (Array.get(attrValue, 0) instanceof String) {

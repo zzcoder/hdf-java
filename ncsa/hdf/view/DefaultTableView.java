@@ -1530,10 +1530,12 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
         int rows = 0;
         int cols = 0;
 
+		log.trace("createTable: start");
         int rank = d.getRank();
         if (rank <= 0) {
             try {
                 d.init();
+        		log.trace("createTable: d.inited");
             }
             catch (Exception ex) {
                 JOptionPane.showMessageDialog(this, ex, "createTable:" + getTitle(), JOptionPane.ERROR_MESSAGE);
@@ -1552,6 +1554,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
             cols = d.getWidth();
         }
 
+		log.debug("createTable: rows={} : cols={}", rows, cols);
         dataValue = null;
         try {
             dataValue = d.getData();
@@ -1561,6 +1564,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
                 return null;
             }
 
+    		log.trace("createTable: dataValue={}", dataValue);
             if (Tools.applyBitmask(dataValue, bitmask, bitmaskOP)) {
                 isReadOnly = true;
                 String opName = "Bits ";
@@ -1587,12 +1591,14 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
         }
 
         fillValue = d.getFillValue();
+		log.debug("createTable: fillValue={}", fillValue);
 
         String cName = dataValue.getClass().getName();
         int cIndex = cName.lastIndexOf("[");
         if (cIndex >= 0) {
             NT = cName.charAt(cIndex + 1);
         }
+		log.debug("createTable: cName={} NT={}", cName, NT);
 
         // convert numerical data into char
         // only possible cases are byte[] and short[] (converted from unsigned
@@ -1674,10 +1680,12 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
             @Override
 			public Object getValueAt(int row, int column) {
                 if (startEditing[0]) return "";
+        		log.trace("createTable:AbstractTableModel:getValueAt start");
 
                 if (isArray) {
                     // ARRAY dataset
                     int arraySize = dtype.getDatatypeSize() / btype.getDatatypeSize();
+            		log.trace("createTable:AbstractTableModel:getValueAt ARRAY dataset size={} isDisplayTypeChar={} isUINT64={}", arraySize, isDisplayTypeChar, isUINT64);
 
                     stringBuffer.setLength(0); // clear the old string
                     int i0 = (row * colCount + column) * arraySize;
@@ -1724,6 +1732,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
                             index = row * colCount + column;
                     }
                     theValue = Array.get(dataValue, index);
+            		log.trace("createTable:AbstractTableModel:getValueAt index={} isStr={} isUINT64={}", index, isStr, isUINT64);
 
                     if (isStr) return theValue;
 
@@ -1752,6 +1761,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
                     }
                 }
 
+        		log.trace("createTable:AbstractTableModel:getValueAt finish");
                 return theValue;
             } // getValueAt(int row, int column)
         };

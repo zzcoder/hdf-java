@@ -62,6 +62,8 @@ import java.util.Map;
  */
 public class Attribute implements Metadata {
     private static final long serialVersionUID = 2072473407027648309L;
+    
+    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Attribute.class);
 
     /** The name of the attribute. */
     private final String      name;
@@ -322,6 +324,7 @@ public class Attribute implements Metadata {
         if (value == null) {
             return null;
         }
+    	log.trace("toString: start");
 
         Class<? extends Object> valClass = value.getClass();
 
@@ -337,6 +340,7 @@ public class Attribute implements Metadata {
         if (is_unsigned) {
             String cname = valClass.getName();
             char dname = cname.charAt(cname.lastIndexOf("[") + 1);
+        	log.debug("toString: is_unsigned with cname={} dname={}", cname, dname);
 
             switch (dname) {
                 case 'B':
@@ -388,9 +392,9 @@ public class Attribute implements Metadata {
                     }
                     break;
                 case 'J':
-                    String theValue = "";
                     long[] larray = (long[]) value;
                     Long l = (Long) larray[0];
+                    String theValue = Long.toString(l);
                     if (l < 0) {
                         l = (l << 1) >>> 1;
                         BigInteger big1 = new BigInteger("9223372036854775808"); // 2^65
@@ -402,6 +406,7 @@ public class Attribute implements Metadata {
                     for (int i = 1; i < n; i++) {
                         sb.append(delimiter);
                         l = (Long) larray[i];
+                        theValue = Long.toString(l);
                         if (l < 0) {
                             l = (l << 1) >>> 1;
                             BigInteger big1 = new BigInteger("9223372036854775808"); // 2^65
@@ -429,6 +434,7 @@ public class Attribute implements Metadata {
             }
         }
 
+    	log.trace("toString: finish");
         return sb.toString();
     }
 }

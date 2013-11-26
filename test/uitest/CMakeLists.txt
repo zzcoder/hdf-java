@@ -47,6 +47,7 @@ ADD_DEPENDENCIES (${HDFJAVA_TEST_UITEST_TARGET} ${HDFJAVA_NCSA_HDF5_LIB_TARGET} 
 
 SET (HDF_JAVA_TEST_FILES
       tattrintsize.h5
+      tintsattrs.h5
       tintsize.h5
       tcmpdattrintsize.h5
       tcmpdints.h5
