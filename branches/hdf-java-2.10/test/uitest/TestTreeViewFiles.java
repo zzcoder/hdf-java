@@ -506,6 +506,59 @@ public class TestTreeViewFiles {
             catch (Exception ex) {}
         }
     }
+    
+    @Test 
+    public void openHDF5IntsAttribute() {
+        File hdf_file = openHDF5File("tintsattrs", 10);
+
+        try {
+            JTreeFixture filetree = mainFrameFixture.tree().focus();
+            filetree.requireVisible();
+            assertTrue("openHDF5IntsAttribute filetree shows:", filetree.target.getRowCount()==10);
+            assertTrue("openHDF5IntsAttribute filetree has file", (filetree.valueAt(0)).compareTo("tintsattrs.h5")==0);
+            assertTrue("openHDF5IntsAttribute filetree has dataser", (filetree.valueAt(8)).compareTo("DU64BITS")==0);
+
+            JMenuItemFixture propMenuItem = filetree.showPopupMenuAt(8).menuItemWithPath("Show Properties");
+            mainFrameFixture.robot.waitForIdle();
+            
+            propMenuItem.requireVisible();
+            propMenuItem.click();
+            mainFrameFixture.robot.waitForIdle();
+            
+            DialogFixture propDialog = mainFrameFixture.dialog();
+            propDialog.requireVisible();
+            
+            JTabbedPaneFixture tabPane = propDialog.tabbedPane();
+            tabPane.requireVisible();
+            tabPane.requireTabTitles("General","Attributes");
+            tabPane.selectTab("Attributes");
+            mainFrameFixture.robot.waitForIdle();
+            
+            tabPane.requireVisible();
+            JTableFixture attrTable = propDialog.table("attributes");
+            JTableCellFixture cell = attrTable.cell(row(0).column(0));
+            cell.requireValue("DU64BITS");
+            JTableCellFixture celldata = attrTable.cell(row(0).column(1));
+            Pattern pattern = Pattern.compile("^18446744073709551615, .*");
+            celldata.requireValue(pattern);
+            pattern = Pattern.compile("^.*808, 0, 0, 0, 0, 0, 0, 0$");
+            celldata.requireValue(pattern);
+            propDialog.button("Close").click();
+            mainFrameFixture.robot.waitForIdle();
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        catch (AssertionError ae) {
+            ae.printStackTrace();
+        }
+        finally {
+            try {
+                closeHDFFile(hdf_file, false);
+            }
+            catch (Exception ex) {}
+        }
+    }
 
     @Test 
     public void openHDF5CompoundDS() {

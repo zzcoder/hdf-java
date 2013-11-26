@@ -269,6 +269,7 @@ public class H5ScalarDS extends ScalarDS {
     private Object getAttrValue(int oid, String aname) {
     	int aid = -1, atid=-1, asid=-1;
     	Object avalue = null;
+		log.trace("getAttrValue: start name={}", aname);
     	
         try {
             // try to find attribute name
@@ -300,19 +301,24 @@ public class H5ScalarDS extends ScalarDS {
         			adims = new long[arank];
         			H5.H5Sget_simple_extent_dims(asid, adims, null);
         		}
+        		log.trace("getAttrValue: adims={}", adims);
 
         		// retrieve the attribute value
         		long lsize = 1;
         		for (int j = 0; j < adims.length; j++) {
         			lsize *= adims[j];
         		}
+        		log.trace("getAttrValue: lsize={}", lsize);
         		avalue = H5Datatype.allocateArray(atid, (int) lsize);
 
         		if (avalue != null) {
+    				log.trace("read attribute id {} of size={}", atid, lsize);
         			H5.H5Aread(aid, atid, avalue);
 
-        			if (H5Datatype.isUnsigned(atid))
+        			if (H5Datatype.isUnsigned(atid)) {
+        				log.trace("id {} is unsigned", atid);
         				avalue = convertFromUnsignedC(avalue, null);
+        			}
         		}
         	}
         	catch (Exception ex) {
@@ -340,6 +346,7 @@ public class H5ScalarDS extends ScalarDS {
         	}
         } // if (aid > 0)
     	
+		log.trace("getAttrValue: finish");
         return avalue;
     }
     
@@ -354,7 +361,7 @@ public class H5ScalarDS extends ScalarDS {
             resetSelection();
             return; // already called. Initialize only once
         }
-		log.debug("init() start");
+		log.trace("init() start");
 
         int did = -1, sid = -1, tid = -1;
 
@@ -497,7 +504,7 @@ public class H5ScalarDS extends ScalarDS {
 
         startDims = new long[rank];
         selectedDims = new long[rank];
-		log.debug("init() finish");
+		log.trace("init() finish");
         resetSelection();
     }
 
@@ -540,6 +547,7 @@ public class H5ScalarDS extends ScalarDS {
      * Resets selection of dataspace
      */
     private void resetSelection() {
+    	log.trace("resetSelection: start");
 
         for (int i = 0; i < rank; i++) {
             startDims[i] = 0;
@@ -621,6 +629,7 @@ public class H5ScalarDS extends ScalarDS {
 
         isDataLoaded = false;
         isDefaultImageOrder = true;
+    	log.trace("resetSelection: finish");
     }
 
     /*
@@ -1114,6 +1123,7 @@ public class H5ScalarDS extends ScalarDS {
         if (rank <= 0) {
             init();
         }
+		log.trace("getMetadata: inited");
 
         try {
             this.linkTargetObjName = H5File.getLinkTargetName(this);
@@ -1137,10 +1147,13 @@ public class H5ScalarDS extends ScalarDS {
                 order = attrPropList[1];
             }
         }
+		log.trace("getMetadata: open dataset");
         did = open();
         if(did >= 0) {
+    		log.trace("getMetadata: dataset opened");
         	try {
         		attributeList = H5File.getAttribute(did, indxType, order);
+        		log.trace("getMetadata: attributeList loaded");
 
         		// get the compression and chunk information
         		pid = H5.H5Dget_create_plist(did);
@@ -1153,21 +1166,31 @@ public class H5ScalarDS extends ScalarDS {
         		}
 
         		int[] flags = { 0, 0 };
-        		long[] cd_nelmts = { 2 };
-        		int[] cd_values = { 0, 0 };
+        		long[] cd_nelmts = { 0 };
+        		int[] cd_values = null;
         		String[] cd_name = { "", "" };
         		int nfilt = H5.H5Pget_nfilters(pid);
+        		log.debug("getMetadata: {} filters in pipeline", nfilt);
         		int filter = -1;
         		int[] filter_config = { 1 };
         		compression = "";
 
         		for (int i = 0; i < nfilt; i++) {
+            		log.debug("getMetadata: filter[{}]", i);
         			if (i > 0) {
         				compression += ", ";
         			}
 
         			try {
+        				cd_nelmts[0] = 0;
+        				cd_values = null;
         				filter = H5.H5Pget_filter(pid, i, flags, cd_nelmts, cd_values, 120, cd_name, filter_config);
+                		log.debug("getMetadata: filter[{}] is {} has {} elements ", i, cd_name[0], cd_nelmts[0]);
+                		if(cd_nelmts[0] < 1)
+                			cd_nelmts[0] = 1;
+        				cd_values = new int[(int) cd_nelmts[0]];
+        				filter = H5.H5Pget_filter(pid, i, flags, cd_nelmts, cd_values, 120, cd_name, filter_config);
+                		log.debug("getMetadata: filter[{}] is {} has {} elements ", i, cd_name[0], cd_nelmts[0]);
         			}
         			catch (Throwable err) {
         				compression += "ERROR";
@@ -1200,11 +1223,21 @@ public class H5ScalarDS extends ScalarDS {
         					compression += ": H5Z_FILTER_CONFIG_ENCODE_ENABLED";
         				}
         			}
+        			else {
+    					compression += "UD: ";
+    					for (int j=0; j<cd_nelmts[0]; j++) {
+    						if(j > 0)
+            					compression += ", ";
+    						compression += cd_values[j];
+    					}
+                		log.debug("getMetadata: filter[{}] is user defined compression", i);
+        			}
         		} // for (int i=0; i<nfilt; i++)
 
         		if (compression.length() == 0) {
         			compression = "NONE";
         		}
+        		log.trace("getMetadata: filter compression={}", compression);
 
         		try {
         			int[] at = { 0 };
@@ -1223,6 +1256,7 @@ public class H5ScalarDS extends ScalarDS {
         		catch (Exception ex) {
         			log.debug("Storage allocation time:", ex);
         		}
+        		log.trace("getMetadata: compression={}", compression);
         	}
         	finally {
         		try {
@@ -1235,6 +1269,7 @@ public class H5ScalarDS extends ScalarDS {
         	}
         }
 
+		log.trace("getMetadata: finish");
         return attributeList;
     }
 
