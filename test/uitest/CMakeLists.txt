@@ -47,6 +47,7 @@ ADD_DEPENDENCIES (${HDFJAVA_TEST_UITEST_TARGET} ${HDFJAVA_NCSA_HDF5_LIB_TARGET} 
 
 SET (HDF_JAVA_TEST_FILES
       tattrintsize.h5
+      tintsattrs.h5
       tintsize.h5
       tcmpdattrintsize.h5
       tcmpdints.h5
@@ -257,7 +258,7 @@ ADD_TEST (
         -D "TEST_FOLDER=${PROJECT_BINARY_DIR}"
         -D "TEST_OUTPUT=JUnit-gui-treeview-files.out"
         -D "TEST_EXPECT=0"
-#        -D "TEST_LOG_LEVEL=debug"
+        -D "TEST_LOG_LEVEL=debug"
         -D "TEST_MASK_FILE=TRUE"
         -D "TEST_ERRREF=JUnit-gui-treeview-files.err"
         -D "TEST_REFERENCE=JUnit-gui-treeview-files.txt"
