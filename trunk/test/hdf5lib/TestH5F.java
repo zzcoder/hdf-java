@@ -55,6 +55,7 @@ public class TestH5F {
     public void deleteH5file() throws HDF5LibraryException {
         if (H5fid > 0) {
             try {H5.H5Fclose(H5fid);} catch (Exception ex) {}
+            H5fid = -1;
         }
         _deleteFile(H5_FILE);
     }
@@ -76,6 +77,11 @@ public class TestH5F {
     @Test(expected = HDF5LibraryException.class)
     public void testH5Fget_create_plist_closed() throws Throwable {
         int fid = -1;
+        
+        if (H5fid > 0) {
+            try {H5.H5Fclose(H5fid);} catch (Exception ex) {}
+            H5fid = -1;
+        }
 
         try {
             fid = H5.H5Fopen(H5_FILE, HDF5Constants.H5F_ACC_RDWR,
@@ -111,6 +117,11 @@ public class TestH5F {
     @Test(expected = HDF5LibraryException.class)
     public void testH5Fget_access_plist_closed() throws Throwable {
         int fid = -1;
+        
+        if (H5fid > 0) {
+            try {H5.H5Fclose(H5fid);} catch (Exception ex) {}
+            H5fid = -1;
+        }
 
         try {
             fid = H5.H5Fopen(H5_FILE, HDF5Constants.H5F_ACC_RDWR,
@@ -133,6 +144,11 @@ public class TestH5F {
     public void testH5Fget_intent_rdwr() {
         int intent = 0;
         int fid = -1;
+        
+        if (H5fid > 0) {
+            try {H5.H5Fclose(H5fid);} catch (Exception ex) {}
+            H5fid = -1;
+        }
 
         try {
             fid = H5.H5Fopen(H5_FILE, HDF5Constants.H5F_ACC_RDWR,
@@ -160,6 +176,11 @@ public class TestH5F {
     public void testH5Fget_intent_rdonly() {
         int intent = 0;
         int fid = -1;
+        
+        if (H5fid > 0) {
+            try {H5.H5Fclose(H5fid);} catch (Exception ex) {}
+            H5fid = -1;
+        }
 
         try {
             fid = H5.H5Fopen(H5_FILE, HDF5Constants.H5F_ACC_RDONLY,
