@@ -147,7 +147,7 @@ public class TestH5F {
         catch (Throwable err) {
             fail("H5.H5Fget_intent: " + err);
         }
-        assertEquals(intent, HDF5Constants.H5F_ACC_RDWR);
+        assertEquals(HDF5Constants.H5F_ACC_RDWR, intent);
 
         try {
             H5.H5Fclose(fid);
@@ -174,7 +174,7 @@ public class TestH5F {
         catch (Throwable err) {
             fail("H5.H5Fget_intent: " + err);
         }
-        assertEquals(intent, HDF5Constants.H5F_ACC_RDONLY);
+        assertEquals(HDF5Constants.H5F_ACC_RDONLY, intent);
 
         try {
             H5.H5Fclose(fid);
