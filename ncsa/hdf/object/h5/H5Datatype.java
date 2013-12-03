@@ -761,6 +761,7 @@ public class H5Datatype extends Datatype {
         boolean isVL = false;
         boolean is_variable_str = false;
         boolean is_reg_ref = false;
+    	log.trace("allocateArray: size={}", size);
 
         if (size < 0) {
             return null;
@@ -778,7 +779,7 @@ public class H5Datatype extends Datatype {
         try {
             tclass = H5.H5Tget_class(tid);
             tsize = H5.H5Tget_size(tid);
-        	log.debug("allocateArray class={} : size={}", tclass, tsize);
+        	log.debug("allocateArray tclass={} : tsize={}", tclass, tsize);
         }
         catch (Exception ex) {
         	log.debug("H5Tget_xxxx data type information:", ex);

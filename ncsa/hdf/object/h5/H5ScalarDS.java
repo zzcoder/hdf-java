@@ -847,6 +847,7 @@ public class H5ScalarDS extends ScalarDS {
         int did = -1, tid = -1;
         int spaceIDs[] = { -1, -1 }; // spaceIDs[0]=mspace, spaceIDs[1]=fspace
 
+		log.trace("H5ScalarDS read: start");
         if (rank <= 0) {
             init();
         }
@@ -864,10 +865,12 @@ public class H5ScalarDS extends ScalarDS {
         }
 
         long[] lsize = { 1 };
+		log.trace("H5ScalarDS read: open dataset");
         did = open();
         if(did >= 0) {
         	try {
         		lsize[0] = selectHyperslab(did, spaceIDs);
+        		log.trace("H5ScalarDS read: opened dataset size {} for {}", lsize[0], nPoints);
 
         		if (lsize[0] == 0) {
         			throw new HDF5Exception("No data to read.\nEither the dataset or the selected subset is empty.");
@@ -918,9 +921,11 @@ public class H5ScalarDS extends ScalarDS {
 
         		if (theData != null) {
         			if (isVLEN) {
+        				log.trace("H5ScalarDS read: H5DreadVL");
         				H5.H5DreadVL(did, tid, spaceIDs[0], spaceIDs[1], HDF5Constants.H5P_DEFAULT, (Object[]) theData);
         			}
         			else {
+        				log.trace("H5ScalarDS read: H5Dread");
         				H5.H5Dread(did, tid, spaceIDs[0], spaceIDs[1], HDF5Constants.H5P_DEFAULT, theData);
 
         				if (isText && convertByteToString) {
@@ -935,6 +940,10 @@ public class H5ScalarDS extends ScalarDS {
         			}
         		} // if (theData != null)
         	}
+    		catch (HDF5Exception h5ex) {
+    			log.debug("H5ScalarDS read: read failure", h5ex);
+    			throw new HDF5Exception(h5ex.toString());
+    		}
         	finally {
         		try {
         			if(HDF5Constants.H5S_ALL != spaceIDs[0])
@@ -960,6 +969,7 @@ public class H5ScalarDS extends ScalarDS {
         	}
         }
 
+		log.trace("H5ScalarDS read: finish");
         return theData;
     }
 
@@ -1191,13 +1201,19 @@ public class H5ScalarDS extends ScalarDS {
         				cd_values = new int[(int) cd_nelmts[0]];
         				filter = H5.H5Pget_filter(pid, i, flags, cd_nelmts, cd_values, 120, cd_name, filter_config);
                 		log.debug("getMetadata: filter[{}] is {} has {} elements ", i, cd_name[0], cd_nelmts[0]);
+    					for (int j=0; j<cd_nelmts[0]; j++) {
+    						log.debug("getMetadata: filter[{}] element {} = {}", i, j, cd_values[j]);
+    					}
         			}
         			catch (Throwable err) {
         				compression += "ERROR";
         				continue;
         			}
 
-        			if (filter == HDF5Constants.H5Z_FILTER_DEFLATE) {
+        			if (filter == HDF5Constants.H5Z_FILTER_NONE) {
+        				compression += "NONE";
+        			}
+        			else if (filter == HDF5Constants.H5Z_FILTER_DEFLATE) {
         				compression += "GZIP: level = " + cd_values[0];
         			}
         			else if (filter == HDF5Constants.H5Z_FILTER_FLETCHER32) {
@@ -1205,6 +1221,12 @@ public class H5ScalarDS extends ScalarDS {
         			}
         			else if (filter == HDF5Constants.H5Z_FILTER_SHUFFLE) {
         				compression += "SHUFFLE: Nbytes = " + cd_values[0];
+        			}
+        			else if (filter == HDF5Constants.H5Z_FILTER_NBIT) {
+        				compression += "NBIT";
+        			}
+        			else if (filter == HDF5Constants.H5Z_FILTER_SCALEOFFSET) {
+        				compression += "SCALEOFFSET: MIN BITS = " + cd_values[0];
         			}
         			else if (filter == HDF5Constants.H5Z_FILTER_SZIP) {
         				compression += "SZIP: Pixels per block = " + cd_values[1];
@@ -1224,7 +1246,7 @@ public class H5ScalarDS extends ScalarDS {
         				}
         			}
         			else {
-    					compression += "UD: ";
+    					compression += "USERDEFINED " + filter + ": ";
     					for (int j=0; j<cd_nelmts[0]; j++) {
     						if(j > 0)
             					compression += ", ";

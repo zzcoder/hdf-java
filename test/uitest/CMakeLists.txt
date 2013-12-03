@@ -18,7 +18,6 @@ SET (HDFJAVA_FEST_JARS
 )
 
 SET (HDFJAVA_TEST_UITEST_SRCS
-#    TestHDFViewCLGeometry.java
     TestHDFViewCLMultipleFiles.java
     TestHDFViewCLRootMultipleFiles.java
     TestHDFViewMenu.java
@@ -26,6 +25,7 @@ SET (HDFJAVA_TEST_UITEST_SRCS
     TestTreeViewNewMenu.java
     TestTreeViewGroups.java
     TestTreeViewFiles.java
+    TestTreeViewFilters.java
     TestTreeViewExport.java
     TestTableViewMenu.java
     TestAll.java
@@ -52,6 +52,7 @@ SET (HDF_JAVA_TEST_FILES
       tcmpdattrintsize.h5
       tcmpdints.h5
       tcmpdintsize.h5
+      tfilters.h5
       tscalarattrintsize.h5
       tscalarintsize.h5
       tscalarstring.h5
@@ -59,8 +60,6 @@ SET (HDF_JAVA_TEST_FILES
 )
 
 SET (HDF_JAVA_TEST_REFERENCE
-#      JUnit-gui-CL-geom.txt
-#      JUnit-gui-CL-geom.err
       JUnit-gui-CL-multi.txt
       JUnit-gui-CL-multi.err
       JUnit-gui-CL-root-multi.txt
@@ -71,6 +70,8 @@ SET (HDF_JAVA_TEST_REFERENCE
       JUnit-gui-treeview-groups.err
       JUnit-gui-treeview-files.txt
       JUnit-gui-treeview-files.err
+      JUnit-gui-treeview-filters.txt
+      JUnit-gui-treeview-filters.err
       JUnit-gui-treeview-export.txt
       JUnit-gui-treeview-export.err
       JUnit-gui-treeview-newmenu.txt
@@ -162,6 +163,8 @@ ADD_TEST (
         JUnit-gui-treeview-groups.out.err
         JUnit-gui-treeview-files.out
         JUnit-gui-treeview-files.out.err
+        JUnit-gui-treeview-filters.out
+        JUnit-gui-treeview-filters.out.err
         JUnit-gui-treeview-export.out
         JUnit-gui-treeview-export.out.err
         JUnit-gui-tableview-menu.out
@@ -348,6 +351,27 @@ ADD_TEST (
 SET_TESTS_PROPERTIES (JUnit-gui-treeview-newvldt PROPERTIES
     DEPENDS JUnit-gui-tableview-menu
 )
+
+ADD_TEST (
+    NAME JUnit-gui-treeview-filters
+    COMMAND "${CMAKE_COMMAND}"
+        -D "TEST_TESTER=${CMAKE_Java_RUNTIME}"
+        -D "TEST_CLASSPATH:STRING=${CMAKE_JAVA_CLASSPATH}"
+        -D "TEST_ARGS:STRING=-ea;org.junit.runner.JUnitCore"
+        -D "TEST_PROGRAM=test.uitest.TestTreeViewFilters"
+        -D "TEST_LIBRARY_DIRECTORY=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
+        -D "TEST_FOLDER=${PROJECT_BINARY_DIR}"
+        -D "TEST_OUTPUT=JUnit-gui-treeview-filters.out"
+        -D "TEST_EXPECT=0"
+        -D "TEST_MASK_FILE=TRUE"
+        -D "TEST_ERRREF=JUnit-gui-treeview-filters.err"
+        -D "TEST_REFERENCE=JUnit-gui-treeview-filters.txt"
+        -P "${HDFJAVA_RESOURCES_DIR}/runTest.cmake"
+)
+
+SET_TESTS_PROPERTIES (JUnit-gui-treeview-filters PROPERTIES
+    DEPENDS JUnit-gui-treeview-newvldt
+)
    
 ADD_TEST (
     NAME JUnit-gui-CL-multi
@@ -367,7 +391,7 @@ ADD_TEST (
 )
 
 SET_TESTS_PROPERTIES (JUnit-gui-CL-multi PROPERTIES
-    DEPENDS JUnit-gui-treeview-newvldt
+    DEPENDS JUnit-gui-treeview-filters
 )
    
 ADD_TEST (
@@ -390,25 +414,4 @@ ADD_TEST (
 SET_TESTS_PROPERTIES (JUnit-gui-CL-root-multi PROPERTIES
     DEPENDS JUnit-gui-CL-multi
 )
-   
-#ADD_TEST (
-#    NAME JUnit-gui-CL-geom
-#    COMMAND "${CMAKE_COMMAND}"
-#        -D "TEST_TESTER=${CMAKE_Java_RUNTIME}"
-#        -D "TEST_CLASSPATH:STRING=${CMAKE_JAVA_CLASSPATH}"
-#        -D "TEST_ARGS:STRING=-ea;org.junit.runner.JUnitCore"
-#        -D "TEST_PROGRAM=test.uitest.TestHDFViewCLGeometry"
-#        -D "TEST_LIBRARY_DIRECTORY=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
-#        -D "TEST_FOLDER=${PROJECT_BINARY_DIR}"
-#        -D "TEST_OUTPUT=JUnit-gui-CL-geom.out"
-#        -D "TEST_EXPECT=0"
-#        -D "TEST_MASK_FILE=TRUE"
-#        -D "TEST_ERRREF=JUnit-gui-CL-geom.err"
-#        -D "TEST_REFERENCE=JUnit-gui-CL-geom.txt"
-#        -P "${HDFJAVA_RESOURCES_DIR}/runTest.cmake"
-#)
-#
-#SET_TESTS_PROPERTIES (JUnit-gui-CL-geom PROPERTIES
-#    DEPENDS JUnit-gui-CL-root-multi
-#)
    
