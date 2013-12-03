@@ -1530,7 +1530,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
         int rows = 0;
         int cols = 0;
 
-		log.trace("createTable: start");
+		log.trace("createTable: ScalarDS start");
         int rank = d.getRank();
         if (rank <= 0) {
             try {
@@ -1878,6 +1878,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
         };
         theTable.setName("ScalarDS");
 
+		log.trace("createTable: ScalarDS finish");
         return theTable;
     }
 
@@ -1886,6 +1887,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
      */
     private JTable createTable(CompoundDS d) {
         JTable theTable = null;
+		log.trace("createTable: CompoundDS start");
 
         int rank = d.getRank();
         if (rank <= 0) {
@@ -2129,6 +2131,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
         }
         theTable.setName("CompoundDS");
 
+		log.trace("createTable: CompoundDS finish");
         return theTable;
     } /* createTable */
 

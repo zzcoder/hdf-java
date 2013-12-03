@@ -701,6 +701,7 @@ public abstract class Dataset extends HObject {
      */
     public final Object getData() throws Exception, OutOfMemoryError {
         if (!isDataLoaded) {
+            log.trace("getData: read");
             data = read(); // load the data;
             originalBuf = data;
             isDataLoaded = true;
@@ -708,6 +709,7 @@ public abstract class Dataset extends HObject {
             for (int j = 0; j < selectedDims.length; j++) {
                 nPoints *= selectedDims[j];
             }
+            log.trace("getData: read {}", nPoints);
         }
 
         return data;
