@@ -348,7 +348,7 @@ IF (HDFJAVA_PACK_EXAMPLES)
         COMPONENT hdfdocuments
     )
   ENDIF (EXISTS "${HDFJAVA_EXAMPLES_COMPRESSED_DIR}/${HDFJAVA_EXAMPLES_COMPRESSED}")
-ENDIF (HDF5_PACK_EXAMPLES)
+ENDIF (HDFJAVA_PACK_EXAMPLES)
 
 #SET (CREATE_JAVADOCS "TRUE")
 #-----------------------------------------------------------------------------
