@@ -1210,7 +1210,10 @@ public class H5ScalarDS extends ScalarDS {
         				continue;
         			}
 
-        			if (filter == HDF5Constants.H5Z_FILTER_DEFLATE) {
+        			if (filter == HDF5Constants.H5Z_FILTER_NONE) {
+        				compression += "NONE";
+        			}
+        			else if (filter == HDF5Constants.H5Z_FILTER_DEFLATE) {
         				compression += "GZIP: level = " + cd_values[0];
         			}
         			else if (filter == HDF5Constants.H5Z_FILTER_FLETCHER32) {
@@ -1218,6 +1221,12 @@ public class H5ScalarDS extends ScalarDS {
         			}
         			else if (filter == HDF5Constants.H5Z_FILTER_SHUFFLE) {
         				compression += "SHUFFLE: Nbytes = " + cd_values[0];
+        			}
+        			else if (filter == HDF5Constants.H5Z_FILTER_NBIT) {
+        				compression += "NBIT";
+        			}
+        			else if (filter == HDF5Constants.H5Z_FILTER_SCALEOFFSET) {
+        				compression += "SCALEOFFSET: MIN BITS = " + cd_values[0];
         			}
         			else if (filter == HDF5Constants.H5Z_FILTER_SZIP) {
         				compression += "SZIP: Pixels per block = " + cd_values[1];
@@ -1237,7 +1246,7 @@ public class H5ScalarDS extends ScalarDS {
         				}
         			}
         			else {
-    					compression += "UD: ";
+    					compression += "USERDEFINED " + filter + ": ";
     					for (int j=0; j<cd_nelmts[0]; j++) {
     						if(j > 0)
             					compression += ", ";
