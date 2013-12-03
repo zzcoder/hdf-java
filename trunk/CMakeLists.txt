@@ -326,16 +326,29 @@ INSTALL (
 )
 
 #-----------------------------------------------------------------------------
-# Add Required Document(s)
+# Configure the HDFJAVA_Examples.cmake file and the examples
 #-----------------------------------------------------------------------------
-INSTALL (
-    DIRECTORY ${HDFJAVA_SOURCE_DIR}/docs
-    DESTINATION ${HJAVA_INSTALL_DATA_DIR}
-    USE_SOURCE_PERMISSIONS 
-    COMPONENT docs
-    PATTERN ".svn" EXCLUDE
-    PATTERN "javadocs" EXCLUDE
-)
+OPTION (HDFJAVA_PACK_EXAMPLES  "Package the HDFJAVA Library Examples Compressed File" OFF)
+IF (HDFJAVA_PACK_EXAMPLES)
+  CONFIGURE_FILE (
+      ${HDFJAVA_RESOURCES_DIR}/HDFJAVA_Examples.cmake.in 
+      ${HDFJAVA_BINARY_DIR}/HDFJAVA_Examples.cmake @ONLY
+  )
+  INSTALL (
+      FILES ${HDFJAVA_BINARY_DIR}/HDFJAVA_Examples.cmake
+      DESTINATION ${HJAVA_INSTALL_DATA_DIR}
+      COMPONENT hdfdocuments
+  )
+  IF (EXISTS "${HDFJAVA_EXAMPLES_COMPRESSED_DIR}/${HDFJAVA_EXAMPLES_COMPRESSED}")
+    INSTALL (
+        FILES
+            ${HDFJAVA_EXAMPLES_COMPRESSED_DIR}/${HDFJAVA_EXAMPLES_COMPRESSED}
+            ${HDFJAVA_RESOURCES_DIR}/USING_CMake_Examples.txt
+        DESTINATION ${HJAVA_INSTALL_DATA_DIR}
+        COMPONENT hdfdocuments
+    )
+  ENDIF (EXISTS "${HDFJAVA_EXAMPLES_COMPRESSED_DIR}/${HDFJAVA_EXAMPLES_COMPRESSED}")
+ENDIF (HDF5_PACK_EXAMPLES)
 
 #SET (CREATE_JAVADOCS "TRUE")
 #-----------------------------------------------------------------------------
@@ -364,7 +377,26 @@ IF (CREATE_JAVADOCS)
       USE TRUE
       VERSION TRUE
   )
+ELSE (CREATE_JAVADOCS)
+  INSTALL (
+      DIRECTORY ${HDFJAVA_SOURCE_DIR}/docs/javadocs
+      DESTINATION ${HJAVA_INSTALL_DATA_DIR}
+      USE_SOURCE_PERMISSIONS 
+      COMPONENT docs
+      PATTERN ".svn" EXCLUDE
+  )
 ENDIF (CREATE_JAVADOCS)
+
+#-----------------------------------------------------------------------------
+# Add Required Document(s)
+#-----------------------------------------------------------------------------
+INSTALL (
+    DIRECTORY ${HDFJAVA_SOURCE_DIR}/docs/samples
+    DESTINATION ${HJAVA_INSTALL_DATA_DIR}
+    USE_SOURCE_PERMISSIONS 
+    COMPONENT docs
+    PATTERN ".svn" EXCLUDE
+)
 
 #-----------------------------------------------------------------------------
 # Add Target(s) to CMake Install for import into other projects
