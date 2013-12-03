@@ -1530,12 +1530,12 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
         int rows = 0;
         int cols = 0;
 
-		log.debug("createTable: start");
+		log.trace("createTable: ScalarDS start");
         int rank = d.getRank();
         if (rank <= 0) {
             try {
                 d.init();
-        		log.debug("createTable: d.inited");
+        		log.trace("createTable: d.inited");
             }
             catch (Exception ex) {
                 JOptionPane.showMessageDialog(this, ex, "createTable:" + getTitle(), JOptionPane.ERROR_MESSAGE);
@@ -1564,7 +1564,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
                 return null;
             }
 
-    		log.debug("createTable: dataValue={}", dataValue);
+    		log.trace("createTable: dataValue={}", dataValue);
             if (Tools.applyBitmask(dataValue, bitmask, bitmaskOP)) {
                 isReadOnly = true;
                 String opName = "Bits ";
@@ -1685,7 +1685,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
                 if (isArray) {
                     // ARRAY dataset
                     int arraySize = dtype.getDatatypeSize() / btype.getDatatypeSize();
-            		log.debug("createTable:AbstractTableModel:getValueAt ARRAY dataset size={} isDisplayTypeChar={} isUINT64={}", arraySize, isDisplayTypeChar, isUINT64);
+            		log.trace("createTable:AbstractTableModel:getValueAt ARRAY dataset size={} isDisplayTypeChar={} isUINT64={}", arraySize, isDisplayTypeChar, isUINT64);
 
                     stringBuffer.setLength(0); // clear the old string
                     int i0 = (row * colCount + column) * arraySize;
@@ -1732,7 +1732,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
                             index = row * colCount + column;
                     }
                     theValue = Array.get(dataValue, index);
-            		log.debug("createTable:AbstractTableModel:getValueAt index={} isStr={} isUINT64={}", index, isStr, isUINT64);
+            		log.trace("createTable:AbstractTableModel:getValueAt index={} isStr={} isUINT64={}", index, isStr, isUINT64);
 
                     if (isStr) return theValue;
 
@@ -1878,6 +1878,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
         };
         theTable.setName("ScalarDS");
 
+		log.trace("createTable: ScalarDS finish");
         return theTable;
     }
 
@@ -1886,6 +1887,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
      */
     private JTable createTable(CompoundDS d) {
         JTable theTable = null;
+		log.trace("createTable: CompoundDS start");
 
         int rank = d.getRank();
         if (rank <= 0) {
@@ -2129,6 +2131,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
         }
         theTable.setName("CompoundDS");
 
+		log.trace("createTable: CompoundDS finish");
         return theTable;
     } /* createTable */
 

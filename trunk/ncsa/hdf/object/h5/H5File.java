@@ -399,7 +399,7 @@ public class H5File extends FileFormat {
         List<Attribute> attributeList = null;
         int aid = -1, sid = -1, tid = -1;
         H5O_info_t obj_info = null;
-    	log.debug("getAttribute: start");
+    	log.trace("getAttribute: start");
 
         try {
             obj_info = H5.H5Oget_info(objID);
@@ -417,7 +417,7 @@ public class H5File extends FileFormat {
 
         for (int i = 0; i < n; i++) {
             long lsize = 1;
-        	log.debug("getAttribute: attribute[{}]", i);
+        	log.trace("getAttribute: attribute[{}]", i);
 
             try {
                 aid = H5.H5Aopen_by_idx(objID, ".", idx_type, order, i, HDF5Constants.H5P_DEFAULT,
@@ -436,7 +436,7 @@ public class H5File extends FileFormat {
                 }
                 String[] nameA = { "" };
                 H5.H5Aget_name(aid, H5File.attrNameLen, nameA);
-            	log.debug("getAttribute: attribute[{}] is {}", i, nameA);
+            	log.trace("getAttribute: attribute[{}] is {}", i, nameA);
 
                 int tmptid = -1;
                 try {
@@ -487,7 +487,7 @@ public class H5File extends FileFormat {
                         strs[j] = "";
                     }
                     try {
-                    	log.debug("getAttribute: attribute[{}] H5AreadVL", i);
+                    	log.trace("getAttribute: attribute[{}] H5AreadVL", i);
                         H5.H5AreadVL(aid, tid, strs);
                     }
                     catch (Exception ex) {ex.printStackTrace();}
@@ -504,7 +504,7 @@ public class H5File extends FileFormat {
                         try {
                             tmptid1 = H5.H5Tget_super(tid);
                             tmptid2 = H5.H5Tget_native_type(tmptid1);
-                        	log.debug("getAttribute: attribute[{}] H5Aread ARRAY", i);
+                        	log.trace("getAttribute: attribute[{}] H5Aread ARRAY", i);
                             H5.H5Aread(aid, tmptid2, value);
                         }
                         catch (Exception ex) {ex.printStackTrace();}
@@ -524,17 +524,17 @@ public class H5File extends FileFormat {
                         }
                     }
                     else {
-                    	log.debug("getAttribute: attribute[{}] H5Aread", i);
+                    	log.trace("getAttribute: attribute[{}] H5Aread", i);
                         H5.H5Aread(aid, tid, value);
                     }
 
                     int typeClass = H5.H5Tget_class(tid);
                     if (typeClass == HDF5Constants.H5T_STRING) {
-                    	log.debug("getAttribute: attribute[{}] byteToString", i);
+                    	log.trace("getAttribute: attribute[{}] byteToString", i);
                         value = Dataset.byteToString((byte[]) value, H5.H5Tget_size(tid));
                     }
                     else if (typeClass == HDF5Constants.H5T_REFERENCE) {
-                    	log.debug("getAttribute: attribute[{}] byteToLong", i);
+                    	log.trace("getAttribute: attribute[{}] byteToLong", i);
                         value = HDFNativeData.byteToLong((byte[]) value);
                     }
                 }
@@ -567,7 +567,7 @@ public class H5File extends FileFormat {
             }
         } // for (int i=0; i<obj_info.num_attrs; i++)
 
-    	log.debug("getAttribute: finish");
+    	log.trace("getAttribute: finish");
         return attributeList;
     }
 
@@ -783,7 +783,7 @@ public class H5File extends FileFormat {
         int sid = -1, size = 0, rank = 0;
         int n = refDatasets.size();
         for (int i = 0; i < n; i++) {
-        	log.debug("Update the references in the scalar datasets in the dest file");
+        	log.trace("Update the references in the scalar datasets in the dest file");
             d = (H5ScalarDS) refDatasets.get(i);
             byte[] buf = null;
             long[] refs = null;

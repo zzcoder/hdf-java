@@ -324,7 +324,7 @@ public class Attribute implements Metadata {
         if (value == null) {
             return null;
         }
-    	log.debug("toString: start");
+    	log.trace("toString: start");
 
         Class<? extends Object> valClass = value.getClass();
 
@@ -434,7 +434,7 @@ public class Attribute implements Metadata {
             }
         }
 
-    	log.debug("toString: finish");
+    	log.trace("toString: finish");
         return sb.toString();
     }
 }

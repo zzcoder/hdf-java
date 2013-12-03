@@ -132,7 +132,7 @@ public class DefaultMetaDataView extends JDialog implements ActionListener, Meta
         tabbedPane = new JTabbedPane();
         // get the metadata information before add GUI components */
         try {
-            log.debug("DefaultMetaDataView: start");
+            log.trace("DefaultMetaDataView: start");
             hObject.getMetadata();
         }
         catch (Exception ex) {
@@ -661,7 +661,7 @@ public class DefaultMetaDataView extends JDialog implements ActionListener, Meta
 
         JPanel rp = new JPanel();
         rp.setLayout(new GridLayout(4, 1));
-        log.debug("createDatasetInfoPanel: start");
+        log.trace("createDatasetInfoPanel: start");
 
         if (d.getRank() <= 0) {
             d.init();
@@ -669,7 +669,7 @@ public class DefaultMetaDataView extends JDialog implements ActionListener, Meta
         JTextField txtf = new JTextField("" + d.getRank());
         txtf.setEditable(false);
         rp.add(txtf);
-        log.debug("createDatasetInfoPanel inited");
+        log.trace("createDatasetInfoPanel inited");
 
         String dimStr = null;
         String maxDimStr = null;
@@ -849,7 +849,7 @@ public class DefaultMetaDataView extends JDialog implements ActionListener, Meta
         bPanel.add(rp, BorderLayout.CENTER);
 
         panel.add(bPanel, BorderLayout.SOUTH);
-        log.debug("createDatasetInfoPanel: finish");
+        log.trace("createDatasetInfoPanel: finish");
 
         return panel;
     }
@@ -1121,7 +1121,7 @@ public class DefaultMetaDataView extends JDialog implements ActionListener, Meta
         // if (col != 1) {
         // return; // can only change attribute value
         // }
-		log.debug("updateAttributeValue:start value={}[{},{}]", newValue, row, col);
+		log.trace("updateAttributeValue:start value={}[{},{}]", newValue, row, col);
 
         String attrName = (String) attrTable.getValueAt(row, 0);
         List<?> attrList = null;
@@ -1250,7 +1250,7 @@ public class DefaultMetaDataView extends JDialog implements ActionListener, Meta
                                             + "]: " + theToken, getTitle(), JOptionPane.ERROR_MESSAGE);
                                 }
                                 lvalue = big.longValue();
-                        		log.debug("updateAttributeValue: big.longValue={}", lvalue);
+                        		log.trace("updateAttributeValue: big.longValue={}", lvalue);
                                 Array.setLong(data, i, lvalue);
                             }
                             else
@@ -1264,7 +1264,7 @@ public class DefaultMetaDataView extends JDialog implements ActionListener, Meta
                                         + "]: " + theToken, getTitle(), JOptionPane.ERROR_MESSAGE);
                             }
                             lvalue = (long)d;
-                    		log.debug("updateAttributeValue: longValue={}", lvalue);
+                    		log.trace("updateAttributeValue: longValue={}", lvalue);
                             Array.setLong(data, i, lvalue);
                         }
                         break;
