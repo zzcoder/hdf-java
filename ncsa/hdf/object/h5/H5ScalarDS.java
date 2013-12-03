@@ -269,7 +269,7 @@ public class H5ScalarDS extends ScalarDS {
     private Object getAttrValue(int oid, String aname) {
     	int aid = -1, atid=-1, asid=-1;
     	Object avalue = null;
-		log.debug("getAttrValue: start name={}", aname);
+		log.trace("getAttrValue: start name={}", aname);
     	
         try {
             // try to find attribute name
@@ -301,22 +301,22 @@ public class H5ScalarDS extends ScalarDS {
         			adims = new long[arank];
         			H5.H5Sget_simple_extent_dims(asid, adims, null);
         		}
-        		log.debug("getAttrValue: adims={}", adims);
+        		log.trace("getAttrValue: adims={}", adims);
 
         		// retrieve the attribute value
         		long lsize = 1;
         		for (int j = 0; j < adims.length; j++) {
         			lsize *= adims[j];
         		}
-        		log.debug("getAttrValue: lsize={}", lsize);
+        		log.trace("getAttrValue: lsize={}", lsize);
         		avalue = H5Datatype.allocateArray(atid, (int) lsize);
 
         		if (avalue != null) {
-    				log.debug("read attribute id {} of size={}", atid, lsize);
+    				log.trace("read attribute id {} of size={}", atid, lsize);
         			H5.H5Aread(aid, atid, avalue);
 
         			if (H5Datatype.isUnsigned(atid)) {
-        				log.debug("id {} is unsigned", atid);
+        				log.trace("id {} is unsigned", atid);
         				avalue = convertFromUnsignedC(avalue, null);
         			}
         		}
@@ -346,7 +346,7 @@ public class H5ScalarDS extends ScalarDS {
         	}
         } // if (aid > 0)
     	
-		log.debug("getAttrValue: finish");
+		log.trace("getAttrValue: finish");
         return avalue;
     }
     
@@ -361,7 +361,7 @@ public class H5ScalarDS extends ScalarDS {
             resetSelection();
             return; // already called. Initialize only once
         }
-		log.debug("init() start");
+		log.trace("init() start");
 
         int did = -1, sid = -1, tid = -1;
 
@@ -504,7 +504,7 @@ public class H5ScalarDS extends ScalarDS {
 
         startDims = new long[rank];
         selectedDims = new long[rank];
-		log.debug("init() finish");
+		log.trace("init() finish");
         resetSelection();
     }
 
@@ -547,7 +547,7 @@ public class H5ScalarDS extends ScalarDS {
      * Resets selection of dataspace
      */
     private void resetSelection() {
-    	log.debug("resetSelection: start");
+    	log.trace("resetSelection: start");
 
         for (int i = 0; i < rank; i++) {
             startDims[i] = 0;
@@ -629,7 +629,7 @@ public class H5ScalarDS extends ScalarDS {
 
         isDataLoaded = false;
         isDefaultImageOrder = true;
-    	log.debug("resetSelection: finish");
+    	log.trace("resetSelection: finish");
     }
 
     /*
@@ -847,6 +847,7 @@ public class H5ScalarDS extends ScalarDS {
         int did = -1, tid = -1;
         int spaceIDs[] = { -1, -1 }; // spaceIDs[0]=mspace, spaceIDs[1]=fspace
 
+		log.trace("H5ScalarDS read: start");
         if (rank <= 0) {
             init();
         }
@@ -864,10 +865,12 @@ public class H5ScalarDS extends ScalarDS {
         }
 
         long[] lsize = { 1 };
+		log.trace("H5ScalarDS read: open dataset");
         did = open();
         if(did >= 0) {
         	try {
         		lsize[0] = selectHyperslab(did, spaceIDs);
+        		log.trace("H5ScalarDS read: opened dataset size {} for {}", lsize[0], nPoints);
 
         		if (lsize[0] == 0) {
         			throw new HDF5Exception("No data to read.\nEither the dataset or the selected subset is empty.");
@@ -918,9 +921,11 @@ public class H5ScalarDS extends ScalarDS {
 
         		if (theData != null) {
         			if (isVLEN) {
+        				log.trace("H5ScalarDS read: H5DreadVL");
         				H5.H5DreadVL(did, tid, spaceIDs[0], spaceIDs[1], HDF5Constants.H5P_DEFAULT, (Object[]) theData);
         			}
         			else {
+        				log.trace("H5ScalarDS read: H5Dread");
         				H5.H5Dread(did, tid, spaceIDs[0], spaceIDs[1], HDF5Constants.H5P_DEFAULT, theData);
 
         				if (isText && convertByteToString) {
@@ -935,6 +940,10 @@ public class H5ScalarDS extends ScalarDS {
         			}
         		} // if (theData != null)
         	}
+    		catch (HDF5Exception h5ex) {
+    			log.debug("H5ScalarDS read: read failure", h5ex);
+    			throw new HDF5Exception(h5ex.toString());
+    		}
         	finally {
         		try {
         			if(HDF5Constants.H5S_ALL != spaceIDs[0])
@@ -960,6 +969,7 @@ public class H5ScalarDS extends ScalarDS {
         	}
         }
 
+		log.trace("H5ScalarDS read: finish");
         return theData;
     }
 
@@ -1123,7 +1133,7 @@ public class H5ScalarDS extends ScalarDS {
         if (rank <= 0) {
             init();
         }
-		log.debug("getMetadata: inited");
+		log.trace("getMetadata: inited");
 
         try {
             this.linkTargetObjName = H5File.getLinkTargetName(this);
@@ -1147,13 +1157,13 @@ public class H5ScalarDS extends ScalarDS {
                 order = attrPropList[1];
             }
         }
-		log.debug("getMetadata: open dataset");
+		log.trace("getMetadata: open dataset");
         did = open();
         if(did >= 0) {
-    		log.debug("getMetadata: dataset opened");
+    		log.trace("getMetadata: dataset opened");
         	try {
         		attributeList = H5File.getAttribute(did, indxType, order);
-        		log.debug("getMetadata: attributeList loaded");
+        		log.trace("getMetadata: attributeList loaded");
 
         		// get the compression and chunk information
         		pid = H5.H5Dget_create_plist(did);
@@ -1191,6 +1201,9 @@ public class H5ScalarDS extends ScalarDS {
         				cd_values = new int[(int) cd_nelmts[0]];
         				filter = H5.H5Pget_filter(pid, i, flags, cd_nelmts, cd_values, 120, cd_name, filter_config);
                 		log.debug("getMetadata: filter[{}] is {} has {} elements ", i, cd_name[0], cd_nelmts[0]);
+    					for (int j=0; j<cd_nelmts[0]; j++) {
+    						log.debug("getMetadata: filter[{}] element {} = {}", i, j, cd_values[j]);
+    					}
         			}
         			catch (Throwable err) {
         				compression += "ERROR";
@@ -1237,7 +1250,7 @@ public class H5ScalarDS extends ScalarDS {
         		if (compression.length() == 0) {
         			compression = "NONE";
         		}
-        		log.debug("getMetadata: filter compression={}", compression);
+        		log.trace("getMetadata: filter compression={}", compression);
 
         		try {
         			int[] at = { 0 };
@@ -1256,7 +1269,7 @@ public class H5ScalarDS extends ScalarDS {
         		catch (Exception ex) {
         			log.debug("Storage allocation time:", ex);
         		}
-        		log.debug("getMetadata: compression={}", compression);
+        		log.trace("getMetadata: compression={}", compression);
         	}
         	finally {
         		try {
@@ -1269,7 +1282,7 @@ public class H5ScalarDS extends ScalarDS {
         	}
         }
 
-		log.debug("getMetadata: finish");
+		log.trace("getMetadata: finish");
         return attributeList;
     }
 
