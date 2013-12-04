@@ -19,12 +19,12 @@ For major changes, please read "About This Release" at
 http://www.hdfgroup.org/hdf-java-html/
 
 
-Files included in the release
+Files included in the release download folder
 ===============================================================================
 1) The "hdfview/" directory contains the installation programs for easy
    download and installation for HDFView. The installation programs are
-   named by platforms. For example, "hdfview_install_linux32.bin" if for 
-   32-bit linux machines. After you install HDFView, you have the pre-built 
+   named by platforms. For example, "HDF-JAVA-2.10.0-Linux.sh"  for 
+   linux machines. After you install HDFView, you have the pre-built 
    binaries for all the HDF-Java products: JNI wrapper, object package, 
    and HDFView.
 
@@ -46,13 +46,10 @@ or
 http://www.hdfgroup.org/hdf-java-html/install_use_hdf_java_products.pdf
 
 
-Build HDF-Java products from the source
+Build HDF-Java products from the source with CMake
 ===============================================================================
-For instructions of building the source on 
-1) Unix and MacOSX, visit
-   http://www.hdfgroup.org/hdf-java-html/build_src_unix.html
-2) Windows, visit 
-   http://www.hdfgroup.org/hdf-java-html/build_src_windows.html
+For instructions of building the source with CMake, visit
+   http://www.hdfgroup.org/hdf-java-html/build_src_cmake.html
 
 
 For more Information, read
