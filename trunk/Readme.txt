@@ -16,7 +16,7 @@ The HDF Java Products include three distinct components:
 Features and changes
 ===============================================================================
 For major changes, please read "About This Release" at 
-http://www.hdfgroup.org/hdf-java-html/
+http://www.hdfgroup.org/products/java/hdf-java-html/
 
 
 Files included in the release download folder
@@ -41,21 +41,21 @@ Files included in the release download folder
 Install and use pre-built HDF-Java products
 ===============================================================================
 For instructions on the installation and use of HDF Java Products, please read
-"Installing and Using HDF Java Products" at http://www.hdfgroup.org/hdf-java-html/
+"Installing and Using HDF Java Products" at http://www.hdfgroup.org/products/java/hdf-java-html/
 or
-http://www.hdfgroup.org/hdf-java-html/install_use_hdf_java_products.pdf
+http://www.hdfgroup.org/products/java/hdf-java-html/install_use_hdf_java_products.pdf
 
 
 Build HDF-Java products from the source with CMake
 ===============================================================================
 For instructions of building the source with CMake, visit
-   http://www.hdfgroup.org/hdf-java-html/build_src_cmake.html
+   http://www.hdfgroup.org/products/java/hdf-java-html/build_src_cmake.html
 
 
 For more Information, read
 =======================================
 
-  http://www.hdfgroup.org/hdf-java-html
+  http://www.hdfgroup.org/products/java/hdf-java-html
 
 
 For questions, send email to
