@@ -8,7 +8,7 @@ Files included in the release:
 
 HDF Libraries
 ==============================================================================================
-This release was built and tested with HDF 4.2.9 and HDF5 1.8.13. 
+This release was built and tested with HDF 4.2.x and HDF5 1.8.x. 
 $YOUR-HDF-JAVA-HOME/lib/<platform>/*.settings files include information on the platform 
 version and compiler used to build HDF4 and HDF5.
 
@@ -27,75 +27,28 @@ This release was built and tested for the following platforms:
     * Solaris
     * Windows
 
-32-bit distribution -- runs on 32-bit systems or 64-bit systems with 32-bit JRE
-    * Linux
-    * Mac Intel
-    * Solaris
+32-bit distribution -- runs on 32-bit systems with 32-bit JRE
     * Windows
 
 
 Changes to the Java HDF5 Interface(JHI5)
 ==============================================================================================
-    * Added options to sort file objects by index
-    * Fixed native method, h5str_sprintf(), for incorrect doubles (floats) and a crash
-    * Fixed a segmentation fault on null datasets of variable-length string type
+    * 
 
 
 Major Enhancements
 ==============================================================================================  
-    * Added a feature to show groups/attributes in creation order
-    * Excluded fill values from data calculations
-    * Added a 'reload' option to quickly close and reopen a file
+    * 
 
 
 Major Bug Fixes
 ============================================================================================== 
-    * Fixed HDFView to display 64-bit unsigned integers
-    * Fixed HDFView to display SCALAR arrays 
-    * Fixed a fill value problem on Macs
-    * Fixed ImageView showing the wrong values for 3D arrays
+    * 
 
 
 Limitations / Known Problems
 ==============================================================================================  
-    * HDFView does not support undo operations; the editing results go to 
-      files and cannot be recovered.
-    * HDFView does not support conversion between HDF4 and HDF5.
-    * HDFView supports only indexed images with RGB color model or 24-bit 
-      true color images. 
-    * Directly using multiple dimensional arrays causes a performance 
-      problem because there is no direct mapping for multiple dimensional 
-      arrays between Java and C.
-    * HDF (4&5) APIs with function pointers are not supported in HDF-Java. 
-    * HDF-Java does not support any filter/feature that is not compiled and
-      distributed with the HDF4/5 libraries. For example, HDFView will not 
-      be able to show data that requires a compression filter that is not 
-      in the HDF4 or HDF5 library.
-
-    * Specific to HDF4:
-        -- Deleting an object or attribute from an HDF4 file is not supported. 
-           Deleting objects in HDF4 may leave dangling objects or corrupt 
-           the file.
-        -- HDFView cannot modify compressed HDF4 SDS if the rank is greater 
-           than two because the existing compression algorithms supported 
-           by HDF do not allow partial modification to a compressed data stream.
-        -- HDFView cannot modify HDF4 vdata. HDF4 only writes vdata by records. 
-           HDF-Java reads data by vdata fields because HDF-Java does not 
-           support the data structure of a vdata record.
-
-    * Specific to HDF5:
-        -- Writing compound data is limited to simple cases. For example, 
-           base compound fields that have primitive types such as integers, 
-           floats, or characters can be written. HDFView does not write 
-           complex compound data. For example, HDFView cannot write a dataset 
-           that has a compound datatype with a region reference.
-        -- Writing variable-length data is not supported except for datasets 
-           where each data point is a single variable-length string.
-        -- There is no single JNI function that can handle HDF5 library 
-           functions that have different return types for version 1.6 and 
-           version 1.8. An additional function has been added to the JNI. For example,
-             * public synchronized static native int H5Tget_size(int type_id)
-             * public synchronized static native long H5Tget_size_long(int type_id)
+    * 
 
 Other Notes
 ==============================================================================================  
