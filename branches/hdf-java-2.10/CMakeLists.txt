@@ -390,8 +390,18 @@ ENDIF (CREATE_JAVADOCS)
 #-----------------------------------------------------------------------------
 # Add Required Document(s)
 #-----------------------------------------------------------------------------
+IF (HDFJAVA_PACK_SAMPLES)
+  INSTALL (
+      DIRECTORY ${HDFJAVA_SOURCE_DIR}/docs/samples
+      DESTINATION ${HJAVA_INSTALL_DATA_DIR}
+      USE_SOURCE_PERMISSIONS 
+      COMPONENT docs
+      PATTERN ".svn" EXCLUDE
+  )
+ENDIF (HDFJAVA_PACK_SAMPLES)
+
 INSTALL (
-    DIRECTORY ${HDFJAVA_SOURCE_DIR}/docs/samples
+    DIRECTORY ${HDFJAVA_SOURCE_DIR}/docs/hdfview/UsersGuide
     DESTINATION ${HJAVA_INSTALL_DATA_DIR}
     USE_SOURCE_PERMISSIONS 
     COMPONENT docs
@@ -535,7 +545,7 @@ ELSEIF (APPLE)
   SET (CPACK_PACKAGE_ICON "${HDFJAVA_RESOURCES_DIR}/hdf.gif")
   SET (CPACK_SET_DESTDIR TRUE) # Required when packaging, and set CMAKE_INSTALL_PREFIX to "/".
     
-  IF (HDF5_PACK_MACOSX_BUNDLE)
+  IF (HDFJAVA_PACK_MACOSX_BUNDLE)
     LIST (APPEND CPACK_GENERATOR "Bundle")
     SET (CPACK_BUNDLE_NAME "${HDFJAVA_PACKAGE_STRING}")
     SET (CPACK_BUNDLE_LOCATION "/")    # make sure CMAKE_INSTALL_PREFIX ends in "/"
@@ -569,7 +579,7 @@ ELSEIF (APPLE)
               ${HDFJAVA_BINARY_DIR}/CMakeFiles/version.plist
         DESTINATION ..
     )
-  ENDIF (HDF5_PACK_MACOSX_BUNDLE)
+  ENDIF (HDFJAVA_PACK_MACOSX_BUNDLE)
 ELSE (WIN32)
   LIST (APPEND CPACK_GENERATOR "STGZ") 
   SET (CPACK_PACKAGING_INSTALL_PREFIX "/usr")

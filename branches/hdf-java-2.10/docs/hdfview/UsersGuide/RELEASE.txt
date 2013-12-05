@@ -27,33 +27,31 @@ This release was built and tested for the following platforms:
     * Solaris
     * Windows
 
-32-bit distribution -- runs on 32-bit systems or 64-bit systems with 32-bit JRE
-    * Linux
-    * Mac Intel
-    * Solaris
+32-bit distribution -- runs on 32-bit systems with 32-bit JRE
     * Windows
 
 
 Changes to the Java HDF5 Interface(JHI5)
 ==============================================================================================
-    * Added options to sort file objects by index
-    * Fixed native method, h5str_sprintf(), for incorrect doubles (floats) and a crash
-    * Fixed a segmentation fault on null datasets of variable-length string type
+    * New utility function H5export_dataset exports data from a dataset
+    * H5get_filter can handle multpile cd_values
+    * H5Xclose functions will reurn 0 when a negative ID is used, instead of throwing an exception.
 
 
 Major Enhancements
 ==============================================================================================  
-    * Added a feature to show groups/attributes in creation order
-    * Excluded fill values from data calculations
-    * Added a 'reload' option to quickly close and reopen a file
+    * Added a feature to export data from the treeview
+    * HDFView table and Image window title bars indicate if the array was opened in 1-based or 0-based way.
+    * HDFView added ability to specify format for scientific notation
+    * Added logging using the slf4j package
 
 
 Major Bug Fixes
 ============================================================================================== 
-    * Fixed HDFView to display 64-bit unsigned integers
-    * Fixed HDFView to display SCALAR arrays 
-    * Fixed a fill value problem on Macs
-    * Fixed ImageView showing the wrong values for 3D arrays
+    * Fixed HDFView reload bug
+    * Fixed HDFView exports of H5T_STD_U8BE data to a binary file
+    * Fixed HDFView command line options
+    * Fixed HDFView data corruption saving a compound dataset
 
 
 Limitations / Known Problems
@@ -67,10 +65,6 @@ Limitations / Known Problems
       problem because there is no direct mapping for multiple dimensional 
       arrays between Java and C.
     * HDF (4&5) APIs with function pointers are not supported in HDF-Java. 
-    * HDF-Java does not support any filter/feature that is not compiled and
-      distributed with the HDF4/5 libraries. For example, HDFView will not 
-      be able to show data that requires a compression filter that is not 
-      in the HDF4 or HDF5 library.
 
     * Specific to HDF4:
         -- Deleting an object or attribute from an HDF4 file is not supported. 
@@ -99,6 +93,5 @@ Limitations / Known Problems
 
 Other Notes
 ==============================================================================================  
-Made changes to Examples to eliminate deprecated functions.
 
 
