@@ -1313,7 +1313,7 @@ public class HDFView extends JFrame implements ViewManager, ActionListener, Chan
                     tmpFile = new File(ugPath);
                     if (!(tmpFile.exists())) {
                         // use the online copy
-                        ugPath = "http://www.hdfgroup.org/hdf-java-html/hdfview/UsersGuide/index.html";
+                        ugPath = "http://www.hdfgroup.org/products/java/hdf-java-html/hdfview/UsersGuide/index.html";
                     }
                     ViewProperties.setUsersGuide(ugPath);
                 }
