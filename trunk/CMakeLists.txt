@@ -390,8 +390,18 @@ ENDIF (CREATE_JAVADOCS)
 #-----------------------------------------------------------------------------
 # Add Required Document(s)
 #-----------------------------------------------------------------------------
+IF (HDFJAVA_PACK_SAMPLES)
+  INSTALL (
+      DIRECTORY ${HDFJAVA_SOURCE_DIR}/docs/samples
+      DESTINATION ${HJAVA_INSTALL_DATA_DIR}
+      USE_SOURCE_PERMISSIONS 
+      COMPONENT docs
+      PATTERN ".svn" EXCLUDE
+  )
+ENDIF (HDFJAVA_PACK_SAMPLES)
+
 INSTALL (
-    DIRECTORY ${HDFJAVA_SOURCE_DIR}/docs/samples
+    DIRECTORY ${HDFJAVA_SOURCE_DIR}/docs/hdfview/UsersGuide
     DESTINATION ${HJAVA_INSTALL_DATA_DIR}
     USE_SOURCE_PERMISSIONS 
     COMPONENT docs
