@@ -3,7 +3,6 @@ The current HDF-Java products can be downloaded at http://www.hdfgroup.org/downl
 Files included in the release:
 /src            -- include all source files
 /bin/$platform  -- pre-built binaries for specific platforms (limited platforms)
-/hdfview        -- HDFView installation program (limited platforms)
 
 
 HDF Libraries
