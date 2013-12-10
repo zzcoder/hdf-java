@@ -180,7 +180,7 @@ ADD_TEST (
 ADD_TEST (
     NAME JUnit-gui-menu
     COMMAND "${CMAKE_COMMAND}"
-        -D "TEST_TESTER=${CMAKE_Java_RUNTIME}"
+        -D "TEST_TESTER=${CMAKE_Java_RUNTIME};${CMAKE_Java_RUNTIME_FLAGS}"
         -D "TEST_CLASSPATH:STRING=${CMAKE_JAVA_CLASSPATH}"
         -D "TEST_ARGS:STRING=-ea;org.junit.runner.JUnitCore"
         -D "TEST_PROGRAM=test.uitest.TestHDFViewMenu"
@@ -201,7 +201,7 @@ SET_TESTS_PROPERTIES (JUnit-gui-menu PROPERTIES
 ADD_TEST (
     NAME JUnit-gui-treeview-newmenu
     COMMAND "${CMAKE_COMMAND}"
-        -D "TEST_TESTER=${CMAKE_Java_RUNTIME}"
+        -D "TEST_TESTER=${CMAKE_Java_RUNTIME};${CMAKE_Java_RUNTIME_FLAGS}"
         -D "TEST_CLASSPATH:STRING=${CMAKE_JAVA_CLASSPATH}"
         -D "TEST_ARGS:STRING=-ea;org.junit.runner.JUnitCore"
         -D "TEST_PROGRAM=test.uitest.TestTreeViewNewMenu"
@@ -222,7 +222,7 @@ SET_TESTS_PROPERTIES (JUnit-gui-treeview-newmenu PROPERTIES
 ADD_TEST (
     NAME JUnit-gui-treeview-groups
     COMMAND "${CMAKE_COMMAND}"
-        -D "TEST_TESTER=${CMAKE_Java_RUNTIME}"
+        -D "TEST_TESTER=${CMAKE_Java_RUNTIME};${CMAKE_Java_RUNTIME_FLAGS}"
         -D "TEST_CLASSPATH:STRING=${CMAKE_JAVA_CLASSPATH}"
         -D "TEST_ARGS:STRING=-ea;org.junit.runner.JUnitCore"
         -D "TEST_PROGRAM=test.uitest.TestTreeViewGroups"
@@ -253,7 +253,7 @@ SET_TESTS_PROPERTIES (JUnit-gui-treeview-files-copy PROPERTIES
 ADD_TEST (
     NAME JUnit-gui-treeview-files
     COMMAND "${CMAKE_COMMAND}"
-        -D "TEST_TESTER=${CMAKE_Java_RUNTIME}"
+        -D "TEST_TESTER=${CMAKE_Java_RUNTIME};${CMAKE_Java_RUNTIME_FLAGS}"
         -D "TEST_CLASSPATH:STRING=${CMAKE_JAVA_CLASSPATH}"
         -D "TEST_ARGS:STRING=-ea;org.junit.runner.JUnitCore"
         -D "TEST_PROGRAM=test.uitest.TestTreeViewFiles"
@@ -274,7 +274,7 @@ SET_TESTS_PROPERTIES (JUnit-gui-treeview-files PROPERTIES
 ADD_TEST (
     NAME JUnit-gui-treeview-export
     COMMAND "${CMAKE_COMMAND}"
-        -D "TEST_TESTER=${CMAKE_Java_RUNTIME}"
+        -D "TEST_TESTER=${CMAKE_Java_RUNTIME};${CMAKE_Java_RUNTIME_FLAGS}"
         -D "TEST_CLASSPATH:STRING=${CMAKE_JAVA_CLASSPATH}"
         -D "TEST_ARGS:STRING=-ea;org.junit.runner.JUnitCore"
         -D "TEST_PROGRAM=test.uitest.TestTreeViewExport"
@@ -313,7 +313,7 @@ SET_TESTS_PROPERTIES (JUnit-gui-treeview-export3 PROPERTIES
 ADD_TEST (
     NAME JUnit-gui-tableview-menu
     COMMAND "${CMAKE_COMMAND}"
-        -D "TEST_TESTER=${CMAKE_Java_RUNTIME}"
+        -D "TEST_TESTER=${CMAKE_Java_RUNTIME};${CMAKE_Java_RUNTIME_FLAGS}"
         -D "TEST_CLASSPATH:STRING=${CMAKE_JAVA_CLASSPATH}"
         -D "TEST_ARGS:STRING=-ea;org.junit.runner.JUnitCore"
         -D "TEST_PROGRAM=test.uitest.TestTableViewMenu"
@@ -334,7 +334,7 @@ SET_TESTS_PROPERTIES (JUnit-gui-tableview-menu PROPERTIES
 ADD_TEST (
     NAME JUnit-gui-treeview-newvldt
     COMMAND "${CMAKE_COMMAND}"
-        -D "TEST_TESTER=${CMAKE_Java_RUNTIME}"
+        -D "TEST_TESTER=${CMAKE_Java_RUNTIME};${CMAKE_Java_RUNTIME_FLAGS}"
         -D "TEST_CLASSPATH:STRING=${CMAKE_JAVA_CLASSPATH}"
         -D "TEST_ARGS:STRING=-ea;org.junit.runner.JUnitCore"
         -D "TEST_PROGRAM=test.uitest.TestTreeViewNewVLDatatypes"
@@ -355,7 +355,7 @@ SET_TESTS_PROPERTIES (JUnit-gui-treeview-newvldt PROPERTIES
 ADD_TEST (
     NAME JUnit-gui-treeview-filters
     COMMAND "${CMAKE_COMMAND}"
-        -D "TEST_TESTER=${CMAKE_Java_RUNTIME}"
+        -D "TEST_TESTER=${CMAKE_Java_RUNTIME};${CMAKE_Java_RUNTIME_FLAGS}"
         -D "TEST_CLASSPATH:STRING=${CMAKE_JAVA_CLASSPATH}"
         -D "TEST_ARGS:STRING=-ea;org.junit.runner.JUnitCore"
         -D "TEST_PROGRAM=test.uitest.TestTreeViewFilters"
@@ -376,7 +376,7 @@ SET_TESTS_PROPERTIES (JUnit-gui-treeview-filters PROPERTIES
 ADD_TEST (
     NAME JUnit-gui-CL-multi
     COMMAND "${CMAKE_COMMAND}"
-        -D "TEST_TESTER=${CMAKE_Java_RUNTIME}"
+        -D "TEST_TESTER=${CMAKE_Java_RUNTIME};${CMAKE_Java_RUNTIME_FLAGS}"
         -D "TEST_CLASSPATH:STRING=${CMAKE_JAVA_CLASSPATH}"
         -D "TEST_ARGS:STRING=-ea;org.junit.runner.JUnitCore"
         -D "TEST_PROGRAM=test.uitest.TestHDFViewCLMultipleFiles"
@@ -397,7 +397,7 @@ SET_TESTS_PROPERTIES (JUnit-gui-CL-multi PROPERTIES
 ADD_TEST (
     NAME JUnit-gui-CL-root-multi
     COMMAND "${CMAKE_COMMAND}"
-        -D "TEST_TESTER=${CMAKE_Java_RUNTIME}"
+        -D "TEST_TESTER=${CMAKE_Java_RUNTIME};${CMAKE_Java_RUNTIME_FLAGS}"
         -D "TEST_CLASSPATH:STRING=${CMAKE_JAVA_CLASSPATH}"
         -D "TEST_ARGS:STRING=-ea;org.junit.runner.JUnitCore"
         -D "TEST_PROGRAM=test.uitest.TestHDFViewCLRootMultipleFiles"
