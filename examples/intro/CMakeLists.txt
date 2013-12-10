@@ -76,7 +76,7 @@ MACRO (ADD_H5_TEST resultfile resultcode)
   ADD_TEST (
       NAME intro-${resultfile}
       COMMAND "${CMAKE_COMMAND}"
-          -D "TEST_TESTER=${CMAKE_Java_RUNTIME}"
+          -D "TEST_TESTER=${CMAKE_Java_RUNTIME};${CMAKE_Java_RUNTIME_FLAGS}"
           -D "TEST_PROGRAM=examples.intro.${resultfile}"
           -D "TEST_ARGS:STRING=${ARGN}"
           -D "TEST_CLASSPATH:STRING=${CMAKE_JAVA_CLASSPATH}${CMAKE_JAVA_INCLUDE_FLAG_SEP}${${resultfile}_JAR_FILE}"
