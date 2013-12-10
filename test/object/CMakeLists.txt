@@ -79,7 +79,7 @@ SET (testfilter "OK (153 tests)")
 ADD_TEST (
     NAME JUnit-object-interface
     COMMAND "${CMAKE_COMMAND}"
-        -D "TEST_TESTER=${CMAKE_Java_RUNTIME}"
+        -D "TEST_TESTER=${CMAKE_Java_RUNTIME};${CMAKE_Java_RUNTIME_FLAGS}"
         -D "TEST_CLASSPATH:STRING=${CMAKE_JAVA_CLASSPATH}"
         -D "TEST_ARGS:STRING="
         -D "TEST_PROGRAM=-ea;org.junit.runner.JUnitCore;test.object.AllH5ObjectTests"
