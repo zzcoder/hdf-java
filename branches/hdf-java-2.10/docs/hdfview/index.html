@@ -43,104 +43,17 @@ Using HDFView, you can
 
 <a name="download_hdfview"></a><h3>Download HDFView 2.10</h3>
 <p />
-    <table cellSpacing="0" cols="1" bgColor="#fffddd" border="0">
-    <tr><td>
-We want to thank you for participating the HDFView User Survey.
-Your feedback and comments are extremely helpful to us. We put
-a short report of the survey for you.
-
-<a href="hdfview_survey_report_2013.pdf">HDFView User Survey Report</a>
-
-<p />
-We will leave the survey open and you may continue to give us
-your thoughts through the survey or our helpdesk.
-
-<a href="http://www.surveymonkey.com/s/PLGRLJY">HDFView User Survey</a>
-    </td></tr>
-    </table>
-
-<p />
-HDFView can be downloaded quickly from here. JRE1.7 is bundled in the 
-distribution (except for Mac). No additional software is needed to run HDFView.
-
-<ul class="ul">
-  <lh><strong>64-bit distribution</strong> -- runs on 64-bit systems with 64-bit JRE</lh>
-  <li><a href="http://www.hdfgroup.org/ftp/HDF5/hdf-java/hdfview/hdfview_install_win64.exe">Windows</a> [40 MB]
-  <li><a href="http://www.hdfgroup.org/ftp/HDF5/hdf-java/hdfview/hdfview_install_linux64.bin">Linux x86</a> [63 MB] 
-  <li><a href="http://www.hdfgroup.org/ftp/HDF5/hdf-java/hdfview/hdfview_install_solaris64.bin">Solaris SPARC</a> 86 MB]
-  <li><a href="http://www.hdfgroup.org/ftp/HDF5/hdf-java/hdfview/hdfview_install_macosx_intel64.zip">Mac Intel</a> [8 MB]
-</ul>
-
-<ul class="ul">
-  <lh><strong>32-bit distribution</strong> -- runs on 32-bit systems or 64-bit systems with 32-bit JRE</lh>
-  <li><a href="http://www.hdfgroup.org/ftp/HDF5/hdf-java/hdfview/hdfview_install_win32.exe">Windows</a> [44 MB]
-  <li><a href="http://www.hdfgroup.org/ftp/HDF5/hdf-java/hdfview/hdfview_install_linux32.bin">Linux</a> [49 MB] 
-  <li><a href="http://www.hdfgroup.org/ftp/HDF5/hdf-java/hdfview/hdfview_install_solaris32.bin">Solaris SPARC</a> [85 MB]
-  <li><a href="http://www.hdfgroup.org/ftp/HDF5/hdf-java/hdfview/hdfview_install_macosx_intel32.zip">Mac Intel</a> [8 MB]
-</ul>
-
-<ul class="ul">
-  <lh><strong>New HDFView installers</strong> -- Please try our new installers built from CMake. 
-      Send us your comments using <a href="http://www.hdfgroup.org/about/contact.html">the contact form or helpdesk.</a> </lh>
-<li><a href="http://www.hdfgroup.org/ftp/HDF5/hdf-java/hdfview/HDF-JAVA-2.10.0-win64.exe">64-bit Windows</a> [64 MB]
-<li><a href="http://www.hdfgroup.org/ftp/HDF5/hdf-java/hdfview/HDF-JAVA-2.10.0-win32.exe">32-bit Windows</a> [64 MB]
-</ul>
-
+HDFView is installed as part of the hdf-java binary installation. 
+Pre-built binaries are available at 
+<a href="http://www.hdfgroup.org/products/java/release/download.html">http://www.hdfgroup.org/products/java/release/download.html</a>
 <p />
 
-<hr>
-<p />
-<h3>Install/Run Instructions</H3>
-<ul class="ul">
-<li><B>Unix:</B>
-<p />
-  <ul class="ul">
-  <li>To install, type: &nbsp; <CODE>
-    sh ./hdfview_install_xxx.bin</CODE>
-  <li>To run,  type: &nbsp; <CODE>./hdfview</CODE>
-  </ul>
-<p />
-<li><B>Mac OS X:</B><p />
-<ul class="ul">
-  <li>To install, open <CODE>hdfview_install_macosx_xxx.zip</CODE>
-  <li>To run, {where_you_install_hdfview}/hdfview.sh <br>
-              or click on the HDFView Icon on the desktop
-
-  </ul>
-<p />
-<li><B>Windows:</B><p />
-<p />
-  <ul class="ul">
-  <li>To install, type: <CODE> hdfview_install_windows_xxx.exe </CODE>
-  <li>To run, select HDFView from the menu, <CODE>Start -> programs -> HDFView 2.x -> HDFView 2.x</CODE>
-  </ul>
-</ul>
-
-<h3>Install HDFView in Silent Mode</H3>
-<ol>
-    <li>Edit Installer.properties file for customisation <br />
-
-    Eg: EDIT the installation directory in USER_INSTALL_DIR property  <br />
-    <br />
-    # Installation mode (Silent) <br />
-    INSTALLER_UI=SILENT <br />
-    <br />
-    # Installation directory - use "\\" to separate directories. <br />
-    USER_INSTALL_DIR=C:\\Program files\\TheHDFGroup\\HDFView <br />
-    <br />
-    # Installation set (Complete/Upgrade) <br />
-    CHOSEN_INSTALL_SET=Complete <br />
-    </li>
-    <li> Place the installer.properties file along with hdfview_install_xxx.exe[.bin] </li>
-    <li> run the HDFView installer with the following command, e.g.<br />
-     hdfview_install_win64.exe -f installer.properties </li>
-</ol>
 
 <hr>
 <H3>Documentation</H3>
 
 The HDFView User's Guide, accessible from the top of this page, contains
-detailed information on installing and using HDFView. 
+detailed information on using HDFView. 
 <p />
 
 <?php 
