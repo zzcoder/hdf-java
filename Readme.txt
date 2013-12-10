@@ -29,10 +29,7 @@ Files included in the release download folder
    and HDFView.
 
 2) The "bin/" directory includes the pre-built binaries for all of the
-    HDF-Java product. You can either download the tarball, which has all 
-    the necessary binaries, or individual part of pre-built binaries. 
-    We strongly recommend you to download the tarball instead of individual
-    files.
+    HDF-Java product. 
 
 3) The "src/" directory has all of the source code for the HDF-Java product.
     You will only need it if you are building HDF-Java from the source.
@@ -49,7 +46,7 @@ http://www.hdfgroup.org/products/java/hdf-java-html/install_use_hdf_java_product
 Build HDF-Java products from the source with CMake
 ===============================================================================
 For instructions of building the source with CMake, visit
-   http://www.hdfgroup.org/products/java/hdf-java-html/build_src_cmake.html
+   http://www.hdfgroup.org/products/java/release/cmakebuild.html
 
 
 For more Information, read
