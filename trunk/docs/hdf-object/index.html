@@ -1,6 +1,6 @@
 <?php
-include ("../../links.php"); 
-include ("../../includes/header.html"); 
+include ("../../../../links.php"); 
+include ("../../../../includes/header.html"); 
 ?>
 
 <fieldset>
@@ -160,8 +160,8 @@ SGI IRIX 6.5.<hr>
 <a NAME="#DOWNLOAD"></a>Download</h3>
 The source and pre-built binaries for the HDF Object Package can be downloaded
 from:
-<blockquote><a href="http://www.hdfgroup.org/ftp/HDF5/hdf-java/">
-http://www.hdfgroup.org/ftp/HDF5/hdf-java/</a></blockquote>
+<blockquote><a href="http://www.hdfgroup.org/products/java/release/download.html">
+http://www.hdfgroup.org/products/java/release/download.html</a></blockquote>
 <b>Binary release</b>
 <p>The binary release includes jar files for the HDF Object Package, the
 JHI (HDF4 library interface) and JHI5 (HDF5 library interface). The
@@ -238,9 +238,20 @@ native libraries are available for selected platforms.
 <p>The source distribution includes all the Java source to build the jar
 files, plus the C source for the native methods of the <a href="../JNI/jhi/index.html">JHI</a>
 and <a href="../JNI/jhi5/index.html">JHI5</a>.
-<p>The JHI requires the HDF4.1r5 library (binary) and the JHI5 requires
-the HDF5.1.4.4 library (binary). These are not included in the Java source.
-They can be obtained from:
+<p>The JHI requires the HDF4 library (binary) and the JHI5 requires
+the HDF5 library (binary). These are not included in the Java source.
+<p />
+Building the HDF Java Products from the source distribution is an easy 
+endeavor. There are CMake specialized compressed sources for all the required libraries. 
+Refer to the following the instructions for more details: 
+
+<ul class="ul">
+  <li><a 
+  href="http://www.hdfgroup.org/products/java/release/cmakebuild.html">Building 
+  from source using CMake</a> </li>
+</ul>
+
+<p />
 <?php 
-include ("../../includes/footer.html"); 
+include ("../../../../includes/footer.html"); 
 ?>
