@@ -1,6 +1,6 @@
 <?php
-include ("../../links.php"); 
-include ("../../includes/header.html"); 
+include ("../../../../links.php"); 
+include ("../../../../includes/header.html"); 
 ?>
 
 <fieldset>
@@ -256,7 +256,7 @@ library must be built in a particular way, depending on the JVM. Note that
 this usually means that all the dependent code must also be built conformantly.
 The may or may not be possible in all cases. If one of the compenents cannot
 be built, the HDF JNI cannot be supported on that platform.<br>
-On windows, solaris, linux, and irix, the build procedure is to use static
+On windows, solaris, linux, and mac, the build procedure is to use static
 version&nbsp; of the dependent libraries (libdf.a, libz.a, etc.), and then output a
 shared library. E.g., for solaris the HDF4 build process is:<br>
 <p>
@@ -286,14 +286,6 @@ This is usually caused by problems with the class path or library path. When
 one of the jar files is missing from the class path, the program will encounter
 a "Class not found" exception. &nbsp;An "unsatisfied link" error will occur if the library
 with the native implementation is not found in the LD_LIBRARY_PATH. </p>
-
-<p>The source distribution includes two small test programs that test the link
-paths (using the install directory specified in the configure). These are
-in the directory test/linktest. To check the installation, change to the
-directory, type 'make'. The 'testlink' program runs the TestHDF5Link.java
-program, and 'testlink4' runs TestHDF5Link.java. These Java program check
-the loading and invokation of the HDF library. If the link test succeeds,
-the paths in the script are correct for using the Java HDF products. </p>
 <?php
-include ("../../includes/footer.html"); 
+include ("../../../../includes/footer.html"); 
 ?>
