@@ -24,7 +24,7 @@ Files included in the release download folder
 1) The "hdfview/" directory contains the installation programs for easy
    download and installation for HDFView. The installation programs are
    named by platforms. For example, "HDF-JAVA-2.10.0-Linux.sh"  for 
-   linux machines. After you install HDFView, you have the pre-built 
+   Linux machines. After you install HDFView, you have the pre-built 
    binaries for all the HDF-Java products: JNI wrapper, object package, 
    and HDFView.
 
@@ -45,11 +45,11 @@ http://www.hdfgroup.org/products/java/hdf-java-html/install_use_hdf_java_product
 
 Build HDF-Java products from the source with CMake
 ===============================================================================
-For instructions of building the source with CMake, visit
+For instructions for building the source with CMake, visit
    http://www.hdfgroup.org/products/java/release/cmakebuild.html
 
 
-For more Information, read
+For more information, read
 =======================================
 
   http://www.hdfgroup.org/products/java/hdf-java-html
