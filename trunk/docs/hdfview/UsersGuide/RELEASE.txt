@@ -1,23 +1,18 @@
-The current HDF-Java products can be downloaded at http://www.hdfgroup.org/downloads/
-
-Files included in the release:
-/src            -- include all source files
-/bin/$platform  -- pre-built binaries for specific platforms (limited platforms)
+he current HDF-Java products can be downloaded at:
+        http://www.hdfgroup.org/downloads/
 
 
 HDF Libraries
-==============================================================================================
+=============================================================================
 This release was built and tested with HDF 4.2.x and HDF5 1.8.x. 
-$YOUR-HDF-JAVA-HOME/lib/<platform>/*.settings files include information on the platform 
-version and compiler used to build HDF4 and HDF5.
 
 JDK
-==============================================================================================
+=============================================================================
 This release was built and tested with JDK 1.7. 
 
 
 Platforms
-==============================================================================================
+==============================================================================
 This release was built and tested for the following platforms:
 
 64-bit distribution -- runs on 64-bit systems with 64-bit JRE only
@@ -31,25 +26,25 @@ This release was built and tested for the following platforms:
 
 
 Changes to the Java HDF5 Interface(JHI5)
-==============================================================================================
+==============================================================================
     * 
 
 
 Major Enhancements
-==============================================================================================  
+==============================================================================  
     * 
 
 
 Major Bug Fixes
-============================================================================================== 
+============================================================================== 
     * 
 
 
 Limitations / Known Problems
-==============================================================================================  
+==============================================================================  
     * 
 
 Other Notes
-==============================================================================================  
+==============================================================================
 
 
