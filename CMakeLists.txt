@@ -500,7 +500,7 @@ IF (HDFJAVA_PACK_JREFILE)
   IF (WIN32)
     SET (CPACK_NSIS_EXTRA_INSTALL_COMMANDS "
         SetOutPath \\\"$INSTDIR\\\\bin\\\\JRE\\\"
-        ExecWait '\\\"$INSTDIR\\\\${HJAVA_INSTALL_CMAKE_DIR}\\\\${HDFJAVA_PACKAGE}\\\\JRE\\\\${HDFJAVA_PACK_JREFILE}\\\" /s /v\\\\\"INSTALLDIR=\\\\\"$INSTDIR\\\\bin\\\\JRE\\\\\" JAVAUPDATE=0\\\\\" /qn'
+        ExecWait '\\\"$INSTDIR\\\\${HJAVA_INSTALL_CMAKE_DIR}\\\\${HDFJAVA_PACKAGE}\\\\JRE\\\\${HDFJAVA_PACK_JREFILE}\\\" /s /v\\\"INSTALLDIR=\\\\\\\"$INSTDIR\\\\bin\\\\JRE\\\\\\\" JAVAUPDATE=0\\\" /qn'
     ")
     IF (CMAKE_CL_64)
       SET (CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS "
