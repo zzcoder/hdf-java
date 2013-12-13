@@ -1,23 +1,18 @@
-The current HDF-Java products can be downloaded at http://www.hdfgroup.org/downloads/
-
-Files included in the release:
-/src            -- include all source files
-/bin/$platform  -- pre-built binaries for specific platforms (limited platforms)
+The current HDF-Java products can be downloaded at:
+        http://www.hdfgroup.org/downloads/
 
 
 HDF Libraries
-==============================================================================================
+=============================================================================
 This release was built and tested with HDF 4.2.9 and HDF5 1.8.12. 
-$YOUR-HDF-JAVA-HOME/lib/<platform>/*.settings files include information on the platform 
-version and compiler used to build HDF4 and HDF5.
 
 JDK
-==============================================================================================
+=============================================================================
 This release was built and tested with JDK 1.7. 
 
 
 Platforms
-==============================================================================================
+=============================================================================
 This release was built and tested for the following platforms:
 
 64-bit distribution -- runs on 64-bit systems with 64-bit JRE only
@@ -31,22 +26,24 @@ This release was built and tested for the following platforms:
 
 
 Changes to the Java HDF5 Interface(JHI5)
-==============================================================================================
+=============================================================================
     * New utility function H5export_dataset exports data from a dataset
     * H5get_filter can handle multpile cd_values
-    * H5Xclose functions will reurn 0 when a negative ID is used, instead of throwing an exception.
+    * H5Xclose functions will reurn 0 when a negative ID is used, instead of
+      throwing an exception.
 
 
 Major Enhancements
-==============================================================================================  
+=============================================================================  
     * Added a feature to export data from the treeview
-    * HDFView table and Image window title bars indicate if the array was opened in 1-based or 0-based way.
+    * HDFView table and Image window title bars indicate if the array was
+      opened in 1-based or 0-based way.
     * HDFView added ability to specify format for scientific notation
     * Added logging using the slf4j package
 
 
 Major Bug Fixes
-============================================================================================== 
+============================================================================= 
     * Fixed HDFView reload bug
     * Fixed HDFView exports of H5T_STD_U8BE data to a binary file
     * Fixed HDFView command line options
@@ -54,7 +51,7 @@ Major Bug Fixes
 
 
 Limitations / Known Problems
-==============================================================================================  
+=============================================================================  
     * HDFView does not support undo operations; the editing results go to 
       files and cannot be recovered.
     * HDFView does not support conversion between HDF4 and HDF5.
@@ -66,13 +63,15 @@ Limitations / Known Problems
     * HDF (4&5) APIs with function pointers are not supported in HDF-Java. 
 
     * Specific to HDF4:
-        -- Deleting an object or attribute from an HDF4 file is not supported. 
-           Deleting objects in HDF4 may leave dangling objects or corrupt 
-           the file.
+        -- Deleting an object or attribute from an HDF4 file is not
+           supported. Deleting objects in HDF4 may leave dangling objects
+           or corrupt the file.
         -- HDFView cannot modify compressed HDF4 SDS if the rank is greater 
            than two because the existing compression algorithms supported 
-           by HDF do not allow partial modification to a compressed data stream.
-        -- HDFView cannot modify HDF4 vdata. HDF4 only writes vdata by records. 
+           by HDF do not allow partial modification to a compressed 
+           data stream.
+        -- HDFView cannot modify HDF4 vdata. HDF4 only writes vdata by 
+           records. 
            HDF-Java reads data by vdata fields because HDF-Java does not 
            support the data structure of a vdata record.
 
@@ -86,11 +85,17 @@ Limitations / Known Problems
            where each data point is a single variable-length string.
         -- There is no single JNI function that can handle HDF5 library 
            functions that have different return types for version 1.6 and 
-           version 1.8. An additional function has been added to the JNI. For example,
-             * public synchronized static native int H5Tget_size(int type_id)
-             * public synchronized static native long H5Tget_size_long(int type_id)
+           version 1.8. An additional function has been added to the JNI. 
+           For example,
+             * public synchronized static native 
+                      int H5Tget_size(int type_id)
+             * public synchronized static native 
+                      long H5Tget_size_long(int type_id)
 
 Other Notes
-==============================================================================================  
-
+=============================================================================  
+    * HDF5 1.8.12 now supports dynamically loaded filters plugins. 
+      The filter plugin must be in the default platform location or specified 
+      with the environment variable HDF5_PLUGIN_PATH.
+    
 
