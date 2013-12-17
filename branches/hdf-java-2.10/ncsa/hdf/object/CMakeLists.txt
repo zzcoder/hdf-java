@@ -10,6 +10,10 @@ INCLUDE_DIRECTORIES (
     ${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/${HDFJAVA_NCSA_OBJECT_LIB_CORENAME}.dir/ncsa/hdf/object
 )
 
+SET_GLOBAL_VARIABLE (HDFJAVA_SOURCE_PACKAGES
+    "${HDFJAVA_SOURCE_PACKAGES};ncsa.hdf.object;ncsa.hdf.object.h4;ncsa.hdf.object.h5"
+)
+
 SET (HDFJAVA_NCSA_HDF_OBJECT_SRCS
     Attribute.java
     CompoundDS.java
