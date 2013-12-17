@@ -230,6 +230,7 @@ ENDIF (NOT HDFJAVA_EXPORTED_TARGETS)
 SET_GLOBAL_VARIABLE (HDFJAVA_LIBRARIES_TO_EXPORT "")
 SET_GLOBAL_VARIABLE (HDFJAVA_JARS_TO_EXPORT "")
 SET_GLOBAL_VARIABLE (HDFJAVA_HDFVIEWJAR_TO_EXPORT "${HDFJAVA_LOGGING_JAR}")
+SET_GLOBAL_VARIABLE (HDFJAVA_SOURCE_PACKAGES "")
 
 #-----------------------------------------------------------------------------
 # Run all the CMake configuration tests for our build environment
@@ -359,16 +360,6 @@ ENDIF (HDFJAVA_PACK_EXAMPLES)
 # Add Required JavaDocs
 #-----------------------------------------------------------------------------
 IF (CREATE_JAVADOCS)
-  SET (HDFJAVA_SOURCE_PACKAGES
-      ncsa.hdf.hdflib
-      ncsa.hdf.hdf5lib.callbacks
-      ncsa.hdf.hdf5lib.exceptions
-      ncsa.hdf.hdf5lib.structs
-      ncsa.hdf.hdf5lib 
-      ncsa.hdf.object
-      ncsa.hdf.object.h4
-      ncsa.hdf.object.h5
-  )
   SET (HDFVIEW_TEST_CLASSPATH "${${HDFJAVA_NCSA_VIEW_LIB_TARGET}_JAR_FILE}${CMAKE_JAVA_INCLUDE_FLAG_SEP}${HDFJAVA_LOGGING_SIMPLE_JAR}${CMAKE_JAVA_INCLUDE_FLAG_SEP}${HDFJAVA_LOGGING_JAR}${CMAKE_JAVA_INCLUDE_FLAG_SEP}${HDFJAVA_LIB_DIR}")
   CREATE_JAVADOC (hdf_java_doc
       PACKAGES ${HDFJAVA_SOURCE_PACKAGES}
