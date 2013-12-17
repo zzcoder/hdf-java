@@ -10,6 +10,10 @@ INCLUDE_DIRECTORIES(
     ${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/${HDFJAVA_NCSA_HDF5_LIB_CORENAME}.dir/ncsa/hdf/hdf5lib
 )
 
+SET_GLOBAL_VARIABLE (HDFJAVA_SOURCE_PACKAGES
+    "${HDFJAVA_SOURCE_PACKAGES};ncsa.hdf.hdf5lib.callbacks;ncsa.hdf.hdf5lib.exceptions;ncsa.hdf.hdf5lib.structs;ncsa.hdf.hdf5lib"
+)
+
 SET (HDFJAVA_NCSA_HDF_HDF5_CALLBACKS_SRCS
     callbacks/H5D_iterate_cb.java
     callbacks/H5D_iterate_t.java
