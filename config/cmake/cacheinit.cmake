@@ -4,9 +4,9 @@
 # EXTERNAL cache entries
 ########################
 
-SET (BUILD_SHARED_LIBS ON CACHE BOOL "Build Shared Libraries" FORCE)
+SET (BUILD_SHARED_LIBS OFF CACHE BOOL "Build Shared Libraries" FORCE)
 
-SET (USE_SHARED_LIBS ON CACHE BOOL "Use Shared Libraries" FORCE)
+SET (USE_SHARED_LIBS OFF CACHE BOOL "Use Shared Libraries" FORCE)
 
 SET (BUILD_TESTING ON CACHE BOOL "Build HDFJAVA Unit Testing" FORCE)
 
