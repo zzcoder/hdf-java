@@ -168,7 +168,7 @@ SET (HDFJAVA_PACKAGE_BUGREPORT "help@hdfgroup.org")
 #-----------------------------------------------------------------------------
 IF (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
   IF(CMAKE_HOST_UNIX)
-    SET(CMAKE_INSTALL_PREFIX "/usr"
+    SET(CMAKE_INSTALL_PREFIX "/HDF_Group/${HDFJAVA_PACKAGE_NAME}/${HDFJAVA_PACKAGE_VERSION}"
       CACHE PATH "Install path prefix, prepended onto install directories." FORCE)
   ELSE(CMAKE_HOST_UNIX)
     GetDefaultWindowsPrefixBase(CMAKE_GENERIC_PROGRAM_FILES)
