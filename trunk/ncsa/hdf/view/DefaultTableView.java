@@ -1173,6 +1173,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
         int nrow = table.getRowCount();
         int ncol = table.getColumnCount();
 
+		log.trace("DefaultTableView showLineplot: {} - {}", nrow, ncol);
         LineplotOption lpo = new LineplotOption((JFrame) viewer, 
                 "Line Plot Options -- " + dataset.getName(), 
                 nrow, ncol);
@@ -1395,6 +1396,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
         }
 
         int size = selectedCols.length * selectedRows.length;
+		log.trace("DefaultTableView getSelectedScalarData: {}", size);
 
         // the whole table is selected
         if ((table.getColumnCount() == selectedCols.length) && (table.getRowCount() == selectedRows.length)) {
@@ -1437,6 +1439,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
             JOptionPane.showMessageDialog(this, "Unsupported data type.", getTitle(), JOptionPane.ERROR_MESSAGE);
             return null;
         }
+		log.trace("DefaultTableView getSelectedScalarData: selectedData={}", selectedData);
 
         table.getSelectedRow();
         table.getSelectedColumn();
@@ -1492,6 +1495,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
         if (cIndex >= 0) {
             nt = cName.charAt(cIndex + 1);
         }
+		log.trace("DefaultTableView getSelectedCompoundData: size={} cName={} nt={}", size, cName, nt);
 
         if (nt == 'B') {
             selectedData = new byte[size];
@@ -1516,6 +1520,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
             JOptionPane.showMessageDialog(this, "Unsupported data type.", getTitle(), JOptionPane.ERROR_MESSAGE);
             return null;
         }
+		log.trace("DefaultTableView getSelectedCompoundData: selectedData={}", selectedData);
 
         System.arraycopy(colData, 0, selectedData, 0, size);
 
@@ -1680,7 +1685,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
             @Override
 			public Object getValueAt(int row, int column) {
                 if (startEditing[0]) return "";
-        		log.trace("createTable:AbstractTableModel:getValueAt start");
+        		log.trace("ScalarDS:createTable:AbstractTableModel:getValueAt({},{}) start", row, column);
 
                 if (isArray) {
                     // ARRAY dataset
@@ -1734,7 +1739,11 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
                     theValue = Array.get(dataValue, index);
             		log.trace("createTable:AbstractTableModel:getValueAt index={} isStr={} isUINT64={}", index, isStr, isUINT64);
 
-                    if (isStr) return theValue;
+//                    if (isRegRef)
+//                        showRegRefData((String) theValue);
+//                    else 
+                    	if (isStr) 
+                    	return theValue;
 
                     if (isUINT64) {
                         Long l = (Long) theValue;
@@ -1833,12 +1842,18 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
                     cellLabel.setText(String.valueOf(rowStart + indexBase + row * rowStride) + ", "
                             + table.getColumnName(column) + "  =  ");
 
+            		log.trace("JTable.ScalarDS isCellSelected isRegRef={} isObjRef={}", isRegRef, isObjRef);
                     Object val = getValueAt(row, column);
                     String strVal = null;
 
                     if (isRegRef) {
                         if(val != null && ((String)val).compareTo("NULL")!=0) {
                             String reg = (String)val;
+                            boolean isPointSelection = (reg.indexOf('-') <= 0);
+
+                            // find the object location
+                            String oidStr = reg.substring(reg.indexOf('/'), reg.indexOf(' '));
+                    		log.trace("JTable.ScalarDS isCellSelected: isPointSelection={} oidStr={}", isPointSelection, oidStr);
 
                             // decode the region selection
                             String regStr = reg.substring(reg.indexOf('{') + 1, reg.indexOf('}'));
@@ -1846,8 +1861,234 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
                                 strVal = null;
                             }
                             else {
-                                // decode the region selection
-                                strVal = reg.substring(reg.indexOf('}') + 1);
+                            	reg.substring(reg.indexOf('}') + 1);
+
+	                            StringTokenizer st = new StringTokenizer(regStr);
+	                            int nSelections = st.countTokens();
+	                            if (nSelections <= 0) { // no selection
+	                                strVal = null;
+	                            }
+	                            else {
+	                            	log.trace("JTable.ScalarDS isCellSelected: nSelections={}", nSelections);
+
+	                            	HObject obj = FileFormat.findObject(dataset.getFileFormat(), oidStr);
+	                            	if (obj == null || !(obj instanceof ScalarDS)) { // no selection
+	                            		strVal = null;
+	                            	}
+	                            	else {
+	                            		ScalarDS dset = (ScalarDS) obj;
+	                                    try {
+	                                        dset.init();
+	                                    }
+	                                    catch (Exception ex) {
+	                                        log.debug("reference dset did not init()", ex);
+	                                    }
+	                            		StringBuffer selectionSB = new StringBuffer();
+	                            		StringBuffer strvalSB = new StringBuffer();
+
+	                            		int idx = 0;
+	                            		while (st.hasMoreTokens()) {
+	                            			log.trace("JTable.ScalarDS isCellSelected: st.hasMoreTokens() begin");
+
+	                            			int rank = dset.getRank();
+	                                        long start[] = dset.getStartDims();
+	                                        long count[] = dset.getSelectedDims();
+	                            			//long count[] = new long[rank];
+
+	                            			// set the selected dimension sizes based on the region selection
+	                            			// info.
+	                            			String sizeStr = null;
+	                            			String token = st.nextToken();
+
+	                            			selectionSB.setLength(0);
+	                            			selectionSB.append(token);
+	                            			log.trace("JTable.ScalarDS isCellSelected: selectionSB={}", selectionSB);
+
+	                            			token = token.replace('(', ' ');
+	                            			token = token.replace(')', ' ');
+	                            			if (isPointSelection) {
+	                            				// point selection
+	                            				String[] tmp = token.split(",");
+	                            				for (int x=0; x<tmp.length; x++) {
+	                                                count[x] = 1;
+	                                                sizeStr = tmp[x].trim();
+	                            					start[x] = Long.valueOf(sizeStr);
+	                            					log.trace("JTable.ScalarDS isCellSelected: point sel={}", tmp[x]);
+	                            				}
+	                            			}
+	                            			else {
+	                            				// rectangle selection
+	                            				String startStr = token.substring(0, token.indexOf('-'));
+	                            				String endStr = token.substring(token.indexOf('-') + 1);
+	                            				log.trace("JTable.ScalarDS isCellSelected: rect sel with startStr={} endStr={}", startStr, endStr);
+	                            				String[] tmp = startStr.split(",");
+	                            				log.trace("JTable.ScalarDS isCellSelected: tmp with length={} rank={}", tmp.length, rank);
+	                            				for (int x=0; x<tmp.length; x++) {
+	                                                sizeStr = tmp[x].trim();
+	                            					start[x] = Long.valueOf(sizeStr);
+	                            					log.trace("JTable.ScalarDS isCellSelected: rect start={}", tmp[x]);
+	                            				}
+	                            				tmp = endStr.split(",");
+	                            				for (int x=0; x<tmp.length; x++) {
+	                                                sizeStr = tmp[x].trim();
+	                                                count[x] = Long.valueOf(sizeStr) - start[x] + 1;
+	                            					log.trace("JTable.ScalarDS isCellSelected: rect end={} count={}", tmp[x], count[x]);
+	                            				}
+	                            			}
+	                            			log.trace("JTable.ScalarDS isCellSelected: selection inited");
+
+	                            			Object dbuf = null;
+	                            			try {
+	                            				dbuf = dset.getData();
+	                            			}
+	                            			catch (Exception ex) {
+	                            				JOptionPane.showMessageDialog(this, ex, "Region Reference:" + getTitle(), JOptionPane.ERROR_MESSAGE);
+	                            			}
+	                            			
+	                            			// Convert dbuf to a displayable string
+	                            			String cName = dbuf.getClass().getName();
+	                            			int cIndex = cName.lastIndexOf("[");
+	                            			if (cIndex >= 0) {
+	                            				NT = cName.charAt(cIndex + 1);
+	                            			}
+	                            			log.debug("JTable.ScalarDS isCellSelected: cName={} NT={}", cName, NT);
+
+	                            			if(idx > 0)
+	                            				strvalSB.append(',');
+
+	                            			// convert numerical data into char
+	                            			// only possible cases are byte[] and short[] (converted from unsigned
+	                            			// byte)
+	                            	        Datatype dtype = dset.getDatatype();
+                            	            Datatype baseType = dtype.getBasetype();
+	                            			log.debug("JTable.ScalarDS isCellSelected: dtype={} baseType={}", dtype.getDatatypeDescription(), baseType);
+	                            			if(baseType == null) baseType = dtype;
+	                            			if ((dtype.getDatatypeClass() == Datatype.CLASS_ARRAY &&
+	                            					baseType.getDatatypeClass() == Datatype.CLASS_CHAR) && 
+	                            				((NT == 'B') || (NT == 'S'))) {
+	                            				int n = Array.getLength(dbuf);
+	                                       		log.trace("JTable.ScalarDS isCellSelected charData length = {}",n);
+	                            				char[] charData = new char[n];
+	                            				for (int i = 0; i < n; i++) {
+	                            					if (NT == 'B') {
+	                            						charData[i] = (char) Array.getByte(dbuf, i);
+	                            					}
+	                            					else if (NT == 'S') {
+	                            						charData[i] = (char) Array.getShort(dbuf, i);
+	                            					}
+	                            				}
+
+	                            				strvalSB.append(charData);
+	                                       		log.trace("JTable.ScalarDS isCellSelected charData");// = {}", strvalSB);
+	                            			}
+	                            	        else {
+	                                            // numerical values
+	                            	        	if (dtype.getDatatypeClass() == Datatype.CLASS_ARRAY)
+	                            	        		dtype = baseType;
+	                                            boolean is_unsigned = dtype.isUnsigned();
+	                                            int n = Array.getLength(dbuf);
+	                                            if (is_unsigned) {
+	                                            	switch (NT) {
+	                                            	case 'B':
+	                                            		byte[] barray = (byte[]) dbuf;
+	                                            		short sValue = barray[0];
+	                                            		if (sValue < 0) {
+	                                            			sValue += 256;
+	                                            		}
+	                                            		strvalSB.append(sValue);
+	                                            		for (int i = 1; i < n; i++) {
+	                                            			strvalSB.append(',');
+	                                            			sValue = barray[i];
+	                                            			if (sValue < 0) {
+	                                            				sValue += 256;
+	                                            			}
+	                                            			strvalSB.append(sValue);
+	                                            		}
+	                                            		break;
+	                                            	case 'S':
+	                                            		short[] sarray = (short[]) dbuf;
+	                                            		int iValue = sarray[0];
+	                                            		if (iValue < 0) {
+	                                            			iValue += 65536;
+	                                            		}
+	                                            		strvalSB.append(iValue);
+	                                            		for (int i = 1; i < n; i++) {
+	                                            			strvalSB.append(',');
+	                                            			iValue = sarray[i];
+	                                            			if (iValue < 0) {
+	                                            				iValue += 65536;
+	                                            			}
+	                                            			strvalSB.append(iValue);
+	                                            		}
+	                                            		break;
+	                                            	case 'I':
+	                                            		int[] iarray = (int[]) dbuf;
+	                                            		long lValue = iarray[0];
+	                                            		if (lValue < 0) {
+	                                            			lValue += 4294967296L;
+	                                            		}
+	                                            		strvalSB.append(lValue);
+	                                            		for (int i = 1; i < n; i++) {
+	                                            			strvalSB.append(',');
+	                                            			lValue = iarray[i];
+	                                            			if (lValue < 0) {
+	                                            				lValue += 4294967296L;
+	                                            			}
+	                                            			strvalSB.append(lValue);
+	                                            		}
+	                                            		break;
+	                                            	case 'J':
+	                                            		long[] larray = (long[]) dbuf;
+	                                            		Long l = (Long) larray[0];
+	                                            		String theValue = Long.toString(l);
+	                                            		if (l < 0) {
+	                                            			l = (l << 1) >>> 1;
+	                                            			BigInteger big1 = new BigInteger("9223372036854775808"); // 2^65
+	                                            			BigInteger big2 = new BigInteger(l.toString());
+	                                            			BigInteger big = big1.add(big2);
+	                                            			theValue = big.toString();
+	                                            		}
+	                                            		strvalSB.append(theValue);
+	                                            		for (int i = 1; i < n; i++) {
+	                                            			strvalSB.append(',');
+	                                            			l = (Long) larray[i];
+	                                            			theValue = Long.toString(l);
+	                                            			if (l < 0) {
+	                                            				l = (l << 1) >>> 1;
+	                                            				BigInteger big1 = new BigInteger("9223372036854775808"); // 2^65
+	                                            				BigInteger big2 = new BigInteger(l.toString());
+	                                            				BigInteger big = big1.add(big2);
+	                                            				theValue = big.toString();
+	                                            			}
+	                                            			strvalSB.append(theValue);
+	                                            		}
+	                                            		break;
+	                                            	default:
+	                                            		strvalSB.append(Array.get(dbuf, 0));
+	                                            		for (int i = 1; i < n; i++) {
+	                                            			strvalSB.append(',');
+	                                            			strvalSB.append(Array.get(dbuf, i));
+	                                            		}
+	                                            		break;
+	                                            	}
+	                                            }
+	                                            else {
+	                                            	for (int x = 0; x < n; x++) {
+	                                            		Object theValue = Array.get(dbuf, x);
+	                                            		if(x > 0) strvalSB.append(',');
+	                                            		strvalSB.append(theValue);
+	                                            	}
+	                                            }
+	                                       		log.trace("JTable.ScalarDS isCellSelected byteString");// = {}", strvalSB);
+	                            	        }
+	                            			idx++;
+	                            			dset.clearData();
+	                            			log.trace("JTable.ScalarDS isCellSelected: st.hasMoreTokens() end");// strvalSB = {}", strvalSB);
+	                            		} // while (st.hasMoreTokens())
+	                            		strVal = strvalSB.toString();
+                            			log.trace("JTable.ScalarDS isCellSelected: st.hasMoreTokens() end");// value = {}", strVal);
+	                            	}
+	                            }
                             }
                         }
                         else {
@@ -1870,6 +2111,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
 
                     if (strVal == null && val != null) strVal = val.toString();
 
+            		log.trace("JTable.ScalarDS isCellSelected finish");// value = {}",strVal);
                     cellValueField.setText(strVal);
                 }
 
@@ -1985,6 +2227,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
 
                 int fieldIdx = col;
                 int rowIdx = row;
+        		log.trace("CompoundDS:createTable:AbstractTableModel:getValueAt({},{}) start", row, col);
 
                 if (nSubColumns > 1) { // multi-dimension compound dataset
                     int colIdx = col / nFields;
@@ -2108,6 +2351,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
                 if ((lastSelectedRow == row) && (lastSelectedColumn == column)) {
                     return super.isCellSelected(row, column);
                 }
+        		log.trace("JTable.CompoundDS isCellSelected row={} column={}", row, column);
 
                 lastSelectedRow = row;
                 lastSelectedColumn = column;
@@ -2732,6 +2976,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
             return;
         }
         String fname = choosedFile.getAbsolutePath();
+		log.trace("DefaultTableView saveAsText: file={}", fname);
 
         // check if the file is in use
         List fileList = viewer.getTreeView().getCurrentFiles();
@@ -2822,6 +3067,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
             return;
         }
         String fname = choosedFile.getAbsolutePath();
+		log.trace("DefaultTableView saveAsBinary: file={}", fname);
 
         // check if the file is in use
         List fileList = viewer.getTreeView().getCurrentFiles();
@@ -3072,6 +3318,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
         if (!isValueChanged) {
             return;
         }
+		log.trace("DefaultTableView updateValueInFile");
 
         try {
             dataset.write();
@@ -3206,6 +3453,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
         else {
             i = row * table.getColumnCount() + col;
         }
+		log.trace("DefaultTableView updateScalarData");
 
         ScalarDS sds = (ScalarDS) dataset;
         boolean isUnsigned = sds.isUnsigned();
@@ -3312,6 +3560,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
         if (!(dataset instanceof CompoundDS) || (cellValue == null) || ((cellValue = cellValue.trim()) == null)) {
             return;
         }
+		log.trace("DefaultTableView updateCompoundData");
 
         CompoundDS compDS = (CompoundDS) dataset;
         List cdata = (List) compDS.getData();
@@ -3700,6 +3949,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
 
                 @Override
 				public Object getValueAt(int row, int column) {
+            		log.trace("RowHeader:AbstractTableModel:getValueAt");
                     return String.valueOf(start + indexBase + row * stride);
                 }
             };
@@ -3983,11 +4233,12 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
      * in a separate spreadsheet.
      * 
      * @param ref
-     *            the array of strings that contain the reg. ref information.
+     *            the array of strings that contain the object reference information.
      * 
      */
     private void showObjRefData(long ref) {
         long[] oid = { ref };
+		log.trace("DefaultTableView showObjRefData: ref={}", ref);
 
         HObject obj = FileFormat.findObject(dataset.getFileFormat(), oid);
         if (obj == null || !(obj instanceof ScalarDS)) return;
@@ -4013,8 +4264,6 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
         }
 
         if (data == null) return;
-
-        new StringBuffer();
 
         JInternalFrame dataView = null;
         HashMap map = new HashMap(1);
@@ -4060,11 +4309,13 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
         boolean isPointSelection = false;
 
         if (reg == null || (reg.length() <= 0) || (reg.compareTo("NULL")==0)) return;
+		log.trace("DefaultTableView showRegRefData: reg={}", reg);
 
         isPointSelection = (reg.indexOf('-') <= 0);
 
         // find the object location
         String oidStr = reg.substring(reg.indexOf('/'), reg.indexOf(' '));
+		log.trace("DefaultTableView showRegRefData: isPointSelection={} oidStr={}", isPointSelection, oidStr);
 
         // decode the region selection
         String regStr = reg.substring(reg.indexOf('{') + 1, reg.indexOf('}'));
@@ -4075,6 +4326,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
         StringTokenizer st = new StringTokenizer(regStr);
         int nSelections = st.countTokens();
         if (nSelections <= 0) return; // no selection
+		log.trace("DefaultTableView showRegRefData: nSelections={}", nSelections);
 
         HObject obj = FileFormat.findObject(dataset.getFileFormat(), oidStr);
         if (obj == null || !(obj instanceof ScalarDS)) return;
@@ -4097,8 +4349,10 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
         // load each selection into a separate dataset and display it in
         // a separate spreadsheet
         StringBuffer titleSB = new StringBuffer();
+		log.trace("DefaultTableView showRegRefData: titleSB created");
 
         while (st.hasMoreTokens()) {
+    		log.trace("DefaultTableView showRegRefData: st.hasMoreTokens() begin");
             try {
                 dset_copy = (ScalarDS) constructor.newInstance(paramObj);
             }
@@ -4128,6 +4382,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
             titleSB.setLength(0);
             titleSB.append(token);
             titleSB.append(" at ");
+    		log.trace("DefaultTableView showRegRefData: titleSB={}", titleSB);
 
             token = token.replace('(', ' ');
             token = token.replace(')', ' ');
@@ -4160,6 +4415,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
                     idx++;
                 }
             }
+    		log.trace("DefaultTableView showRegRefData: selection inited");
 
             try {
                 dset_copy.getData();
@@ -4187,6 +4443,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
                 viewer.addDataView((DataView) dataView);
                 dataView.setTitle(dataView.getTitle() + "; "+titleSB.toString());
             }
+    		log.trace("DefaultTableView showRegRefData: st.hasMoreTokens() end");
         } // while (st.hasMoreTokens())
     } // private void showRegRefData(String reg)
 }

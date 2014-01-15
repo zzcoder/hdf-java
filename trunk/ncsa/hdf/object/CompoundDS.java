@@ -331,13 +331,13 @@ public abstract class CompoundDS extends Dataset {
      *     }
      * </pre>
      * 
-     * getMemeberDims(2) returns an array of {2, 3}, while getMemeberDims(1)
-     * returns an array of {5}, getMemeberDims(0) returns null.
+     * getMemberDims(2) returns an array of {2, 3}, while getMemberDims(1)
+     * returns an array of {5}, getMemberDims(0) returns null.
      * 
      * @return the dimension sizes of of the i-th member, null if the compound
      *         member is not an array.
      */
-    public final int[] getMemeberDims(int i) {
+    public final int[] getMemberDims(int i) {
         if (memberDims == null) {
             return null;
         }

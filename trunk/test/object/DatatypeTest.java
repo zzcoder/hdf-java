@@ -3,15 +3,22 @@
  */
 package test.object;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
+import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.object.Datatype;
 import ncsa.hdf.object.h5.H5Datatype;
+
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * @author rsinha
  * 
  */
-public class DatatypeTest extends TestCase {
+public class DatatypeTest {
     private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DatatypeTest.class);
 
     private Datatype[] baseTypes = null;
@@ -86,21 +93,22 @@ public class DatatypeTest extends TestCase {
             "Unknown", "Unknown", "Unknown", 
             "Unknown", "Unknown", "Unknown", 
             "Unknown", "Unknown", "Unknown" };
+    
+    @AfterClass
+    public static void checkIDs() throws Exception {
+		try {
+			int openID = H5.getOpenIDCount();
+			if(openID>0)
+				System.out.println("Number of IDs still open: "+ openID);
+		} 
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
 
-    /**
-     * @param arg0
-     */
-    public DatatypeTest(String arg0) {
-        super(arg0);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see junit.framework.TestCase#setUp()
-     */
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void createArrays() throws Exception {
         baseTypes = new Datatype[n_orders * n_signs * (n_classes + 5)];
         int counter = 0;
         for (int i = 0; i < n_classes; i++) {
@@ -133,21 +141,14 @@ public class DatatypeTest extends TestCase {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see junit.framework.TestCase#tearDown()
-     */
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
 
     /**
      * Test method for {@link ncsa.hdf.object.Datatype#getDatatypeClass()}.
      * <p>
      * We test for every combination of class, size and possible signs.
      */
-    public final void testGetDatatypeClass() {
+    @Test
+    public void testGetDatatypeClass() {
     	log.debug("testGetDatatypeClass");
         int counter = 0;
         for (int i = 0; i < n_classes; i++) {
@@ -181,7 +182,8 @@ public class DatatypeTest extends TestCase {
      * <p>
      * We test for every combination of class, size and possible signs.
      */
-    public final void testGetDatatypeSize() {
+    @Test
+    public void testGetDatatypeSize() {
     	log.debug("testGetDatatypeSize");
         int counter = 0;
         for (int i = 0; i < n_classes; i++) {
@@ -215,7 +217,8 @@ public class DatatypeTest extends TestCase {
      * <p>
      * We test for every combination of class, size and possible signs.
      */
-    public final void testGetDatatypeOrder() {
+    @Test
+    public void testGetDatatypeOrder() {
     	log.debug("testGetDatatypeOrder");
         int counter = 0;
         for (int i = 0; i < n_classes; i++) {
@@ -249,7 +252,8 @@ public class DatatypeTest extends TestCase {
      * <p>
      * We test for every combination of class, size and possible signs.
      */
-    public final void testGetDatatypeSign() {
+    @Test
+    public void testGetDatatypeSign() {
     	log.debug("testGetDatatypeSign");
         int counter = 0;
         for (int i = 0; i < n_classes; i++) {
@@ -284,7 +288,8 @@ public class DatatypeTest extends TestCase {
      * <p>
      * create a new enum data type set it to two different values and check it.
      */
-    public final void testSetEnumMembers() {
+    @Test
+    public void testSetEnumMembers() {
     	log.debug("testSetEnumMembers");
         Datatype ed = new H5Datatype(Datatype.CLASS_ENUM, 2,
                 Datatype.ORDER_NONE, Datatype.NSGN);
@@ -297,7 +302,8 @@ public class DatatypeTest extends TestCase {
      * <p>
      * look at {@link ncsa.hdf.object.Datatype#setEnumMembers(java.lang.String)}.
      */
-    public final void testGetEnumMembers() {
+    @Test
+    public void testGetEnumMembers() {
     	log.debug("testGetEnumMembers");
         testSetEnumMembers();
     }
@@ -309,7 +315,8 @@ public class DatatypeTest extends TestCase {
      * <p>
      * We test for every combination of class, size and possible signs.
      */
-    public final void testGetDatatypeDescription() {
+    @Test
+    public void testGetDatatypeDescription() {
     	log.debug("testGetDatatypeDescription");
         int counter = 0;
         for (int i = 0; i < n_classes; i++) {
@@ -345,7 +352,8 @@ public class DatatypeTest extends TestCase {
      * <p>
      * We test for every combination of class, size and possible signs.
      */
-    public final void testIsUnsigned() {
+    @Test
+    public void testIsUnsigned() {
     	log.debug("testIsUnsigned");
         int counter = 0;
         for (int i = 0; i < n_classes; i++) {

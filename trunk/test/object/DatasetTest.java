@@ -3,20 +3,31 @@
  */
 package test.object;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.util.Arrays;
 
-import junit.framework.TestCase;
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 import ncsa.hdf.object.Dataset;
 import ncsa.hdf.object.FileFormat;
 import ncsa.hdf.object.h5.H5File;
 
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
 /**
  * @author rsinha
  * 
  */
-public class DatasetTest extends TestCase {
+public class DatasetTest {
     private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DatasetTest.class);
     private static final H5File H5FILE = new H5File();
 
@@ -27,21 +38,32 @@ public class DatasetTest extends TestCase {
             H5TestFile.NAME_DATASET_IMAGE, H5TestFile.NAME_DATASET_COMPOUND };
     private Dataset[] dSets = new Dataset[dsetNames.length];
 
-    /**
-     * @param arg0
-     */
-    public DatasetTest(String arg0) {
-        super(arg0);
+    @BeforeClass
+    public static void createFile() throws Exception {
+		try {
+			H5TestFile.createTestFile(null);
+		}
+		catch (final Exception ex) {
+			System.out.println("*** Unable to create HDF5 test file. " + ex);
+			System.exit(-1);
+		}
     }
+    
+    @AfterClass
+    public static void checkIDs() throws Exception {
+		try {
+			int openID = H5.getOpenIDCount();
+			if(openID>0)
+				System.out.println("Number of IDs still open: "+ openID);
+		} 
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see junit.framework.TestCase#setUp()
-     */
-    @Override
-	protected void setUp() throws Exception {
-        super.setUp();
+    }
+    
+    @Before
+    public void openFiles() throws Exception {
         testFile = (H5File) H5FILE.open(H5TestFile.NAME_FILE_H5,
                 FileFormat.READ);
         assertNotNull(testFile);
@@ -53,15 +75,8 @@ public class DatasetTest extends TestCase {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see junit.framework.TestCase#tearDown()
-     */
-    @Override
-	protected void tearDown() throws Exception {
-        super.tearDown();
-
+    @After
+	public void removeFiles() throws Exception {
         if (testFile != null) {
             try {
                 testFile.close();
@@ -89,7 +104,8 @@ public class DatasetTest extends TestCase {
      * <li>checking the width.
      * </ul>
      */
-    public final void testMetadataAssociatedWithDataset() {
+    @Test
+    public void testMetadataAssociatedWithDataset() {
     	log.debug("testMetadataAssociatedWithDataset");
         for (int i = 0; i < dsetNames.length; i++) {
             assertNull(dSets[i].getChunkSize());
@@ -166,7 +182,8 @@ public class DatasetTest extends TestCase {
      * <li>long[] uint32 = {4294967295L, 2147483648L, 2147483647, 0};
      * </ul>
      */
-    public final void testConvertFromUnsignedC() {
+    @Test
+    public void testConvertFromUnsignedC() {
     	log.debug("testConvertFromUnsignedC");
         byte[] int8 = { -1, -128, 127, 0 };
         short[] int16 = { -1, -32768, 32767, 0 };

@@ -1,6 +1,3 @@
-/**
- * 
- */
 package test.object;
 
 import java.util.Vector;

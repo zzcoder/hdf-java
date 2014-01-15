@@ -1,7 +1,10 @@
-/**
- * 
- */
 package test.object;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -12,7 +15,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Vector;
 
-import junit.framework.TestCase;
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 import ncsa.hdf.object.Attribute;
@@ -20,6 +22,12 @@ import ncsa.hdf.object.Datatype;
 import ncsa.hdf.object.FileFormat;
 import ncsa.hdf.object.h5.H5Datatype;
 import ncsa.hdf.object.h5.H5File;
+
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 /**
  * TestCase for H5Datatype.
@@ -69,7 +77,7 @@ import ncsa.hdf.object.h5.H5File;
  * 
  * @author Peter Cao, The HDF Group
  */
-public class H5DatatypeTest extends TestCase {
+public class H5DatatypeTest {
     private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H5DatatypeTest.class);
     private static final H5File H5FILE = new H5File();
     private static final int NLOOPS = 10;
@@ -85,22 +93,32 @@ public class H5DatatypeTest extends TestCase {
     private H5File testFile = null;
     private H5Datatype testDatatype = null;
 
-    /**
-     * @param arg0
-     */
-    public H5DatatypeTest(final String arg0) {
-        super(arg0);
+    @BeforeClass
+    public static void createFile() throws Exception {
+		try {
+			H5TestFile.createTestFile(null);
+		}
+		catch (final Exception ex) {
+			System.out.println("*** Unable to create HDF5 test file. " + ex);
+			System.exit(-1);
+		}
     }
+    
+    @AfterClass
+    public static void checkIDs() throws Exception {
+		try {
+			int openID = H5.getOpenIDCount();
+			if(openID>0)
+				System.out.println("Number of IDs still open: "+ openID);
+		} 
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see junit.framework.TestCase#setUp()
-     */
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-
+    }
+    
+    @Before
+    public void openFiles() throws Exception {
         typeInt = new H5Datatype(Datatype.CLASS_INTEGER,
                 H5TestFile.DATATYPE_SIZE, -1, -1);
         typeUInt = new H5Datatype(Datatype.CLASS_INTEGER,
@@ -120,15 +138,8 @@ public class H5DatatypeTest extends TestCase {
         assertNotNull(testDatatype);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see junit.framework.TestCase#tearDown()
-     */
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-
+    @After
+    public void removeFiles() throws Exception {
         if (testFile != null) {
             try {
                 testFile.close();
@@ -150,7 +161,8 @@ public class H5DatatypeTest extends TestCase {
      * <li>Repeat all above
      * </ul>
      */
-    public final void testOpen() {
+    @Test
+    public void testOpen() {
     	log.debug("testOpen");
         int tid = -1, tclass = -1, tsize = -1;
 
@@ -205,7 +217,8 @@ public class H5DatatypeTest extends TestCase {
      * <li>Repeat all above
      * </ul>
      */
-    public final void testClose() {
+    @Test
+    public void testClose() {
     	log.debug("testClose");
         int tid = -1, tclass = -1, tsize = -1;
 
@@ -265,7 +278,8 @@ public class H5DatatypeTest extends TestCase {
      * <li>Check the classes and sizes of the datatypes from toNative()
      * </ul>
      */
-    public final void testToNative() {
+    @Test
+    public void testToNative() {
     	log.debug("testToNative");
         int tid = -1, tclass = -1, tsize = -1;
 
@@ -358,7 +372,8 @@ public class H5DatatypeTest extends TestCase {
      * <li>Check the class and size of the datatype
      * </ul>
      */
-    public final void testFromNative() {
+    @Test
+    public void testFromNative() {
     	log.debug("testFromNative");
         int tid = -1;
         H5Datatype type = new H5Datatype(-1);
@@ -416,7 +431,8 @@ public class H5DatatypeTest extends TestCase {
      * <li>Check non-integer datatype
      * </ul>
      */
-    public final void testIsUnsigned() {
+    @Test
+    public void testIsUnsigned() {
     	log.debug("testIsUnsigned");
         assertFalse(typeInt.isUnsigned());
         assertFalse(typeFloat.isUnsigned());
@@ -433,7 +449,8 @@ public class H5DatatypeTest extends TestCase {
      * <li>Check the content of the attributes
      * </ul>
      */
-    public final void testGetMetadata() {
+    @Test
+    public void testGetMetadata() {
     	log.debug("testGetMetadata");
         Vector attrs = null;
 
@@ -492,7 +509,8 @@ public class H5DatatypeTest extends TestCase {
      * <li>Restore to the orginal state
      * </ul>
      */
-    public final void testWriteMetadata() {
+    @Test
+    public void testWriteMetadata() {
     	log.debug("testWriteMetadata");
         Vector attrs = null;
         Attribute attr = null;
@@ -642,7 +660,8 @@ public class H5DatatypeTest extends TestCase {
      * <li>Restore to the orginal state
      * </ul>
      */
-    public final void testRemoveMetadata() {
+    @Test
+    public void testRemoveMetadata() {
     	log.debug("testRemoveMetadata");
         Vector attrs = null;
         try {
@@ -708,7 +727,8 @@ public class H5DatatypeTest extends TestCase {
     /**
      * Test method for {@link ncsa.hdf.object.h5.H5Datatype} IsSerializable.
      */
-    public final void testIsSerializable() {
+    @Test
+    public void testIsSerializable() {
     	log.debug("testIsSerializable");
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         ObjectOutputStream oos;
@@ -736,7 +756,8 @@ public class H5DatatypeTest extends TestCase {
      * <li>Close the datatype
      * </ul>
      */
-    public final void testSerializeToDisk()
+    @Test
+    public void testSerializeToDisk()
     {
     	log.debug("testSerializeToDisk");
         try {

@@ -597,7 +597,7 @@ public class H5ScalarDS extends ScalarDS {
             //
             // (5/4/09) Modified the default dimension order. See bug#1379
             // We change the default order to the following. In most situation,
-            // users want to use the nature order of
+            // users want to use the natural order of
             // selectedIndex[0] = 0
             // selectedIndex[1] = 1
             // selectedIndex[2] = 2
@@ -779,6 +779,7 @@ public class H5ScalarDS extends ScalarDS {
     public byte[] readBytes() throws HDF5Exception {
         byte[] theData = null;
 
+    	log.trace("H5ScalarDS readBytes: start");
         if (rank <= 0) {
             init();
         }
@@ -807,6 +808,7 @@ public class H5ScalarDS extends ScalarDS {
 
         		tid = H5.H5Dget_type(did);
         		int size = H5.H5Tget_size(tid) * (int) lsize[0];
+            	log.trace("H5ScalarDS readBytes: size = {}", size);
         		theData = new byte[size];
         		H5.H5Dread(did, tid, mspace, fspace, HDF5Constants.H5P_DEFAULT, theData);
         	}
@@ -832,6 +834,7 @@ public class H5ScalarDS extends ScalarDS {
         		close(did);
         	}
         }
+    	log.trace("H5ScalarDS readBytes: finish");
 
         return theData;
     }
