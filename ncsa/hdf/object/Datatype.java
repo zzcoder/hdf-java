@@ -391,7 +391,7 @@ public abstract class Datatype extends HObject {
     /**
      * Returns the datatype of array element for ARRAY datatype.
      * <p>
-     * For example, a dataset set of ARRAY of inteter, The datatype of the
+     * For example, a dataset set of ARRAY of integer, The datatype of the
      * dataset is ARRAY. The datatype of the base type is integer.
      * 
      * @return the the datatype of array element for ARRAY datatype.

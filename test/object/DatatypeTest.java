@@ -10,8 +10,10 @@ import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.object.Datatype;
 import ncsa.hdf.object.h5.H5Datatype;
 
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
@@ -93,13 +95,25 @@ public class DatatypeTest {
             "Unknown", "Unknown", "Unknown", 
             "Unknown", "Unknown", "Unknown", 
             "Unknown", "Unknown", "Unknown" };
+
+    @BeforeClass
+    public static void createFile() throws Exception {
+		try {
+			int openID = H5.getOpenIDCount();
+			if(openID > 0)
+				System.out.println("DatatypeTest BeforeClass: Number of IDs still open: "+ openID);
+		} 
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
+    }
     
     @AfterClass
     public static void checkIDs() throws Exception {
 		try {
 			int openID = H5.getOpenIDCount();
 			if(openID>0)
-				System.out.println("Number of IDs still open: "+ openID);
+				System.out.println("DatatypeTest AfterClass: Number of IDs still open: "+ openID);
 		} 
 		catch (Exception ex) {
 			ex.printStackTrace();
@@ -109,6 +123,14 @@ public class DatatypeTest {
 
     @Before
     public void createArrays() throws Exception {
+		try {
+			int openID = H5.getOpenIDCount();
+			if(openID > 0)
+				log.debug("Before: Number of IDs still open: "+ openID);
+		} 
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
         baseTypes = new Datatype[n_orders * n_signs * (n_classes + 5)];
         int counter = 0;
         for (int i = 0; i < n_classes; i++) {
@@ -139,6 +161,18 @@ public class DatatypeTest {
                 }
             }
         }
+    }
+
+    @After
+    public void finish() throws Exception {
+		try {
+			int openID = H5.getOpenIDCount();
+			if(openID > 0)
+				log.debug("After: Number of IDs still open: "+ openID);
+		} 
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
     }
 
 
