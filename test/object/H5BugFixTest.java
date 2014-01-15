@@ -1,17 +1,24 @@
-/**
- * 
- */
 package test.object;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.Vector;
 
-import junit.framework.TestCase;
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 import ncsa.hdf.object.Dataset;
 import ncsa.hdf.object.FileFormat;
 import ncsa.hdf.object.h5.H5CompoundDS;
 import ncsa.hdf.object.h5.H5File;
+
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 /**
  * TestCase for bug fixes.
@@ -44,18 +51,12 @@ import ncsa.hdf.object.h5.H5File;
  * 
  *@author Peter Cao, The HDF Group
  */
-public class H5BugFixTest extends TestCase {
+public class H5BugFixTest {
     private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H5BugFixTest.class);
     private static final int NLOOPS = 10;
     private static final H5File H5FILE = new H5File();
     private H5File testFile = null;
 
-    /**
-     * @param arg0
-     */
-    public H5BugFixTest(final String arg0) {
-        super(arg0);
-    }
 
     private static void collectGarbage() {
         try {
@@ -69,28 +70,39 @@ public class H5BugFixTest extends TestCase {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see junit.framework.TestCase#setUp()
-     */
-    @Override
-	protected void setUp() throws Exception {
-        super.setUp();
+    @BeforeClass
+    public static void createFile() throws Exception {
+		try {
+			H5TestFile.createTestFile(null);
+		}
+		catch (final Exception ex) {
+			System.out.println("*** Unable to create HDF5 test file. " + ex);
+			System.exit(-1);
+		}
+    }
+    
+    @AfterClass
+    public static void checkIDs() throws Exception {
+		try {
+			int openID = H5.getOpenIDCount();
+			if(openID>0)
+				System.out.println("Number of IDs still open: "+ openID);
+		} 
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
+
+    }
+   
+    @Before
+    public void openFiles() throws Exception {
         testFile = (H5File) H5FILE.open(H5TestFile.NAME_FILE_H5,
                 FileFormat.WRITE);
         assertNotNull(testFile);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see junit.framework.TestCase#tearDown()
-     */
-    @Override
-	protected void tearDown() throws Exception {
-        super.tearDown();
-
+    @After
+	public void removeFiles() throws Exception {
         if (testFile != null) {
             try {
                 testFile.close();
@@ -125,7 +137,8 @@ public class H5BugFixTest extends TestCase {
      * </pre>
      * <p>
      */
-    public final void testBug847() throws Exception {
+    @Test
+    public void testBug847() throws Exception {
     	log.debug("testBug847");
         Vector data = null;
 
@@ -271,7 +284,8 @@ public class H5BugFixTest extends TestCase {
      * }
      * </pre>
      */
-    public final void testBug863() throws Exception {
+    @Test
+    public void testBug863() throws Exception {
     	log.debug("testBug863");
         int nObjs = 0; // number of object left open
         Dataset dset = null;

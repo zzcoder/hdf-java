@@ -2008,11 +2008,11 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
     }
 
     /**
-     * Dispaly the content of a data object.
+     * Display the content of a data object.
      * 
      * @param dataObject
      *            the data object
-     * @return the dataview that displays the data content
+     * @return the DataView that displays the data content
      * @throws Exception
      */
     public DataView showDataContent(HObject dataObject) throws Exception {

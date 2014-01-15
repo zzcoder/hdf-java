@@ -311,7 +311,7 @@ extends <a href="../../../ncsa/hdf/object/Dataset.html" title="class in ncsa.hdf
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>int[]</code></td>
-<td class="colLast"><code><strong><a href="../../../ncsa/hdf/object/CompoundDS.html#getMemeberDims(int)">getMemeberDims</a></strong>(int&nbsp;i)</code>
+<td class="colLast"><code><strong><a href="../../../ncsa/hdf/object/CompoundDS.html#getMemberDims(int)">getMemberDims</a></strong>(int&nbsp;i)</code>
 <div class="block">Returns the dimension sizes of of the i-th member.</div>
 </td>
 </tr>
@@ -685,13 +685,13 @@ public&nbsp;CompoundDS(<a href="../../../ncsa/hdf/object/FileFormat.html" title=
          members of compound.</dd></dl>
 </li>
 </ul>
-<a name="getMemeberDims(int)">
+<a name="getMemberDims(int)">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
-<h4>getMemeberDims</h4>
-<pre>public final&nbsp;int[]&nbsp;getMemeberDims(int&nbsp;i)</pre>
+<h4>getMemberDims</h4>
+<pre>public final&nbsp;int[]&nbsp;getMemberDims(int&nbsp;i)</pre>
 <div class="block">Returns the dimension sizes of of the i-th member.
  <p>
  For example, a compound dataset COMP has members of A, B and C as
@@ -704,8 +704,8 @@ public&nbsp;CompoundDS(<a href="../../../ncsa/hdf/object/FileFormat.html" title=
      }
  </pre>
  
- getMemeberDims(2) returns an array of {2, 3}, while getMemeberDims(1)
- returns an array of {5}, getMemeberDims(0) returns null.</div>
+ getMemberDims(2) returns an array of {2, 3}, while getMemberDims(1)
+ returns an array of {5}, getMemberDims(0) returns null.</div>
 <dl><dt><span class="strong">Returns:</span></dt><dd>the dimension sizes of of the i-th member, null if the compound
          member is not an array.</dd></dl>
 </li>

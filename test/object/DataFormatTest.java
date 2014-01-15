@@ -3,9 +3,12 @@
  */
 package test.object;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
+
 import java.util.List;
 
-import junit.framework.TestCase;
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 import ncsa.hdf.object.Attribute;
@@ -15,32 +18,49 @@ import ncsa.hdf.object.FileFormat;
 import ncsa.hdf.object.h5.H5Datatype;
 import ncsa.hdf.object.h5.H5File;
 
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
 /**
  * @author rsinha
  * 
  */
-public class DataFormatTest extends TestCase {
+public class DataFormatTest {
     private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DataFormatTest.class);
     private static final H5File H5FILE = new H5File();
 
     private H5File testFile = null;
     private DataFormat testGroup = null;
 
-    /**
-     * @param arg0
-     */
-    public DataFormatTest(String arg0) {
-        super(arg0);
+    @BeforeClass
+    public static void createFile() throws Exception {
+		try {
+			H5TestFile.createTestFile(null);
+		}
+		catch (final Exception ex) {
+			System.out.println("*** Unable to create HDF5 test file. " + ex);
+			System.exit(-1);
+		}
     }
+    
+    @AfterClass
+    public static void checkIDs() throws Exception {
+		try {
+			int openID = H5.getOpenIDCount();
+			if(openID>0)
+				System.out.println("Number of IDs still open: "+ openID);
+		} 
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see junit.framework.TestCase#setUp()
-     */
-    @Override
-	protected void setUp() throws Exception {
-        super.setUp();
+    }
+    
+    @Before
+    public void openFiles() throws Exception {
         testFile = (H5File) H5FILE.open(H5TestFile.NAME_FILE_H5,
                 FileFormat.WRITE);
         assertNotNull(testFile);
@@ -48,15 +68,9 @@ public class DataFormatTest extends TestCase {
         assertNotNull(testGroup);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see junit.framework.TestCase#tearDown()
-     */
-    @Override
-	protected void tearDown() throws Exception {
-        super.tearDown();
-
+	
+    @After
+    public void removeFiles() throws Exception {
         if (testFile != null) {
             try {
                 testFile.close();
@@ -73,7 +87,8 @@ public class DataFormatTest extends TestCase {
      * <li>Test if the file name is correct
      * </ul>
      */
-    public final void testGetFile() {
+    @Test
+    public void testGetFile() {
     	log.debug("testGetFile");
         if (!testGroup.getFile().equals(H5TestFile.NAME_FILE_H5)) {
             fail("getFile() fails.");
@@ -96,7 +111,8 @@ public class DataFormatTest extends TestCase {
      * <li>Checking the values of attributes
      * </ul>
      */
-    public final void testGetMetadata() {
+    @Test
+    public void testGetMetadata() {
     	log.debug("testGetMetadata");
         Attribute strAttr = null;
         Attribute arrayIntAttr = null;
@@ -141,7 +157,8 @@ public class DataFormatTest extends TestCase {
      * <li>Checking that the new attributes are written in file
      * </ul>
      */
-    public final void testWriteMetadata() {
+    @Test
+    public void testWriteMetadata() {
     	log.debug("testWriteMetadata");
         long[] attrDims = { 1 };
         String attrName = "CLASS";
@@ -211,7 +228,8 @@ public class DataFormatTest extends TestCase {
      * <li>Remove an attribute
      * </ul>
      */
-    public final void testRemoveMetadata() {
+    @Test
+    public void testRemoveMetadata() {
     	log.debug("testRemoveMetadata");
         List mdataList = null;
         try {

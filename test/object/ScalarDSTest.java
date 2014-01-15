@@ -1,9 +1,10 @@
-/**
- * 
- */
 package test.object;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 import ncsa.hdf.object.FileFormat;
@@ -11,11 +12,17 @@ import ncsa.hdf.object.ScalarDS;
 import ncsa.hdf.object.h5.H5File;
 import ncsa.hdf.object.h5.H5Group;
 
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
 /**
  * @author rsinha
  * 
  */
-public class ScalarDSTest extends TestCase {
+public class ScalarDSTest {
     private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ScalarDSTest.class);
     private static final H5File H5FILE = new H5File();
 
@@ -30,21 +37,32 @@ public class ScalarDSTest extends TestCase {
     private ScalarDS imagePalete = null;
     private ScalarDS ORDset = null;
 
-    /**
-     * @param arg0
-     */
-    public ScalarDSTest(String arg0) {
-        super(arg0);
+    @BeforeClass
+    public static void createFile() throws Exception {
+		try {
+			H5TestFile.createTestFile(null);
+		}
+		catch (final Exception ex) {
+			System.out.println("*** Unable to create HDF5 test file. " + ex);
+			System.exit(-1);
+		}
     }
+    
+    @AfterClass
+    public static void checkIDs() throws Exception {
+		try {
+			int openID = H5.getOpenIDCount();
+			if(openID>0)
+				System.out.println("Number of IDs still open: "+ openID);
+		} 
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see junit.framework.TestCase#setUp()
-     */
-    @Override
-	protected void setUp() throws Exception {
-        super.setUp();
+    }
+   
+    @Before
+    public void openFiles() throws Exception {
         testFile = (H5File) H5FILE.open(H5TestFile.NAME_FILE_H5,
                 FileFormat.READ);
         assertNotNull(testFile);
@@ -78,15 +96,8 @@ public class ScalarDSTest extends TestCase {
         imagePalete.init();
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see junit.framework.TestCase#tearDown()
-     */
-    @Override
-	protected void tearDown() throws Exception {
-        super.tearDown();
-
+    @After
+	public void removeFiles() throws Exception {
         if (testFile != null) {
             try {
                 testFile.close();
@@ -115,7 +126,8 @@ public class ScalarDSTest extends TestCase {
      * </ul>
      * </ul>
      */
-    public final void testImageFunctionality() {
+    @Test
+    public void testImageFunctionality() {
     	log.debug("testImageFunctionality");
         assertTrue(imageDset.hasAttribute());
         assertTrue(imageDset.isImage());
@@ -164,7 +176,8 @@ public class ScalarDSTest extends TestCase {
      * </ul>
      * </ul>
      */
-    public final void testIsText() {
+    @Test
+    public void testIsText() {
     	log.debug("testIsText");
         assertTrue(strDset.isText());
         assertFalse(imageDset.isText());

@@ -256,6 +256,14 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dread_1reg_1ref (JNIEnv*, jcla
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Dread_reg_ref_data
+ * Signature: (IIIII[Ljava/lang/String;)I
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dread_1reg_1ref_1data (JNIEnv*, jclass,
+    jint, jint, jint, jint, jint, jobjectArray);
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    _H5Dcreate2
  * Signature: (ILjava/lang/String;IIIII)I
  */
