@@ -58,6 +58,14 @@ public class H5GroupTest {
     @BeforeClass
     public static void createFile() throws Exception {
 		try {
+			int openID = H5.getOpenIDCount();
+			if(openID > 0)
+				System.out.println("H5GroupTest BeforeClass: Number of IDs still open: "+ openID);
+		} 
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		try {
 			H5TestFile.createTestFile(null);
 		}
 		catch (final Exception ex) {
@@ -71,7 +79,7 @@ public class H5GroupTest {
 		try {
 			int openID = H5.getOpenIDCount();
 			if(openID>0)
-				System.out.println("Number of IDs still open: "+ openID);
+				System.out.println("H5GroupTest AfterClass: Number of IDs still open: "+ openID);
 		} 
 		catch (Exception ex) {
 			ex.printStackTrace();
@@ -81,6 +89,14 @@ public class H5GroupTest {
     
     @Before
     public void openFiles() throws Exception {
+		try {
+			int openID = H5.getOpenIDCount();
+			if(openID > 0)
+				log.debug("Before: Number of IDs still open: "+ openID);
+		} 
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
         testFile = (H5File) H5FILE.open(H5TestFile.NAME_FILE_H5,
                 FileFormat.WRITE);
         assertNotNull(testFile);
@@ -106,6 +122,14 @@ public class H5GroupTest {
             }
             testFile = null;
         }
+		try {
+			int openID = H5.getOpenIDCount();
+			if(openID > 0)
+				log.debug("After: Number of IDs still open: "+ openID);
+		} 
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
     }
 
     /**

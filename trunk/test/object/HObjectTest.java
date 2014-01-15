@@ -34,6 +34,14 @@ public class HObjectTest {
     @BeforeClass
     public static void createFile() throws Exception {
 		try {
+			int openID = H5.getOpenIDCount();
+			if(openID > 0)
+				System.out.println("HObjectTest BeforeClass: Number of IDs still open: "+ openID);
+		} 
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		try {
 			H5TestFile.createTestFile(null);
 		}
 		catch (final Exception ex) {
@@ -47,7 +55,7 @@ public class HObjectTest {
 		try {
 			int openID = H5.getOpenIDCount();
 			if(openID>0)
-				System.out.println("Number of IDs still open: "+ openID);
+				System.out.println("HObjectTest AfterClass: Number of IDs still open: "+ openID);
 		} 
 		catch (Exception ex) {
 			ex.printStackTrace();
@@ -57,6 +65,14 @@ public class HObjectTest {
     
     @Before
     public void openFiles() throws Exception {
+		try {
+			int openID = H5.getOpenIDCount();
+			if(openID > 0)
+				log.debug("Before: Number of IDs still open: "+ openID);
+		} 
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
         testFile = new H5File(H5TestFile.NAME_FILE_H5, FileFormat.WRITE);
         assertNotNull(testFile);
         testObj = testFile.get(GNAME);
@@ -74,6 +90,14 @@ public class HObjectTest {
             }
             testFile = null;
         }
+		try {
+			int openID = H5.getOpenIDCount();
+			if(openID > 0)
+				log.debug("After: Number of IDs still open: "+ openID);
+		} 
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
     }
 
     /**

@@ -104,6 +104,14 @@ public class H5ScalarDSTest {
     @BeforeClass
     public static void createFile() throws Exception {
 		try {
+			int openID = H5.getOpenIDCount();
+			if(openID > 0)
+				System.out.println("H5ScalarDSTest BeforeClass: Number of IDs still open: "+ openID);
+		} 
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		try {
 			H5TestFile.createTestFile(null);
 		}
 		catch (final Exception ex) {
@@ -117,7 +125,7 @@ public class H5ScalarDSTest {
 		try {
 			int openID = H5.getOpenIDCount();
 			if(openID>0)
-				System.out.println("Number of IDs still open: "+ openID);
+				System.out.println("H5ScalarDSTest AfterClass: Number of IDs still open: "+ openID);
 		} 
 		catch (Exception ex) {
 			ex.printStackTrace();
@@ -127,6 +135,14 @@ public class H5ScalarDSTest {
     
     @Before
     public void openFiles() throws Exception {
+		try {
+			int openID = H5.getOpenIDCount();
+			if(openID > 0)
+				log.debug("Before: Number of IDs still open: "+ openID);
+		} 
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
         typeInt = new H5Datatype(Datatype.CLASS_INTEGER,
                 H5TestFile.DATATYPE_SIZE, -1, -1);
         typeFloat = new H5Datatype(Datatype.CLASS_FLOAT,
@@ -154,6 +170,14 @@ public class H5ScalarDSTest {
             }
             testFile = null;
         }
+		try {
+			int openID = H5.getOpenIDCount();
+			if(openID > 0)
+				log.debug("After: Number of IDs still open: "+ openID);
+		} 
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
     }
 
     /**

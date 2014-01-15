@@ -96,6 +96,14 @@ public class H5DatatypeTest {
     @BeforeClass
     public static void createFile() throws Exception {
 		try {
+			int openID = H5.getOpenIDCount();
+			if(openID > 0)
+				System.out.println("H5DatatypeTest BeforeClass: Number of IDs still open: "+ openID);
+		} 
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		try {
 			H5TestFile.createTestFile(null);
 		}
 		catch (final Exception ex) {
@@ -109,7 +117,7 @@ public class H5DatatypeTest {
 		try {
 			int openID = H5.getOpenIDCount();
 			if(openID>0)
-				System.out.println("Number of IDs still open: "+ openID);
+				System.out.println("H5DatatypeTest AfterClass: Number of IDs still open: "+ openID);
 		} 
 		catch (Exception ex) {
 			ex.printStackTrace();
@@ -119,6 +127,14 @@ public class H5DatatypeTest {
     
     @Before
     public void openFiles() throws Exception {
+		try {
+			int openID = H5.getOpenIDCount();
+			if(openID > 0)
+				log.debug("Before: Number of IDs still open: "+ openID);
+		} 
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
         typeInt = new H5Datatype(Datatype.CLASS_INTEGER,
                 H5TestFile.DATATYPE_SIZE, -1, -1);
         typeUInt = new H5Datatype(Datatype.CLASS_INTEGER,
@@ -148,6 +164,14 @@ public class H5DatatypeTest {
             }
             testFile = null;
         }
+		try {
+			int openID = H5.getOpenIDCount();
+			if(openID > 0)
+				log.debug("After: Number of IDs still open: "+ openID);
+		} 
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
     }
 
     /**

@@ -40,6 +40,14 @@ public class AttributeTest {
     @BeforeClass
     public static void createFile() throws Exception {
 		try {
+			int openID = H5.getOpenIDCount();
+			if(openID > 0)
+				System.out.println("AttributTest BeforeClass: Number of IDs still open: "+ openID);
+		} 
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		try {
 			H5TestFile.createTestFile(null);
 		}
 		catch (final Exception ex) {
@@ -52,17 +60,24 @@ public class AttributeTest {
     public static void checkIDs() throws Exception {
 		try {
 			int openID = H5.getOpenIDCount();
-			if(openID>0)
-				System.out.println("Number of IDs still open: "+ openID);
+			if(openID > 0)
+				System.out.println("AttributTest AfterClass: Number of IDs still open: "+ openID);
 		} 
 		catch (Exception ex) {
 			ex.printStackTrace();
 		}
-
     }
 
     @Before
     public void openFiles() throws Exception {
+		try {
+			int openID = H5.getOpenIDCount();
+			if(openID > 0)
+				log.debug("Before: Number of IDs still open: "+ openID);
+		} 
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
         testFile = (H5File) H5FILE.open(H5TestFile.NAME_FILE_H5, FileFormat.WRITE);
         assertNotNull(testFile);
         testGroup = (H5Group) testFile.get(H5TestFile.NAME_GROUP_ATTR);
@@ -86,6 +101,14 @@ public class AttributeTest {
             }
             testFile = null;
         }
+		try {
+			int openID = H5.getOpenIDCount();
+			if(openID > 0)
+				log.debug("After: Number of IDs still open: "+ openID);
+		} 
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
     }
 
     /**
