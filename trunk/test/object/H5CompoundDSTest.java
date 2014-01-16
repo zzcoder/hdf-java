@@ -1403,9 +1403,25 @@ public class H5CompoundDSTest {
         }
 
         // test a non-existing dataset
-        final H5CompoundDS dset = new H5CompoundDS(file, "NO_SUCH_DATASET", "NO_SUCH_PATH");
-        dset.init();
-        dset.clearData();
+        H5CompoundDS dset = null;
+        try {
+        	dset = new H5CompoundDS(file, "NO_SUCH_DATASET", "NO_SUCH_PATH");
+        }
+        catch (final Exception ex) {
+            ; // Expected - intentional
+        }
+        try {
+        	dset.init();
+        }
+        catch (final Exception ex) {
+            ; // Expected - intentional
+        }
+        try {
+        	dset.clearData();
+        }
+        catch (final Exception ex) {
+            ; // Expected - intentional
+        }
         data = null;
         try {
             data = (Vector<?>) dset.getData();

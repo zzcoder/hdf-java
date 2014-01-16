@@ -1156,7 +1156,17 @@ public class H5Datatype extends Datatype {
      */
     @Override
     public boolean isUnsigned() {
-        return (isUnsigned(toNative()));
+        boolean unsigned = false;
+        int tid = toNative();
+
+        unsigned = isUnsigned(tid);
+        try {
+            H5.H5Tclose(tid);
+        }
+        catch (final Exception ex) {
+        }
+
+        return unsigned;
     }
 
     /**
