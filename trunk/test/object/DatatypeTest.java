@@ -49,10 +49,18 @@ public class DatatypeTest {
             "Unknown", "Unknown", "Unknown", 
             "Unknown", "Unknown", "Unknown", 
             "Unknown", "Unknown", "Unknown",
-            "enum ( 0=1  1=2  )", "enum ( 0=1  1=2  )", "enum ( 0=1  1=2  )",
-            "enum ( 0=1  1=2  )", "enum ( 0=1  1=2  )", "enum ( 0=1  1=2  )",
-            "enum ( 0=1  1=2  )", "enum ( 0=1  1=2  )", "enum ( 0=1  1=2  )",
-            "enum ( 0=1  1=2  )", "enum ( 0=1  1=2  )", "enum ( 0=1  1=2  )",
+            "8-bit enum ( 0=1  1=2  )", "16-bit enum ( 0=1  1=2  )", "32-bit enum ( 0=1  1=2  )", "64-bit enum ( 0=1  1=2  )",
+            "8-bit enum ( 0=1  1=2  )", "16-bit enum ( 0=1  1=2  )", "32-bit enum ( 0=1  1=2  )", "64-bit enum ( 0=1  1=2  )",
+            "8-bit enum ( 0=1  1=2  )", "16-bit enum ( 0=1  1=2  )", "32-bit enum ( 0=1  1=2  )", "64-bit enum ( 0=1  1=2  )",
+            "8-bit enum ( 0=1  1=2  )", "16-bit enum ( 0=1  1=2  )", "32-bit enum ( 0=1  1=2  )", "64-bit enum ( 0=1  1=2  )",
+            "8-bit enum ( 0=1  1=2  )", "16-bit enum ( 0=1  1=2  )", "32-bit enum ( 0=1  1=2  )", "64-bit enum ( 0=1  1=2  )",
+            "8-bit enum ( 0=1  1=2  )", "16-bit enum ( 0=1  1=2  )", "32-bit enum ( 0=1  1=2  )", "64-bit enum ( 0=1  1=2  )",
+            "8-bit enum ( 0=1  1=2  )", "16-bit enum ( 0=1  1=2  )", "32-bit enum ( 0=1  1=2  )", "64-bit enum ( 0=1  1=2  )",
+            "8-bit enum ( 0=1  1=2  )", "16-bit enum ( 0=1  1=2  )", "32-bit enum ( 0=1  1=2  )", "64-bit enum ( 0=1  1=2  )",
+            "8-bit enum ( 0=1  1=2  )", "16-bit enum ( 0=1  1=2  )", "32-bit enum ( 0=1  1=2  )", "64-bit enum ( 0=1  1=2  )",
+            "8-bit enum ( 0=1  1=2  )", "16-bit enum ( 0=1  1=2  )", "32-bit enum ( 0=1  1=2  )", "64-bit enum ( 0=1  1=2  )",
+            "8-bit enum ( 0=1  1=2  )", "16-bit enum ( 0=1  1=2  )", "32-bit enum ( 0=1  1=2  )", "64-bit enum ( 0=1  1=2  )",
+            "8-bit enum ( 0=1  1=2  )", "16-bit enum ( 0=1  1=2  )", "32-bit enum ( 0=1  1=2  )", "64-bit enum ( 0=1  1=2  )",
             "32-bit floating-point", "32-bit floating-point", "32-bit floating-point", 
             "32-bit floating-point", "32-bit floating-point", "32-bit floating-point", 
             "32-bit floating-point", "32-bit floating-point", "32-bit floating-point", 
@@ -131,7 +139,7 @@ public class DatatypeTest {
 		catch (Exception ex) {
 			ex.printStackTrace();
 		}
-        baseTypes = new Datatype[n_orders * n_signs * (n_classes + 5)];
+        baseTypes = new Datatype[n_orders * n_signs * (n_classes + 8)]; //INT and ENUM have 4 sizes
         int counter = 0;
         for (int i = 0; i < n_classes; i++) {
             for (int j = 0; j < n_orders; j++) {
@@ -139,6 +147,7 @@ public class DatatypeTest {
                     int n_sizes;
                     switch (classes[i]) {
                     case Datatype.CLASS_INTEGER:
+                    case Datatype.CLASS_ENUM:
                         n_sizes = 4;
                         break;
                     case Datatype.CLASS_FLOAT:
@@ -155,7 +164,7 @@ public class DatatypeTest {
                         baseTypes[counter] = new H5Datatype(
                                 classes[i], sizes[l], orders[j], signs[k]);
                         assertNotNull(baseTypes[counter]);
-                        //System.out.println(counter+": "+sizes[l]+" ["+classes[i]+","+orders[j]+","+signs[k]+"] type is "+baseTypes[counter].getDatatypeDescription());
+                        log.trace("counter={}: sizes={} for ({},{},{}) type of {}",counter,sizes[l],classes[i],orders[j],signs[k],baseTypes[counter].getDatatypeDescription());
                         counter++;
                     }
                 }
@@ -191,6 +200,7 @@ public class DatatypeTest {
                     int n_sizes;
                     switch (classes[i]) {
                     case Datatype.CLASS_INTEGER:
+                    case Datatype.CLASS_ENUM:
                         n_sizes = 4;
                         break;
                     case Datatype.CLASS_FLOAT:
@@ -226,6 +236,7 @@ public class DatatypeTest {
                     int n_sizes;
                     switch (classes[i]) {
                     case Datatype.CLASS_INTEGER:
+                    case Datatype.CLASS_ENUM:
                         n_sizes = 4;
                         break;
                     case Datatype.CLASS_FLOAT:
@@ -261,6 +272,7 @@ public class DatatypeTest {
                     int n_sizes;
                     switch (classes[i]) {
                     case Datatype.CLASS_INTEGER:
+                    case Datatype.CLASS_ENUM:
                         n_sizes = 4;
                         break;
                     case Datatype.CLASS_FLOAT:
@@ -296,6 +308,7 @@ public class DatatypeTest {
                     int n_sizes;
                     switch (classes[i]) {
                     case Datatype.CLASS_INTEGER:
+                    case Datatype.CLASS_ENUM:
                         n_sizes = 4;
                         break;
                     case Datatype.CLASS_FLOAT:
@@ -359,7 +372,8 @@ public class DatatypeTest {
                     int n_sizes;
                     switch (classes[i]) {
                     case Datatype.CLASS_INTEGER:
-                        n_sizes = 4;
+                    case Datatype.CLASS_ENUM:
+                       n_sizes = 4;
                         break;
                     case Datatype.CLASS_FLOAT:
                         n_sizes = 2;
@@ -396,6 +410,7 @@ public class DatatypeTest {
                     int n_sizes;
                     switch (classes[i]) {
                     case Datatype.CLASS_INTEGER:
+                    case Datatype.CLASS_ENUM:
                         n_sizes = 4;
                         break;
                     case Datatype.CLASS_FLOAT:

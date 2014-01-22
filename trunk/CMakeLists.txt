@@ -231,6 +231,7 @@ SET_GLOBAL_VARIABLE (HDFJAVA_LIBRARIES_TO_EXPORT "")
 SET_GLOBAL_VARIABLE (HDFJAVA_JARS_TO_EXPORT "")
 SET_GLOBAL_VARIABLE (HDFJAVA_HDFVIEWJAR_TO_EXPORT "${HDFJAVA_LOGGING_JAR}")
 SET_GLOBAL_VARIABLE (HDFJAVA_SOURCE_PACKAGES "")
+SET_GLOBAL_VARIABLE (HDFJAVA_OBJECT_JARS "")
 
 #-----------------------------------------------------------------------------
 # Run all the CMake configuration tests for our build environment
