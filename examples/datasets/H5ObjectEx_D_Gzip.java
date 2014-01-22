@@ -92,11 +92,6 @@ public class H5ObjectEx_D_Gzip {
     private static void writeGzip() {
         H5File file = null;
         Dataset dset = null;
-        int file_id = -1;
-        int filespace_id = -1;
-        int dataset_id = -1;
-        int dcpl_id = -1;
-        int type_id = -1;
         long[] dims = { DIM_X, DIM_Y };
         long[] chunk_dims = { CHUNK_X, CHUNK_Y };
         int[][] dset_data = new int[DIM_X][DIM_Y];
@@ -111,31 +106,7 @@ public class H5ObjectEx_D_Gzip {
         // Create a new file using default properties.
         try {
             file = new H5File(FILENAME, FileFormat.CREATE);
-            file_id = file.open();
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        // Create dataspace. Setting maximum size to NULL sets the maximum
-        // size to be the current size.
-        try {
-            filespace_id = H5.H5Screate_simple(RANK, dims, null);
-            type_id = typeInt.toNative();
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        // Create the dataset creation property list, add the gzip compression
-        // filter.
-        try {
-            dcpl_id = H5.H5Pcreate(HDF5Constants.H5P_DATASET_CREATE);
-            if (dcpl_id >= 0) {
-                H5.H5Pset_deflate(dcpl_id, 9);
-                // Set the chunk size.
-                H5.H5Pset_chunk(dcpl_id, NDIMS, chunk_dims);
-            }
+            file.open();
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -143,53 +114,7 @@ public class H5ObjectEx_D_Gzip {
 
         // Create the dataset.
         try {
-            if ((file_id >= 0) && (filespace_id >= 0) && (dcpl_id >= 0))
-                dataset_id = H5.H5Dcreate(file_id, DATASETNAME,
-                        type_id, filespace_id, HDF5Constants.H5P_DEFAULT, dcpl_id, HDF5Constants.H5P_DEFAULT);
-            dset = new H5ScalarDS(file, DATASETNAME, "/");
-            Group pgroup = (Group) file.get("/");
-            pgroup.addToMemberList(dset);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        // Write the data to the dataset.
-        try {
-            dset.write(dset_data);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        // End access to the dataset and release resources used by it.
-        try {
-            if (dcpl_id >= 0)
-                H5.H5Pclose(dcpl_id);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-        
-        try {
-            if (type_id >= 0)
-                H5.H5Tclose(type_id);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        try {
-            if (dataset_id >= 0)
-                dset.close(dataset_id);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        try {
-            if (filespace_id >= 0)
-                H5.H5Sclose(filespace_id);
+        	file.createScalarDS(DATASETNAME, null, typeInt, dims, null, chunk_dims, 9, null, dset_data);
         }
         catch (Exception e) {
             e.printStackTrace();
