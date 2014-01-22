@@ -520,7 +520,7 @@ public abstract class Datatype extends HObject {
             description = "Bitfield";
             break;
         case CLASS_ENUM:
-            description = "enum";
+            description = String.valueOf(datatypeSize * 8) + "-bit enum";
             break;
         case CLASS_ARRAY:
             description = "Array";
