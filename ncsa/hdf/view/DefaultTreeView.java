@@ -2526,7 +2526,7 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
             int eMod = e.getModifiers();
             if (e.isPopupTrigger()
                     || (eMod == MouseEvent.BUTTON3_MASK)
-                    || (System.getProperty("os.name").startsWith("Mac") && (eMod == (MouseEvent.BUTTON1_MASK | MouseEvent.CTRL_MASK)))) {
+                    || (System.getProperty("os.name").startsWith("Mac") && (eMod == (MouseEvent.BUTTON1_MASK | Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())))) {
                 int selRow = tree.getRowForLocation(e.getX(), e.getY());
 
                 if (!tree.isRowSelected(selRow)) {
