@@ -557,13 +557,13 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
         item = new JMenuItem("Copy");
         item.addActionListener(this);
         item.setActionCommand("Copy data");
-        item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_MASK, true));
+        item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask(), true));
         menu.add(item);
 
         item = new JMenuItem("Paste");
         item.addActionListener(this);
         item.setActionCommand("Paste data");
-        item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.CTRL_MASK, true));
+        item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask(), true));
         item.setEnabled(isEditable);
         menu.add(item);
 
@@ -579,7 +579,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
         item.addActionListener(this);
         item.setActionCommand("Save dataset");
         item.setEnabled(isEditable);
-        item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_U, InputEvent.CTRL_MASK, true));
+        item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_U, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask(), true));
         menu.add(item);
 
         menu.addSeparator();
@@ -587,7 +587,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
         item = new JMenuItem("Select All");
         item.addActionListener(this);
         item.setActionCommand("Select all data");
-        item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.CTRL_MASK, true));
+        item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask(), true));
         menu.add(item);
 
         menu.addSeparator();
@@ -4152,7 +4152,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
         if (e.isPopupTrigger()
                 || (eMod == InputEvent.BUTTON3_MASK)
                 || (System.getProperty("os.name").startsWith("Mac") 
-                && (eMod == (InputEvent.BUTTON1_MASK | InputEvent.CTRL_MASK)))) {
+                && (eMod == (InputEvent.BUTTON1_MASK | Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())))) {
             if (popupMenu != null) {
                 popupMenu.show((JComponent) e.getSource(), e.getX(), e.getY());
             }
