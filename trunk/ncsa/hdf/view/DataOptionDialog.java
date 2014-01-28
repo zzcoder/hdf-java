@@ -922,6 +922,9 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
             ScalarDS sd = (ScalarDS) dataset;
             isImage = sd.isImageDisplay();
             isTrueColorImage = sd.isTrueColor();
+            // compound datasets don't have data range or fill values (JAVA-1825)
+            dataRangeField.setEnabled(isImage);
+            fillValueField.setEnabled(isImage);
         }
         else if (dataset instanceof CompoundDS) {
             imageButton.setEnabled(false);
@@ -930,8 +933,6 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
         choiceTableView.setEnabled(!isImage);
         choiceImageView.setEnabled(isImage);
         imageButton.setSelected(isImage);
-        dataRangeField.setEnabled(isImage);
-        fillValueField.setEnabled(isImage);
         choicePalette.setEnabled(isImage && !isTrueColorImage);
 
         int n = Math.min(3, rank);
