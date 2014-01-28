@@ -278,14 +278,6 @@ IF (MAKE_SYSTEM)
 ENDIF (MAKE_SYSTEM)
 
 #-----------------------------------------------------------------------------
-# Build utility to copy and strip X lines of file
-#-----------------------------------------------------------------------------
-IF (HDF_BUILD_EXAMPLES AND BUILD_TESTING)
-  SET (XLATE_UTILITY "xlatefile")
-  ADD_EXECUTABLE(${XLATE_UTILITY} ${HDFJAVA_RESOURCES_DIR}/xlatefile.c)
-ENDIF (HDF_BUILD_EXAMPLES AND BUILD_TESTING)
-
-#-----------------------------------------------------------------------------
 # Dashboard and Testing Settings
 #-----------------------------------------------------------------------------
 OPTION (BUILD_TESTING "Build HDFJAVA Unit Testing" OFF)
