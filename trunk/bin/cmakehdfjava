@@ -85,7 +85,7 @@ set (SITE_BUILDNAME_SUFFIX "cmakehdfjava")
 set (LOCAL_SKIP_UPDATE TRUE)
 set (REPOSITORY_URL "http://svn.hdfgroup.uiuc.edu/hdf-java/trunk")
 # -- Standard build options  
-set (ADD_BUILD_OPTIONS "-DCMAKE_INSTALL_PREFIX:PATH=/usr/local/hdf-java -DHDF_ALLOW_EXTERNAL_SUPPORT:STRING=\"SVN\" -DHDF_PACKAGE_EXTLIBS:BOOL=ON")
+set (ADD_BUILD_OPTIONS "-DCMAKE_INSTALL_PREFIX:PATH=. -DHDF_ALLOW_EXTERNAL_SUPPORT:STRING=\"SVN\" -DHDF_PACKAGE_EXTLIBS:BOOL=ON")
 
 # Use multiple CPU cores to build
 include(ProcessorCount)
