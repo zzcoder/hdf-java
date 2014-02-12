@@ -1,0 +1,60 @@
+#!/bin/sh
+
+# Set up default variable values if not supplied by the user.
+
+# where the new builds exist
+HDFBLD_HOME=@abs_top_builddir@
+export HDFBLD_HOME
+
+# where Java is installed
+JAVAPATH=@JAVABIN@
+export JAVAPATH
+
+TESTS="testh4file testh5file"
+
+CLASSPATH=$HDFBLD_HOME"/lib/jh4toh5.jar:"$HDFBLD_HOME"/lib/jhdf.jar:"$HDFBLD_HOME"/lib/jhdf5.jar:"$HDFBLD_HOME"/lib/jhdf5obj.jar:"$HDFBLD_HOME"/lib/jhdfobj.jar:"$HDFBLD_HOME"/lib/slf4j-api-1.7.5.jar:"$HDFBLD_HOME"/lib/ext/slf4j-nop-1.7.5.jar:../../.."
+
+LD_LIBRARY_PATH=$HDFBLD_HOME"/lib/@JAVATARG@"
+
+export CLASSPATH
+export LD_LIBRARY_PATH
+
+## note: disabled tests for HDF4--unresolved problems in test suite.
+
+##cp ../h4toh5/testfiles/*.hdf .
+cp ../h4toh5/Expected/*.h5 .
+
+##echo "Test HDF4"
+##TESTFILES="image_lib_lonetest image_lib_test sds_lib_lonetest sds_lib_test testallvgroup vdata_lib_lonetest vdata_lib_test vg_all_testname vg_bas_test"
+
+###HDF4 tests
+##for i in $TESTFILES
+##do
+##
+##echo "***"
+##echo $i
+##echo "***"
+##@JAVA@ -Djava.library.path=$LD_LIBRARY_PATH -Dncsa.hdf.hdflib.HDFLibrary.hdflib=$HDFBLD_HOME"/lib/@JAVATARG@/libjhdf.so" test.object.misc.TestH4File $i
+##
+##
+### check against correct output....
+##
+##done
+##
+
+TESTFILES="image_lib_test.h5 sds_lib_test.h5 testallvgroup.h5 vdata_lib_test.h5 vg_all_test.h5 vg_all_testname.h5"
+
+echo "Test HDF5"
+#HDF5 tests
+for i in $TESTFILES
+do
+
+echo "***"
+echo $i
+echo "***"
+@JAVA@ -Djava.library.path=$LD_LIBRARY_PATH -Dncsa.hdf.hdf5lib.H5.hdf5lib=$HDFBLD_HOME"/lib/@JAVATARG@/libjhdf5.so" test.object.misc.TestH5File $i
+
+
+# check against correct output....
+
+done

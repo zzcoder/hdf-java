@@ -1,0 +1,57 @@
+#/****************************************************************************
+#* Copyright by The HDF Group.                                               *
+#* Copyright by the Board of Trustees of the University of Illinois.         *
+#* All rights reserved.                                                      *
+#*                                                                           *
+#* This file is part of HDF Java Products. The full HDF Java copyright       *
+#* notice, including terms governing use, modification, and redistribution,  *
+#* is contained in the file, COPYING.  COPYING can be found at the root of   *
+#* the source code distribution tree. You can also access it online  at      *
+#* http://www.hdfgroup.org/products/licenses.html.  If you do not have       *
+#* access to the file, you may request a copy from help@hdfgroup.org.        *
+#****************************************************************************/
+ 
+TOP = ../..
+DIR	= test/object
+SUBDIRS = misc
+
+JAVAC           = @JAVAC@
+JAVADOC         = @JAVADOC@
+JAR         	= @JAR@
+FIND            = @FIND@
+RM              = @RM@
+SLEXT=@SLEXT@
+JSLEXT=@JSLEXT@
+
+CLASSPATH=@CLASSPATH@:../../lib/junit.jar:$(TOP)/lib/slf4j-api-1.7.5.jar
+JH45INSTALLDIR=@JH45INST@
+H45INC=@H45INC@
+H4INC=@HDF4INC@
+H5INC=@HDF5INC@
+
+JAVA_SRCS = \
+AllH5ObjectTests.java \
+AttributeTest.java \
+CompoundDSTest.java \
+DatasetTest.java \
+DatatypeTest.java \
+DataFormatTest.java \
+FileFormatTest.java \
+GroupTest.java \
+H5BugFixTest.java \
+H5CompoundDSTest.java \
+H5DatatypeTest.java \
+H5FileTest.java \
+H5GroupTest.java \
+H5ScalarDSTest.java \
+H5TestFile.java \
+HObjectTest.java \
+MetadataTest.java \
+ScalarDSTest.java
+
+include $(TOP)/config/Rules.mk
+
+check: all
+	cp h5ex_d_extern.data $(TOP)/lib/$(DIR)
+	cp h5ex_d_extern.hdf5 $(TOP)/lib/$(DIR)
+	chmod u+x unittests.sh; ./unittests.sh

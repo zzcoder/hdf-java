@@ -1,0 +1,44 @@
+#/****************************************************************************
+#* Copyright by The HDF Group.                                               *
+#* Copyright by the Board of Trustees of the University of Illinois.         *
+#* All rights reserved.                                                      *
+#*                                                                           *
+#* This file is part of HDF Java Products. The full HDF Java copyright       *
+#* notice, including terms governing use, modification, and redistribution,  *
+#* is contained in the file, COPYING.  COPYING can be found at the root of   *
+#* the source code distribution tree. You can also access it online  at      *
+#* http://www.hdfgroup.org/products/licenses.html.  If you do not have       *
+#* access to the file, you may request a copy from help@hdfgroup.org.        *
+#****************************************************************************/
+
+H45INC=@H45INC@
+H4INC=@HDF4INC@
+H5INC=@HDF5INC@
+
+all: hdflib hdf5lib
+
+hdflib: FORCE
+	@if test x'$(H4INC)' != x'' ; then $(MAKE) do-hdflib ; fi
+
+do-hdflib: 
+	cd hdflib; \
+	$(MAKE) ; 
+
+hdf5lib: FORCE
+	@if test x'$(H5INC)' != x'' ; then $(MAKE) do-hdf5lib ; fi
+
+do-hdf5lib: 
+	cd hdf5lib; \
+	$(MAKE) ; 
+
+clean: clean-hdflib clean-hdf5lib 
+
+clean-hdflib:
+	cd hdflib; \
+	$(MAKE) clean ; 
+
+clean-hdf5lib:
+	cd hdf5lib; \
+	$(MAKE) clean ; 
+
+FORCE:
