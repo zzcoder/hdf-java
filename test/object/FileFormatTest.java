@@ -3,84 +3,53 @@
  */
 package test.object;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
 import java.util.Enumeration;
 
+import junit.framework.TestCase;
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 import ncsa.hdf.object.FileFormat;
 import ncsa.hdf.object.h5.H5File;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
 /**
  * @author rsinha
  * 
  */
-public class FileFormatTest {
+public class FileFormatTest extends TestCase {
     private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FileFormatTest.class);
     private static final H5File H5FILE = new H5File();
 
     private FileFormat testFile = null;
 
-    @BeforeClass
-    public static void createFile() throws Exception {
-		try {
-			int openID = H5.getOpenIDCount();
-			if(openID > 0)
-				System.out.println("FileFormatTest BeforeClass: Number of IDs still open: "+ openID);
-		} 
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
-		try {
-			H5TestFile.createTestFile(null);
-		}
-		catch (final Exception ex) {
-			System.out.println("*** Unable to create HDF5 test file. " + ex);
-			System.exit(-1);
-		}
+    /**
+     * @param arg0
+     */
+    public FileFormatTest(String arg0) {
+        super(arg0);
     }
-    
-    @AfterClass
-    public static void checkIDs() throws Exception {
-		try {
-			int openID = H5.getOpenIDCount();
-			if(openID>0)
-				System.out.println("FileFormatTest AfterClass: Number of IDs still open: "+ openID);
-		} 
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
 
-    }
-    
-    @Before
-    public void openFiles() throws Exception {
-		try {
-			int openID = H5.getOpenIDCount();
-			if(openID > 0)
-				log.debug("Before: Number of IDs still open: "+ openID);
-		} 
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see junit.framework.TestCase#setUp()
+     */
+    @Override
+	protected void setUp() throws Exception {
+        super.setUp();
         testFile = H5FILE.open(H5TestFile.NAME_FILE_H5, FileFormat.WRITE);
         assertNotNull(testFile);
         testFile.open();
     }
 
-    @After
-	public void removeFiles() throws Exception {
+    /*
+     * (non-Javadoc)
+     * 
+     * @see junit.framework.TestCase#tearDown()
+     */
+    @Override
+	protected void tearDown() throws Exception {
+        super.tearDown();
+
         if (testFile != null) {
             try {
                 testFile.close();
@@ -89,14 +58,6 @@ public class FileFormatTest {
             }
             testFile = null;
         }
-		try {
-			int openID = H5.getOpenIDCount();
-			if(openID > 0)
-				log.debug("After: Number of IDs still open: "+ openID);
-		} 
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
     }
 
     /**
@@ -138,8 +99,7 @@ public class FileFormatTest {
      * <li>Test the number of compements.
      * </ul>
      */
-    @Test
-    public void testGetNumberOfMembers() {
+    public final void testGetNumberOfMembers() {
     	log.debug("testGetNumberOfMembers");
         assertEquals(testFile.getNumberOfMembers(), 21);
         int nObjs = 0;
@@ -161,8 +121,7 @@ public class FileFormatTest {
      * <li>Test for HDF5.
      * </ul>
      */
-    @Test
-    public void testGetFileFormat() {
+    public final void testGetFileFormat() {
     	log.debug("testGetFileFormat");
         FileFormat f = FileFormat.getFileFormat("HDF5");
         assertNotNull(f);
@@ -184,8 +143,7 @@ public class FileFormatTest {
      * <li>current file formats are HDF5, HDF.
      * </ul>
      */
-    @Test
-    public void testGetFileFormatKeys() {
+    public final void testGetFileFormatKeys() {
     	log.debug("testGetFileFormatKeys");
      	
     	Enumeration<String> e = FileFormat.getFileFormatKeys();
@@ -211,8 +169,7 @@ public class FileFormatTest {
      * <li>Make sure the fid is not -1.
      * </ul>
      */
-    @Test
-    public void testGetFID() {
+    public final void testGetFID() {
     	log.debug("testGetFID");
         assertTrue((testFile.getFID() != -1));
         int nObjs = 0;
@@ -235,8 +192,7 @@ public class FileFormatTest {
      * <li>Open an exisiting file.
      * </ul>
      */
-    @Test
-    public void testGetInstance() {
+    public final void testGetInstance() {
     	log.debug("testGetInstance");
         H5File f = null;
         try {
@@ -272,8 +228,7 @@ public class FileFormatTest {
      * <li>Test that the FileFormat object is formed for HDF5.
      * </ul>
      */
-    @Test
-    public void testGetFileFormats() {
+    public final void testGetFileFormats() {
     	log.debug("testGetFileFormats");
         FileFormat f = FileFormat.getFileFormat("HDF5");
         assertNotNull(f);

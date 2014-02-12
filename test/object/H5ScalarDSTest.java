@@ -1,11 +1,7 @@
+/**
+ * 
+ */
 package test.object;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -17,6 +13,7 @@ import java.io.ObjectOutputStream;
 import java.lang.reflect.Array;
 import java.util.Vector;
 
+import junit.framework.TestCase;
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 import ncsa.hdf.hdf5lib.HDFNativeData;
@@ -30,12 +27,6 @@ import ncsa.hdf.object.ScalarDS;
 import ncsa.hdf.object.h5.H5Datatype;
 import ncsa.hdf.object.h5.H5File;
 import ncsa.hdf.object.h5.H5ScalarDS;
-
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
 
 /**
  * TestCase for H5ScalarDS.
@@ -85,7 +76,7 @@ import org.junit.Test;
  * 
  * @author Peter Cao, The HDF Group
  */
-public class H5ScalarDSTest {
+public class H5ScalarDSTest extends TestCase {
     private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H5ScalarDSTest.class);
     private static final H5File H5FILE = new H5File();
     private static final int NLOOPS = 10;
@@ -101,48 +92,22 @@ public class H5ScalarDSTest {
     private H5File testFile = null;
     private H5ScalarDS testDataset = null;
 
-    @BeforeClass
-    public static void createFile() throws Exception {
-		try {
-			int openID = H5.getOpenIDCount();
-			if(openID > 0)
-				System.out.println("H5ScalarDSTest BeforeClass: Number of IDs still open: "+ openID);
-		} 
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
-		try {
-			H5TestFile.createTestFile(null);
-		}
-		catch (final Exception ex) {
-			System.out.println("*** Unable to create HDF5 test file. " + ex);
-			System.exit(-1);
-		}
+    /**
+     * @param arg0
+     */
+    public H5ScalarDSTest(final String arg0) {
+        super(arg0);
     }
-    
-    @AfterClass
-    public static void checkIDs() throws Exception {
-		try {
-			int openID = H5.getOpenIDCount();
-			if(openID>0)
-				System.out.println("H5ScalarDSTest AfterClass: Number of IDs still open: "+ openID);
-		} 
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
 
-    }
-    
-    @Before
-    public void openFiles() throws Exception {
-		try {
-			int openID = H5.getOpenIDCount();
-			if(openID > 0)
-				log.debug("Before: Number of IDs still open: "+ openID);
-		} 
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see junit.framework.TestCase#setUp()
+     */
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+
         typeInt = new H5Datatype(Datatype.CLASS_INTEGER,
                 H5TestFile.DATATYPE_SIZE, -1, -1);
         typeFloat = new H5Datatype(Datatype.CLASS_FLOAT,
@@ -160,8 +125,15 @@ public class H5ScalarDSTest {
         assertNotNull(testDataset);
     }
 
-    @After
-    public void removeFiles() throws Exception {
+    /*
+     * (non-Javadoc)
+     * 
+     * @see junit.framework.TestCase#tearDown()
+     */
+    @Override
+    protected void tearDown() throws Exception {
+        super.tearDown();
+
         if (testFile != null) {
             try {
                 testFile.close();
@@ -170,14 +142,6 @@ public class H5ScalarDSTest {
             }
             testFile = null;
         }
-		try {
-			int openID = H5.getOpenIDCount();
-			if(openID > 0)
-				log.debug("After: Number of IDs still open: "+ openID);
-		} 
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
     }
 
     /**
@@ -204,8 +168,7 @@ public class H5ScalarDSTest {
      * </ul>
      * </ul>
      */
-    @Test
-    public void testSetName() {
+    public final void testSetName() {
     	log.debug("testSetName");
         final String newName = "tmpName";
 
@@ -290,8 +253,7 @@ public class H5ScalarDSTest {
      * <li>Repeat all above
      * </ul>
      */
-    @Test
-    public void testOpen() {
+    public final void testOpen() {
     	log.debug("testOpen");
         int did = -1, tid = -1, sid = -1;
 
@@ -351,8 +313,7 @@ public class H5ScalarDSTest {
      * <li>Repeat all above
      * </ul>
      */
-    @Test
-    public void testClose() {
+    public final void testClose() {
     	log.debug("testClose");
         int did = -1, tid = -1, sid = -1;
 
@@ -430,8 +391,7 @@ public class H5ScalarDSTest {
      * <li>make sure that the attribute list is empty
      * </ul>
      */
-    @Test
-    public void testClear() {
+    public final void testClear() {
     	log.debug("testClear");
         Object data = null;
 
@@ -484,8 +444,7 @@ public class H5ScalarDSTest {
      * <li>Repeat all above
      * </ul>
      */
-    @Test
-    public void testInit() {
+    public final void testInit() {
     	log.debug("testInit");
         for (int loop = 0; loop < NLOOPS; loop++) {
 
@@ -578,8 +537,7 @@ public class H5ScalarDSTest {
      * 
      * </ul>
      */
-    @Test
-    public void testRead() {
+    public final void testRead() {
     	log.debug("testRead");
         for (int loop = 0; loop < NLOOPS; loop++) {
             testDataset.init();
@@ -656,8 +614,7 @@ public class H5ScalarDSTest {
      * <li>Read an external dataset
      * </ul>
      */
-    @Test
-    public void testReadExt() {
+    public final void testReadExt() {
     	log.debug("testReadExt");
         
         Dataset dset = null;
@@ -692,8 +649,7 @@ public class H5ScalarDSTest {
      * <li>Repeat all above
      * </ul>
      */
-    @Test
-    public void testReadByRow() {
+    public final void testReadByRow() {
     	log.debug("testReadByRow");
         int[] data = null;
 
@@ -750,8 +706,7 @@ public class H5ScalarDSTest {
      * <li>check the data size
      * </ul>
      */
-    @Test
-    public void testReadBytes() {
+    public final void testReadBytes() {
     	log.debug("testReadBytes");
         byte[] data = null;
 
@@ -789,8 +744,7 @@ public class H5ScalarDSTest {
      * <li>write the original data back to file
      * </ul>
      */
-    @Test
-    public void testWriteObject() {
+    public final void testWriteObject() {
     	log.debug("testWriteObject");
         int[] data = null;
 
@@ -878,8 +832,7 @@ public class H5ScalarDSTest {
      * <li>write the original data back to file
      * </ul>
      */
-    @Test
-    public void testWriteSubset() {
+    public final void testWriteSubset() {
     	log.debug("testWriteSubset");
         int[] data = null;
 
@@ -979,8 +932,7 @@ public class H5ScalarDSTest {
      * <li>write the original data back to file
      * </ul>
      */
-    @Test
-    public void testReadWriteNullStr() {
+    public final void testReadWriteNullStr() {
     	log.debug("testReadWriteNullStr");
         String[] data = null;
         String[] nullStrs = null;
@@ -1077,8 +1029,7 @@ public class H5ScalarDSTest {
      * <li>Repeat all above
      * </ul>
      */
-    @Test
-    public void testCopy() {
+    public final void testCopy() {
     	log.debug("testCopy");
         int nObjs = 0;
         Dataset dset = null, dsetNew = null;
@@ -1190,8 +1141,7 @@ public class H5ScalarDSTest {
      * <li>Check the class and size of the datatype
      * </ul>
      */
-    @Test
-    public void testGetDatatype() {
+    public final void testGetDatatype() {
     	log.debug("testGetDatatype");
         H5Datatype dtype = null;
 
@@ -1225,8 +1175,7 @@ public class H5ScalarDSTest {
      * <li>Check the content of the palette
      * </ul>
      */
-    @Test
-    public void testGetPalette() {
+    public final void testGetPalette() {
     	log.debug("testGetPalette");
         ScalarDS img = null;
 
@@ -1266,8 +1215,7 @@ public class H5ScalarDSTest {
      * <li>Check the content of the palette
      * </ul>
      */
-    @Test
-    public void testReadPalette() {
+    public final void testReadPalette() {
     	log.debug("testReadPalette");
         ScalarDS img = null;
 
@@ -1307,8 +1255,7 @@ public class H5ScalarDSTest {
      * <li>Check the content of the palette references
      * </ul>
      */
-    @Test
-    public void testGetPaletteRefs() {
+    public final void testGetPaletteRefs() {
     	log.debug("testGetPaletteRefs");
         ScalarDS img = null;
 
@@ -1349,8 +1296,7 @@ public class H5ScalarDSTest {
      * <li>Construct an H5ScalarDS object that does not exist in file
      * </ul>
      */
-    @Test
-    public void testH5ScalarDSFileFormatStringString() {
+    public final void testH5ScalarDSFileFormatStringString() {
     	log.debug("testH5ScalarDSFileFormatStringString");
         int[] data = null;
         final String[] names = { null, DNAME_SUB, DNAME.substring(1) };
@@ -1425,8 +1371,7 @@ public class H5ScalarDSTest {
      * <li>Construct an H5ScalarDS object that does not exist in file
      * </ul>
      */
-    @Test
-    public void testH5ScalarDSFileFormatStringStringLongArray() {
+    public final void testH5ScalarDSFileFormatStringStringLongArray() {
     	log.debug("testH5ScalarDSFileFormatStringStringLongArray");
         int[] data = null;
         final String[] names = { null, DNAME_SUB, DNAME.substring(1) };
@@ -1508,8 +1453,7 @@ public class H5ScalarDSTest {
      * <li>Check the content of the attributes
      * </ul>
      */
-    @Test
-    public void testGetMetadata() {
+    public final void testGetMetadata() {
     	log.debug("testGetMetadata");
         Vector attrs = null;
 
@@ -1568,8 +1512,7 @@ public class H5ScalarDSTest {
      * <li>Restore to the orginal state
      * </ul>
      */
-    @Test
-    public void testWriteMetadata() {
+    public final void testWriteMetadata() {
     	log.debug("testWriteMetadata");
         Vector attrs = null;
         Attribute attr = null;
@@ -1720,8 +1663,7 @@ public class H5ScalarDSTest {
      * <li>Restore to the orginal state
      * </ul>
      */
-    @Test
-    public void testRemoveMetadata() {
+    public final void testRemoveMetadata() {
     	log.debug("testRemoveMetadata");
         Vector attrs = null;
         try {
@@ -1798,8 +1740,7 @@ public class H5ScalarDSTest {
      * <li>Restore to the orginal file (remove the new dataset)
      * </ul>
      */
-    @Test
-    public void testCreate() {
+    public final void testCreate() {
     	log.debug("testCreate");
         ScalarDS dset = null;
         final String nameNew = "/tmpH5ScalarDS";
@@ -1850,8 +1791,7 @@ public class H5ScalarDSTest {
     /**
      * Test method for {@link ncsa.hdf.object.h5.H5ScalarDS} IsSerializable.
      */
-    @Test
-    public void testIsSerializable() {
+    public final void testIsSerializable() {
     	log.debug("testIsSerializable");
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         ObjectOutputStream oos;
@@ -1878,8 +1818,7 @@ public class H5ScalarDSTest {
      * <li>get datatype and dataspace identifier for the dataset
      * </ul>
      */
-    @Test
-    public void testSerializeToDisk()
+    public final void testSerializeToDisk()
     {
     	log.debug("testSerializeToDisk");
         try {

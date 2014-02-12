@@ -32,7 +32,7 @@ import org.junit.Test;
 public class TestTreeViewFilters {
     private static FrameFixture mainFrameFixture;
     // the version of the HDFViewer
-    private static String VERSION = "2.99";
+    private static String VERSION = "2.10";
 
     private File openHDF5File(String name, int initrows) {
         File hdf_file = new File(name+".h5");

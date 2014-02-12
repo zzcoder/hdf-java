@@ -3,24 +3,15 @@
  */
 package test.object;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
-import ncsa.hdf.hdf5lib.H5;
+import junit.framework.TestCase;
 import ncsa.hdf.object.Datatype;
 import ncsa.hdf.object.h5.H5Datatype;
-
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
 
 /**
  * @author rsinha
  * 
  */
-public class DatatypeTest {
+public class DatatypeTest extends TestCase {
     private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DatatypeTest.class);
 
     private Datatype[] baseTypes = null;
@@ -49,18 +40,10 @@ public class DatatypeTest {
             "Unknown", "Unknown", "Unknown", 
             "Unknown", "Unknown", "Unknown", 
             "Unknown", "Unknown", "Unknown",
-            "8-bit enum ( 0=1  1=2  )", "16-bit enum ( 0=1  1=2  )", "32-bit enum ( 0=1  1=2  )", "64-bit enum ( 0=1  1=2  )",
-            "8-bit enum ( 0=1  1=2  )", "16-bit enum ( 0=1  1=2  )", "32-bit enum ( 0=1  1=2  )", "64-bit enum ( 0=1  1=2  )",
-            "8-bit enum ( 0=1  1=2  )", "16-bit enum ( 0=1  1=2  )", "32-bit enum ( 0=1  1=2  )", "64-bit enum ( 0=1  1=2  )",
-            "8-bit enum ( 0=1  1=2  )", "16-bit enum ( 0=1  1=2  )", "32-bit enum ( 0=1  1=2  )", "64-bit enum ( 0=1  1=2  )",
-            "8-bit enum ( 0=1  1=2  )", "16-bit enum ( 0=1  1=2  )", "32-bit enum ( 0=1  1=2  )", "64-bit enum ( 0=1  1=2  )",
-            "8-bit enum ( 0=1  1=2  )", "16-bit enum ( 0=1  1=2  )", "32-bit enum ( 0=1  1=2  )", "64-bit enum ( 0=1  1=2  )",
-            "8-bit enum ( 0=1  1=2  )", "16-bit enum ( 0=1  1=2  )", "32-bit enum ( 0=1  1=2  )", "64-bit enum ( 0=1  1=2  )",
-            "8-bit enum ( 0=1  1=2  )", "16-bit enum ( 0=1  1=2  )", "32-bit enum ( 0=1  1=2  )", "64-bit enum ( 0=1  1=2  )",
-            "8-bit enum ( 0=1  1=2  )", "16-bit enum ( 0=1  1=2  )", "32-bit enum ( 0=1  1=2  )", "64-bit enum ( 0=1  1=2  )",
-            "8-bit enum ( 0=1  1=2  )", "16-bit enum ( 0=1  1=2  )", "32-bit enum ( 0=1  1=2  )", "64-bit enum ( 0=1  1=2  )",
-            "8-bit enum ( 0=1  1=2  )", "16-bit enum ( 0=1  1=2  )", "32-bit enum ( 0=1  1=2  )", "64-bit enum ( 0=1  1=2  )",
-            "8-bit enum ( 0=1  1=2  )", "16-bit enum ( 0=1  1=2  )", "32-bit enum ( 0=1  1=2  )", "64-bit enum ( 0=1  1=2  )",
+            "enum ( 0=1  1=2  )", "enum ( 0=1  1=2  )", "enum ( 0=1  1=2  )",
+            "enum ( 0=1  1=2  )", "enum ( 0=1  1=2  )", "enum ( 0=1  1=2  )",
+            "enum ( 0=1  1=2  )", "enum ( 0=1  1=2  )", "enum ( 0=1  1=2  )",
+            "enum ( 0=1  1=2  )", "enum ( 0=1  1=2  )", "enum ( 0=1  1=2  )",
             "32-bit floating-point", "32-bit floating-point", "32-bit floating-point", 
             "32-bit floating-point", "32-bit floating-point", "32-bit floating-point", 
             "32-bit floating-point", "32-bit floating-point", "32-bit floating-point", 
@@ -104,42 +87,21 @@ public class DatatypeTest {
             "Unknown", "Unknown", "Unknown", 
             "Unknown", "Unknown", "Unknown" };
 
-    @BeforeClass
-    public static void createFile() throws Exception {
-		try {
-			int openID = H5.getOpenIDCount();
-			if(openID > 0)
-				System.out.println("DatatypeTest BeforeClass: Number of IDs still open: "+ openID);
-		} 
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
-    }
-    
-    @AfterClass
-    public static void checkIDs() throws Exception {
-		try {
-			int openID = H5.getOpenIDCount();
-			if(openID>0)
-				System.out.println("DatatypeTest AfterClass: Number of IDs still open: "+ openID);
-		} 
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
-
+    /**
+     * @param arg0
+     */
+    public DatatypeTest(String arg0) {
+        super(arg0);
     }
 
-    @Before
-    public void createArrays() throws Exception {
-		try {
-			int openID = H5.getOpenIDCount();
-			if(openID > 0)
-				log.debug("Before: Number of IDs still open: "+ openID);
-		} 
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
-        baseTypes = new Datatype[n_orders * n_signs * (n_classes + 8)]; //INT and ENUM have 4 sizes
+    /*
+     * (non-Javadoc)
+     * 
+     * @see junit.framework.TestCase#setUp()
+     */
+    protected void setUp() throws Exception {
+        super.setUp();
+        baseTypes = new Datatype[n_orders * n_signs * (n_classes + 5)];
         int counter = 0;
         for (int i = 0; i < n_classes; i++) {
             for (int j = 0; j < n_orders; j++) {
@@ -147,7 +109,6 @@ public class DatatypeTest {
                     int n_sizes;
                     switch (classes[i]) {
                     case Datatype.CLASS_INTEGER:
-                    case Datatype.CLASS_ENUM:
                         n_sizes = 4;
                         break;
                     case Datatype.CLASS_FLOAT:
@@ -164,7 +125,7 @@ public class DatatypeTest {
                         baseTypes[counter] = new H5Datatype(
                                 classes[i], sizes[l], orders[j], signs[k]);
                         assertNotNull(baseTypes[counter]);
-                        log.trace("counter={}: sizes={} for ({},{},{}) type of {}",counter,sizes[l],classes[i],orders[j],signs[k],baseTypes[counter].getDatatypeDescription());
+                        //System.out.println(counter+": "+sizes[l]+" ["+classes[i]+","+orders[j]+","+signs[k]+"] type is "+baseTypes[counter].getDatatypeDescription());
                         counter++;
                     }
                 }
@@ -172,26 +133,21 @@ public class DatatypeTest {
         }
     }
 
-    @After
-    public void finish() throws Exception {
-		try {
-			int openID = H5.getOpenIDCount();
-			if(openID > 0)
-				log.debug("After: Number of IDs still open: "+ openID);
-		} 
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see junit.framework.TestCase#tearDown()
+     */
+    protected void tearDown() throws Exception {
+        super.tearDown();
     }
-
 
     /**
      * Test method for {@link ncsa.hdf.object.Datatype#getDatatypeClass()}.
      * <p>
      * We test for every combination of class, size and possible signs.
      */
-    @Test
-    public void testGetDatatypeClass() {
+    public final void testGetDatatypeClass() {
     	log.debug("testGetDatatypeClass");
         int counter = 0;
         for (int i = 0; i < n_classes; i++) {
@@ -200,7 +156,6 @@ public class DatatypeTest {
                     int n_sizes;
                     switch (classes[i]) {
                     case Datatype.CLASS_INTEGER:
-                    case Datatype.CLASS_ENUM:
                         n_sizes = 4;
                         break;
                     case Datatype.CLASS_FLOAT:
@@ -226,8 +181,7 @@ public class DatatypeTest {
      * <p>
      * We test for every combination of class, size and possible signs.
      */
-    @Test
-    public void testGetDatatypeSize() {
+    public final void testGetDatatypeSize() {
     	log.debug("testGetDatatypeSize");
         int counter = 0;
         for (int i = 0; i < n_classes; i++) {
@@ -236,7 +190,6 @@ public class DatatypeTest {
                     int n_sizes;
                     switch (classes[i]) {
                     case Datatype.CLASS_INTEGER:
-                    case Datatype.CLASS_ENUM:
                         n_sizes = 4;
                         break;
                     case Datatype.CLASS_FLOAT:
@@ -262,8 +215,7 @@ public class DatatypeTest {
      * <p>
      * We test for every combination of class, size and possible signs.
      */
-    @Test
-    public void testGetDatatypeOrder() {
+    public final void testGetDatatypeOrder() {
     	log.debug("testGetDatatypeOrder");
         int counter = 0;
         for (int i = 0; i < n_classes; i++) {
@@ -272,7 +224,6 @@ public class DatatypeTest {
                     int n_sizes;
                     switch (classes[i]) {
                     case Datatype.CLASS_INTEGER:
-                    case Datatype.CLASS_ENUM:
                         n_sizes = 4;
                         break;
                     case Datatype.CLASS_FLOAT:
@@ -298,8 +249,7 @@ public class DatatypeTest {
      * <p>
      * We test for every combination of class, size and possible signs.
      */
-    @Test
-    public void testGetDatatypeSign() {
+    public final void testGetDatatypeSign() {
     	log.debug("testGetDatatypeSign");
         int counter = 0;
         for (int i = 0; i < n_classes; i++) {
@@ -308,7 +258,6 @@ public class DatatypeTest {
                     int n_sizes;
                     switch (classes[i]) {
                     case Datatype.CLASS_INTEGER:
-                    case Datatype.CLASS_ENUM:
                         n_sizes = 4;
                         break;
                     case Datatype.CLASS_FLOAT:
@@ -335,8 +284,7 @@ public class DatatypeTest {
      * <p>
      * create a new enum data type set it to two different values and check it.
      */
-    @Test
-    public void testSetEnumMembers() {
+    public final void testSetEnumMembers() {
     	log.debug("testSetEnumMembers");
         Datatype ed = new H5Datatype(Datatype.CLASS_ENUM, 2,
                 Datatype.ORDER_NONE, Datatype.NSGN);
@@ -349,8 +297,7 @@ public class DatatypeTest {
      * <p>
      * look at {@link ncsa.hdf.object.Datatype#setEnumMembers(java.lang.String)}.
      */
-    @Test
-    public void testGetEnumMembers() {
+    public final void testGetEnumMembers() {
     	log.debug("testGetEnumMembers");
         testSetEnumMembers();
     }
@@ -362,8 +309,7 @@ public class DatatypeTest {
      * <p>
      * We test for every combination of class, size and possible signs.
      */
-    @Test
-    public void testGetDatatypeDescription() {
+    public final void testGetDatatypeDescription() {
     	log.debug("testGetDatatypeDescription");
         int counter = 0;
         for (int i = 0; i < n_classes; i++) {
@@ -372,8 +318,7 @@ public class DatatypeTest {
                     int n_sizes;
                     switch (classes[i]) {
                     case Datatype.CLASS_INTEGER:
-                    case Datatype.CLASS_ENUM:
-                       n_sizes = 4;
+                        n_sizes = 4;
                         break;
                     case Datatype.CLASS_FLOAT:
                         n_sizes = 2;
@@ -400,8 +345,7 @@ public class DatatypeTest {
      * <p>
      * We test for every combination of class, size and possible signs.
      */
-    @Test
-    public void testIsUnsigned() {
+    public final void testIsUnsigned() {
     	log.debug("testIsUnsigned");
         int counter = 0;
         for (int i = 0; i < n_classes; i++) {
@@ -410,7 +354,6 @@ public class DatatypeTest {
                     int n_sizes;
                     switch (classes[i]) {
                     case Datatype.CLASS_INTEGER:
-                    case Datatype.CLASS_ENUM:
                         n_sizes = 4;
                         break;
                     case Datatype.CLASS_FLOAT:

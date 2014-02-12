@@ -536,7 +536,7 @@ public class HDFView extends JFrame implements ViewManager, ActionListener, Chan
         item.setMnemonic(KeyEvent.VK_O);
         item.addActionListener(this);
         item.setActionCommand("Open file");
-        item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask(), true));
+        item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, Event.CTRL_MASK, true));
         fileMenu.add(item);
 
         item = new JMenuItem("Open Read-Only");
@@ -610,7 +610,7 @@ public class HDFView extends JFrame implements ViewManager, ActionListener, Chan
         item.setMnemonic(KeyEvent.VK_X);
         item.addActionListener(this);
         item.setActionCommand("Exit");
-        item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask(), true));
+        item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, Event.CTRL_MASK, true));
         fileMenu.add(item);
 
         fileMenu.addSeparator();

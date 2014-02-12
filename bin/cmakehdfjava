@@ -14,8 +14,6 @@ DPRINT=:
 progname=`basename $0`	# program name
 cminfile="cmakemin.$$" # Cmake minimum file
 cfgfile=$progname.$$	# configure file
-ctest_log=ctest.log    # output of ctest script
-install_log=install.log  # output of installation
 $DPRINT $cfgfile
 
 # Remove temporary generated files if exit 0
@@ -38,8 +36,7 @@ TIMESTAMP
 
 # Explain what and where log files are.
 cat <<EOF
-$ctest_log: output of ctest script.
-$install_log: output of installation
+ctest.log: output of ctest script.
 Log files will be stored in Testing/Temporary:
     LastConfigure_<timestamp>.log: output of configure
     LastBuild_<timestamp>.log: output of build
@@ -85,7 +82,7 @@ set (SITE_BUILDNAME_SUFFIX "cmakehdfjava")
 set (LOCAL_SKIP_UPDATE TRUE)
 set (REPOSITORY_URL "http://svn.hdfgroup.uiuc.edu/hdf-java/trunk")
 # -- Standard build options  
-set (ADD_BUILD_OPTIONS "-DCMAKE_INSTALL_PREFIX:PATH=. -DHDF_ALLOW_EXTERNAL_SUPPORT:STRING=\"SVN\" -DHDF_PACKAGE_EXTLIBS:BOOL=ON")
+set (ADD_BUILD_OPTIONS "-DCMAKE_INSTALL_PREFIX:PATH=/usr/local/hdf-java -DHDF_ALLOW_EXTERNAL_SUPPORT:STRING=\"SVN\" -DHDF_PACKAGE_EXTLIBS:BOOL=ON")
 
 # Use multiple CPU cores to build
 include(ProcessorCount)
@@ -123,8 +120,6 @@ endif()
 # -----------------------------------------------------------  
   
 set (BUILD_OPTIONS "${ADD_BUILD_OPTIONS} -DSITE:STRING=${CTEST_SITE} -DBUILDNAME:STRING=${CTEST_BUILD_NAME}")
-#  hdf-java builds native libs static 
-set (BUILD_OPTIONS "${BUILD_OPTIONS} -DBUILD_SHARED_LIBS:BOOL=OFF -DBUILD_JPEG_WITH_PIC:BOOL=ON -DCMAKE_ANSI_CFLAGS:STRING=-fPIC")
  
 #-----------------------------------------------------------------------------
 # MAC machines need special option
@@ -135,6 +130,8 @@ if (APPLE)
   execute_process(COMMAND xcrun --find c++ OUTPUT_VARIABLE XCODE_CXX OUTPUT_STRIP_TRAILING_WHITESPACE)
   SET(ENV{CC} "${XCODE_CC}")
   SET(ENV{CXX} "${XCODE_CXX}")
+#  # Shared fortran is not supported, build static 
+  set (BUILD_OPTIONS "${BUILD_OPTIONS} -DBUILD_SHARED_LIBS:BOOL=OFF -DBUILD_JPEG_WITH_PIC:BOOL=ON -DCMAKE_ANSI_CFLAGS:STRING=-fPIC")
   set (BUILD_OPTIONS "${BUILD_OPTIONS} -DCTEST_USE_LAUNCHERS:BOOL=ON -DCMAKE_BUILD_WITH_INSTALL_RPATH:BOOL=OFF")
 endif (APPLE)
 
@@ -222,36 +219,13 @@ if (NOT LOCAL_SKIP_TEST)
   endif()
   message ("test DONE")
 endif (NOT LOCAL_SKIP_TEST)
-if(NOT LOCAL_MEMCHECK_TEST)
-  ##-----------------------------------------------
-  ## Package the product
-  ##-----------------------------------------------
-  execute_process(COMMAND cpack -C ${CTEST_BUILD_CONFIGURATION} -V
-    WORKING_DIRECTORY ${CTEST_BINARY_DIRECTORY}
-    RESULT_VARIABLE cpackResult
-    OUTPUT_VARIABLE cpackLog
-    ERROR_VARIABLE cpackLog.err
-  )
-  file(WRITE ${CTEST_BINARY_DIRECTORY}/cpack.log "${cpackLog.err}" "${cpackLog}")
-endif(NOT LOCAL_MEMCHECK_TEST)
-#-----------------------------------------------------------------------------
 
 message ("DONE")
 EOF
 
 
 # Run ctest
-ctest -S $cfgfile -C Release -V -O $ctest_log
-exit_code=$?
-if [ $exit_code = 0 ]; then
-    echo CTest script completed without error
-else
-    echo Error encountered CTest script
-fi
-# Using HDFJAVA-*.sh because actual name is unavailable
-install_sh=HDFJAVA-*.sh
-echo installing with $install_sh ...
-./$install_sh --skip-license > $install_log
+ctest -S $cfgfile -C Release -V -O ctest.log
 exit_code=$?
 if [ $exit_code = 0 ]; then
     echo Complete without error

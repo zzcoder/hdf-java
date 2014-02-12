@@ -36,6 +36,7 @@ import java.util.BitSet;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Vector;
+
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -57,6 +58,7 @@ import javax.swing.WindowConstants;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
+
 import ncsa.hdf.object.CompoundDS;
 import ncsa.hdf.object.Dataset;
 import ncsa.hdf.object.Datatype;
@@ -64,90 +66,93 @@ import ncsa.hdf.object.FileFormat;
 import ncsa.hdf.object.ScalarDS;
 
 /**
- * DataOptionDialog is an dialog window used to select display options. Display options include
- * selection of subset, display type (image, text, or spreadsheet).
+ * DataOptionDialog is an dialog window used to select display options. Display
+ * options include selection of subset, display type (image, text, or
+ * spreadsheet).
  * 
  * @author Peter X. Cao
  * @version 2.4 9/6/2007
  */
-public class DataOptionDialog extends JDialog implements ActionListener, ItemListener
+public class DataOptionDialog extends JDialog implements ActionListener, ItemListener 
 {
     /**
      * 
      */
-    private static final long      serialVersionUID      = -1078411885690696784L;
+    private static final long serialVersionUID = -1078411885690696784L;
 
     /**
      * The main HDFView.
      */
-    private final ViewManager      viewer;
+    private final ViewManager viewer;
 
     /** the selected dataset/image */
-    private Dataset                dataset;
+    private Dataset dataset;
 
     /** the rank of the dataset/image */
-    private int                    rank;
+    private int rank;
 
     /** the starting point of selected subset */
-    private long                   start[];
+    private long start[];
 
     /** the sizes of all dimensions */
-    private long                   dims[];
+    private long dims[];
 
     /** the selected sizes of all dimensions */
-    private long                   selected[];
+    private long selected[];
 
     /** the stride */
-    private long                   stride[];
+    private long stride[];
 
     /** the indices of the selected dimensions. */
-    private int                    selectedIndex[];
+    private int selectedIndex[];
 
-    private int                    currentIndex[];
+    private int currentIndex[];
 
-    private JRadioButton           spreadsheetButton, imageButton, base1Button, base0Button;
+    private JRadioButton spreadsheetButton, imageButton, base1Button, base0Button;
 
-    private JRadioButton[]         bitmaskButtons;
-    private JCheckBox              applyBitmaskButton, extractBitButton;
+    private JRadioButton[] bitmaskButtons;
+    private JCheckBox applyBitmaskButton, extractBitButton;
+   
+    private JCheckBox charCheckbox;
+    
+    private BitSet bitmask;
+    
+    private JButton bitmaskHelp;
 
-    private JCheckBox              charCheckbox;
+    private JComboBox choiceTextView, choiceTableView, choiceImageView,
+            choicePalette, choices[];
+    private JComboBox transposeChoice;
 
-    private BitSet                 bitmask;
+    private boolean isSelectionCancelled;
 
-    private JButton                bitmaskHelp;
+    private boolean isTrueColorImage;
 
-    private JComboBox              choiceTextView, choiceTableView, choiceImageView,
-                                   choicePalette, choices[];
-    private JComboBox              transposeChoice;
+    private boolean isText;
 
-    private boolean                isSelectionCancelled;
+    private boolean isH5;
 
-    private boolean                isTrueColorImage;
+    private JLabel maxLabels[], selLabel;
 
-    private boolean                isText;
+    private JTextField startFields[], endFields[], strideFields[], dataRangeField, fillValueField;
 
-    private boolean                isH5;
+    private JList fieldList;
 
-    private JLabel                 maxLabels[], selLabel;
-
-    private JTextField             startFields[], endFields[], strideFields[], dataRangeField, fillValueField;
-
-    private JList                  fieldList;
-
-    private final Toolkit          toolkit;
+    private final Toolkit toolkit;
 
     private final PreviewNavigator navigator;
 
-    private int                    numberOfPalettes;
+    private int numberOfPalettes;
 
     /**
-     * JComboBox.setSelectedItem() or setSelectedIndex() always fires action event. If you call
-     * setSelectedItem() or setSelectedIndex() at itemStateChanged() or actionPerformed(), the
-     * setSelectedItem() or setSelectedIndex() will make loop calls of itemStateChanged() or
-     * actionPerformed(). This is not what we want. We want the setSelectedItem() or
-     * setSelectedIndex() behavior like java.awt.Choice. This flag is used to serve this purpose.
+     * JComboBox.setSelectedItem() or setSelectedIndex() always fires action
+     * event. If you call setSelectedItem() or setSelectedIndex() at
+     * itemStateChanged() or actionPerformed(), the setSelectedItem() or
+     * setSelectedIndex() will make loop calls of itemStateChanged() or
+     * actionPerformed(). This is not what we want. We want the
+     * setSelectedItem() or setSelectedIndex() behavior like java.awt.Choice.
+     * This flag is used to serve this purpose.
      */
-    private boolean                performJComboBoxEvent = false;
+    private boolean performJComboBoxEvent = false;
 
     /**
      * Constructs a DataOptionDialog with the given HDFView.
@@ -215,14 +220,14 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
         choiceTableView = new JComboBox((Vector<?>) HDFView.getListOfTableView());
 
         choicePalette.addItem("Select palette");
-        if (dataset instanceof ScalarDS) {
+        if(dataset instanceof ScalarDS ){
             String paletteName = ((ScalarDS) dataset).getPaletteName(0);
-            if (paletteName == null) {
+            if(paletteName==null){
                 paletteName = "Default";
             }
             choicePalette.addItem(paletteName);
             for (int i = 2; i <= numberOfPalettes; i++) {
-                paletteName = ((ScalarDS) dataset).getPaletteName(i - 1);
+                paletteName = ((ScalarDS) dataset).getPaletteName(i-1);
                 choicePalette.addItem(paletteName);
             }
         }
@@ -252,7 +257,7 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
         applyBitmaskButton.setMnemonic(KeyEvent.VK_A);
         applyBitmaskButton.setEnabled(false);
         applyBitmaskButton.addItemListener(this);
-
+        
         bitmaskHelp = new JButton(ViewProperties.getHelpIcon());
         bitmaskHelp.setEnabled(false);
         bitmaskHelp.setToolTipText("Help on how to set bitmask");
@@ -280,15 +285,6 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
         navigatorP.add(selLabel, BorderLayout.SOUTH);
         navigatorP.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
         performJComboBoxEvent = true;
-
-        // create and initialize these buttons here so the isIndexBase1 method
-        // functions properly
-        base0Button = new JRadioButton("0-based ");
-        base1Button = new JRadioButton("1-based ");
-        if (ViewProperties.isIndexBase1())
-            base1Button.setSelected(true);
-        else
-            base0Button.setSelected(true);
 
         if (dataset instanceof CompoundDS) {
             // setup GUI components for the field selection
@@ -335,8 +331,8 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
                 centerP.add(txtviewP, BorderLayout.SOUTH);
             }
             else {
-                w1 = 800 + (ViewProperties.getFontSize() - 12) * 15;
-                h1 = 400 + (ViewProperties.getFontSize() - 12) * 10;
+                 w1 = 800 + (ViewProperties.getFontSize() - 12) * 15;
+                 h1 = 400 + (ViewProperties.getFontSize() - 12) * 10;
                 contentPane.setPreferredSize(new Dimension(w1, h1));
                 if (rank > 1) {
                     centerP.add(navigatorP, BorderLayout.WEST);
@@ -362,7 +358,7 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
                 if (tclass == Datatype.CLASS_CHAR
                         || (tclass == Datatype.CLASS_INTEGER && sd
                                 .getDatatype().getDatatypeSize() == 1)) {
-                    charCheckbox.setEnabled(false);
+                	charCheckbox.setEnabled(false);
                 }
 
                 // add tableview selection
@@ -398,9 +394,9 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
                 tmpP = new JPanel();
                 tmpP.setLayout(new GridLayout(2, 1, 5, 5));
                 tmpP.add(choicePalette);
-                tmpP.add(choiceImageView);
-                imageP1.add(tmpP, BorderLayout.CENTER);
-
+                tmpP.add(choiceImageView);               
+                imageP1.add(tmpP, BorderLayout.CENTER);  
+                
                 imageP2.setLayout(new GridLayout(1, 2, 5, 5));
                 tmpP = new JPanel();
                 tmpP.setLayout(new GridLayout(2, 1, 5, 5));
@@ -409,55 +405,59 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
                 imageP2.add(tmpP);
                 tmpP = new JPanel();
                 tmpP.setLayout(new GridLayout(2, 1, 5, 5));
-                String minmaxStr = "min, max", fillStr = "val1, val2, ...";
+                String minmaxStr="min, max", fillStr="val1, val2, ...";
                 double minmax[] = ((ScalarDS) dataset).getImageDataRange();
-                if (minmax != null) {
-                    if (dataset.getDatatype().getDatatypeClass() == Datatype.CLASS_FLOAT)
-                        minmaxStr = minmax[0] + "," + minmax[1];
-                    else
-                        minmaxStr = ((long) minmax[0]) + "," + ((long) minmax[1]);
+                if (minmax!=null) {
+                	if (dataset.getDatatype().getDatatypeClass()==Datatype.CLASS_FLOAT)
+                	    minmaxStr = minmax[0] + ","+minmax[1];
+                	else
+                    	minmaxStr = ((long)minmax[0]) + ","+((long)minmax[1]);
                 }
                 List<Number> fillValue = ((ScalarDS) dataset).getFilteredImageValues();
                 int n = fillValue.size();
-                if (n > 0) {
-                    fillStr = fillValue.get(0).toString();
-                    for (int i = 1; i < n; i++) {
-                        fillStr += ", " + fillValue.get(i);
+                if (n>0) {
+                	fillStr = fillValue.get(0).toString();
+                    for (int i=1; i<n; i++) {
+                    	fillStr += ", "+fillValue.get(i);
                     }
                 }
-                tmpP.add(dataRangeField = new JTextField(minmaxStr));
-                tmpP.add(fillValueField = new JTextField(fillStr));
-                imageP2.add(tmpP);
+                tmpP.add(dataRangeField = new JTextField( minmaxStr));
+                tmpP.add(fillValueField = new JTextField(fillStr));               
+                imageP2.add(tmpP);                 
 
                 JPanel northP = new JPanel();
                 northP.setLayout(new BorderLayout(5, 5));
                 northP.add(viewP, BorderLayout.CENTER);
-
+               
                 // index base and bit mask
                 viewP = new JPanel();
                 viewP.setLayout(new BorderLayout());
                 northP.add(viewP, BorderLayout.EAST);
-
+                
                 JPanel baseIndexP = new JPanel();
                 viewP.add(baseIndexP, BorderLayout.NORTH);
                 tborder = new TitledBorder("Index Base");
                 tborder.setTitleColor(Color.gray);
                 baseIndexP.setBorder(tborder);
                 baseIndexP.setLayout(new GridLayout(1, 2, 5, 5));
-
+                base0Button = new JRadioButton("0-based ");
+                base1Button = new JRadioButton("1-based ");
                 ButtonGroup bgrp = new ButtonGroup();
                 bgrp.add(base0Button);
                 bgrp.add(base1Button);
-
+                if (ViewProperties.isIndexBase1())
+                	base1Button.setSelected(true);
+                else
+                	base0Button.setSelected(true);
                 baseIndexP.add(base0Button);
                 baseIndexP.add(base1Button);
-
+                
                 int tsize = sd.getDatatype().getDatatypeSize();
-                bitmaskButtons = new JRadioButton[8 * tsize];
+                bitmaskButtons = new JRadioButton[8 *tsize];
                 for (int i = 0; i < bitmaskButtons.length; i++) {
-                    bitmaskButtons[i] = new JRadioButton(String.valueOf(i));
-                    bitmaskButtons[i].setEnabled(false);
-                    bitmaskButtons[i].addItemListener(this);
+                	bitmaskButtons[i] = new JRadioButton(String.valueOf(i));
+                	bitmaskButtons[i].setEnabled(false);
+                	bitmaskButtons[i].addItemListener(this);
                 }
 
                 JPanel sheetP2 = new JPanel();
@@ -467,19 +467,19 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
                 sheetP2.setBorder(tborder);
 
                 tmpP = new JPanel();
-                if (bitmaskButtons.length <= 8) {
-                    tmpP.setLayout(new GridLayout(1, bitmaskButtons.length));
-                    for (int i = bitmaskButtons.length; i > 0; i--)
-                        tmpP.add(bitmaskButtons[i - 1]);
+                if(bitmaskButtons.length <=8){
+                	tmpP.setLayout(new GridLayout(1, bitmaskButtons.length));
+                	for (int i = bitmaskButtons.length; i>0; i--)
+                		tmpP.add(bitmaskButtons[i-1]);
                 }
-                else {
-                    tmpP.setLayout(new GridLayout(2, bitmaskButtons.length / 2));
+                else{
+                	tmpP.setLayout(new GridLayout(2, bitmaskButtons.length/2));
 
-                    for (int i = bitmaskButtons.length; i > bitmaskButtons.length / 2; i--)
-                        tmpP.add(bitmaskButtons[i - 1]);
+                	for (int i = bitmaskButtons.length; i>bitmaskButtons.length/2; i--)
+                		tmpP.add(bitmaskButtons[i-1]);
 
-                    for (int i = bitmaskButtons.length / 2; i > 0; i--)
-                        tmpP.add(bitmaskButtons[i - 1]);
+                	for (int i = bitmaskButtons.length/2; i>0; i--)
+                		tmpP.add(bitmaskButtons[i-1]);
 
                 }
                 sheetP2.setLayout(new BorderLayout(10, 10));
@@ -487,7 +487,7 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
                 sheetP2.add(new JLabel(), BorderLayout.NORTH);
 
                 JPanel tmpP2 = new JPanel();
-                tmpP2.setLayout(new GridLayout(2, 1));
+                tmpP2.setLayout(new GridLayout(2,1));
                 tmpP2.add(extractBitButton);
                 tmpP2.add(applyBitmaskButton);
                 tmpP = new JPanel();
@@ -498,12 +498,12 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
                 tmpP.add(tmpP2, BorderLayout.EAST);
                 sheetP2.add(tmpP, BorderLayout.NORTH);
                 contentPane.add(northP, BorderLayout.NORTH);
-
+                                        
                 if (tclass == Datatype.CLASS_CHAR
                         || (tclass == Datatype.CLASS_INTEGER && tsize <= 2)) {
-                    extractBitButton.setEnabled(true);
-                    applyBitmaskButton.setEnabled(true);
-                    bitmaskHelp.setEnabled(true);
+                	extractBitButton.setEnabled(true);
+                	applyBitmaskButton.setEnabled(true);
+                	bitmaskHelp.setEnabled(true);
                 }
             }
         }
@@ -612,7 +612,7 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
         pack();
     }
 
-    public void actionPerformed (ActionEvent e) {
+    public void actionPerformed(ActionEvent e) {
         String cmd = e.getActionCommand();
 
         if (cmd.equals("Ok")) {
@@ -714,206 +714,207 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
             }
         } // else if (cmd.equals("Select more dimensions"))
         else if (cmd.equals("Help on how to set bitmask")) {
-            String msg = ""
-                    + "\"Apply Bitmask\" applies bitwise \"AND\" to the original data.\n"
-                    + "For example, bits 2, 3, and 4 are selected for the bitmask\n"
-                    + "         10010101 (data)\n"
-                    + "AND 00011100 (mask)  \n"
-                    + "  =     00010100 (result) ==> the decimal value is 20. \n"
-                    + "\n"
-                    + "\"Extract Bit(s)\" removes all the bits from the result above where\n"
-                    + "their corresponding bits in the bitmask are 0. \nFor the same example above, "
-                    + "the result is \n101 ==> the decimal value is 5.\n\n";
+            String msg ="" 
+            + "\"Apply Bitmask\" applies bitwise \"AND\" to the original data.\n"
+            + "For example, bits 2, 3, and 4 are selected for the bitmask\n"
+            + "         10010101 (data)\n"
+            + "AND 00011100 (mask)  \n"
+            + "  =     00010100 (result) ==> the decimal value is 20. \n"
+            + "\n"
+            + "\"Extract Bit(s)\" removes all the bits from the result above where\n"
+            + "their corresponding bits in the bitmask are 0. \nFor the same example above, "
+            + "the result is \n101 ==> the decimal value is 5.\n\n";
+
+
 
             JOptionPane.showMessageDialog((JFrame) viewer, msg);
         }
     }
 
-    public void itemStateChanged (ItemEvent e) {
-        Object source = e.getSource();
+    public void itemStateChanged(ItemEvent e) {
+    	Object source = e.getSource();
 
-        if (source.equals(imageButton)) {
-            choicePalette.setEnabled(!isTrueColorImage);
-            dataRangeField.setEnabled(true);
-            fillValueField.setEnabled(true);
-            choiceImageView.setEnabled(true);
-            choiceTableView.setEnabled(false);
-            charCheckbox.setSelected(false);
-            charCheckbox.setEnabled(false);
-        }
-        else if (source.equals(spreadsheetButton)) {
-            choicePalette.setEnabled(false);
-            choiceImageView.setEnabled(false);
-            choiceTableView.setEnabled(true);
-            dataRangeField.setEnabled(false);
-            fillValueField.setEnabled(false);
-            Datatype dtype = dataset.getDatatype();
-            int tclass = dtype.getDatatypeClass();
-            charCheckbox.setEnabled((tclass == Datatype.CLASS_CHAR ||
-                    tclass == Datatype.CLASS_INTEGER) &&
-                    (dtype.getDatatypeSize() == 1));
-        }
-        else if (source instanceof JToggleButton) {
-            checkBitmaskButtons((JToggleButton) source);
-        }
-        else if (source instanceof JComboBox) {
-            if (!performJComboBoxEvent) {
-                return;
-            }
+    	if (source.equals(imageButton))
+    	{
+    		choicePalette.setEnabled(!isTrueColorImage);
+    		dataRangeField.setEnabled(true);
+    		fillValueField.setEnabled(true);
+    		choiceImageView.setEnabled(true);
+    		choiceTableView.setEnabled(false);
+    		charCheckbox.setSelected(false);
+    		charCheckbox.setEnabled(false);
+    	} else if (source.equals(spreadsheetButton)) {
+    		choicePalette.setEnabled(false);
+    		choiceImageView.setEnabled(false);
+    		choiceTableView.setEnabled(true);
+    		dataRangeField.setEnabled(false);
+    		fillValueField.setEnabled(false);
+    		Datatype dtype = dataset.getDatatype();
+    		int tclass = dtype.getDatatypeClass();
+    		charCheckbox.setEnabled((tclass == Datatype.CLASS_CHAR || 
+    				tclass == Datatype.CLASS_INTEGER)&&
+    				(dtype.getDatatypeSize() == 1));
+    	} else if (source instanceof JToggleButton) {
+    		checkBitmaskButtons((JToggleButton)source);
+    	}
+    	else if (source instanceof JComboBox) {
+    		if (!performJComboBoxEvent) {
+    			return;
+    		}
 
-            if (e.getStateChange() == ItemEvent.DESELECTED) {
-                return; // don't care about the deselect
-            }
+    		if (e.getStateChange() == ItemEvent.DESELECTED) {
+    			return; // don't care about the deselect
+    		}
 
-            JComboBox theChoice = (JComboBox) source;
+        	JComboBox theChoice = (JComboBox) source;
 
-            int theSelectedChoice = -1;
+        	int theSelectedChoice = -1;
 
-            int n = Math.min(3, rank);
-            for (int i = 0; i < n; i++) {
-                if (theChoice.equals(choices[i])) {
-                    theSelectedChoice = i;
-                }
-            }
+        	int n = Math.min(3, rank);
+        	for (int i = 0; i < n; i++) {
+        		if (theChoice.equals(choices[i])) {
+        			theSelectedChoice = i;
+        		}
+        	}
 
-            if (theSelectedChoice < 0) {
-                return; // the selected JComboBox is not a dimension choice
-            }
+        	if (theSelectedChoice < 0) {
+        		return; // the selected JComboBox is not a dimension choice
+        	}
 
-            int theIndex = theChoice.getSelectedIndex();
-            if (theIndex == currentIndex[theSelectedChoice]) {
-                return; // select the same item, no change
-            }
+        	int theIndex = theChoice.getSelectedIndex();
+        	if (theIndex == currentIndex[theSelectedChoice]) {
+        		return; // select the same item, no change
+        	}
 
-            start[currentIndex[theSelectedChoice]] = 0;
+        	start[currentIndex[theSelectedChoice]] = 0;
 
-            // reset the selected dimension choice
-            startFields[theSelectedChoice].setText("0");
-            endFields[theSelectedChoice].setText(String
-                    .valueOf(dims[theIndex] - 1));
-            strideFields[theSelectedChoice].setText("1");
-            maxLabels[theSelectedChoice]
-                    .setText(String.valueOf(dims[theIndex]));
+        	// reset the selected dimension choice
+        	startFields[theSelectedChoice].setText("0");
+        	endFields[theSelectedChoice].setText(String
+        			.valueOf(dims[theIndex] - 1));
+        	strideFields[theSelectedChoice].setText("1");
+        	maxLabels[theSelectedChoice]
+        	          .setText(String.valueOf(dims[theIndex]));
 
-            // if the selected choice selects the dimension that is selected by
-            // other dimension choice, exchange the dimensions
-            for (int i = 0; i < n; i++) {
-                if (i == theSelectedChoice) {
-                    continue; // don't exchange itself
-                }
-                else if (theIndex == choices[i].getSelectedIndex()) {
-                    setJComboBoxSelectedIndex(choices[i],
-                            currentIndex[theSelectedChoice]);
-                    startFields[i].setText("0");
-                    endFields[i]
-                            .setText(String
-                                    .valueOf(dims[currentIndex[theSelectedChoice]] - 1));
-                    strideFields[i].setText("1");
-                    maxLabels[i].setText(String
-                            .valueOf(dims[currentIndex[theSelectedChoice]]));
-                }
-            }
+        	// if the selected choice selects the dimension that is selected by
+        	// other dimension choice, exchange the dimensions
+        	for (int i = 0; i < n; i++) {
+        		if (i == theSelectedChoice) {
+        			continue; // don't exchange itself
+        		}
+        		else if (theIndex == choices[i].getSelectedIndex()) {
+        			setJComboBoxSelectedIndex(choices[i],
+        					currentIndex[theSelectedChoice]);
+        			startFields[i].setText("0");
+        			endFields[i]
+        			          .setText(String
+        			        		  .valueOf(dims[currentIndex[theSelectedChoice]] - 1));
+        			strideFields[i].setText("1");
+        			maxLabels[i].setText(String
+        					.valueOf(dims[currentIndex[theSelectedChoice]]));
+        		}
+        	}
 
-            for (int i = 0; i < n; i++) {
-                currentIndex[i] = choices[i].getSelectedIndex();
-            }
+        	for (int i = 0; i < n; i++) {
+        		currentIndex[i] = choices[i].getSelectedIndex();
+        	}
 
-            // update the navigator
-            if (rank > 1) {
-                if (isText) {
-                    endFields[1].setText(startFields[1].getText());
-                }
-                else {
-                    int hIdx = choices[0].getSelectedIndex();
-                    int wIdx = choices[1].getSelectedIndex();
-                    transposeChoice.setSelectedIndex(0);
+        	// update the navigator
+        	if (rank > 1) {
+        		if (isText) {
+        			endFields[1].setText(startFields[1].getText());
+        		}
+        		else {
+        			int hIdx = choices[0].getSelectedIndex();
+        			int wIdx = choices[1].getSelectedIndex();
+        			transposeChoice.setSelectedIndex(0);
 
-                    // Use transpose option only if the dims are not in original
-                    // order
-                    if (hIdx < wIdx)
-                        transposeChoice.setEnabled(false);
-                    else
-                        transposeChoice.setEnabled(true);
+        			// Use transpose option only if the dims are not in original
+        			// order
+        			if (hIdx < wIdx)
+        				transposeChoice.setEnabled(false);
+        			else
+        				transposeChoice.setEnabled(true);
 
-                    long dims[] = dataset.getDims();
-                    int w = (int) dims[wIdx];
-                    int h = (int) dims[hIdx];
-                    navigator.setDimensionSize(w, h);
-                    navigator.updateUI();
-                }
-            }
+        			long dims[] = dataset.getDims();
+        			int w = (int) dims[wIdx];
+        			int h = (int) dims[hIdx];
+        			navigator.setDimensionSize(w, h);
+        			navigator.updateUI();
+        		}
+        	}
 
-            if (rank > 2) {
-                endFields[2].setText(startFields[2].getText());
-            }
+        	if (rank > 2) {
+        		endFields[2].setText(startFields[2].getText());
+        	}
         } // else if (source instanceof JComboBox)
     }
 
     /** Returns true if the data selection is cancelled. */
-    public boolean isCancelled ( ) {
+    public boolean isCancelled() {
         return isSelectionCancelled;
     }
 
     /** Returns true if the display option is image. */
-    public boolean isImageDisplay ( ) {
+    public boolean isImageDisplay() {
         return imageButton.isSelected();
     }
-
-    public boolean isIndexBase1 ( ) {
-        if (base1Button == null)
-            return false;
-
-        return base1Button.isSelected();
+    
+    public boolean isIndexBase1() {
+    	if (base1Button==null)
+    		return false;
+    	
+    	return base1Button.isSelected();
     }
 
     /** for deal with bit masks only */
-    private void checkBitmaskButtons (JToggleButton source) {
-        boolean b = false;
-        int n = 0;
-
-        if (source.equals(applyBitmaskButton)) {
-            if (applyBitmaskButton.isSelected())
-                extractBitButton.setSelected(false);
-        }
-        else if (source.equals(extractBitButton)) {
-            if (extractBitButton.isSelected())
-                applyBitmaskButton.setSelected(false);
-        }
-
-        b = (applyBitmaskButton.isSelected() || extractBitButton.isSelected());
-        bitmaskButtons[0].setEnabled(b);
-        if (bitmaskButtons[0].isSelected())
-            n = 1;
-
+    private void checkBitmaskButtons(JToggleButton source) 
+    {
+    	boolean b = false;
+    	int n = 0;
+    	
+    	if (source.equals(applyBitmaskButton)) {
+    		if (applyBitmaskButton.isSelected())
+    			extractBitButton.setSelected(false);
+    	} else if (source.equals(extractBitButton)) {
+    		if (extractBitButton.isSelected())
+    			applyBitmaskButton.setSelected(false);
+     	}
+    	
+    	b = (applyBitmaskButton.isSelected() || extractBitButton.isSelected());
+    	bitmaskButtons[0].setEnabled(b);
+    	if (bitmaskButtons[0].isSelected())
+    		n = 1;
+    	
         for (int i = 1; i < bitmaskButtons.length; i++) {
             bitmaskButtons[i].setEnabled(b);
-            if (bitmaskButtons[i].isSelected() && !bitmaskButtons[i - 1].isSelected())
-                n++;
+            if (bitmaskButtons[i].isSelected() && !bitmaskButtons[i-1].isSelected())
+            	n++;
         }
 
         // do not allow non-adjacent selection for extracting bits
-        if (extractBitButton.isSelected() && n > 1) {
+        if (extractBitButton.isSelected() && n>1) {
+            
             if (source.equals(extractBitButton) && extractBitButton.isSelected()) {
                 applyBitmaskButton.setSelected(true);
                 JOptionPane.showMessageDialog(this,
                         "Selecting non-adjacent bits is only allowed \nfor the \"Apply Bitmask\" option.",
                         "Select Bitmask",
                         JOptionPane.ERROR_MESSAGE);
-            }
-            else if (source instanceof JRadioButton) {
+            } else if (source instanceof JRadioButton){
                 JOptionPane.showMessageDialog(this,
                         "Please select contiguous bits \nwhen the \"Show Value of Selected Bits\" option is checked.",
                         "Select Bitmask",
                         JOptionPane.ERROR_MESSAGE);
-                source.setSelected(false);
+                source.setSelected(false);         	
             }
         } // if (extractBitButton.isSelected() && n>1) {
     }
-
+    
     /**
      * Set the initial state of all the variables
      */
-    private void init ( ) {
+    private void init() {
         // set the imagebutton state
         boolean isImage = false;
 
@@ -921,10 +922,6 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
             ScalarDS sd = (ScalarDS) dataset;
             isImage = sd.isImageDisplay();
             isTrueColorImage = sd.isTrueColor();
-            // compound datasets don't have data range or fill values
-            // (JAVA-1825)
-            dataRangeField.setEnabled(isImage);
-            fillValueField.setEnabled(isImage);
         }
         else if (dataset instanceof CompoundDS) {
             imageButton.setEnabled(false);
@@ -933,6 +930,8 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
         choiceTableView.setEnabled(!isImage);
         choiceImageView.setEnabled(isImage);
         imageButton.setSelected(isImage);
+        dataRangeField.setEnabled(isImage);
+        fillValueField.setEnabled(isImage);
         choicePalette.setEnabled(isImage && !isTrueColorImage);
 
         int n = Math.min(3, rank);
@@ -1018,19 +1017,21 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
     }
 
     /**
-     * JComboBox.setSelectedItem() or setSelectedIndex() always fires action event. If you call
-     * setSelectedItem() or setSelectedIndex() at itemStateChanged() or actionPerformed(), the
-     * setSelectedItem() or setSelectedIndex() will make loop calls of itemStateChanged() or
-     * actionPerformed(). This is not what we want. We want the setSelectedItem() or
-     * setSelectedIndex() behavior like java.awt.Choice. This flag is used to serve this purpose.
+     * JComboBox.setSelectedItem() or setSelectedIndex() always fires action
+     * event. If you call setSelectedItem() or setSelectedIndex() at
+     * itemStateChanged() or actionPerformed(), the setSelectedItem() or
+     * setSelectedIndex() will make loop calls of itemStateChanged() or
+     * actionPerformed(). This is not what we want. We want the
+     * setSelectedItem() or setSelectedIndex() behavior like java.awt.Choice.
+     * This flag is used to serve this purpose.
      */
-    private void setJComboBoxSelectedIndex (JComboBox box, int idx) {
+    private void setJComboBoxSelectedIndex(JComboBox box, int idx) {
         performJComboBoxEvent = false;
         box.setSelectedIndex(idx);
         performJComboBoxEvent = true;
     }
 
-    private void setPalette ( ) {
+    private void setPalette() {
         if (!(dataset instanceof ScalarDS)) {
             return;
         }
@@ -1068,7 +1069,7 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
         ((ScalarDS) dataset).setPalette(pal);
     }
 
-    private boolean setSelection ( ) {
+    private boolean setSelection() {
         long[] n0 = { 0, 0, 0 }; // start
         long[] n1 = { 0, 0, 0 }; // end
         long[] n2 = { 1, 1, 1 }; // stride
@@ -1133,31 +1134,26 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
             for (int i = 0; i < selectedFieldIndices.length; i++) {
                 d.selectMember(selectedFieldIndices[i]);
             }
-        }
-        else {
-            ScalarDS ds = (ScalarDS) dataset;
-            StringTokenizer st = new StringTokenizer(dataRangeField.getText(), ",");
-            if (st.countTokens() == 2) {
-                double min = 0, max = 0;
-                try {
-                    min = Double.valueOf(st.nextToken());
-                    max = Double.valueOf(st.nextToken());
-                }
-                catch (Throwable ex) {
-                }
-                if (max > min)
-                    ds.setImageDataRange(min, max);
-            }
-            st = new StringTokenizer(fillValueField.getText(), ",");
-            while (st.hasMoreTokens()) {
-                double x = 0;
-                try {
-                    x = Double.valueOf(st.nextToken());
-                    ds.addFilteredImageValue(x);
-                }
-                catch (Throwable ex) {
-                }
-            }
+        } else {
+        	ScalarDS ds = (ScalarDS) dataset;
+        	StringTokenizer st = new StringTokenizer(dataRangeField.getText(), ",");
+        	if (st.countTokens()==2) {
+        		double min=0, max=0;
+        		try { 
+        		    min = Double.valueOf(st.nextToken());
+        		    max = Double.valueOf(st.nextToken());
+        		} catch (Throwable ex) {}
+        		if (max>min)
+        			ds.setImageDataRange(min, max);
+        	}
+        	st = new StringTokenizer(fillValueField.getText(), ",");
+        	while (st.hasMoreTokens()) {
+        		double x=0;
+        		try { 
+        		    x = Double.valueOf(st.nextToken());
+        		    ds.addFilteredImageValue(x);
+        		} catch (Throwable ex) {}
+        	}
         }
 
         // reset selected size
@@ -1193,53 +1189,51 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
         return retVal;
     }
 
-    private boolean setBitmask ( )
+    private boolean setBitmask() 
     {
-        boolean isAll = false, isNothing = false;
+    	boolean isAll=false, isNothing=false;
+    	
+    	if (bitmaskButtons == null) {
+    		bitmask = null;
+    		return true;
+    	}
+    	
+    	if (!(applyBitmaskButton.isSelected() || extractBitButton.isSelected())) {
+    		bitmask = null;
+    		return true;
+    	}
 
-        if (bitmaskButtons == null) {
-            bitmask = null;
-            return true;
-        }
+    	int len = bitmaskButtons.length;
+    	for (int i = 0; i < len; i++) {
+    		isAll = (isAll && bitmaskButtons[i].isSelected());
+    		isNothing = (isNothing && !bitmaskButtons[i].isSelected());
+    	}
+  
+    	if (isAll || isNothing) {
+    		bitmask = null;
+    		return true;
+    	}
+    	
+    	if (bitmask == null)
+    		bitmask = new BitSet(len);
 
-        if (!(applyBitmaskButton.isSelected() || extractBitButton.isSelected())) {
-            bitmask = null;
-            return true;
-        }
+    	for (int i = 0; i < len; i++) {
+    		bitmask.set(i, bitmaskButtons[i].isSelected());
+    	}
 
-        int len = bitmaskButtons.length;
-        for (int i = 0; i < len; i++) {
-            isAll = (isAll && bitmaskButtons[i].isSelected());
-            isNothing = (isNothing && !bitmaskButtons[i].isSelected());
-        }
-
-        if (isAll || isNothing) {
-            bitmask = null;
-            return true;
-        }
-
-        if (bitmask == null)
-            bitmask = new BitSet(len);
-
-        for (int i = 0; i < len; i++) {
-            bitmask.set(i, bitmaskButtons[i].isSelected());
-        }
-
-        return true;
+    	return true;
     }
-
+    
     /** SubsetNavigator draws selection rectangle of subset. */
     private class PreviewNavigator extends JComponent implements MouseListener,
             MouseMotionListener {
         private static final long serialVersionUID = -4458114008420664965L;
-        private final int         NAVIGATOR_SIZE   = 150;
-        private int               dimX, dimY, x, y;
-        private double            r;
-        private Point             startPosition;                           // mouse
-                                                                            // clicked
-                                                                            // position
-        private Rectangle         selectedArea;
-        private Image             previewImage     = null;
+        private final int NAVIGATOR_SIZE = 150;
+        private int dimX, dimY, x, y;
+        private double r;
+        private Point startPosition; // mouse clicked position
+        private Rectangle selectedArea;
+        private Image previewImage = null;
 
         private PreviewNavigator(int w, int h) {
             dimX = w;
@@ -1268,7 +1262,7 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
             addMouseMotionListener(this);
         }
 
-        private Image createPreviewImage ( ) throws Exception {
+        private Image createPreviewImage() throws Exception {
             if ((rank <= 1) || !(dataset instanceof ScalarDS)) {
                 return null;
             }
@@ -1331,7 +1325,7 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
                 Object data = sd.read();
                 int h = sd.getHeight();
                 int w = sd.getWidth();
-
+                
                 byte[] bData = Tools.getBytes(data, sd.getImageDataRange(), w, h, false, sd.getFilteredImageValues(), null);
 
                 if (isTrueColorImage) {
@@ -1356,9 +1350,8 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
                             }
                         }
                     }
-                    if (!isH5 && !sd.isDefaultImageOrder() && (selectedIndex[1] > selectedIndex[0])) {
-                        // transpose data for hdf4 images where selectedIndex[1]
-                        // > selectedIndex[0]
+                    if (!isH5 && !sd.isDefaultImageOrder()&& (selectedIndex[1] > selectedIndex[0])) {
+                        // transpose data for hdf4 images where selectedIndex[1] > selectedIndex[0]
                         int n = bData.length;
                         byte[] bData2 = new byte[n];
                         for (int i = 0; i < h; i++) {
@@ -1382,7 +1375,7 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
         }
 
         @Override
-        public void paint (Graphics g) {
+        public void paint(Graphics g) {
             g.setColor(Color.blue);
 
             if (previewImage != null) {
@@ -1400,18 +1393,18 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
             }
         }
 
-        public void mousePressed (MouseEvent e) {
+        public void mousePressed(MouseEvent e) {
             startPosition = e.getPoint();
             selectedArea.setBounds(startPosition.x, startPosition.y, 0, 0);
         }
 
-        public void mouseClicked (MouseEvent e) {
+        public void mouseClicked(MouseEvent e) {
             startPosition = e.getPoint();
             selectedArea.setBounds(startPosition.x, startPosition.y, 0, 0);
             repaint();
         }
 
-        public void mouseDragged (MouseEvent e) {
+        public void mouseDragged(MouseEvent e) {
             Point p0 = startPosition;
             Point p1 = e.getPoint();
 
@@ -1433,7 +1426,7 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
             repaint();
         }
 
-        private void updateSelection (int x0, int y0, int w, int h) {
+        private void updateSelection(int x0, int y0, int w, int h) {
             int i0 = 0, i1 = 0;
             String selStr;
 
@@ -1471,19 +1464,19 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
             selLabel.setText(selStr);
         }
 
-        public void mouseReleased (MouseEvent e) {
+        public void mouseReleased(MouseEvent e) {
         }
 
-        public void mouseEntered (MouseEvent e) {
+        public void mouseEntered(MouseEvent e) {
         }
 
-        public void mouseExited (MouseEvent e) {
+        public void mouseExited(MouseEvent e) {
         }
 
-        public void mouseMoved (MouseEvent e) {
+        public void mouseMoved(MouseEvent e) {
         }
 
-        private void setDimensionSize (int w, int h) {
+        private void setDimensionSize(int w, int h) {
             dimX = w;
             dimY = h;
             if (dimX > dimY) {
@@ -1510,22 +1503,23 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
 
     /**
      * 
-     * @return true if display the data as characters; otherwise, display as numbers.
+     * @return true if display the data as characters; otherwise, display as
+     *         numbers.
      */
-    public boolean isDisplayTypeChar ( ) {
+    public boolean isDisplayTypeChar() {
         return charCheckbox.isSelected();
     }
 
     /**
      * Return the bitmask.
      */
-    public BitSet getBitmask ( ) {
-        if (bitmask == null)
+    public BitSet getBitmask() {
+    	if (bitmask == null)
             return null;
-
+    	
         if (!extractBitButton.isEnabled())
             return null;
-
+        
         // do not use bitmask if it is empty (all bits are zero)
         if (bitmask.isEmpty())
             return null;
@@ -1533,7 +1527,7 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
         boolean isAllSelected = true;
         int size = bitmask.size();
         for (int i = 0; i < size; i++)
-            isAllSelected = (bitmask.get(i) && isAllSelected);
+        	isAllSelected = (bitmask.get(i) && isAllSelected);
 
         // do not use bitmask if it is full (all bits are one)
         if (isAllSelected)
@@ -1541,28 +1535,29 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
 
         return bitmask;
     }
-
+    
     /**
      * Check if it only apply bitmask.
      */
-    public boolean isApplyBitmaskOnly ( )
+    public boolean isApplyBitmaskOnly() 
     {
-        if (getBitmask() == null)
-            return false;
-
-        return applyBitmaskButton.isSelected();
+    	if (getBitmask()==null)
+    		return false;
+    	
+    	return applyBitmaskButton.isSelected();
     }
-
+    
     /**
      * 
-     * @return true if transpose the data in 2D table; otherwise, do not transpose the data.
+     * @return true if transpose the data in 2D table; otherwise, do not
+     *         transpose the data.
      */
-    public boolean isTransposed ( ) {
+    public boolean isTransposed() {
         return (transposeChoice.getSelectedIndex() == 1);
     }
 
     /** return the name of selected dataview */
-    public String getDataViewName ( ) {
+    public String getDataViewName() {
         String viewName = null;
 
         if (isText) {

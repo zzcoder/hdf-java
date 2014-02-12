@@ -46,8 +46,6 @@ public abstract class Datatype extends HObject {
      */
     private static final long serialVersionUID = -581324710549963177L;
 
-    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Datatype.class);
-
     /**
      * The default definition for datatype size, order, and sign.
      */
@@ -308,7 +306,6 @@ public abstract class Datatype extends HObject {
         enumMembers = null;
         baseType = tbase;
         dims = null;
-        log.trace("datatypeClass={} datatypeSize={} datatypeOrder={} datatypeSign={} baseType={}", datatypeClass, datatypeSize, datatypeOrder, datatypeSign, baseType);
     }
 
     /**
@@ -394,7 +391,7 @@ public abstract class Datatype extends HObject {
     /**
      * Returns the datatype of array element for ARRAY datatype.
      * <p>
-     * For example, a dataset set of ARRAY of integer, The datatype of the
+     * For example, a dataset set of ARRAY of inteter, The datatype of the
      * dataset is ARRAY. The datatype of the base type is integer.
      * 
      * @return the the datatype of array element for ARRAY datatype.
@@ -523,7 +520,7 @@ public abstract class Datatype extends HObject {
             description = "Bitfield";
             break;
         case CLASS_ENUM:
-            description = String.valueOf(datatypeSize * 8) + "-bit enum";
+            description = "enum";
             break;
         case CLASS_ARRAY:
             description = "Array";
@@ -539,7 +536,6 @@ public abstract class Datatype extends HObject {
             break;
         }
 
-        log.trace("description={}", description);
         return description;
     }
 

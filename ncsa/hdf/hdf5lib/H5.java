@@ -252,7 +252,7 @@ public class H5 implements java.io.Serializable {
      * 
      * Make sure to update the versions number when a different library is used.
      */
-    public final static int LIB_VERSION[] = { 1, 8, 13 };
+    public final static int LIB_VERSION[] = { 1, 8, 12 };
 
     public final static String H5PATH_PROPERTY_KEY = "ncsa.hdf.hdf5lib.H5.hdf5lib";
 
@@ -1760,7 +1760,6 @@ public synchronized static int H5Dread(int dataset_id, int mem_type_id,
                 isCriticalPinning);
     }
     else if (H5.H5Tequal(mem_type_id, HDF5Constants.H5T_STD_REF_DSETREG)) {
-    	log.trace("H5Dread_reg_ref");
         status = H5Dread_reg_ref(dataset_id, mem_type_id, mem_space_id,
                 file_space_id, xfer_plist_id, (String[]) obj);
     }
@@ -1856,11 +1855,6 @@ public synchronized static int H5Dread_long(int dataset_id,
 }
 
 public synchronized static native int H5Dread_reg_ref(int dataset_id,
-        int mem_type_id, int mem_space_id, int file_space_id,
-        int xfer_plist_id, String[] buf)
-        throws HDF5LibraryException, NullPointerException;
-
-public synchronized static native int H5Dread_reg_ref_data(int dataset_id,
         int mem_type_id, int mem_space_id, int file_space_id,
         int xfer_plist_id, String[] buf)
         throws HDF5LibraryException, NullPointerException;

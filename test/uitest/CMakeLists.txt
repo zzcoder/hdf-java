@@ -18,7 +18,6 @@ SET (HDFJAVA_FEST_JARS
 )
 
 SET (HDFJAVA_TEST_UITEST_SRCS
-#    TestHDFViewCLGeometry.java
     TestHDFViewCLMultipleFiles.java
     TestHDFViewCLRootMultipleFiles.java
     TestHDFViewMenu.java
@@ -61,8 +60,6 @@ SET (HDF_JAVA_TEST_FILES
 )
 
 SET (HDF_JAVA_TEST_REFERENCE
-#      JUnit-gui-CL-geom.txt
-#      JUnit-gui-CL-geom.err
       JUnit-gui-CL-multi.txt
       JUnit-gui-CL-multi.err
       JUnit-gui-CL-root-multi.txt
@@ -264,7 +261,6 @@ ADD_TEST (
         -D "TEST_FOLDER=${PROJECT_BINARY_DIR}"
         -D "TEST_OUTPUT=JUnit-gui-treeview-files.out"
         -D "TEST_EXPECT=0"
-#        -D "TEST_LOG_LEVEL=debug"
         -D "TEST_MASK_FILE=TRUE"
         -D "TEST_ERRREF=JUnit-gui-treeview-files.err"
         -D "TEST_REFERENCE=JUnit-gui-treeview-files.txt"
@@ -367,7 +363,6 @@ ADD_TEST (
         -D "TEST_FOLDER=${PROJECT_BINARY_DIR}"
         -D "TEST_OUTPUT=JUnit-gui-treeview-filters.out"
         -D "TEST_EXPECT=0"
-#        -D "TEST_LOG_LEVEL=debug"
         -D "TEST_MASK_FILE=TRUE"
         -D "TEST_ERRREF=JUnit-gui-treeview-filters.err"
         -D "TEST_REFERENCE=JUnit-gui-treeview-filters.txt"
@@ -419,25 +414,4 @@ ADD_TEST (
 SET_TESTS_PROPERTIES (JUnit-gui-CL-root-multi PROPERTIES
     DEPENDS JUnit-gui-CL-multi
 )
-   
-#ADD_TEST (
-#    NAME JUnit-gui-CL-geom
-#    COMMAND "${CMAKE_COMMAND}"
-#        -D "TEST_TESTER=${CMAKE_Java_RUNTIME};${CMAKE_Java_RUNTIME_FLAGS}"
-#        -D "TEST_CLASSPATH:STRING=${CMAKE_JAVA_CLASSPATH}"
-#        -D "TEST_ARGS:STRING=-ea;org.junit.runner.JUnitCore"
-#        -D "TEST_PROGRAM=test.uitest.TestHDFViewCLGeometry"
-#        -D "TEST_LIBRARY_DIRECTORY=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
-#        -D "TEST_FOLDER=${PROJECT_BINARY_DIR}"
-#        -D "TEST_OUTPUT=JUnit-gui-CL-geom.out"
-#        -D "TEST_EXPECT=0"
-#        -D "TEST_MASK_FILE=TRUE"
-#        -D "TEST_ERRREF=JUnit-gui-CL-geom.err"
-#        -D "TEST_REFERENCE=JUnit-gui-CL-geom.txt"
-#        -P "${HDFJAVA_RESOURCES_DIR}/runTest.cmake"
-#)
-#
-#SET_TESTS_PROPERTIES (JUnit-gui-CL-geom PROPERTIES
-#    DEPENDS JUnit-gui-CL-root-multi
-#)
    

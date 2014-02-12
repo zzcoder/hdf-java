@@ -80,7 +80,7 @@ public class H5ScalarDS extends ScalarDS {
     /**
      * flag to indicate if the datatype in file is the same as dataype in memory
      */
-    private boolean           isNativeDatatype  = false;
+    private boolean           isNativeDatatype  = true;
 
     /** flag to indicate is the datatype is reg. ref. */
     private boolean           isRegRef          = false;
@@ -407,17 +407,14 @@ public class H5ScalarDS extends ScalarDS {
         		try {
         			tmptid = H5.H5Tget_native_type(tid);
         			isNativeDatatype = H5.H5Tequal(tid, tmptid);
-        			log.trace("init() isNativeDatatype={}",isNativeDatatype);
 
         			/* see if fill value is defined */
         			int[] fillStatus = { 0 };
         			if (H5.H5Pfill_value_defined(pid, fillStatus) >= 0) {
         				if (fillStatus[0] == HDF5Constants.H5D_FILL_VALUE_USER_DEFINED) {
         					fillValue = H5Datatype.allocateArray(tmptid, 1);
-    						log.trace("init() fillValue={}",fillValue);
         					try {
         						H5.H5Pget_fill_value(pid, tmptid, fillValue);
-        						log.trace("init() H5Pget_fill_value={}",fillValue);
         						if (fillValue !=null) {
         							if(isFillValueConverted)
         								fillValue = ScalarDS.convertToUnsignedC(fillValue, null);
@@ -600,7 +597,7 @@ public class H5ScalarDS extends ScalarDS {
             //
             // (5/4/09) Modified the default dimension order. See bug#1379
             // We change the default order to the following. In most situation,
-            // users want to use the natural order of
+            // users want to use the nature order of
             // selectedIndex[0] = 0
             // selectedIndex[1] = 1
             // selectedIndex[2] = 2
@@ -782,7 +779,6 @@ public class H5ScalarDS extends ScalarDS {
     public byte[] readBytes() throws HDF5Exception {
         byte[] theData = null;
 
-    	log.trace("H5ScalarDS readBytes: start");
         if (rank <= 0) {
             init();
         }
@@ -811,7 +807,6 @@ public class H5ScalarDS extends ScalarDS {
 
         		tid = H5.H5Dget_type(did);
         		int size = H5.H5Tget_size(tid) * (int) lsize[0];
-            	log.trace("H5ScalarDS readBytes: size = {}", size);
         		theData = new byte[size];
         		H5.H5Dread(did, tid, mspace, fspace, HDF5Constants.H5P_DEFAULT, theData);
         	}
@@ -837,7 +832,6 @@ public class H5ScalarDS extends ScalarDS {
         		close(did);
         	}
         }
-    	log.trace("H5ScalarDS readBytes: finish");
 
         return theData;
     }
@@ -894,7 +888,6 @@ public class H5ScalarDS extends ScalarDS {
         		}
 
         		tid = H5.H5Dget_type(did);
-        		log.trace("H5ScalarDS read: isNativeDatatype",isNativeDatatype);
         		if (!isNativeDatatype) {
         			int tmptid = -1;
         			try {
@@ -990,7 +983,6 @@ public class H5ScalarDS extends ScalarDS {
         int did = -1, tid = -1;
         int spaceIDs[] = { -1, -1 }; // spaceIDs[0]=mspace, spaceIDs[1]=fspace
         Object tmpData = null;
-    	log.trace("H5ScalarDS write: start");
 
         if (buf == null) {
             return;
@@ -1005,13 +997,11 @@ public class H5ScalarDS extends ScalarDS {
 
         long[] lsize = { 1 };
         did = open();
-    	log.trace("H5ScalarDS write: dataset opened");
         if(did >= 0) {
         	try {
         		lsize[0] = selectHyperslab(did, spaceIDs);
         		tid = H5.H5Dget_type(did);
 
-    			log.trace("H5ScalarDS write: isNativeDatatype={}",isNativeDatatype);
         		if (!isNativeDatatype) {
         			int tmptid = -1;
         			try {
@@ -1036,7 +1026,6 @@ public class H5ScalarDS extends ScalarDS {
         		char dname = cname.charAt(cname.lastIndexOf("[") + 1);
         		boolean doConversion = (((tsize == 1) && (dname == 'S')) || ((tsize == 2) && (dname == 'I'))
         				|| ((tsize == 4) && (dname == 'J')) || (isUnsigned && unsignedConverted));
-    			log.trace("H5ScalarDS write: tsize={} cname={} dname={} doConversion={}",tsize,cname,dname,doConversion);
 
         		tmpData = buf;
         		if (doConversion) {
@@ -1079,7 +1068,6 @@ public class H5ScalarDS extends ScalarDS {
         		close(did);
         	}
         }
-    	log.trace("H5ScalarDS write: finish");
     }
 
     /**
@@ -1650,7 +1638,6 @@ public class H5ScalarDS extends ScalarDS {
         String fullPath = null;
         int did = -1, tid = -1, sid = -1, plist = -1;
 
-		log.debug("H5ScalarDS create start");
         if ((pgroup == null) || (name == null) || (dims == null) || ((gzip > 0) && (chunks == null))) {
             return null;
         }
@@ -1690,7 +1677,7 @@ public class H5ScalarDS extends ScalarDS {
             }
         }
 
-        // HDF5 requires you to use chunking in order to define extendible
+        // HDF 5 requires you to use chunking in order to define extendible
         // datasets. Chunking makes it possible to extend datasets efficiently,
         // without having to reorganize storage excessively. Using default size
         // of 64x...which has good performance
@@ -1736,9 +1723,7 @@ public class H5ScalarDS extends ScalarDS {
         		}
         		int fid = file.getFID();
 
-        		log.debug("H5ScalarDS create dataset");
         		did = H5.H5Dcreate(fid, fullPath, tid, sid, HDF5Constants.H5P_DEFAULT, plist, HDF5Constants.H5P_DEFAULT);
-        		log.debug("H5ScalarDS create H5ScalarDS");
         		dataset = new H5ScalarDS(file, name, path);
         	}
         	finally {
@@ -1775,7 +1760,6 @@ public class H5ScalarDS extends ScalarDS {
                 dataset.write(data);
             }
         }
-    	log.debug("H5ScalarDS create finish");
 
         return dataset;
     }
@@ -1863,13 +1847,11 @@ public class H5ScalarDS extends ScalarDS {
         if (datatype == null) {
             int did = -1, tid = -1;
 
-            log.trace("H5ScalarDS getDatatype: datatype == null");
             did = open();
             if(did >= 0) {
             	try {
             		tid = H5.H5Dget_type(did);
 
-            		log.trace("H5ScalarDS getDatatype: isNativeDatatype",isNativeDatatype);
             		if (!isNativeDatatype) {
             			int tmptid = -1;
             			try {
@@ -1888,7 +1870,6 @@ public class H5ScalarDS extends ScalarDS {
             		datatype = new H5Datatype(tid);
             	}
             	catch (Exception ex) {
-        			log.debug("new H5Datatype:", ex);
             	}
             	finally {
             		try {

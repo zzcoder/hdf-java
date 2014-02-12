@@ -3,10 +3,7 @@
  */
 package test.object;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
+import junit.framework.TestCase;
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 import ncsa.hdf.object.CompoundDS;
@@ -14,65 +11,32 @@ import ncsa.hdf.object.Datatype;
 import ncsa.hdf.object.FileFormat;
 import ncsa.hdf.object.h5.H5File;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
 /**
  * @author rsinha
  * 
  */
-public class CompoundDSTest {
+public class CompoundDSTest extends TestCase {
     private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CompoundDSTest.class);
     private static final H5File H5FILE = new H5File();
 
     private H5File testFile = null;
     private CompoundDS testDS = null;
 
-    @BeforeClass
-    public static void createFile() throws Exception {
-		try {
-			int openID = H5.getOpenIDCount();
-			if(openID > 0)
-				System.out.println("CompoundDSTest BeforeClass: Number of IDs still open: "+ openID);
-		} 
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
-		try {
-			H5TestFile.createTestFile(null);
-		}
-		catch (final Exception ex) {
-			System.out.println("*** Unable to create HDF5 test file. " + ex);
-			System.exit(-1);
-		}
+    /**
+     * @param arg0
+     */
+    public CompoundDSTest(String arg0) {
+        super(arg0);
     }
-    
-    @AfterClass
-    public static void checkIDs() throws Exception {
-		try {
-			int openID = H5.getOpenIDCount();
-			if(openID>0)
-				System.out.println("CompoundDSTest AfterClass: Number of IDs still open: "+ openID);
-		} 
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
 
-    }
-    
-    @Before
-    public void openFiles() throws Exception {
-		try {
-			int openID = H5.getOpenIDCount();
-			if(openID > 0)
-				log.debug("Before: Number of IDs still open: "+ openID);
-		} 
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see junit.framework.TestCase#setUp()
+     */
+    @Override
+	protected void setUp() throws Exception {
+        super.setUp();
         testFile = (H5File) H5FILE.createInstance(H5TestFile.NAME_FILE_H5,
                 FileFormat.WRITE);
         assertNotNull(testFile);
@@ -81,8 +45,15 @@ public class CompoundDSTest {
         testDS.init();
     }
 
-    @After
-    public void removeFiles() throws Exception {
+    /*
+     * (non-Javadoc)
+     * 
+     * @see junit.framework.TestCase#tearDown()
+     */
+    @Override
+	protected void tearDown() throws Exception {
+        super.tearDown();
+
         if (testFile != null) {
             try {
                 testFile.close();
@@ -91,14 +62,6 @@ public class CompoundDSTest {
             }
             testFile = null;
         }
-		try {
-			int openID = H5.getOpenIDCount();
-			if(openID > 0)
-				log.debug("After: Number of IDs still open: "+ openID);
-		} 
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
     }
 
     /**
@@ -111,8 +74,7 @@ public class CompoundDSTest {
      * <li>the dims of each member in the dataset.
      * </ul>
      */
-    @Test
-    public void testFieldsHaveCorrectNameTypeOrderAndDims() {
+    public final void testFieldsHaveCorrectNameTypeOrderAndDims() {
     	log.debug("testFieldsHaveCorrectNameTypeOrderAndDims");
         int correctMemberCount = H5TestFile.COMPOUND_MEMBER_NAMES.length;
         assertEquals(testDS.getMemberCount(), correctMemberCount);
@@ -146,7 +108,7 @@ public class CompoundDSTest {
             }
         }
         for (int i = 0; i < correctMemberCount; i++) {
-            assertNull(testDS.getMemberDims(i)); // all scalar data
+            assertNull(testDS.getMemeberDims(i)); // all scalar data
         }
         int nObjs = 0;
         try {
@@ -170,8 +132,7 @@ public class CompoundDSTest {
      * properly.
      * </ul>
      */
-    @Test
-    public void testSelectionDeselectionCountWorks() {
+    public final void testSelectionDeselectionCountWorks() {
     	log.debug("testSelectionDeselectionCountWorks");
         if (testDS.getSelectedMemberCount() != H5TestFile.COMPOUND_MEMBER_NAMES.length) {
             fail("Right after init getSelectedMemberCount returns"

@@ -82,7 +82,7 @@ IF (HDFJAVA_TEST_H5TABLE)
   ADD_TEST (
       NAME TESTH5TABLE-object-misc
       COMMAND "${CMAKE_COMMAND}"
-          -D "TEST_TESTER=${CMAKE_Java_RUNTIME};${CMAKE_Java_RUNTIME_FLAGS}"
+          -D "TEST_TESTER=${CMAKE_Java_RUNTIME}"
           -D "TEST_CLASSPATH:STRING=${CMAKE_JAVA_CLASSPATH}"
           -D "TEST_ARGS:STRING="
           -D "TEST_PROGRAM=test.object.misc.TestH5Table"
@@ -126,7 +126,7 @@ IF (HDFJAVA_TEST_DEBUGHDF)
   ADD_TEST (
       NAME TESTDEBUGHDF-object-misc
       COMMAND "${CMAKE_COMMAND}"
-          -D "TEST_TESTER=${CMAKE_Java_RUNTIME};${CMAKE_Java_RUNTIME_FLAGS}"
+          -D "TEST_TESTER=${CMAKE_Java_RUNTIME}"
           -D "TEST_CLASSPATH:STRING=${CMAKE_JAVA_CLASSPATH}"
           -D "TEST_ARGS:STRING="
           -D "TEST_PROGRAM=test.object.misc.DebugHDF"
@@ -170,7 +170,7 @@ IF (HDFJAVA_TEST_H5FILE)
   ADD_TEST (
       NAME TESTH5FILE-object-misc
       COMMAND "${CMAKE_COMMAND}"
-          -D "TEST_TESTER=${CMAKE_Java_RUNTIME};${CMAKE_Java_RUNTIME_FLAGS}"
+          -D "TEST_TESTER=${CMAKE_Java_RUNTIME}"
           -D "TEST_CLASSPATH:STRING=${CMAKE_JAVA_CLASSPATH}"
           -D "TEST_ARGS:STRING="
           -D "TEST_PROGRAM=test.object.misc.TestH5File"
@@ -214,7 +214,7 @@ IF (HDFJAVA_TEST_MEMORYLEAK)
   ADD_TEST (
       NAME TESTMEMORYLEAK-object-misc
       COMMAND "${CMAKE_COMMAND}"
-          -D "TEST_TESTER=${CMAKE_Java_RUNTIME};${CMAKE_Java_RUNTIME_FLAGS}"
+          -D "TEST_TESTER=${CMAKE_Java_RUNTIME}"
           -D "TEST_CLASSPATH:STRING=${CMAKE_JAVA_CLASSPATH}"
           -D "TEST_ARGS:STRING="
           -D "TEST_PROGRAM=test.object.misc.TestH5MemoryLeak"
@@ -258,7 +258,7 @@ IF (HDFJAVA_TEST_H4FILE)
   ADD_TEST (
       NAME TESTH4FILE-object-misc
       COMMAND "${CMAKE_COMMAND}"
-          -D "TEST_TESTER=${CMAKE_Java_RUNTIME};${CMAKE_Java_RUNTIME_FLAGS}"
+          -D "TEST_TESTER=${CMAKE_Java_RUNTIME}"
           -D "TEST_CLASSPATH:STRING=${CMAKE_JAVA_CLASSPATH}"
           -D "TEST_ARGS:STRING="
           -D "TEST_PROGRAM=test.object.misc.TestH4File"

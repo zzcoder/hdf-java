@@ -1,11 +1,7 @@
+/**
+ * 
+ */
 package test.object;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -17,6 +13,7 @@ import java.io.ObjectOutputStream;
 import java.lang.reflect.Array;
 import java.util.Vector;
 
+import junit.framework.TestCase;
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 import ncsa.hdf.hdf5lib.HDFNativeData;
@@ -28,12 +25,6 @@ import ncsa.hdf.object.h5.H5CompoundDS;
 import ncsa.hdf.object.h5.H5Datatype;
 import ncsa.hdf.object.h5.H5File;
 import ncsa.hdf.object.h5.H5Group;
-
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
 
 /**
  * TestCase for H5CompoundDS.
@@ -84,7 +75,7 @@ import org.junit.Test;
  * 
  * @author Peter Cao, The HDF Group
  */
-public class H5CompoundDSTest {
+public class H5CompoundDSTest extends TestCase {
     private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H5CompoundDSTest.class);
     private static final H5File H5FILE = new H5File();
     private static final int NLOOPS = 10;
@@ -100,47 +91,21 @@ public class H5CompoundDSTest {
     private H5File testFile = null;
     private H5CompoundDS testDataset = null;
 
-    @BeforeClass
-    public static void createFile() throws Exception {
-		try {
-			int openID = H5.getOpenIDCount();
-			if(openID > 0)
-				System.out.println("H5CompoundDSTest BeforeClass: Number of IDs still open: "+ openID);
-		} 
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
-		try {
-			H5TestFile.createTestFile(null);
-		}
-		catch (final Exception ex) {
-			System.out.println("*** Unable to create HDF5 test file. " + ex);
-			System.exit(-1);
-		}
+    /**
+     * @param arg0
+     */
+    public H5CompoundDSTest(final String arg0) {
+        super(arg0);
     }
-    
-    @AfterClass
-    public static void checkIDs() throws Exception {
-		try {
-			int openID = H5.getOpenIDCount();
-			if(openID > 0)
-				System.out.println("H5CompoundDSTest AfterClass: Number of IDs still open: "+ openID);
-		} 
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
-    }
-    
-    @Before
-    public void openFiles() throws Exception {
-		try {
-			int openID = H5.getOpenIDCount();
-			if(openID > 0)
-				log.debug("Before: Number of IDs still open: "+ openID);
-		} 
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see junit.framework.TestCase#setUp()
+     */
+    protected void setUp() throws Exception {
+        super.setUp();
+
         typeInt = new H5Datatype(Datatype.CLASS_INTEGER, H5TestFile.DATATYPE_SIZE, -1, -1);
         typeFloat = new H5Datatype(Datatype.CLASS_FLOAT, H5TestFile.DATATYPE_SIZE, -1, -1);
         typeStr = new H5Datatype(Datatype.CLASS_STRING, H5TestFile.STR_LEN, -1, -1);
@@ -154,8 +119,14 @@ public class H5CompoundDSTest {
         assertNotNull("setUp testFile.get", testDataset);
     }
 
-    @After
-    public void removeFiles() throws Exception {
+    /*
+     * (non-Javadoc)
+     * 
+     * @see junit.framework.TestCase#tearDown()
+     */
+    protected void tearDown() throws Exception {
+        super.tearDown();
+
         if (testFile != null) {
             try {
                 testFile.close();
@@ -163,14 +134,6 @@ public class H5CompoundDSTest {
             catch (final Exception ex) {}
             testFile = null;
         }
-		try {
-			int openID = H5.getOpenIDCount();
-			if(openID > 0)
-				log.debug("After: Number of IDs still open: "+ openID);
-		} 
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
     }
 
     /**
@@ -197,8 +160,7 @@ public class H5CompoundDSTest {
      * </ul>
      * </ul>
      */
-    @Test
-    public void testSetName() {
+    public final void testSetName() {
     	log.debug("testSetName");
         final String newName = "tmpName";
 
@@ -281,8 +243,7 @@ public class H5CompoundDSTest {
      * <li>Repeat all above
      * </ul>
      */
-    @Test
-    public void testOpen() {
+    public final void testOpen() {
     	log.debug("testOpen");
         int did = -1, tid = -1, sid = -1;
 
@@ -338,8 +299,7 @@ public class H5CompoundDSTest {
      * <li>Repeat all above
      * </ul>
      */
-    @Test
-    public void testClose() {
+    public final void testClose() {
     	log.debug("testClose");
         int did = -1, tid = -1, sid = -1;
 
@@ -414,8 +374,7 @@ public class H5CompoundDSTest {
      * <li>make sure that the attribute list is empty
      * </ul>
      */
-    @Test
-    public void testClear() {
+    public final void testClear() {
     	log.debug("testClear");
         Vector<?> data = null;
 
@@ -469,8 +428,7 @@ public class H5CompoundDSTest {
      * <li>Repeat all above
      * </ul>
      */
-    @Test
-    public void testInit() {
+    public final void testInit() {
     	log.debug("testInit");
         for (int loop = 0; loop < NLOOPS; loop++) {
 
@@ -574,8 +532,7 @@ public class H5CompoundDSTest {
      * <li>Repeat all above
      * </ul>
      */
-    @Test
-    public void testRead() {
+    public final void testRead() {
     	log.debug("testRead");
         Vector<?> data = null;
 
@@ -627,8 +584,7 @@ public class H5CompoundDSTest {
      * <li>Repeat all above
      * </ul>
      */
-    @Test
-    public void testReadByRow() {
+    public final void testReadByRow() {
     	log.debug("testReadByRow");
         Vector<?> data = null;
 
@@ -691,8 +647,7 @@ public class H5CompoundDSTest {
      * <li>Repeat all above
      * </ul>
      */
-    @Test
-    public void testReadByField() {
+    public final void testReadByField() {
     	log.debug("testReadByField");
         Vector<?> data = null;
 
@@ -761,8 +716,7 @@ public class H5CompoundDSTest {
      * <li>check the data size
      * </ul>
      */
-    @Test
-    public void testReadBytes() {
+    public final void testReadBytes() {
     	log.debug("testReadBytes");
         byte[] data = null;
 
@@ -799,8 +753,7 @@ public class H5CompoundDSTest {
      * <li>write the original data back to file
      * </ul>
      */
-    @Test
-    public void testWriteObject() {
+    public final void testWriteObject() {
     	log.debug("testWriteObject");
         Vector<?> data = null;
 
@@ -917,8 +870,7 @@ public class H5CompoundDSTest {
      * <li>write the original data back to file
      * </ul>
      */
-    @Test
-    public void testWriteByRow() {
+    public final void testWriteByRow() {
     	log.debug("testWriteByRow");
         Vector<?> data = null;
 
@@ -1031,8 +983,7 @@ public class H5CompoundDSTest {
      * <li>write the original data back to file
      * </ul>
      */
-    @Test
-    public void testWriteByField() {
+    public final void testWriteByField() {
     	log.debug("testWriteByField");
         Vector<?> data = null;
 
@@ -1161,8 +1112,7 @@ public class H5CompoundDSTest {
      * <li>Get the datatype object of the dataset
      * </ul>
      */
-    @Test
-    public void testGetDatatype() {
+    public final void testGetDatatype() {
     	log.debug("testGetDatatype");
         testDataset.init();
 
@@ -1188,8 +1138,7 @@ public class H5CompoundDSTest {
      * <li>Test a non-string datatype with isString(int tid)
      * </ul>
      */
-    @Test
-    public void testIsString() {
+    public final void testIsString() {
     	log.debug("testIsString");
         assertFalse(testDataset.isString(HDF5Constants.H5T_NATIVE_INT));
         assertFalse(testDataset.isString(HDF5Constants.H5T_NATIVE_FLOAT));
@@ -1212,8 +1161,7 @@ public class H5CompoundDSTest {
      * <li>Test a sizes of different defined data types
      * </ul>
      */
-    @Test
-    public void testGetSize() {
+    public final void testGetSize() {
     	log.debug("testGetSize");
         assertEquals(1, testDataset.getSize(HDF5Constants.H5T_NATIVE_INT8));
         assertEquals(2, testDataset.getSize(HDF5Constants.H5T_NATIVE_INT16));
@@ -1245,8 +1193,7 @@ public class H5CompoundDSTest {
      * <li>Construct an H5CompoundDS object that does not exist in file
      * </ul>
      */
-    @Test
-    public void testH5CompoundDSFileFormatStringString() {
+    public final void testH5CompoundDSFileFormatStringString() {
     	log.debug("testH5CompoundDSFileFormatStringString");
         Vector<?> data = null;
         final String[] names = { null, DNAME_SUB, DNAME.substring(1) };
@@ -1345,8 +1292,7 @@ public class H5CompoundDSTest {
      * <li>Construct an H5CompoundDS object that does not exist in file
      * </ul>
      */
-    @Test
-    public void testH5CompoundDSFileFormatStringStringLongArray() {
+    public final void testH5CompoundDSFileFormatStringStringLongArray() {
     	log.debug("testH5CompoundDSFileFormatStringStringLongArray");
         Vector<?> data = null;
         final String[] names = { null, DNAME_SUB, DNAME.substring(1) };
@@ -1403,25 +1349,9 @@ public class H5CompoundDSTest {
         }
 
         // test a non-existing dataset
-        H5CompoundDS dset = null;
-        try {
-        	dset = new H5CompoundDS(file, "NO_SUCH_DATASET", "NO_SUCH_PATH");
-        }
-        catch (final Exception ex) {
-            ; // Expected - intentional
-        }
-        try {
-        	dset.init();
-        }
-        catch (final Exception ex) {
-            ; // Expected - intentional
-        }
-        try {
-        	dset.clearData();
-        }
-        catch (final Exception ex) {
-            ; // Expected - intentional
-        }
+        final H5CompoundDS dset = new H5CompoundDS(file, "NO_SUCH_DATASET", "NO_SUCH_PATH");
+        dset.init();
+        dset.clearData();
         data = null;
         try {
             data = (Vector<?>) dset.getData();
@@ -1449,8 +1379,7 @@ public class H5CompoundDSTest {
      * <li>Check the content of the attributes
      * </ul>
      */
-    @Test
-    public void testGetMetadata() {
+    public final void testGetMetadata() {
     	log.debug("testGetMetadata");
         Vector<?> attrs = null;
 
@@ -1504,8 +1433,7 @@ public class H5CompoundDSTest {
      * <li>Restore to the orginal state
      * </ul>
      */
-    @Test
-    public void testWriteMetadata() {
+    public final void testWriteMetadata() {
     	log.debug("testWriteMetadata");
         Vector<?> attrs = null;
         Attribute attr = null;
@@ -1650,8 +1578,7 @@ public class H5CompoundDSTest {
      * <li>Restore to the original state
      * </ul>
      */
-    @Test
-    public void testRemoveMetadata() {
+    public final void testRemoveMetadata() {
     	log.debug("testRemoveMetadata");
         Vector<?> attrs = null;
 
@@ -1750,8 +1677,7 @@ public class H5CompoundDSTest {
      * </ul>
      */
     @SuppressWarnings("unchecked")
-    @Test
-    public void testCreateStringGroupLongArrayStringArrayDatatypeArrayIntArrayObject() {
+    public final void testCreateStringGroupLongArrayStringArrayDatatypeArrayIntArrayObject() {
     	log.debug("testCreateStringGroupLongArrayStringArrayDatatypeArrayIntArrayObject");
         H5CompoundDS dset = null;
         H5Group rootGrp = null;
@@ -2001,8 +1927,7 @@ public class H5CompoundDSTest {
      * </ul>
      */
     @SuppressWarnings("unchecked")
-    @Test
-    public void testCreateStringGroupLongArrayStringArrayDatatypeArrayIntArrayIntArrayArrayObject() {
+    public final void testCreateStringGroupLongArrayStringArrayDatatypeArrayIntArrayIntArrayArrayObject() {
     	log.debug("testCreateStringGroupLongArrayStringArrayDatatypeArrayIntArrayIntArrayArrayObject");
         H5CompoundDS dset = null;
         H5Group rootGrp = null;
@@ -2124,8 +2049,7 @@ public class H5CompoundDSTest {
      * </ul>
      */
     @SuppressWarnings("unchecked")
-    @Test
-    public void testCreateStringGroupLongArrayLongArrayLongArrayIntStringArrayDatatypeArrayIntArrayIntArrayArrayObject() {
+    public final void testCreateStringGroupLongArrayLongArrayLongArrayIntStringArrayDatatypeArrayIntArrayIntArrayArrayObject() {
     	log.debug("testCreateStringGroupLongArrayLongArrayLongArrayIntStringArrayDatatypeArrayIntArrayIntArrayArrayObject");
         H5CompoundDS dset = null;
         H5Group rootGrp = null;
@@ -2219,8 +2143,7 @@ public class H5CompoundDSTest {
     /**
      * Test method for {@link ncsa.hdf.object.h5.H5CompoundDS} IsSerializable.
      */
-    @Test
-    public void testIsSerializable() {
+    public final void testIsSerializable() {
     	log.debug("testIsSerializable");
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         ObjectOutputStream oos;
@@ -2247,8 +2170,7 @@ public class H5CompoundDSTest {
      * <li>get datatype and dataspace identifier for the dataset
      * </ul>
      */
-    @Test
-    public void testSerializeToDisk()
+    public final void testSerializeToDisk()
     {
     	log.debug("testSerializeToDisk");
         try {

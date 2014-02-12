@@ -23,7 +23,7 @@ Files included in the release download folder
 ===============================================================================
 1) The "hdfview/" directory contains the installation programs for easy
    download and installation for HDFView. The installation programs are
-   named by platforms. For example, "HDF-JAVA-2.99.0-Linux.sh"  for 
+   named by platforms. For example, "HDF-JAVA-2.10.0-Linux.sh"  for 
    Linux machines. After you install HDFView, you have the pre-built 
    binaries for all the HDF-Java products: JNI wrapper, object package, 
    and HDFView.
@@ -60,5 +60,4 @@ For questions, send email to
 
   help@hdfgroup.org
 
-Exception when using a Java 1.7 built program on Java 1.6:
-Exception in thread "main" java.lang.UnsupportedClassVersionError: ncsa/hdf/view/HDFView : Unsupported major.minor version 51.0
+

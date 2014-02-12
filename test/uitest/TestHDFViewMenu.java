@@ -25,10 +25,10 @@ import org.junit.Test;
 
 public class TestHDFViewMenu {
     private static FrameFixture mainFrameFixture;
-    private static String HDF5VERSION = "HDF5 1.8.13";
-    private static String HDF4VERSION = "HDF 4.2.10";
+    private static String HDF5VERSION = "HDF5 1.8.12";
+    private static String HDF4VERSION = "HDF 4.2.9";
     // the version of the HDFViewer
-    private static String VERSION = "2.99";
+    private static String VERSION = "2.10";
 
     private File createFile(String name, boolean hdf4_type) {
         String file_ext;
@@ -742,7 +742,7 @@ public class TestHDFViewMenu {
             fileMenuItem.click();
             mainFrameFixture.robot.waitForIdle();
             
-            mainFrameFixture.dialog().optionPane().requirePlainMessage().requireMessage("HDF Viewer, Version 2.99\\sFor.*\\s\\sCopyright.*2006-2013 The HDF Group.\\sAll rights reserved.");
+            mainFrameFixture.dialog().optionPane().requirePlainMessage().requireMessage("HDF Viewer, Version 2.10\\sFor.*\\s\\sCopyright.*2006-2013 The HDF Group.\\sAll rights reserved.");
             mainFrameFixture.dialog().optionPane().button("OptionPane.button").click();
             mainFrameFixture.robot.waitForIdle();
         }

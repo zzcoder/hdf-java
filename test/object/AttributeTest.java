@@ -1,14 +1,12 @@
+/**
+ * 
+ */
 package test.object;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.util.Arrays;
 import java.util.List;
 
+import junit.framework.TestCase;
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 import ncsa.hdf.object.Attribute;
@@ -18,17 +16,11 @@ import ncsa.hdf.object.h5.H5Datatype;
 import ncsa.hdf.object.h5.H5File;
 import ncsa.hdf.object.h5.H5Group;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
 /**
  * @author Rishi R. Sinha
  * 
  */
-public class AttributeTest {
+public class AttributeTest extends TestCase {
     private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(AttributeTest.class);
     private static final H5File H5FILE = new H5File();
 
@@ -37,47 +29,22 @@ public class AttributeTest {
     private Attribute strAttr = null;
     private Attribute arrayIntAttr = null;
 
-    @BeforeClass
-    public static void createFile() throws Exception {
-		try {
-			int openID = H5.getOpenIDCount();
-			if(openID > 0)
-				System.out.println("AttributTest BeforeClass: Number of IDs still open: "+ openID);
-		} 
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
-		try {
-			H5TestFile.createTestFile(null);
-		}
-		catch (final Exception ex) {
-			System.out.println("*** Unable to create HDF5 test file. " + ex);
-			System.exit(-1);
-		}
-    }
-    
-    @AfterClass
-    public static void checkIDs() throws Exception {
-		try {
-			int openID = H5.getOpenIDCount();
-			if(openID > 0)
-				System.out.println("AttributTest AfterClass: Number of IDs still open: "+ openID);
-		} 
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
+    /**
+     * @param arg0
+     */
+    public AttributeTest(String arg0) {
+        super(arg0);
     }
 
-    @Before
-    public void openFiles() throws Exception {
-		try {
-			int openID = H5.getOpenIDCount();
-			if(openID > 0)
-				log.debug("Before: Number of IDs still open: "+ openID);
-		} 
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see junit.framework.TestCase#setUp()
+     */
+    @Override
+	protected void setUp() throws Exception {
+        super.setUp();
+
         testFile = (H5File) H5FILE.open(H5TestFile.NAME_FILE_H5, FileFormat.WRITE);
         assertNotNull(testFile);
         testGroup = (H5Group) testFile.get(H5TestFile.NAME_GROUP_ATTR);
@@ -90,8 +57,15 @@ public class AttributeTest {
         assertNotNull(arrayIntAttr);
     }
 
-    @After
-	public void removeFiles() throws Exception {
+    /*
+     * (non-Javadoc)
+     * 
+     * @see junit.framework.TestCase#tearDown()
+     */
+    @Override
+	protected void tearDown() throws Exception {
+        super.tearDown();
+
         if (testFile != null) {
             try {
                 testFile.close();
@@ -101,14 +75,6 @@ public class AttributeTest {
             }
             testFile = null;
         }
-		try {
-			int openID = H5.getOpenIDCount();
-			if(openID > 0)
-				log.debug("After: Number of IDs still open: "+ openID);
-		} 
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
     }
 
     /**
@@ -123,8 +89,7 @@ public class AttributeTest {
      * </ul>
      * 
      */
-    @Test
-    public void testAttributeStringDatatypeLongArray() {
+    public final void testAttributeStringDatatypeLongArray() {
     	log.debug("testAttributeStringDatatypeLongArray");
         long[] attrDims = { 1 };
         String attrName = "CLASS";
@@ -156,8 +121,7 @@ public class AttributeTest {
      * <li>Creating a new attribute with a value.
      * </ul>
      */
-    @Test
-    public void testAttributeStringDatatypeLongArrayObject() {
+    public final void testAttributeStringDatatypeLongArrayObject() {
     	log.debug("testAttributeStringDatatypeLongArrayObject");
         long[] attrDims = { 1 };
         String attrName = "CLASS";
@@ -187,8 +151,7 @@ public class AttributeTest {
      * the int array attribute).
      * </ul>
      */
-    @Test
-    public void testGetValue() {
+    public final void testGetValue() {
     	log.debug("testGetValue");
         assertEquals(((String[]) strAttr.getValue())[0], "String attribute.");
         assertTrue(Arrays.equals((int[]) arrayIntAttr.getValue(), new int[] {
@@ -214,8 +177,7 @@ public class AttributeTest {
      * the int array attribute).
      * </ul>
      */
-    @Test
-    public void testSetValue() {
+    public final void testSetValue() {
     	log.debug("testSetValue");
         String[] prevValue = (String[]) strAttr.getValue();
         strAttr.setValue("Temp String Value");
@@ -247,8 +209,7 @@ public class AttributeTest {
      * int array attribute).
      * </ul>
      */
-    @Test
-    public void testGetName() {
+    public final void testGetName() {
     	log.debug("testGetName");
         assertTrue(strAttr.getName().equals("strAttr"));
         assertTrue(arrayIntAttr.getName().equals("arrayInt"));
@@ -272,8 +233,7 @@ public class AttributeTest {
      * int array attribute).
      * </ul>
      */
-    @Test
-    public void testGetRank() {
+    public final void testGetRank() {
     	log.debug("testGetRank");
         assertEquals(strAttr.getRank(), 1);
         assertEquals(arrayIntAttr.getRank(), 1);
@@ -297,8 +257,7 @@ public class AttributeTest {
      * attribute and the int array attribute).
      * </ul>
      */
-    @Test
-    public void testGetDataDims() {
+    public final void testGetDataDims() {
     	log.debug("testGetDataDims");
         assertEquals(strAttr.getDataDims()[0], 1);
         assertEquals(arrayIntAttr.getDataDims()[0], 10);
@@ -322,8 +281,7 @@ public class AttributeTest {
      * the int array attribute).
      * </ul>
      */
-    @Test
-    public void testGetType() {
+    public final void testGetType() {
     	log.debug("testGetType");
         assertTrue(strAttr.getType().getDatatypeDescription().equals(
                 "String, length = 20"));
@@ -349,8 +307,7 @@ public class AttributeTest {
      * attribute) are unsigned.
      * </ul>
      */
-    @Test
-    public void testIsUnsigned() {
+    public final void testIsUnsigned() {
     	log.debug("testIsUnsigned");
         assertFalse(strAttr.isUnsigned());
         assertFalse(arrayIntAttr.isUnsigned());
@@ -375,8 +332,7 @@ public class AttributeTest {
      * the int array attribute).
      * </ul>
      */
-    @Test
-    public void testToStringString() {
+    public final void testToStringString() {
     	log.debug("testToStringString");
         assertTrue(strAttr.toString(",").equals("String attribute."));
         assertTrue(arrayIntAttr.toString(",").equals("1,2,3,4,5,6,7,8,9,10"));

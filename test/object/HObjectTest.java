@@ -1,28 +1,20 @@
+/**
+ * 
+ */
 package test.object;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import junit.framework.TestCase;
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 import ncsa.hdf.object.FileFormat;
 import ncsa.hdf.object.HObject;
 import ncsa.hdf.object.h5.H5File;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
 /**
  * @author Rishi R. Sinha
  * 
  */
-public class HObjectTest {
+public class HObjectTest extends TestCase {
     private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(HObjectTest.class);
     private static final H5File H5FILE = new H5File();
     private static final String GNAME = H5TestFile.NAME_GROUP;
@@ -31,48 +23,22 @@ public class HObjectTest {
     private HObject testObj = null;
     private long testOID;
 
-    @BeforeClass
-    public static void createFile() throws Exception {
-		try {
-			int openID = H5.getOpenIDCount();
-			if(openID > 0)
-				System.out.println("HObjectTest BeforeClass: Number of IDs still open: "+ openID);
-		} 
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
-		try {
-			H5TestFile.createTestFile(null);
-		}
-		catch (final Exception ex) {
-			System.out.println("*** Unable to create HDF5 test file. " + ex);
-			System.exit(-1);
-		}
+    /**
+     * @param arg0
+     */
+    public HObjectTest(String arg0) {
+        super(arg0);
     }
-    
-    @AfterClass
-    public static void checkIDs() throws Exception {
-		try {
-			int openID = H5.getOpenIDCount();
-			if(openID>0)
-				System.out.println("HObjectTest AfterClass: Number of IDs still open: "+ openID);
-		} 
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
 
-    }
-    
-    @Before
-    public void openFiles() throws Exception {
-		try {
-			int openID = H5.getOpenIDCount();
-			if(openID > 0)
-				log.debug("Before: Number of IDs still open: "+ openID);
-		} 
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see junit.framework.TestCase#setUp()
+     */
+    @Override
+	protected void setUp() throws Exception {
+        super.setUp();
+
         testFile = new H5File(H5TestFile.NAME_FILE_H5, FileFormat.WRITE);
         assertNotNull(testFile);
         testObj = testFile.get(GNAME);
@@ -80,8 +46,15 @@ public class HObjectTest {
         testOID = testObj.getOID()[0];
     }
 
-    @After
-	public void removeFiles() throws Exception {
+    /*
+     * (non-Javadoc)
+     * 
+     * @see junit.framework.TestCase#tearDown()
+     */
+    @Override
+	protected void tearDown() throws Exception {
+        super.tearDown();
+
         if (testFile != null) {
             try {
                 testFile.close();
@@ -90,14 +63,6 @@ public class HObjectTest {
             }
             testFile = null;
         }
-		try {
-			int openID = H5.getOpenIDCount();
-			if(openID > 0)
-				log.debug("After: Number of IDs still open: "+ openID);
-		} 
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
     }
 
     /**
@@ -108,8 +73,7 @@ public class HObjectTest {
      * <li>Make sure file name in object yields same file as filename
      * </ul>
      */
-    @Test
-    public void testGetFile() {
+    public final void testGetFile() {
     	log.debug("testGetFile");
         String fullFileName = testObj.getFile();
         if (!fullFileName.endsWith(H5TestFile.NAME_FILE_H5)) {
@@ -135,8 +99,7 @@ public class HObjectTest {
      * the standard.
      * </ul>
      */
-    @Test
-    public void testGetName() {
+    public final void testGetName() {
     	log.debug("testGetName");
         if (!testObj.getName().equals(GNAME.substring(1))) {
             fail("GetName returns wrong name");
@@ -161,8 +124,7 @@ public class HObjectTest {
      * against the standard.
      * </ul>
      */
-    @Test
-    public void testGetFullName() {
+    public final void testGetFullName() {
     	log.debug("testGetFullName");
         if (!testObj.getFullName().equals(GNAME)) {
             fail("GetFullName returns wrong name");
@@ -187,8 +149,7 @@ public class HObjectTest {
      * the standard.
      * </ul>
      */
-    @Test
-    public void testGetPath() {
+    public final void testGetPath() {
     	log.debug("testGetPath");
         if (!testObj.getPath().equals("/")) {
             fail("GetPath returns wrong path");
@@ -215,8 +176,7 @@ public class HObjectTest {
      * <li>Test setting the name to a new name.
      * </ul>
      */
-    @Test
-    public void testSetName() {
+    public final void testSetName() {
     	log.debug("testSetName");
         final String newName = "tmpName";
 
@@ -302,8 +262,7 @@ public class HObjectTest {
      * <li>Test setting the path to a new name.
      * </ul>
      */
-    @Test
-    public void testSetPath() {
+    public final void testSetPath() {
     	log.debug("testSetPath");
         String path = testObj.getPath();
         try {
@@ -351,8 +310,7 @@ public class HObjectTest {
      * <li>Open the Group and check that the gid returned is less than 1.
      * </ul>
      */
-    @Test
-    public void testOpen() {
+    public final void testOpen() {
     	log.debug("testOpen");
         int gid = -1;
 
@@ -386,8 +344,7 @@ public class HObjectTest {
      * <li>Run the tests for opening the group.
      * </ul>
      */
-    @Test
-    public void testClose() {
+    public final void testClose() {
     	log.debug("testClose");
         testOpen();
         int nObjs = 0;
@@ -410,8 +367,7 @@ public class HObjectTest {
      * FID for the file.
      * </ul>
      */
-    @Test
-    public void testGetFID() {
+    public final void testGetFID() {
     	log.debug("testGetFID");
         assertEquals(testObj.getFID(), testFile.getFID());
         int nObjs = 0;
@@ -434,8 +390,7 @@ public class HObjectTest {
      * <li>Check against the OID that we have already extraced.
      * </ul>
      */
-    @Test
-    public void testEqualsOID() {
+    public final void testEqualsOID() {
     	log.debug("testEqualsOID");
         assertNotNull(testObj);
         assertTrue(testObj.equalsOID(new long[] { testOID }));
@@ -459,8 +414,7 @@ public class HObjectTest {
      * <li>For the group, check against the testFile.
      * </ul>
      */
-    @Test
-    public void testGetFileFormat() {
+    public final void testGetFileFormat() {
     	log.debug("testGetFileFormat");
         assertNotNull(testObj.getFileFormat());
         assertEquals(testObj.getFileFormat(), testFile);
@@ -484,8 +438,7 @@ public class HObjectTest {
      * <li>Check that OID[0] is correct.
      * </ul>
      */
-    @Test
-    public void testGetOID() {
+    public final void testGetOID() {
     	log.debug("testGetOID");
         assertNotNull(testObj.getOID());
         assertEquals(testObj.getOID()[0], testOID);
@@ -509,8 +462,7 @@ public class HObjectTest {
      * <li>Check for base group which has no attributes.
      * </ul>
      */
-    @Test
-    public void testHasAttribute() {
+    public final void testHasAttribute() {
     	log.debug("testHasAttribute");
         try {
             assertTrue(testFile.get(H5TestFile.NAME_DATASET_IMAGE)
@@ -539,8 +491,7 @@ public class HObjectTest {
      * <li>Check for the group.
      * </ul>
      */
-    @Test
-    public void testToString() {
+    public final void testToString() {
     	log.debug("testToString");
         assertEquals(testObj.toString(), GNAME.substring(1));
         int nObjs = 0;
