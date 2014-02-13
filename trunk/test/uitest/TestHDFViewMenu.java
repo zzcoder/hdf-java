@@ -742,7 +742,7 @@ public class TestHDFViewMenu {
             fileMenuItem.click();
             mainFrameFixture.robot.waitForIdle();
             
-            mainFrameFixture.dialog().optionPane().requirePlainMessage().requireMessage("HDF Viewer, Version 2.99\\sFor.*\\s\\sCopyright.*2006-2013 The HDF Group.\\sAll rights reserved.");
+            mainFrameFixture.dialog().optionPane().requirePlainMessage().requireMessage("HDF Viewer, Version 2.99\\sFor.*\\s\\sCopyright.*2006-2014 The HDF Group.\\sAll rights reserved.");
             mainFrameFixture.dialog().optionPane().button("OptionPane.button").click();
             mainFrameFixture.robot.waitForIdle();
         }

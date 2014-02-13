@@ -596,7 +596,7 @@ ELSEIF (APPLE)
 #    SET (CPACK_BUNDLE_STARTUP_COMMAND "/System/Library/Frameworks/JavaVM.framework/Resources/MacOS/JavaApplicationStub")
     SET (CPACK_BUNDLE_STARTUP_COMMAND "${HDFJAVA_RESOURCES_DIR}/JavaAppLauncher")
     SET (CPACK_APPLE_GUI_BUNDLE_NAME "HDFView")
-    SET (CPACK_APPLE_GUI_COPYRIGHT "Copyright © 2006-2013 by The HDF Group. All rights reserved.")
+    SET (CPACK_APPLE_GUI_COPYRIGHT "Copyright © 2006-2014 by The HDF Group. All rights reserved.")
     SET (CPACK_APPLE_GUI_SHORT_VERSION_STRING "${CPACK_PACKAGE_VERSION}")
     #-----------------------------------------------------------------------------
     # Configure the HDFJAVA-startup.sh and Info.plist file for the install bundle
