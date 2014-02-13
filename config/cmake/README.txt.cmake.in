@@ -24,15 +24,15 @@ Installation
 After Installation
 ===========================================================================
 The compressed examples file HDFJavaExamples-0.1.1-Source.@BINARY_EXAMPLE_ENDING@, located in the 
-HDF-JAVA install folder, can be built and tested with CMake and the supplied
-HDFJAVA_Examples.cmake file. The HDFJAVA_Examples.cmake expects HDF-JAVA to have
+@HDFJAVA_PACKAGE_NAME@ install folder, can be built and tested with CMake and the supplied
+HDFJAVA_Examples.cmake file. The HDFJAVA_Examples.cmake expects @HDFJAVA_PACKAGE_NAME@ to have
 been installed in the default location with JAVA @Java_VERSION_STRING@ installed.
 
 To test the installation with the examples;
     Create a directory to run the examples.
     Copy HDFJavaExamples-0.1.1-Source.@BINARY_EXAMPLE_ENDING@ to this directory, do NOT unzip.
     Copy HDFJAVA_Examples.cmake to this directory.
-    Edit HDFJAVA_Examples.cmake line 8 to set INSTALLDIR to where HDF-JAVA is installed.
+    Edit HDFJAVA_Examples.cmake line 8 to set INSTALLDIR to where @HDFJAVA_PACKAGE_NAME@ is installed.
     Execute from this directory: 
         ctest -S HDFJAVA_Examples.cmake,HDFJavaExamples-0.1.1-Source -C Release -O test.log
 
