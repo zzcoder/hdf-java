@@ -21,6 +21,7 @@ ELSE (BUILD_SHARED_LIBS)
     ADD_DEFINITIONS (-DPIC)
   ENDIF (NOT WIN32)
 ENDIF (BUILD_SHARED_LIBS)
+SET (LIB_TYPE ${LIB_TYPE} PARENT_SCOPE)
 
 #-----------------------------------------------------------------------------
 # When building utility executables that generate other (source) files :
@@ -198,6 +199,7 @@ SET (HDF4_LINK_LIBS ${HDF4_LINK_LIBS} ${HDF4_LIBRARIES})
 INCLUDE_DIRECTORIES (${HDF4_INCLUDE_DIRS})
 SET (HDF4_FOUND 1 PARENT_SCOPE)
 SET (HDF4_INCLUDE_DIR_GEN ${HDF4_INCLUDE_DIR_GEN} PARENT_SCOPE)
+SET (HDF4_VERSION_STRING ${HDF4_VERSION_STRING} PARENT_SCOPE)
 
 #-----------------------------------------------------------------------------
 # HDF5 support
@@ -257,6 +259,7 @@ SET (HDF5_LINK_LIBS ${HDF5_LINK_LIBS} ${HDF5_LIBRARIES})
 INCLUDE_DIRECTORIES (${HDF5_INCLUDE_DIRS})
 SET (HDF5_FOUND 1 PARENT_SCOPE)
 SET (HDF5_INCLUDE_DIR_GEN ${HDF5_INCLUDE_DIR_GEN} PARENT_SCOPE)
+SET (HDF5_VERSION_STRING ${HDF5_VERSION_STRING} PARENT_SCOPE)
 
 #-----------------------------------------------------------------------------
 # Option for external libraries
