@@ -709,6 +709,7 @@ public class H5Datatype extends Datatype {
             int ptid = tid;
             try {
                 tid = H5.H5Tenum_create(ptid);
+                datatypeSize = H5.H5Tget_size(tid);
             }
             catch (Exception ex) {
             	log.debug("toNative create members", ex);
