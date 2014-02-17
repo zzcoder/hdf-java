@@ -1314,6 +1314,7 @@ public class H5File extends FileFormat {
         int tid = -1;
         H5Datatype dtype = null;
 
+    	log.trace("createDatatype with name={} start",name);
         try {
             H5Datatype t = (H5Datatype) createDatatype(tclass, tsize, torder, tsign, tbase);
             if((tid = t.toNative()) < 0)
@@ -1335,6 +1336,7 @@ public class H5File extends FileFormat {
             H5.H5Tclose(tid);
         }
 
+    	log.trace("createDatatype with name={} finish",name);
         return dtype;
     }
 
@@ -1359,6 +1361,7 @@ public class H5File extends FileFormat {
      */
     @Override
     public Datatype createDatatype(int tclass, int tsize, int torder, int tsign) throws Exception {
+    	log.trace("createDatatype");
         return new H5Datatype(tclass, tsize, torder, tsign);
     }
     /*
@@ -1368,6 +1371,7 @@ public class H5File extends FileFormat {
      */
     @Override
     public Datatype createDatatype(int tclass, int tsize, int torder, int tsign, Datatype tbase) throws Exception {
+    	log.trace("createDatatype with base");
         return new H5Datatype(tclass, tsize, torder, tsign, tbase);
     }
 
@@ -1386,6 +1390,7 @@ public class H5File extends FileFormat {
             pgroup = (Group) get("/");
         }
 
+    	log.trace("createScalarDS name={}", name);
         return H5ScalarDS.create(name, pgroup, type, dims, maxdims, chunks, gzip, fillValue, data);
     }
 
@@ -1418,6 +1423,7 @@ public class H5File extends FileFormat {
             // create new dataset at the root group by default
             pgroup = (Group) get("/");
         }
+    	log.trace("createCompoundDS name={}", name);
         ds = H5CompoundDS.create(name, pgroup, dims, maxdims, chunks, gzip, memberNames, memberDatatypes, memberRanks,
                 memberDims, data);
 
@@ -1940,6 +1946,7 @@ public class H5File extends FileFormat {
         if (fid > 0) {
             return fid; // file is opened already
         }
+		log.trace("open: loadFullHierarchy={} start", loadFullHierarchy);
 
         // The cwd may be changed at Dataset.read() by H5Dchdir_ext()
         // to make it work for external datasets. We need to set it back
@@ -1952,6 +1959,7 @@ public class H5File extends FileFormat {
         }
         else if (HDF5Constants.H5F_ACC_CREAT == flag) {
             // create a new file
+    		log.trace("open: create file");
             fid = H5.H5Fcreate(fullFileName, HDF5Constants.H5F_ACC_TRUNC, HDF5Constants.H5P_DEFAULT,
                     HDF5Constants.H5P_DEFAULT);
             H5.H5Fflush(fid, HDF5Constants.H5F_SCOPE_LOCAL);
@@ -1969,6 +1977,7 @@ public class H5File extends FileFormat {
         }
 
         try {
+    		log.trace("open: open file");
             fid = H5.H5Fopen(fullFileName, flag, plist);
         }
         catch (Exception ex) {
@@ -2007,6 +2016,7 @@ public class H5File extends FileFormat {
             rootNode = loadTree();
         }
 
+		log.trace("open: finish");
         return fid;
     }
 

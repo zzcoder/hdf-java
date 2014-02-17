@@ -762,7 +762,7 @@ public class DefaultMetaDataView extends JDialog implements ActionListener, Meta
 
                 for (int i = 0; i < n; i++) {
                     rowData[i][0] = names[i];
-                    int mDims[] = compound.getMemeberDims(i);
+                    int mDims[] = compound.getMemberDims(i);
                     if (mDims == null) {
                         rowData[i][2] = String.valueOf(orders[i]);
 

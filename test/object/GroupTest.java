@@ -3,10 +3,14 @@
  */
 package test.object;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
+
 import java.util.Iterator;
 import java.util.List;
 
-import junit.framework.TestCase;
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 import ncsa.hdf.object.FileFormat;
@@ -15,31 +19,64 @@ import ncsa.hdf.object.HObject;
 import ncsa.hdf.object.h5.H5File;
 import ncsa.hdf.object.h5.H5Group;
 
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
 /**
  * @author Rishi R Sinha
  * 
  */
-public class GroupTest extends TestCase {
+public class GroupTest {
     private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GroupTest.class);
 
     private H5File testFile = null;
     private Group testGroup = null;
 
-    /**
-     * @param arg0
-     */
-    public GroupTest(String arg0) {
-        super(arg0);
+    @BeforeClass
+    public static void createFile() throws Exception {
+		try {
+			int openID = H5.getOpenIDCount();
+			if(openID > 0)
+				System.out.println("GroupTest BeforeClass: Number of IDs still open: "+ openID);
+		} 
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		try {
+			H5TestFile.createTestFile(null);
+		}
+		catch (final Exception ex) {
+			System.out.println("*** Unable to create HDF5 test file. " + ex);
+			System.exit(-1);
+		}
     }
+    
+    @AfterClass
+    public static void checkIDs() throws Exception {
+		try {
+			int openID = H5.getOpenIDCount();
+			if(openID>0)
+				System.out.println("GroupTest AfterClass: Number of IDs still open: "+ openID);
+		} 
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see junit.framework.TestCase#setUp()
-     */
-    @Override
-	protected void setUp() throws Exception {
-        super.setUp();
+    }
+   
+    @Before
+    public void openFiles() throws Exception {
+		try {
+			int openID = H5.getOpenIDCount();
+			if(openID > 0)
+				log.debug("Before: Number of IDs still open: "+ openID);
+		} 
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
         H5File H5FILE = new H5File();
         testFile = (H5File) H5FILE.open(H5TestFile.NAME_FILE_H5,
                 FileFormat.WRITE);
@@ -48,15 +85,8 @@ public class GroupTest extends TestCase {
         assertNotNull(testGroup);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see junit.framework.TestCase#tearDown()
-     */
-    @Override
-	protected void tearDown() throws Exception {
-        super.tearDown();
-
+    @After
+	public void removeFiles() throws Exception {
         if (testFile != null) {
             try {
                 testFile.close();
@@ -65,6 +95,14 @@ public class GroupTest extends TestCase {
             }
             testFile = null;
         }
+		try {
+			int openID = H5.getOpenIDCount();
+			if(openID > 0)
+				log.debug("After: Number of IDs still open: "+ openID);
+		} 
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
     }
 
     /**
@@ -76,6 +114,7 @@ public class GroupTest extends TestCase {
      * </ul>
      * </ul>
      */
+    @Test
     public void testClear() {
     	log.debug("testClear");
         testGroup.clear();
@@ -111,6 +150,7 @@ public class GroupTest extends TestCase {
      * </ul>
      * </ul>
      */
+    @Test
     public void testAddToMemberList() {
     	log.debug("testAddToMemberList");
         int previous_size = testGroup.getMemberList().size();
@@ -163,6 +203,7 @@ public class GroupTest extends TestCase {
      * </ul>
      * </ul>
      */
+    @Test
     public void testRemoveFromMemberList() {
     	log.debug("testRemoveFromMemberList");
         int previous_size = testGroup.getMemberList().size();
@@ -205,6 +246,7 @@ public class GroupTest extends TestCase {
      * <li>testing the member list for the root group.
      * <ul>
      */
+    @Test
     public void testGetMemberList() {
     	log.debug("testGetMemberList");
         String objs[] = { "a_link_to_the_image", "dataset_comp", "dataset_int",
@@ -234,6 +276,7 @@ public class GroupTest extends TestCase {
      * <li>Test to get the parent of group g0.
      * </ul>
      */
+    @Test
     public void testGetParent() {
     	log.debug("testGetParent");
         assertEquals(testGroup.getParent().getName(), "/");
@@ -255,6 +298,7 @@ public class GroupTest extends TestCase {
      * <li>Test for not root.
      * </ul>
      */
+    @Test
     public void testIsRoot() {
     	log.debug("testIsRoot");
         assertFalse(testGroup.isRoot());
@@ -276,6 +320,7 @@ public class GroupTest extends TestCase {
      * <li>Test for the number of members in the file.
      * <ul>
      */
+    @Test
     public void testGetNumberOfMembersInFile() {
     	log.debug("testGetNumberOfMembersInFile");
         assertEquals(testGroup.getNumberOfMembersInFile(), 8);

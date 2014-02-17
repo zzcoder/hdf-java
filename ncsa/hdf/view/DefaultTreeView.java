@@ -2008,11 +2008,11 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
     }
 
     /**
-     * Dispaly the content of a data object.
+     * Display the content of a data object.
      * 
      * @param dataObject
      *            the data object
-     * @return the dataview that displays the data content
+     * @return the DataView that displays the data content
      * @throws Exception
      */
     public DataView showDataContent(HObject dataObject) throws Exception {
@@ -2526,7 +2526,7 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
             int eMod = e.getModifiers();
             if (e.isPopupTrigger()
                     || (eMod == MouseEvent.BUTTON3_MASK)
-                    || (System.getProperty("os.name").startsWith("Mac") && (eMod == (MouseEvent.BUTTON1_MASK | MouseEvent.CTRL_MASK)))) {
+                    || (System.getProperty("os.name").startsWith("Mac") && (eMod == (MouseEvent.BUTTON1_MASK | Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())))) {
                 int selRow = tree.getRowForLocation(e.getX(), e.getY());
 
                 if (!tree.isRowSelected(selRow)) {

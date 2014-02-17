@@ -23,7 +23,7 @@ Files included in the release download folder
 ===============================================================================
 1) The "hdfview/" directory contains the installation programs for easy
    download and installation for HDFView. The installation programs are
-   named by platforms. For example, "HDF-JAVA-2.10.0-Linux.sh"  for 
+   named by platforms. For example, "HDFView-2.10.1-Linux.sh"  for 
    Linux machines. After you install HDFView, you have the pre-built 
    binaries for all the HDF-Java products: JNI wrapper, object package, 
    and HDFView.
