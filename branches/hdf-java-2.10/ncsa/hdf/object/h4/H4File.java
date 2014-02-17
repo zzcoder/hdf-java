@@ -51,11 +51,6 @@ public class H4File extends FileFormat {
 
     private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H4File.class);
 
-	// make sure that the library is loaded.
-	static {
-		HDFLibrary.loadH4Lib();
-	}
-
 	/**
 	 * the file access flag.
 	 */

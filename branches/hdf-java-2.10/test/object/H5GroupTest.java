@@ -1,7 +1,11 @@
-/**
- * 
- */
 package test.object;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -12,7 +16,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Vector;
 
-import junit.framework.TestCase;
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 import ncsa.hdf.hdf5lib.HDFNativeData;
@@ -26,11 +29,17 @@ import ncsa.hdf.object.h5.H5Datatype;
 import ncsa.hdf.object.h5.H5File;
 import ncsa.hdf.object.h5.H5Group;
 
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
 /**
  * @author xcao
  * 
  */
-public class H5GroupTest extends TestCase {
+public class H5GroupTest {
     private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H5GroupTest.class);
     private static final H5File H5FILE = new H5File();
     private static final int NLOOPS = 5;
@@ -46,22 +55,48 @@ public class H5GroupTest extends TestCase {
     private H5File testFile = null;
     private H5Group testGroup = null;
 
-    /**
-     * @param arg0
-     */
-    public H5GroupTest(final String arg0) {
-        super(arg0);
+    @BeforeClass
+    public static void createFile() throws Exception {
+		try {
+			int openID = H5.getOpenIDCount();
+			if(openID > 0)
+				System.out.println("H5GroupTest BeforeClass: Number of IDs still open: "+ openID);
+		} 
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		try {
+			H5TestFile.createTestFile(null);
+		}
+		catch (final Exception ex) {
+			System.out.println("*** Unable to create HDF5 test file. " + ex);
+			System.exit(-1);
+		}
     }
+    
+    @AfterClass
+    public static void checkIDs() throws Exception {
+		try {
+			int openID = H5.getOpenIDCount();
+			if(openID>0)
+				System.out.println("H5GroupTest AfterClass: Number of IDs still open: "+ openID);
+		} 
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see junit.framework.TestCase#setUp()
-     */
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-
+    }
+    
+    @Before
+    public void openFiles() throws Exception {
+		try {
+			int openID = H5.getOpenIDCount();
+			if(openID > 0)
+				log.debug("Before: Number of IDs still open: "+ openID);
+		} 
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
         testFile = (H5File) H5FILE.open(H5TestFile.NAME_FILE_H5,
                 FileFormat.WRITE);
         assertNotNull(testFile);
@@ -77,15 +112,8 @@ public class H5GroupTest extends TestCase {
         assertNotNull(testGroup);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see junit.framework.TestCase#tearDown()
-     */
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-
+    @After
+    public void removeFiles() throws Exception {
         if (testFile != null) {
             try {
                 testFile.close();
@@ -94,6 +122,14 @@ public class H5GroupTest extends TestCase {
             }
             testFile = null;
         }
+		try {
+			int openID = H5.getOpenIDCount();
+			if(openID > 0)
+				log.debug("After: Number of IDs still open: "+ openID);
+		} 
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
     }
 
     /**
@@ -120,7 +156,8 @@ public class H5GroupTest extends TestCase {
      * </ul>
      * </ul>
      */
-    public final void testSetName() {
+    @Test
+    public void testSetName() {
     	log.debug("testSetName");
         final String newName = "tmpName";
 
@@ -199,7 +236,8 @@ public class H5GroupTest extends TestCase {
      * Test method for
      * {@link ncsa.hdf.object.h5.H5Group#setPath(java.lang.String)}.
      */
-    public final void testSetPath() {
+    @Test
+    public void testSetPath() {
     	log.debug("testSetPath");
         final String newPath = "tmpName";
 
@@ -231,7 +269,8 @@ public class H5GroupTest extends TestCase {
      * <li>Repeat all above
      * </ul>
      */
-    public final void testOpen() {
+    @Test
+    public void testOpen() {
     	log.debug("testOpen");
         int gid = -1;
 
@@ -270,7 +309,8 @@ public class H5GroupTest extends TestCase {
      * <li>Repeat all above
      * </ul>
      */
-    public final void testClose() {
+    @Test
+    public void testClose() {
     	log.debug("testClose");
         testOpen();
         int nObjs = 0;
@@ -294,7 +334,8 @@ public class H5GroupTest extends TestCase {
      * <li>make sure that the attribute list is empty
      * </ul>
      */
-    public final void testClear() {
+    @Test
+    public void testClear() {
     	log.debug("testClear");
         Vector attrs = null;
         try {
@@ -343,7 +384,8 @@ public class H5GroupTest extends TestCase {
      * <li>Construct an H5Group object that does not exist in file
      * </ul>
      */
-    public final void testH5GroupFileFormatStringStringGroup() {
+    @Test
+    public void testH5GroupFileFormatStringStringGroup() {
     	log.debug("testH5GroupFileFormatStringStringGroup");
         Group pgroup = null;
         final String[] names = { null, GNAME_SUB, GNAME_SUB.substring(4) };
@@ -399,7 +441,8 @@ public class H5GroupTest extends TestCase {
      * <li>Construct an H5Group object that does not exist in file
      * </ul>
      */
-    public final void testH5GroupFileFormatStringStringGroupLongArray() {
+    @Test
+    public void testH5GroupFileFormatStringStringGroupLongArray() {
         // RISHI SINHA Why are we testing a deprecated API.
     	log.debug("testH5GroupFileFormatStringStringGroupLongArray");
         Group pgroup = null;
@@ -472,7 +515,8 @@ public class H5GroupTest extends TestCase {
      * <li>Check the content of the attributes
      * </ul>
      */
-    public final void testGetMetadata() {
+    @Test
+    public void testGetMetadata() {
     	log.debug("testGetMetadata");
         Vector attrs = null;
 
@@ -531,7 +575,8 @@ public class H5GroupTest extends TestCase {
      * <li>Restore to the orginal state
      * </ul>
      */
-    public final void testWriteMetadata() {
+    @Test
+    public void testWriteMetadata() {
     	log.debug("testWriteMetadata");
         Vector attrs = null;
         Attribute attr = null;
@@ -682,7 +727,8 @@ public class H5GroupTest extends TestCase {
      * <li>Restore to the orginal state
      * </ul>
      */
-    public final void testRemoveMetadata() {
+    @Test
+    public void testRemoveMetadata() {
     	log.debug("testRemoveMetadata");
         Vector attrs = null;
         try {
@@ -759,7 +805,8 @@ public class H5GroupTest extends TestCase {
      * <li>Restore to the orginal file (remove the new group)
      * </ul>
      */
-    public final void testCreate() {
+    @Test
+    public void testCreate() {
     	log.debug("testCreate");
         Group grp = null;
         final String nameNew = "/tmpH5Group";
@@ -840,7 +887,8 @@ public class H5GroupTest extends TestCase {
      * <li>Restore to the original file (remove the new group)
      * </ul>
      */
-    public final void testCreateWithGroupplist() {
+    @Test
+    public void testCreateWithGroupplist() {
     	log.debug("testCreateWithGroupplist");
         Group grp = null;
         final String nameNew = "/Group1";
@@ -961,7 +1009,8 @@ public class H5GroupTest extends TestCase {
     /**
      * Test method for {@link ncsa.hdf.object.h5.H5Group} IsSerializable.
      */
-    public final void testIsSerializable() {
+    @Test
+    public void testIsSerializable() {
     	log.debug("testIsSerializable");
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         ObjectOutputStream oos;
@@ -989,7 +1038,8 @@ public class H5GroupTest extends TestCase {
      * <li>Close the group
      * </ul>
      */
-    public final void testSerializeToDisk()
+    @Test
+    public void testSerializeToDisk()
     {
     	log.debug("testSerializeToDisk");
         try {

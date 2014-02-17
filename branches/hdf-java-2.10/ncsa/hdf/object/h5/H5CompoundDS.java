@@ -1613,8 +1613,8 @@ public class H5CompoundDS extends CompoundDS {
     private final int createCompoundFieldType(int member_tid, String member_name, int[] compInfo) throws HDF5Exception {
         int nested_tid = -1;
 
-        int arrayType = member_tid;
-        int baseType = arrayType;
+        int arrayType = -1;
+        int baseType = -1;
         int tmp_tid1 = -1, tmp_tid4 = -1;
 
         try {
@@ -1633,19 +1633,45 @@ public class H5CompoundDS extends CompoundDS {
             }
 
             try {
-                if (H5Datatype.isUnsigned(baseType)) {
-                    compInfo[2] = 1;
-                }
+            	if (baseType < 0) {
+                    if (H5Datatype.isUnsigned(member_tid)) {
+                        compInfo[2] = 1;
+                    }
+            	}
+            	else {
+	                if (H5Datatype.isUnsigned(baseType)) {
+	                    compInfo[2] = 1;
+	                }
+            	}
             }
             catch (Exception ex2) {
             	log.debug("baseType isUnsigned:", ex2);
+            }
+            try {
+                H5.H5Tclose(baseType);
+                baseType = -1;
+            }
+            catch (HDF5Exception ex4) {
+            	log.debug("finally close:", ex4);
             }
 
             member_size = H5.H5Tget_size(member_tid);
 
             // construct nested compound structure with a single field
             String theName = member_name;
-            tmp_tid1 = H5.H5Tcopy(arrayType);
+        	if (arrayType < 0) {
+        		tmp_tid1 = H5.H5Tcopy(member_tid);
+        	}
+        	else {
+        		tmp_tid1 = H5.H5Tcopy(arrayType);
+        	}
+        	try {
+                H5.H5Tclose(arrayType);
+                arrayType = -1;
+            }
+            catch (HDF5Exception ex4) {
+            	log.debug("finally close:", ex4);
+            }
             int sep = member_name.lastIndexOf(CompoundDS.separator);
 
             while (sep > 0) {
@@ -1679,6 +1705,18 @@ public class H5CompoundDS extends CompoundDS {
             }
             catch (HDF5Exception ex3) {
             	log.debug("finally close:", ex3);
+            }
+            try {
+                H5.H5Tclose(baseType);
+            }
+            catch (HDF5Exception ex4) {
+            	log.debug("finally close:", ex4);
+            }
+        	try {
+                H5.H5Tclose(arrayType);
+            }
+            catch (HDF5Exception ex4) {
+            	log.debug("finally close:", ex4);
             }
         }
 

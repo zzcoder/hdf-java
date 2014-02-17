@@ -679,7 +679,7 @@ public abstract class Dataset extends HObject {
      * short, int, float, double or String type based on the datatype of the
      * dataset.
      * <p>
-     * For CompoundDS, the meory data object is an java.util.List object. Each
+     * For CompoundDS, the memory data object is an java.util.List object. Each
      * element of the list is a data array that corresponds to a compound field.
      * <p>
      * For example, if compound dataset "comp" has the following nested
@@ -1172,7 +1172,7 @@ public abstract class Dataset extends HObject {
         for (int i = 0; i < n; i++) {
             str = new String(bytes, i * length, length);
             // bigstr.substring uses less memory space
-            // NOTE: bigstr does not work on linus if bytes.length is very large
+            // NOTE: bigstr does not work on linux if bytes.length is very large
             // see bug 1091
             // offset = i*length;
             // str = bigstr.substring(offset, offset+length);

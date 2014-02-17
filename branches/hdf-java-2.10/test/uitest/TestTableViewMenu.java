@@ -30,7 +30,7 @@ import org.junit.Test;
 public class TestTableViewMenu {
     private static FrameFixture mainFrameFixture;
     // the version of the HDFViewer
-    private static String VERSION = "2.10";
+    private static String VERSION = "2.10.1";
 
     private File openHDF5File(String name, int initrows) {
         File hdf_file = new File(name+".h5");

@@ -214,7 +214,7 @@ public class TestH5Object
             file.createScalarDS(NAME_DATASET_FLOAT, null, new H5Datatype(Datatype.CLASS_FLOAT, -1, -1, -1), DIMs, null, CHUNKs, 9, DATA_FLOAT);
             file.createScalarDS(NAME_DATASET_CHAR, null, new H5Datatype(Datatype.CLASS_CHAR, -1, -1, -1), DIMs, null, CHUNKs, 9, DATA_BYTE);
             file.createScalarDS(NAME_DATASET_STR, null, new H5Datatype(Datatype.CLASS_STRING, STR_LEN, -1, -1), DIMs, null, CHUNKs, 9, DATA_STR);
-            file.createScalarDS(NAME_DATASET_ENUM, null, new H5Datatype(Datatype.CLASS_ENUM, -1, -1, -1), DIMs, null, CHUNKs, 9, DATA_ENUM);
+            file.createScalarDS(NAME_DATASET_ENUM, null, new H5Datatype(Datatype.CLASS_ENUM, 4, -1, -1), DIMs, null, CHUNKs, 9, DATA_ENUM);
             file.createScalarDS(NAME_DATASET_SUB, g0, new H5Datatype(Datatype.CLASS_INTEGER, -1, -1, -1), DIMs, null, CHUNKs, 9, DATA_INT);
             file.createScalarDS(NAME_DATASET_SUB_SUB, g00, new H5Datatype(Datatype.CLASS_FLOAT, -1, -1, -1), DIMs, null, CHUNKs, 9, DATA_FLOAT);
             file.createImage(NAME_DATASET_ATTR, null, new H5Datatype(Datatype.CLASS_INTEGER, 1, -1, -1), DIMs, null, CHUNKs, 9, 1, -1, DATA_BYTE);

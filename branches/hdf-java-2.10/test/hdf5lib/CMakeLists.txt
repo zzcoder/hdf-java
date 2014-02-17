@@ -98,10 +98,10 @@ ADD_TEST (
         -D "TEST_PROGRAM=test.hdf5lib.TestAll"
         -D "TEST_LIBRARY_DIRECTORY=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
         -D "TEST_FOLDER=${HDFJAVA_BINARY_DIR}"
-        -D "TEST_OUTPUT=${HDFJAVA_TEST_HDF5LIB_BINARY_DIR}/JUnit-interface.out"
+        -D "TEST_OUTPUT=test/hdf5lib/JUnit-interface.out"
         -D "TEST_EXPECT=0"
-        -D "TEST_SKIP_COMPARE=TRUE"
+        -D "TEST_MASK_ERROR=TRUE"
         -D "TEST_FILTER:STRING=${testfilter}"
-        -D "TEST_REFERENCE=${testfilter}"
+        -D "TEST_REFERENCE=test/hdf5lib/JUnit-interface.txt"
         -P "${HDFJAVA_RESOURCES_DIR}/runTest.cmake"
 )

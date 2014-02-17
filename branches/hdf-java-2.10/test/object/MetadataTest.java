@@ -1,11 +1,11 @@
-/**
- * 
- */
 package test.object;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 import java.util.List;
 
-import junit.framework.TestCase;
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 import ncsa.hdf.object.Attribute;
@@ -14,12 +14,18 @@ import ncsa.hdf.object.Metadata;
 import ncsa.hdf.object.h5.H5File;
 import ncsa.hdf.object.h5.H5Group;
 
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
 /**
  * @author Rishi R. Sinha This has to be removed because both the methods tested
  *         here are actually abstract methods and should be tested elsewhere.
  * 
  */
-public class MetadataTest extends TestCase {
+public class MetadataTest {
     private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MetadataTest.class);
     private static final H5File H5FILE = new H5File();
 
@@ -28,21 +34,32 @@ public class MetadataTest extends TestCase {
     private Metadata strAttr = null;
     private Metadata arrayIntAttr = null;
 
-    /**
-     * @param arg0
-     */
-    public MetadataTest(String arg0) {
-        super(arg0);
+    @BeforeClass
+    public static void createFile() throws Exception {
+		try {
+			H5TestFile.createTestFile(null);
+		}
+		catch (final Exception ex) {
+			System.out.println("*** Unable to create HDF5 test file. " + ex);
+			System.exit(-1);
+		}
     }
+    
+    @AfterClass
+    public static void checkIDs() throws Exception {
+		try {
+			int openID = H5.getOpenIDCount();
+			if(openID>0)
+				System.out.println("Number of IDs still open: "+ openID);
+		} 
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see junit.framework.TestCase#setUp()
-     */
-    @Override
-	protected void setUp() throws Exception {
-        super.setUp();
+    }
+    
+    @Before
+    public void openFiles() throws Exception {
         testFile = (H5File) H5FILE.open(H5TestFile.NAME_FILE_H5,
                 FileFormat.WRITE);
         assertNotNull(testFile);
@@ -56,14 +73,8 @@ public class MetadataTest extends TestCase {
         assertNotNull(arrayIntAttr);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see junit.framework.TestCase#tearDown()
-     */
-    @Override
-	protected void tearDown() throws Exception {
-        super.tearDown();
+    @After
+	public void removeFiles() throws Exception {
         // make sure all objects are closed
         final int fid = testFile.getFID();
         if (fid > 0) {
@@ -90,7 +101,8 @@ public class MetadataTest extends TestCase {
     /**
      * Test method for {@link ncsa.hdf.object.Metadata#getValue()}.
      */
-    public final void testGetValue() {
+    @Test
+    public void testGetValue() {
     	log.debug("testGetValue");
         String[] value = (String[]) strAttr.getValue();
         if (!value[0].equals("String attribute.")) {
@@ -110,7 +122,8 @@ public class MetadataTest extends TestCase {
      * Test method for
      * {@link ncsa.hdf.object.Metadata#setValue(java.lang.Object)}.
      */
-    public final void testSetValue() {
+    @Test
+    public void testSetValue() {
     	log.debug("testSetValue");
         String[] tempValue = { "Temp String Value" };
         String[] prevValue = (String[]) strAttr.getValue();

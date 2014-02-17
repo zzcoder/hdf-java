@@ -476,12 +476,30 @@ public class H5Datatype extends Datatype {
         		try {
         			int nMember = H5.H5Tget_nmembers(tid);
         			String name = null;
-        			int[] val = new int[1];
+        			byte[] val = new byte[tsize];
         			String enumStr = "";
         			for (int i = 0; i < nMember; i++) {
         				name = H5.H5Tget_member_name(tid, i);
         				H5.H5Tget_member_value(tid, i, val);
-        				enumStr += name + "=" + val[0] + ",";
+        				enumStr += name + "=";
+        				switch(H5.H5Tget_size(tid)) {
+        				case 1:
+        					enumStr += (HDFNativeData.byteToByte(val[0]))[0];
+        					break;
+        				case 2:
+        					enumStr += (HDFNativeData.byteToShort(val))[0];
+        					break;
+        				case 4:
+        					enumStr += (HDFNativeData.byteToInt(val))[0];
+        					break;
+        				case 8:
+        					enumStr += (HDFNativeData.byteToLong(val))[0];
+        					break;
+        				default:
+        					enumStr += "?";
+        					break;
+        				}
+        				enumStr += ",";
         			}
         			enumMembers = enumStr;
         		}
@@ -589,30 +607,38 @@ public class H5Datatype extends Datatype {
                     break;
                 case CLASS_INTEGER:
                 case CLASS_ENUM:
-                   if (datatypeSize == 1) {
+                	if (datatypeSize == 1) {
+                		log.trace("toNative CLASS_INT-ENUM is H5T_NATIVE_INT8");
                         tid = H5.H5Tcopy(HDF5Constants.H5T_NATIVE_INT8);
                     }
                     else if (datatypeSize == 2) {
+                		log.trace("toNative CLASS_INT-ENUM is H5T_NATIVE_INT16");
                         tid = H5.H5Tcopy(HDF5Constants.H5T_NATIVE_INT16);
                     }
                     else if (datatypeSize == 4) {
+                		log.trace("toNative CLASS_INT-ENUM is H5T_NATIVE_INT32");
                         tid = H5.H5Tcopy(HDF5Constants.H5T_NATIVE_INT32);
                     }
                     else if (datatypeSize == 8) {
+                		log.trace("toNative CLASS_INT-ENUM is H5T_NATIVE_INT64");
                         tid = H5.H5Tcopy(HDF5Constants.H5T_NATIVE_INT64);
                     }
                     else {
+                		log.trace("toNative CLASS_INT-ENUM is H5T_NATIVE_INT");
                         tid = H5.H5Tcopy(HDF5Constants.H5T_NATIVE_INT);
                     }
 
                     if (datatypeOrder == Datatype.ORDER_BE) {
+                		log.trace("toNative CLASS_INT-ENUM is H5T_ORDER_BE");
                         H5.H5Tset_order(tid, HDF5Constants.H5T_ORDER_BE);
                     }
                     else if (datatypeOrder == Datatype.ORDER_LE) {
+                		log.trace("toNative CLASS_INT-ENUM is H5T_ORDER_LE");
                         H5.H5Tset_order(tid, HDF5Constants.H5T_ORDER_LE);
                     }
 
                     if (datatypeSign == Datatype.SIGN_NONE) {
+                		log.trace("toNative CLASS_INT-ENUM is H5T_SGN_NONE");
                         H5.H5Tset_sign(tid, HDF5Constants.H5T_SGN_NONE);
                     }
                     break;
@@ -683,8 +709,29 @@ public class H5Datatype extends Datatype {
             int ptid = tid;
             try {
                 tid = H5.H5Tenum_create(ptid);
+                datatypeSize = H5.H5Tget_size(tid);
+            }
+            catch (Exception ex) {
+            	log.debug("toNative create members", ex);
+                tid = -1;
+            }
+
+            try {
                 String memstr, memname;
-                int memval = 0, idx;
+                int idx;
+                byte[] memval = null;
+            	if (datatypeSize == 1) {
+                    memval = HDFNativeData.byteToByte(new Byte((byte)0));
+                }
+                else if (datatypeSize == 2) {
+                    memval = HDFNativeData.shortToByte(new Short((short)0));
+                }
+                else if (datatypeSize == 4) {
+                    memval = HDFNativeData.intToByte(new Integer((int)0));
+                }
+                else if (datatypeSize == 8) {
+                    memval = HDFNativeData.longToByte(new Long((long)0));
+                }
                 StringTokenizer token;
 
                 // using "0" and "1" as default
@@ -711,19 +758,66 @@ public class H5Datatype extends Datatype {
                     idx = memstr.indexOf('=');
                     if (idx > 0) {
                         memname = memstr.substring(0, idx);
-                        memval = Integer.parseInt(memstr.substring(idx + 1));
+                    	if (datatypeSize == 1) {
+                    		log.trace("toNative ENUM is H5T_NATIVE_INT8");
+                            Byte tval = Byte.parseByte(memstr.substring(idx + 1));
+                            memval = HDFNativeData.byteToByte(tval);
+                        }
+                        else if (datatypeSize == 2) {
+                    		log.trace("toNative CLASS_INT-ENUM is H5T_NATIVE_INT16");
+                    		Short tval = Short.parseShort(memstr.substring(idx + 1));
+                            memval = HDFNativeData.shortToByte(tval);
+                        }
+                        else if (datatypeSize == 4) {
+                    		log.trace("toNative CLASS_INT-ENUM is H5T_NATIVE_INT32");
+                            Integer tval = Integer.parseInt(memstr.substring(idx + 1));
+                            memval = HDFNativeData.intToByte(tval);
+                        }
+                        else if (datatypeSize == 8) {
+                    		log.trace("toNative CLASS_INT-ENUM is H5T_NATIVE_INT64");
+                            Long tval = Long.parseLong(memstr.substring(idx + 1));
+                            memval = HDFNativeData.longToByte(tval);
+                        }
+                        else {
+                        	log.debug("toNative enum datatypeSize incorrect");
+                        }
                     }
                     else {
                         memname = memstr;
-                        memval++;
+                    	if (datatypeSize == 1) {
+                    		log.trace("toNative ENUM is H5T_NATIVE_INT8");
+                            Byte tval = new Byte(memval[0]);
+                            tval++;
+                            memval = HDFNativeData.byteToByte(tval);
+                        }
+                        else if (datatypeSize == 2) {
+                    		log.trace("toNative CLASS_INT-ENUM is H5T_NATIVE_INT16");
+                    		Short tval = (HDFNativeData.byteToShort(memval))[0];
+                            tval++;
+                            memval = HDFNativeData.shortToByte(tval);
+                        }
+                        else if (datatypeSize == 4) {
+                    		log.trace("toNative CLASS_INT-ENUM is H5T_NATIVE_INT32");
+                            Integer tval = (HDFNativeData.byteToInt(memval))[0];
+                            tval++;
+                            memval = HDFNativeData.intToByte(tval);
+                        }
+                        else if (datatypeSize == 8) {
+                    		log.trace("toNative CLASS_INT-ENUM is H5T_NATIVE_INT64");
+                            Long tval = (HDFNativeData.byteToLong(memval))[0];
+                            tval++;
+                            memval = HDFNativeData.longToByte(tval);
+                        }
+                        else {
+                        	log.debug("toNative enum datatypeSize incorrect");
+                        }
                     }
-                	log.debug("toNative H5Tenum_insert {} {}", memname, memval);
+                	log.trace("toNative H5Tenum_insert {} {}", memname, memval);
                     H5.H5Tenum_insert(tid, memname, memval);
                 }
             }
             catch (Exception ex) {
             	log.debug("toNative set up enum members", ex);
-                tid = -1;
             }
 
             try {
@@ -824,8 +918,6 @@ public class H5Datatype extends Datatype {
         }
         else if (tclass == HDF5Constants.H5T_ENUM) {
         	log.debug("allocateArray class.H5T_ENUM={}", tclass);
-            // can be any integer
-            // data = new int[size];
             int superTid = -1;
             try {
                 superTid = H5.H5Tget_super(tid);
@@ -1046,15 +1138,31 @@ public class H5Datatype extends Datatype {
             description = "Bitfield";
         }
         else if (tclass == HDF5Constants.H5T_ENUM) {
-            description = "enum";
+            byte[] evalue = new byte[tsize];
             String enames = " ( ";
-            int[] evalue = { 0 };
             try {
                 int n = H5.H5Tget_nmembers(tid);
                 for (int i = 0; i < n; i++) {
                     H5.H5Tget_member_value(tid, i, evalue);
                     enames += H5.H5Tget_member_name(tid, i);
-                    enames += "=" + evalue[0] + "  ";
+                    enames += "=";
+                    if (tsize == 1) {
+                        description = "8-bit enum";
+                        enames += (HDFNativeData.byteToByte(evalue[0]))[0];
+                   }
+                    else if (tsize == 2) {
+                        description = "16-bit enum";
+                        enames += (HDFNativeData.byteToShort(evalue))[0];
+                    }
+                    else if (tsize == 4) {
+                        description = "32-bit enum";
+                        enames += (HDFNativeData.byteToInt(evalue))[0];
+                    }
+                    else if (tsize == 8) {
+                        description = "64-bit enum";
+                        enames += (HDFNativeData.byteToLong(evalue))[0];
+                    }
+                    enames += "  ";
                 }
                 enames += ")";
                 description += enames;
@@ -1156,7 +1264,17 @@ public class H5Datatype extends Datatype {
      */
     @Override
     public boolean isUnsigned() {
-        return (isUnsigned(toNative()));
+        boolean unsigned = false;
+        int tid = toNative();
+
+        unsigned = isUnsigned(tid);
+        try {
+            H5.H5Tclose(tid);
+        }
+        catch (final Exception ex) {
+        }
+
+        return unsigned;
     }
 
     /**
@@ -1175,7 +1293,7 @@ public class H5Datatype extends Datatype {
         if(datatype >= 0) {
 	        try {
 	        	int tclass = H5.H5Tget_class(datatype);
-	        	if(tclass != HDF5Constants.H5T_FLOAT && tclass != HDF5Constants.H5T_STRING) {
+	        	if(tclass != HDF5Constants.H5T_FLOAT && tclass != HDF5Constants.H5T_STRING && tclass != HDF5Constants.H5T_REFERENCE) {
 		            int tsign = H5.H5Tget_sign(datatype);
 		            if (tsign == HDF5Constants.H5T_SGN_NONE) {
 		                unsigned = true;
