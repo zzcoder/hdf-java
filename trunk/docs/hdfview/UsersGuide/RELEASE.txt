@@ -1,4 +1,4 @@
-he current HDF-Java products can be downloaded at:
+The current HDF-Java products can be downloaded at:
         http://www.hdfgroup.org/downloads/
 
 
