@@ -181,7 +181,9 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
     private final JCheckBoxMenuItem       checkHex;
     private final JCheckBoxMenuItem       checkBin;
 
-    private final DecimalFormat           scientificFormat = new DecimalFormat("###.#####E0#");
+    // changed to use normalized scientific notation (1 <= coefficient < 10).
+    // private final DecimalFormat scientificFormat = new DecimalFormat("###.#####E0#");
+    private final DecimalFormat           scientificFormat = new DecimalFormat("0.0###E0###");
     private DecimalFormat                 customFormat     = new DecimalFormat("###.#####");
     private final NumberFormat            normalFormat     = null;                                                     // NumberFormat.getInstance();
     private NumberFormat                  numberFormat     = normalFormat;
@@ -917,8 +919,8 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
                         + "\n       FRACTION: the pattern for the fractional part"
                         + "\n       EXPONENT: the pattern for the exponent part"
                         + "\n\nFor example, "
-                        + "\n\t the scientific notation format is, \"###.#####E0#\""
-                        + "\n\t to make the digits required, \"000.00000E00\"\n\n";
+                        + "\n\t the normalized scientific notation format is \"#.0###E0##\""
+                        + "\n\t to make the digits required \"0.00000E000\"\n\n";
                 String str = (String) JOptionPane.showInputDialog(this, msg, "Create a custom number format",
                         JOptionPane.PLAIN_MESSAGE, ViewProperties.getLargeHdfIcon(), null, null);
                 if ((str == null) || (str.length() < 1)) {
