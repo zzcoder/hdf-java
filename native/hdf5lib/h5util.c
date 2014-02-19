@@ -48,7 +48,7 @@ int     render_bin_output_region_data_points(FILE *stream, hid_t region_space, h
             hid_t container, int ndims, hid_t type_id, hssize_t npoints, hsize_t *ptdata);
 int     render_bin_output_region_points(FILE *stream, hid_t region_space,
             hid_t region_id, hid_t container);
-/** frees memory held by aray of strings */
+/** frees memory held by array of strings */
 void h5str_array_free(char **strs, size_t len) {
     size_t i;
 
