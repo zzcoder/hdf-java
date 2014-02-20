@@ -29,6 +29,7 @@ SET (HDFJAVA_TEST_UITEST_SRCS
     TestTreeViewFilters.java
     TestTreeViewExport.java
     TestTableViewMenu.java
+    TestHDFViewTAttr2.java
     TestAll.java
 )
 
@@ -58,6 +59,7 @@ SET (HDF_JAVA_TEST_FILES
       tscalarintsize.h5
       tscalarstring.h5
       tordergr.h5
+      tattr2.h5
 )
 
 SET (HDF_JAVA_TEST_REFERENCE
@@ -83,6 +85,8 @@ SET (HDF_JAVA_TEST_REFERENCE
       JUnit-gui-tableview-menu.err
       JUnit-gui-treeview-newvldt.txt
       JUnit-gui-treeview-newvldt.err
+      JUnit-gui-tattr2.txt
+      JUnit-gui-tattr2.err
       DU64BITS.xbin
 )
 
@@ -172,6 +176,8 @@ ADD_TEST (
         JUnit-gui-treeview-export.out.err
         JUnit-gui-tableview-menu.out
         JUnit-gui-tableview-menu.out.err
+        JUnit-gui-tattr2.out
+        JUnit-gui-tattr2.out.err
         JUnit-gui-treeview-newvldt.out
         JUnit-gui-treeview-newvldt.out.err
         JUnit-gui-CL-multi.out
@@ -379,6 +385,27 @@ SET_TESTS_PROPERTIES (JUnit-gui-treeview-filters PROPERTIES
 )
    
 ADD_TEST (
+    NAME JUnit-gui-tattr2
+    COMMAND "${CMAKE_COMMAND}"
+        -D "TEST_TESTER=${CMAKE_Java_RUNTIME};${CMAKE_Java_RUNTIME_FLAGS}"
+        -D "TEST_CLASSPATH:STRING=${CMAKE_JAVA_CLASSPATH}"
+        -D "TEST_ARGS:STRING=-ea;org.junit.runner.JUnitCore"
+        -D "TEST_PROGRAM=test.uitest.TestHDFViewTAttr2"
+        -D "TEST_LIBRARY_DIRECTORY=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
+        -D "TEST_FOLDER=${PROJECT_BINARY_DIR}"
+        -D "TEST_OUTPUT=JUnit-gui-tattr2.out"
+        -D "TEST_EXPECT=0"
+        -D "TEST_MASK_FILE=TRUE"
+        -D "TEST_ERRREF=JUnit-gui-tattr2.err"
+        -D "TEST_REFERENCE=JUnit-gui-tattr2.txt"
+        -P "${HDFJAVA_RESOURCES_DIR}/runTest.cmake"
+)
+
+SET_TESTS_PROPERTIES (JUnit-gui-tattr2 PROPERTIES
+    DEPENDS JUnit-gui-treeview-filters
+)
+   
+ADD_TEST (
     NAME JUnit-gui-CL-multi
     COMMAND "${CMAKE_COMMAND}"
         -D "TEST_TESTER=${CMAKE_Java_RUNTIME};${CMAKE_Java_RUNTIME_FLAGS}"
@@ -396,7 +423,7 @@ ADD_TEST (
 )
 
 SET_TESTS_PROPERTIES (JUnit-gui-CL-multi PROPERTIES
-    DEPENDS JUnit-gui-treeview-filters
+    DEPENDS JUnit-gui-tattr2
 )
    
 ADD_TEST (

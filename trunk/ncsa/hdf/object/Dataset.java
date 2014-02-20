@@ -974,7 +974,7 @@ public abstract class Dataset extends HObject {
         String cname = data_class.getName();
         char dname = cname.charAt(cname.lastIndexOf("[") + 1);
         int size = Array.getLength(data_in);
-        log.debug("convertFromUnsignedC: cname={} dname={} size={}", cname, dname, size);
+        log.trace("convertFromUnsignedC: cname={} dname={} size={}", cname, dname, size);
 
         if (dname == 'B') {
             short[] sdata = null;
@@ -1078,7 +1078,7 @@ public abstract class Dataset extends HObject {
         String cname = data_class.getName();
         char dname = cname.charAt(cname.lastIndexOf("[") + 1);
         int size = Array.getLength(data_in);
-        log.debug("convertToUnsignedC: cname={} dname={} size={}", cname, dname, size);
+        log.trace("convertToUnsignedC: cname={} dname={} size={}", cname, dname, size);
 
         if (dname == 'S') {
             byte[] bdata = null;
@@ -1164,7 +1164,7 @@ public abstract class Dataset extends HObject {
         }
 
         int n = bytes.length / length;
-        log.debug("byteToString: n={} from length of {}", n, length);
+        log.trace("byteToString: n={} from length of {}", n, length);
         // String bigstr = new String(bytes);
         String[] strArray = new String[n];
         String str = null;
@@ -1220,7 +1220,7 @@ public abstract class Dataset extends HObject {
 
         int size = strings.length;
         byte[] bytes = new byte[size * length];
-        log.debug("stringToByte: size={} length={}", size, length);
+        log.trace("stringToByte: size={} length={}", size, length);
         StringBuffer strBuff = new StringBuffer(length);
         for (int i = 0; i < size; i++) {
             // initialize the string with spaces

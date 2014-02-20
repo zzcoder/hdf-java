@@ -191,7 +191,7 @@ public abstract class CompoundDS extends Dataset {
                 }
             }
         }
-        log.debug("count of selected members={}", count);
+        log.trace("count of selected members={}", count);
 
         return count;
     }

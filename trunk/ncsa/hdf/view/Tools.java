@@ -941,6 +941,7 @@ public final class Tools {
      */
     public static Object newInstance(Class<?> cls, Object[] initargs) throws Exception {
         Object instance = null;
+        log.trace("newInstance: start");
 
         if (cls == null) {
             return null;
@@ -977,6 +978,7 @@ public final class Tools {
                 }
             } // for (int i=0; i<m; i++) {
         }
+        log.trace("newInstance: finish");
 
         return instance;
     }
@@ -1366,7 +1368,7 @@ public final class Tools {
 
         String cname = data.getClass().getName();
         char dname = cname.charAt(cname.lastIndexOf("[") + 1);
-    	log.debug("findMinMax() cname={} : dname={}", cname, dname);
+    	log.trace("findMinMax() cname={} : dname={}", cname, dname);
 
         minmax[0] = Float.MAX_VALUE;
         minmax[1] = -Float.MAX_VALUE;
@@ -1536,7 +1538,7 @@ public final class Tools {
 
         String cname = data.getClass().getName();
         char dname = cname.charAt(cname.lastIndexOf("[") + 1);
-    	log.debug("computeStatistics() cname={} : dname={}", cname, dname);
+    	log.trace("computeStatistics() cname={} : dname={}", cname, dname);
 
         npoints = 0;
         switch (dname) {

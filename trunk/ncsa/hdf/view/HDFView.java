@@ -236,7 +236,7 @@ public class HDFView extends JFrame implements ViewManager, ActionListener, Chan
             props.load();
         }
         catch (Exception ex) {
-        	log.debug("failed to load ViewProperties from {}", rootDir);
+            log.debug("failed to load ViewProperties from {}", rootDir);
         }
 
         // recentFiles = ViewProperties.getMRF();
@@ -1761,7 +1761,7 @@ public class HDFView extends JFrame implements ViewManager, ActionListener, Chan
             }
         } // else if (obj instanceof Dataset)
         else {
-        	log.debug("obj not instanceof Group or Dataset");
+            log.debug("obj not instanceof Group or Dataset");
         }
 
         List<?> attrList = null;
@@ -1770,7 +1770,7 @@ public class HDFView extends JFrame implements ViewManager, ActionListener, Chan
             attrList = obj.getMetadata();
         }
         catch (Exception ex) {
-        	log.debug("getMetadata failure: ", ex);
+            log.debug("getMetadata failure: ", ex);
         }
 
         if (attrList == null) {
