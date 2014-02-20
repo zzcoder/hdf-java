@@ -389,13 +389,13 @@ IF (HDFJAVA_PACK_SAMPLES)
   )
 ENDIF (HDFJAVA_PACK_SAMPLES)
 
-INSTALL (
-    DIRECTORY ${HDFJAVA_SOURCE_DIR}/docs/hdfview/UsersGuide
-    DESTINATION ${HJAVA_INSTALL_DATA_DIR}
-    USE_SOURCE_PERMISSIONS 
-    COMPONENT docs
-    PATTERN ".svn" EXCLUDE
-)
+#INSTALL (
+#    DIRECTORY ${HDFJAVA_SOURCE_DIR}/docs/hdfview/UsersGuide
+#    DESTINATION ${HJAVA_INSTALL_DATA_DIR}
+#    USE_SOURCE_PERMISSIONS 
+#    COMPONENT docs
+#    PATTERN ".svn" EXCLUDE
+#)
 
 #-----------------------------------------------------------------------------
 # Add Target(s) to CMake Install for import into other projects
