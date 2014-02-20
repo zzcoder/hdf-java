@@ -2101,7 +2101,7 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
                 theClass = Class.forName(dataViewName);
             }
             catch (Exception ex) {
-            	log.debug("Class.forName {} failuere: ", dataViewName, ex);
+            	log.debug("Class.forName {} failure: ", dataViewName, ex);
             }
         }
         Object theView = null;

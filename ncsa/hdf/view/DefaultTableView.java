@@ -256,6 +256,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
         super();
 
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        log.trace("DefaultTableView start");
 
         viewer = theView;
         toolkit = Toolkit.getDefaultToolkit();
@@ -270,6 +271,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
         bitmask = null;
 
         if (ViewProperties.isIndexBase1()) indexBase = 1;
+        log.trace("isIndexBase1() is {}", indexBase);
 
         checkFixedDataLength = new JCheckBoxMenuItem("Fixed Data Length", false);
         checkCustomNotation = new JCheckBoxMenuItem("Show Custom Notation", false);
@@ -297,6 +299,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
                     indexBase = 0;
             }
         }
+        log.trace("isIndexBase={} - isDataTransposed={} - isDisplayTypeChar={}", indexBase, isDataTransposed, isDisplayTypeChar);
 
         if (hobject == null) hobject = viewer.getTreeView().getCurrentObject();
 
@@ -306,6 +309,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
 
         dataset = (Dataset) hobject;
         isReadOnly = dataset.getFileFormat().isReadOnly();
+        log.trace("dataset({}) isReadOnly={}", dataset, isReadOnly);
 
         long[] dims = dataset.getDims();
         long tsize = 1;
@@ -313,6 +317,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
         for (int i = 0; i < dims.length; i++)
             tsize *= dims[i];
 
+        log.trace("dataset size={} Height={} Width={}", tsize, dataset.getHeight(), dataset.getWidth());
         if (dataset.getHeight() <= 0 || dataset.getWidth() <= 0 || tsize <= 0) return;
 
         // cannot edit hdf4 vdata
@@ -332,9 +337,11 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
         }
 
         Datatype dtype = dataset.getDatatype();
+        log.trace("dataset dtype.getDatatypeClass()={}", dtype.getDatatypeClass());
         isDisplayTypeChar = (isDisplayTypeChar && (dtype.getDatatypeSize() == 1 || (dtype.getDatatypeClass() == Datatype.CLASS_ARRAY && dtype
                 .getBasetype().getDatatypeClass() == Datatype.CLASS_CHAR)));
 
+        log.trace("dataset isDisplayTypeChar={} isConvertEnum={}", isDisplayTypeChar, ViewProperties.isConvertEnum());
         dataset.setEnumConverted(ViewProperties.isConvertEnum());
 
         // create the table and its columnHeader
@@ -346,6 +353,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
         else { /* if (dataset instanceof ScalarDS) */
             this.setFrameIcon(ViewProperties.getDatasetIcon());
             table = createTable((ScalarDS) dataset);
+            log.trace("createTable((ScalarDS) dataset) dtype.getDatatypeClass()={}", dtype.getDatatypeClass());
 
             if (dtype.getDatatypeClass() == Datatype.CLASS_REFERENCE) {
                 table.addMouseListener(this);
@@ -357,6 +365,16 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
                 else
                     isObjRef = true;
             }
+            else if ((dtype.getDatatypeClass() == Datatype.CLASS_BITFIELD) || (dtype.getDatatypeClass() == Datatype.CLASS_OPAQUE)) {
+                showAsHex = true;
+                checkHex.setSelected(true);
+                checkScientificNotation.setSelected(false);
+                checkCustomNotation.setSelected(false);
+                checkBin.setSelected(false);
+                showAsBin = false;
+                numberFormat = normalFormat;
+            }
+            log.trace("createTable((ScalarDS) dataset) isRegRef={} isObjRef={} showAsHex={}", isRegRef, isObjRef, showAsHex);
         }
 
         if (table == null) {
@@ -367,6 +385,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
         }
         table.setName("data");
 
+        log.trace("DefaultTableView create ColumnHeader");
         ColumnHeader columnHeaders = new ColumnHeader(table);
         columnHeaders.setName("columnHeaders");
         table.setTableHeader(columnHeaders);
@@ -380,6 +399,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
         scrollingTable.getHorizontalScrollBar().setUnitIncrement(100);
 
         // create row headers and add it to the scroller
+        log.trace("DefaultTableView create RowHeader");
         RowHeader rowHeaders = new RowHeader(table, dataset);
         rowHeaders.setName("rowHeaders");
 
@@ -431,6 +451,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
         contentPane.setBorder(border);
 
         // setup subset information
+        log.trace("DefaultTableView setup subset information");
         int rank = dataset.getRank();
         int[] selectedIndex = dataset.getSelectedIndex();
         long[] count = dataset.getSelectedDims();
@@ -468,6 +489,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
             sb.append(stride[selectedIndex[i]]);
         }
         sb.append(" ] ");
+        log.trace("DefaultTableView subset={}", sb.toString());
 
         setJMenuBar(createMenuBar());
         viewer.showStatus(sb.toString());
@@ -479,7 +501,8 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
 
         // create popup menu for reg. ref.
         if (isRegRef || isObjRef) popupMenu = createPopupMenu();
-    }
+        log.trace("DefaultTableView finish");
+   }
 
     private JMenuBar createMenuBar ( ) {
         JMenuBar bar = new JMenuBar();
@@ -1547,7 +1570,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
             cols = d.getWidth();
         }
 
-        log.debug("createTable: rows={} : cols={}", rows, cols);
+        log.trace("createTable: rows={} : cols={}", rows, cols);
         dataValue = null;
         try {
             dataValue = d.getData();
@@ -1584,14 +1607,14 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
         }
 
         fillValue = d.getFillValue();
-        log.debug("createTable: fillValue={}", fillValue);
+        log.trace("createTable: fillValue={}", fillValue);
 
         String cName = dataValue.getClass().getName();
         int cIndex = cName.lastIndexOf("[");
         if (cIndex >= 0) {
             NT = cName.charAt(cIndex + 1);
         }
-        log.debug("createTable: cName={} NT={}", cName, NT);
+        log.trace("createTable: cName={} NT={}", cName, NT);
 
         // convert numerical data into char
         // only possible cases are byte[] and short[] (converted from unsigned
@@ -1674,6 +1697,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
             public Object getValueAt (int row, int column) {
                 if (startEditing[0]) return "";
                 log.trace("ScalarDS:createTable:AbstractTableModel:getValueAt({},{}) start", row, column);
+                log.trace("ScalarDS:createTable:AbstractTableModel:getValueAt isInt={} isArray={} showAsHex={} showAsBin={}", isInt, isArray, showAsHex, showAsBin);
 
                 if (isArray) {
                     // ARRAY dataset
@@ -1947,7 +1971,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
                                             if (cIndex >= 0) {
                                                 NT = cName.charAt(cIndex + 1);
                                             }
-                                            log.debug("JTable.ScalarDS isCellSelected: cName={} NT={}", cName, NT);
+                                            log.trace("JTable.ScalarDS isCellSelected: cName={} NT={}", cName, NT);
 
                                             if (idx > 0) strvalSB.append(',');
 
@@ -1958,7 +1982,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
                                             // byte)
                                             Datatype dtype = dset.getDatatype();
                                             Datatype baseType = dtype.getBasetype();
-                                            log.debug("JTable.ScalarDS isCellSelected: dtype={} baseType={}",
+                                            log.trace("JTable.ScalarDS isCellSelected: dtype={} baseType={}",
                                                     dtype.getDatatypeDescription(), baseType);
                                             if (baseType == null) baseType = dtype;
                                             if ((dtype.getDatatypeClass() == Datatype.CLASS_ARRAY && baseType.getDatatypeClass() == Datatype.CLASS_CHAR)

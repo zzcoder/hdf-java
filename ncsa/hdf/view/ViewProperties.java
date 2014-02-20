@@ -584,287 +584,287 @@ public class ViewProperties extends Properties {
 
         // load icon images
         if (hdfIcon == null) {
-            u = classLoader.getResource("ncsa/hdf/view/icons/hdf.gif");
+            u = classLoader.getResource("icons/hdf.gif");
             if (u != null) {
                 hdfIcon = new ImageIcon(u);
             }
         }
 
         if (h4Icon == null) {
-            u = classLoader.getResource("ncsa/hdf/view/icons/hdf4.gif");
+            u = classLoader.getResource("icons/hdf4.gif");
             if (u != null) {
                 h4Icon = new ImageIcon(u);
             }
         }
 
         if (h5Icon == null) {
-            u = classLoader.getResource("ncsa/hdf/view/icons/hdf5.gif");
+            u = classLoader.getResource("icons/hdf5.gif");
             if (u != null) {
                 h5Icon = new ImageIcon(u);
             }
         }
 
         if (foldercloseIcon == null) {
-            u = classLoader.getResource("ncsa/hdf/view/icons/folderclose.gif");
+            u = classLoader.getResource("icons/folderclose.gif");
             if (u != null) {
                 foldercloseIcon = new ImageIcon(u);
             }
         }
 
         if (foldercloseIconA == null) {
-            u = classLoader.getResource("ncsa/hdf/view/icons/foldercloseA.gif");
+            u = classLoader.getResource("icons/foldercloseA.gif");
             if (u != null) {
                 foldercloseIconA = new ImageIcon(u);
             }
         }
 
         if (folderopenIcon == null) {
-            u = classLoader.getResource("ncsa/hdf/view/icons/folderopen.gif");
+            u = classLoader.getResource("icons/folderopen.gif");
             if (u != null) {
                 folderopenIcon = new ImageIcon(u);
             }
         }
 
         if (folderopenIconA == null) {
-            u = classLoader.getResource("ncsa/hdf/view/icons/folderopenA.gif");
+            u = classLoader.getResource("icons/folderopenA.gif");
             if (u != null) {
                 folderopenIconA = new ImageIcon(u);
             }
         }
 
         if (datasetIcon == null) {
-            u = classLoader.getResource("ncsa/hdf/view/icons/dataset.gif");
+            u = classLoader.getResource("icons/dataset.gif");
             if (u != null) {
                 datasetIcon = new ImageIcon(u);
             }
         }
 
         if (datasetIconA == null) {
-            u = classLoader.getResource("ncsa/hdf/view/icons/datasetA.gif");
+            u = classLoader.getResource("icons/datasetA.gif");
             if (u != null) {
                 datasetIconA = new ImageIcon(u);
             }
         }
 
         if (datatypeIcon == null) {
-            u = classLoader.getResource("ncsa/hdf/view/icons/datatype.gif");
+            u = classLoader.getResource("icons/datatype.gif");
             if (u != null) {
                 datatypeIcon = new ImageIcon(u);
             }
         }
 
         if (datatypeIconA == null) {
-            u = classLoader.getResource("ncsa/hdf/view/icons/datatypeA.gif");
+            u = classLoader.getResource("icons/datatypeA.gif");
             if (u != null) {
                 datatypeIconA = new ImageIcon(u);
             }
         }
 
         if (linkIcon == null) {
-            u = classLoader.getResource("ncsa/hdf/view/icons/link.gif");
+            u = classLoader.getResource("icons/link.gif");
             if (u != null) {
                 linkIcon = new ImageIcon(u);
             }
         }
 
         if (fileopenIcon == null) {
-            u = classLoader.getResource("ncsa/hdf/view/icons/fileopen.gif");
+            u = classLoader.getResource("icons/fileopen.gif");
             if (u != null) {
                 fileopenIcon = new ImageIcon(u);
             }
         }
 
         if (filesaveIcon == null) {
-            u = classLoader.getResource("ncsa/hdf/view/icons/filesave.gif");
+            u = classLoader.getResource("icons/filesave.gif");
             if (u != null) {
                 filesaveIcon = new ImageIcon(u);
             }
         }
 
         if (filenewIcon == null) {
-            u = classLoader.getResource("ncsa/hdf/view/icons/filenew.gif");
+            u = classLoader.getResource("icons/filenew.gif");
             if (u != null) {
                 filenewIcon = new ImageIcon(u);
             }
         }
 
         if (filecloseIcon == null) {
-            u = classLoader.getResource("ncsa/hdf/view/icons/fileclose.gif");
+            u = classLoader.getResource("icons/fileclose.gif");
             if (u != null) {
                 filecloseIcon = new ImageIcon(u);
             }
         }
 
         if (paletteIcon == null) {
-            u = classLoader.getResource("ncsa/hdf/view/icons/palette.gif");
+            u = classLoader.getResource("icons/palette.gif");
             if (u != null) {
                 paletteIcon = new ImageIcon(u);
             }
         }
 
         if (brightIcon == null) {
-            u = classLoader.getResource("ncsa/hdf/view/icons/brightness.gif");
+            u = classLoader.getResource("icons/brightness.gif");
             if (u != null) {
                 brightIcon = new ImageIcon(u);
             }
         }
 
         if (autocontrastIcon == null) {
-            u = classLoader.getResource("ncsa/hdf/view/icons/autocontrast.gif");
+            u = classLoader.getResource("icons/autocontrast.gif");
             if (u != null) {
                 autocontrastIcon = new ImageIcon(u);
             }
         }
 
         if (imageIcon == null) {
-            u = classLoader.getResource("ncsa/hdf/view/icons/image.gif");
+            u = classLoader.getResource("icons/image.gif");
             if (u != null) {
                 imageIcon = new ImageIcon(u);
             }
         }
 
         if (imageIconA == null) {
-            u = classLoader.getResource("ncsa/hdf/view/icons/imageA.gif");
+            u = classLoader.getResource("icons/imageA.gif");
             if (u != null) {
                 imageIconA = new ImageIcon(u);
             }
         }
 
         if (tableIcon == null) {
-            u = classLoader.getResource("ncsa/hdf/view/icons/table.gif");
+            u = classLoader.getResource("icons/table.gif");
             if (u != null) {
                 tableIcon = new ImageIcon(u);
             }
         }
 
         if (tableIconA == null) {
-            u = classLoader.getResource("ncsa/hdf/view/icons/tableA.gif");
+            u = classLoader.getResource("icons/tableA.gif");
             if (u != null) {
                 tableIconA = new ImageIcon(u);
             }
         }
 
         if (textIcon == null) {
-            u = classLoader.getResource("ncsa/hdf/view/icons/text.gif");
+            u = classLoader.getResource("icons/text.gif");
             if (u != null) {
                 textIcon = new ImageIcon(u);
             }
         }
 
         if (textIconA == null) {
-            u = classLoader.getResource("ncsa/hdf/view/icons/textA.gif");
+            u = classLoader.getResource("icons/textA.gif");
             if (u != null) {
                 textIconA = new ImageIcon(u);
             }
         }
 
         if (zoominIcon == null) {
-            u = classLoader.getResource("ncsa/hdf/view/icons/zoomin.gif");
+            u = classLoader.getResource("icons/zoomin.gif");
             if (u != null) {
                 zoominIcon = new ImageIcon(u);
             }
         }
 
         if (zoomoutIcon == null) {
-            u = classLoader.getResource("ncsa/hdf/view/icons/zoomout.gif");
+            u = classLoader.getResource("icons/zoomout.gif");
             if (u != null) {
                 zoomoutIcon = new ImageIcon(u);
             }
         }
 
         if (blankIcon == null) {
-            u = classLoader.getResource("ncsa/hdf/view/icons/blank.gif");
+            u = classLoader.getResource("icons/blank.gif");
             if (u != null) {
                 blankIcon = new ImageIcon(u);
             }
         }
 
         if (helpIcon == null) {
-            u = classLoader.getResource("ncsa/hdf/view/icons/help.gif");
+            u = classLoader.getResource("icons/help.gif");
             if (u != null) {
                 helpIcon = new ImageIcon(u);
             }
         }
 
         if (copyIcon == null) {
-            u = classLoader.getResource("ncsa/hdf/view/icons/copy.gif");
+            u = classLoader.getResource("icons/copy.gif");
             if (u != null) {
                 copyIcon = new ImageIcon(u);
             }
         }
 
         if (cutIcon == null) {
-            u = classLoader.getResource("ncsa/hdf/view/icons/cut.gif");
+            u = classLoader.getResource("icons/cut.gif");
             if (u != null) {
                 cutIcon = new ImageIcon(u);
             }
         }
 
         if (pasteIcon == null) {
-            u = classLoader.getResource("ncsa/hdf/view/icons/paste.gif");
+            u = classLoader.getResource("icons/paste.gif");
             if (u != null) {
                 pasteIcon = new ImageIcon(u);
             }
         }
 
         if (largeHdfIcon == null) {
-            u = classLoader.getResource("ncsa/hdf/view/icons/hdf_large.gif");
+            u = classLoader.getResource("icons/hdf_large.gif");
             if (u != null) {
                 largeHdfIcon = new ImageIcon(u);
             }
         }
 
         if (previousIcon == null) {
-            u = classLoader.getResource("ncsa/hdf/view/icons/previous.gif");
+            u = classLoader.getResource("icons/previous.gif");
             if (u != null) {
                 previousIcon = new ImageIcon(u);
             }
         }
 
         if (nextIcon == null) {
-            u = classLoader.getResource("ncsa/hdf/view/icons/next.gif");
+            u = classLoader.getResource("icons/next.gif");
             if (u != null) {
                 nextIcon = new ImageIcon(u);
             }
         }
 
         if (firstIcon == null) {
-            u = classLoader.getResource("ncsa/hdf/view/icons/first.gif");
+            u = classLoader.getResource("icons/first.gif");
             if (u != null) {
                 firstIcon = new ImageIcon(u);
             }
         }
 
         if (lastIcon == null) {
-            u = classLoader.getResource("ncsa/hdf/view/icons/last.gif");
+            u = classLoader.getResource("icons/last.gif");
             if (u != null) {
                 lastIcon = new ImageIcon(u);
             }
         }
 
         if (chartIcon == null) {
-            u = classLoader.getResource("ncsa/hdf/view/icons/chart.gif");
+            u = classLoader.getResource("icons/chart.gif");
             if (u != null) {
                 chartIcon = new ImageIcon(u);
             }
         }
 
         if (animationIcon == null) {
-            u = classLoader.getResource("ncsa/hdf/view/icons/animation.gif");
+            u = classLoader.getResource("icons/animation.gif");
             if (u != null) {
                 animationIcon = new ImageIcon(u);
             }
         }
 
         if (questionIcon == null) {
-            u = classLoader.getResource("ncsa/hdf/view/icons/question.gif");
+            u = classLoader.getResource("icons/question.gif");
             if (u != null) {
                 questionIcon = new ImageIcon(u);
             }
         }
 
         try {
-            u = classLoader.getResource("ncsa/hdf/view/icons/audio.gif");
+            u = classLoader.getResource("icons/audio.gif");
             iconAUDIO = new ImageIcon(u);
         }
         catch (Exception ex) {
@@ -872,7 +872,7 @@ public class ViewProperties extends Properties {
         }
 
         try {
-            u = classLoader.getResource("ncsa/hdf/view/icons/xls.gif");
+            u = classLoader.getResource("icons/xls.gif");
             iconXLS = new ImageIcon(u);
         }
         catch (Exception ex) {
@@ -880,7 +880,7 @@ public class ViewProperties extends Properties {
         }
 
         try {
-            u = classLoader.getResource("ncsa/hdf/view/icons/pdf.gif");
+            u = classLoader.getResource("icons/pdf.gif");
             iconPDF = new ImageIcon(u);
         }
         catch (Exception ex) {
@@ -888,7 +888,7 @@ public class ViewProperties extends Properties {
         }
 
         try {
-            u = classLoader.getResource("ncsa/hdf/view/icons/apps.gif");
+            u = classLoader.getResource("icons/apps.gif");
             iconAPPS = new ImageIcon(u);
         }
         catch (Exception ex) {
@@ -896,7 +896,7 @@ public class ViewProperties extends Properties {
         }
 
         try {
-            u = classLoader.getResource("ncsa/hdf/view/icons/url.gif");
+            u = classLoader.getResource("icons/url.gif");
             iconURL = new ImageIcon(u);
         }
         catch (Exception ex) {
@@ -904,7 +904,7 @@ public class ViewProperties extends Properties {
         }
 
         try {
-            u = classLoader.getResource("ncsa/hdf/view/icons/video.gif");
+            u = classLoader.getResource("icons/video.gif");
             iconVIDEO = new ImageIcon(u);
         }
         catch (Exception ex) {

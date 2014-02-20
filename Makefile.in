@@ -35,7 +35,6 @@ H5INC=@HDF5INC@
 LIBDIR=$(JH45INSTALLDIR)/lib
 BINDIR=$(JH45INSTALLDIR)/bin
 DOCDIR= $(JH45INSTALLDIR)/docs
-UGDIR= $(JH45INSTALLDIR)/UsersGuide
 
 CLASS_DIR=$(TOP)/lib
 CP="$(CLASSPATH):$(CLASS_DIR):. "
@@ -108,11 +107,7 @@ GUITESTFILES=./test/uitest/*.in ./test/uitest/CMakeLists.txt ./test/uitest/*.jav
 	$(CLASS_DIR)/fest-assert-1.2.jar $(CLASS_DIR)/fest-reflect-1.2.jar $(CLASS_DIR)/fest-swing-1.2.jar \
 	$(CLASS_DIR)/fest-util-1.1.2.jar $(CLASS_DIR)/fest-annotations-1.0.jar
 
-DOCFILES=./docs/*.html ./docs/*.gif ./docs/*.js ./docs/hdfview/*.html \
-         ./docs/hdfview/*.gif ./docs/hdfview/ModularGuide/*.html \
-         ./docs/hdfview/ModularGuide/*.gif ./docs/hdfview/UsersGuide/images/*.gif \
-         ./docs/hdfview/UsersGuide/images/*.jpg ./docs/hdfview/UsersGuide/*.html \
-         ./docs/hdfview/UsersGuide/*.txt
+DOCFILES=
 
 WINDOWSFILES=./windows/hdfview.bat ./windows/copy_hdf.bat ./windows/javabuild.bat  \
 	./windows/javacheck.bat ./windows/javainstall.bat ./windows/jnibuild.bat \
@@ -361,11 +356,6 @@ install-jhdfview: ncsa.hdf.view
 	-mkdir -p $(LIBDIR)/ext
 	$(JAR) cf $(JH45INSTALLDIR)/lib/ext/nc2obj.jar -C $(CLASS_DIR) $(NC2OBJCLASSES)
 	$(JAR) cf $(JH45INSTALLDIR)/lib/ext/fitsobj.jar -C $(CLASS_DIR) $(FITSOBJCLASSES)
-	$(RM) -rf $(UGDIR);
-	-mkdir -p $(UGDIR);
-	cp -R docs/hdfview/UsersGuide/* $(UGDIR);	
-	$(RM) -rf $(UGDIR)/.svn
-	$(RM) -rf $(UGDIR)/images/.svn
 	-mkdir -p $(BINDIR);
 	cp lib/netcdf.jar $(LIBDIR)
 	cp lib/fits.jar $(LIBDIR)
@@ -389,9 +379,8 @@ uninstall-jhdfobj:
 
 uninstall-jhdfview: 
 	$(RM) -f $(JH45INSTALLDIR)/lib/jhdfview.jar;
-	$(RM) -rf $(UGDIR)
 
-install-docs: install-javadocs install-ug
+install-docs: install-javadocs
 
 install-javadocs:
 	-mkdir -p $(DOCDIR)/javadocs;
@@ -405,23 +394,6 @@ install-javadocs:
 
 uninstall-javadocs:
 	$(RM) -rf $(DOCDIR)/javadocs/*.html $(DOCDIR)/images
-
-install-ug:
-	-mkdir -p $(DOCDIR);
-	-mkdir -p $(DOCDIR)/hdfview/UsersGuide;
-	cp docs/hdfview/index.html $(DOCDIR)/hdfview/UsersGuide;
-	cp docs/hdfview/UsersGuide/*.html $(DOCDIR)/hdfview/UsersGuide;
-	cp docs/hdfview/UsersGuide/*.txt $(DOCDIR)/hdfview/UsersGuide;
-	-mkdir -p $(DOCDIR)/hdfview/UsersGuide/images;
-	cp docs/hdfview/UsersGuide/images/*.gif $(DOCDIR)/hdfview/UsersGuide/images;
-	-mkdir -p $(DOCDIR)/hdf-object;
-	cp docs/hdf-object/*.html $(DOCDIR)/hdf-object;
-	cp docs/hdf-object/*.jpg $(DOCDIR)/hdf-object;
-	cp docs/hdf-object/*.h5 $(DOCDIR)/hdf-object;
-
-uninstall-ug:
-	$(RM) -rf $(DOCDIR)/hdfview/UsersGuide/*
-	$(RM) -rf $(DOCDIR)/hdf-object/*
 
 distclean: clean-natives clean-ncsa clean-classes clean-test clean-examples
 	$(RM) -f config.cache config.status config.log 
@@ -455,8 +427,6 @@ distclean: clean-natives clean-ncsa clean-classes clean-test clean-examples
 	$(RM) -rf ./test/object/*.sh
 	$(RM) -rf ./test/object/misc/Makefile
 	$(RM) -rf ./test/object/misc/*.sh
-#	$(RM) -rf ./test/object/uitest/Makefile
-#	$(RM) -rf ./test/object/uitest/*.sh
 	$(RM) -rf ./examples/Makefile
 	$(RM) -rf ./examples/runExample.sh
 	$(RM) -rf ./examples/intro/Makefile
@@ -465,17 +435,12 @@ distclean: clean-natives clean-ncsa clean-classes clean-test clean-examples
 	$(RM) -rf ./examples/datatypes/Makefile
 	$(RM) -rf ./Makefile
 
-#build_package:
-#	./build/JDK/builddist solaris
-#	./build/JRE/buildjre solaris
-
 src-dist: docs
 	-mkdir -p hdf-java
 	tar cvf $(VERSION)-x.tar $(DISTFILES) ; mv $(VERSION)-x.tar hdf-java/
 	cd hdf-java ; tar xf $(VERSION)-x.tar ; $(RM) -f $(VERSION)-x.tar ; find . -name .svn -exec rm -rf {} \;
 	cd ..
 	tar cvf $(VERSION)-src.tar hdf-java/*
-#	$(JAR) cvf $(VERSION)-src.jar hdf-java/*
 	$(RM) -rf hdf-java
 
 
