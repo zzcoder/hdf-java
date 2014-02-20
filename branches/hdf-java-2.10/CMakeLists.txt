@@ -585,10 +585,10 @@ IF (WIN32)
   ENDIF (CMAKE_CL_64)
   # set the install/unistall icon used for the installer itself
   # There is a bug in NSI that does not handle full unix paths properly.
-  SET (CPACK_NSIS_MUI_ICON "${HDFJAVA_RESOURCES_DIR}\\hdf.ico")
-  SET (CPACK_NSIS_MUI_UNIICON "${HDFJAVA_RESOURCES_DIR}\\hdf.ico")
+  SET (CPACK_NSIS_MUI_ICON "${HDFJAVA_RESOURCES_DIR}\\\\hdf.ico")
+  SET (CPACK_NSIS_MUI_UNIICON "${HDFJAVA_RESOURCES_DIR}\\\\hdf.ico")
   # set the package header icon for MUI
-  SET (CPACK_PACKAGE_ICON "${HDFJAVA_RESOURCES_DIR}\\hdf.bmp")
+  SET (CPACK_PACKAGE_ICON "${HDFJAVA_RESOURCES_DIR}\\\\hdf.bmp")
   SET (CPACK_NSIS_DISPLAY_NAME "@CPACK_NSIS_PACKAGE_NAME@, a visual tool for browsing and editing HDF files")
   SET (CPACK_PACKAGE_INSTALL_DIRECTORY "${CPACK_PACKAGE_VENDOR}\\\\${CPACK_PACKAGE_NAME}\\\\${CPACK_PACKAGE_VERSION}")
   SET (CPACK_MONOLITHIC_INSTALL ON)
