@@ -214,9 +214,6 @@ function (__java_copy_file src dest comment)
                 ${dest}
         DEPENDS ${src}
         COMMENT ${comment})
-#    execute_process(
-#        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${src} ${dest}
-#    )
 endfunction ()
 
 # define helper scripts
