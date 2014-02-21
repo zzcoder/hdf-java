@@ -223,7 +223,7 @@ public class HDFView extends JFrame implements ViewManager, ActionListener, Chan
         userOptionDialog = null;
         ctrSrbFileDialog = null;
         toolkit = Toolkit.getDefaultToolkit();
-        ViewProperties.loadIcons(rootDir);
+        ViewProperties.loadIcons();
         ViewProperties.loadExtClass();
 
         editGUIs = new Vector<Object>();
