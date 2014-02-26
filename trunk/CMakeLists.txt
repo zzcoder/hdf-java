@@ -107,7 +107,9 @@ IF (NOT HJAVA_INSTALL_BIN_DIR)
 ENDIF (NOT HJAVA_INSTALL_BIN_DIR)
 IF (NOT HJAVA_INSTALL_LIB_DIR)
   IF (APPLE)
+    OPTION (HDFJAVA_PACK_MACOSX_BUNDLE "Create a Mac OSX Application Bundle" OFF)
     IF (HDFJAVA_PACK_MACOSX_BUNDLE)
+      OPTION (HDFJAVA_PACK_MACOSX_16_BUNDLE "Create a Mac OSX Application Bundle with Apple Java 1.6" OFF)
       IF (HDFJAVA_PACK_MACOSX_16_BUNDLE)
         SET (HJAVA_INSTALL_JAR_DIR Java)
       ELSE (HDFJAVA_PACK_MACOSX_16_BUNDLE)
@@ -385,6 +387,7 @@ ENDIF (CREATE_JAVADOCS)
 #-----------------------------------------------------------------------------
 # Add Required Document(s)
 #-----------------------------------------------------------------------------
+OPTION (HDFJAVA_PACK_SAMPLES  "Package the HDFJAVA File Samples" OFF)
 IF (HDFJAVA_PACK_SAMPLES)
   INSTALL (
       DIRECTORY ${HDFJAVA_SOURCE_DIR}/docs/samples
@@ -494,6 +497,7 @@ ENDIF (NOT HDFJAVA_EXTERNALLY_CONFIGURED)
 #-----------------------------------------------------------------------------
 # Option to include jre
 #-----------------------------------------------------------------------------
+OPTION (HDFJAVA_PACK_JREFILE  "Package a JRE installer file" OFF)
 IF (HDFJAVA_PACK_JREFILE)
   INSTALL (
       FILES ${HDFJAVA_PACK_JREPATH}/${HDFJAVA_PACK_JREFILE}
