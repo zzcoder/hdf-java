@@ -852,7 +852,7 @@ public class NewAttributeDialog extends JDialog implements ActionListener, ItemL
                     pane.setPage(e.getURL());
                 }
                 catch (Throwable t) {
-                	log.debug("JEditorPane hyper link:", t);
+                    log.debug("JEditorPane hyper link:", t);
                 }
             }
         }

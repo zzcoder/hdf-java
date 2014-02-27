@@ -852,7 +852,7 @@ public class NewDatasetDialog extends JDialog implements ActionListener, ItemLis
                     pane.setPage(e.getURL());
                 }
                 catch (Throwable t) {
-                	log.debug("JEditorPane hyperlink:", t);
+                    log.debug("JEditorPane hyperlink:", t);
                 }
             }
         }

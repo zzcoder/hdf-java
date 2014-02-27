@@ -22,7 +22,7 @@ pushd %~dp0
 rem Adjust the following variable to match your environment
 set INSTALLDIR=@CMAKE_INSTALL_PREFIX@
 
-set JAVABIN=%INSTALLDIR%\bin\JRE\bin
+set JAVABIN=%INSTALLDIR%\bin\jre7\bin
 
 echo.Setting environment
 if "!%JAVABIN%!\java.exe"=="\java.exe" (
