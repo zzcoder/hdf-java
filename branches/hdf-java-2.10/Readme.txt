@@ -60,4 +60,5 @@ For questions, send email to
 
   help@hdfgroup.org
 
-
+Exception when using a Java 1.7 built program on Java 1.6:
+Exception in thread "main" java.lang.UnsupportedClassVersionError: ncsa/hdf/view/HDFView : Unsupported major.minor version 51.0

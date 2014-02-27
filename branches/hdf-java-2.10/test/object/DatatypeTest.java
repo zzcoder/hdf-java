@@ -37,10 +37,18 @@ public class DatatypeTest {
     private int n_orders = 4;
     private int[] sizes = { 1, 2, 4, 8 };
     private String[] descriptions = { 
-            "Unknown", "Unknown", "Unknown", 
-            "Unknown", "Unknown", "Unknown", 
-            "Unknown", "Unknown", "Unknown", 
-            "Unknown", "Unknown", "Unknown", 
+            "8-bit integer", "16-bit integer", "32-bit integer", "64-bit integer", 
+            "8-bit integer", "16-bit integer", "32-bit integer", "64-bit integer", 
+            "8-bit integer", "16-bit integer", "32-bit integer", "64-bit integer", 
+            "8-bit integer", "16-bit integer", "32-bit integer", "64-bit integer", 
+            "8-bit integer", "16-bit integer", "32-bit integer", "64-bit integer", 
+            "8-bit integer", "16-bit integer", "32-bit integer", "64-bit integer", 
+            "8-bit integer", "16-bit integer", "32-bit integer", "64-bit integer",
+            "8-bit integer", "16-bit integer", "32-bit integer", "64-bit integer", 
+            "8-bit integer", "16-bit integer", "32-bit integer", "64-bit integer", 
+            "8-bit integer", "16-bit integer", "32-bit integer", "64-bit integer", 
+            "8-bit integer", "16-bit integer", "32-bit integer", "64-bit integer", 
+            "8-bit integer", "16-bit integer", "32-bit integer", "64-bit integer", 
             "8-bit integer", "8-bit unsigned integer", "8-bit integer", 
             "8-bit integer", "8-bit unsigned integer", "8-bit integer", 
             "8-bit integer", "8-bit unsigned integer", "8-bit integer", 
@@ -49,18 +57,18 @@ public class DatatypeTest {
             "Unknown", "Unknown", "Unknown", 
             "Unknown", "Unknown", "Unknown", 
             "Unknown", "Unknown", "Unknown",
-            "8-bit enum ( 0=1  1=2  )", "16-bit enum ( 0=1  1=2  )", "32-bit enum ( 0=1  1=2  )", "64-bit enum ( 0=1  1=2  )",
-            "8-bit enum ( 0=1  1=2  )", "16-bit enum ( 0=1  1=2  )", "32-bit enum ( 0=1  1=2  )", "64-bit enum ( 0=1  1=2  )",
-            "8-bit enum ( 0=1  1=2  )", "16-bit enum ( 0=1  1=2  )", "32-bit enum ( 0=1  1=2  )", "64-bit enum ( 0=1  1=2  )",
-            "8-bit enum ( 0=1  1=2  )", "16-bit enum ( 0=1  1=2  )", "32-bit enum ( 0=1  1=2  )", "64-bit enum ( 0=1  1=2  )",
-            "8-bit enum ( 0=1  1=2  )", "16-bit enum ( 0=1  1=2  )", "32-bit enum ( 0=1  1=2  )", "64-bit enum ( 0=1  1=2  )",
-            "8-bit enum ( 0=1  1=2  )", "16-bit enum ( 0=1  1=2  )", "32-bit enum ( 0=1  1=2  )", "64-bit enum ( 0=1  1=2  )",
-            "8-bit enum ( 0=1  1=2  )", "16-bit enum ( 0=1  1=2  )", "32-bit enum ( 0=1  1=2  )", "64-bit enum ( 0=1  1=2  )",
-            "8-bit enum ( 0=1  1=2  )", "16-bit enum ( 0=1  1=2  )", "32-bit enum ( 0=1  1=2  )", "64-bit enum ( 0=1  1=2  )",
-            "8-bit enum ( 0=1  1=2  )", "16-bit enum ( 0=1  1=2  )", "32-bit enum ( 0=1  1=2  )", "64-bit enum ( 0=1  1=2  )",
-            "8-bit enum ( 0=1  1=2  )", "16-bit enum ( 0=1  1=2  )", "32-bit enum ( 0=1  1=2  )", "64-bit enum ( 0=1  1=2  )",
-            "8-bit enum ( 0=1  1=2  )", "16-bit enum ( 0=1  1=2  )", "32-bit enum ( 0=1  1=2  )", "64-bit enum ( 0=1  1=2  )",
-            "8-bit enum ( 0=1  1=2  )", "16-bit enum ( 0=1  1=2  )", "32-bit enum ( 0=1  1=2  )", "64-bit enum ( 0=1  1=2  )",
+            "8-bit enum ( 0=1 1=2)", "16-bit enum ( 0=1 1=2)", "32-bit enum ( 0=1 1=2)", "64-bit enum ( 0=1 1=2)",
+            "8-bit enum ( 0=1 1=2)", "16-bit enum ( 0=1 1=2)", "32-bit enum ( 0=1 1=2)", "64-bit enum ( 0=1 1=2)",
+            "8-bit enum ( 0=1 1=2)", "16-bit enum ( 0=1 1=2)", "32-bit enum ( 0=1 1=2)", "64-bit enum ( 0=1 1=2)",
+            "8-bit enum ( 0=1 1=2)", "16-bit enum ( 0=1 1=2)", "32-bit enum ( 0=1 1=2)", "64-bit enum ( 0=1 1=2)",
+            "8-bit enum ( 0=1 1=2)", "16-bit enum ( 0=1 1=2)", "32-bit enum ( 0=1 1=2)", "64-bit enum ( 0=1 1=2)",
+            "8-bit enum ( 0=1 1=2)", "16-bit enum ( 0=1 1=2)", "32-bit enum ( 0=1 1=2)", "64-bit enum ( 0=1 1=2)",
+            "8-bit enum ( 0=1 1=2)", "16-bit enum ( 0=1 1=2)", "32-bit enum ( 0=1 1=2)", "64-bit enum ( 0=1 1=2)",
+            "8-bit enum ( 0=1 1=2)", "16-bit enum ( 0=1 1=2)", "32-bit enum ( 0=1 1=2)", "64-bit enum ( 0=1 1=2)",
+            "8-bit enum ( 0=1 1=2)", "16-bit enum ( 0=1 1=2)", "32-bit enum ( 0=1 1=2)", "64-bit enum ( 0=1 1=2)",
+            "8-bit enum ( 0=1 1=2)", "16-bit enum ( 0=1 1=2)", "32-bit enum ( 0=1 1=2)", "64-bit enum ( 0=1 1=2)",
+            "8-bit enum ( 0=1 1=2)", "16-bit enum ( 0=1 1=2)", "32-bit enum ( 0=1 1=2)", "64-bit enum ( 0=1 1=2)",
+            "8-bit enum ( 0=1 1=2)", "16-bit enum ( 0=1 1=2)", "32-bit enum ( 0=1 1=2)", "64-bit enum ( 0=1 1=2)",
             "32-bit floating-point", "32-bit floating-point", "32-bit floating-point", 
             "32-bit floating-point", "32-bit floating-point", "32-bit floating-point", 
             "32-bit floating-point", "32-bit floating-point", "32-bit floating-point", 
@@ -85,10 +93,18 @@ public class DatatypeTest {
             "Unknown", "Unknown", "Unknown", 
             "Unknown", "Unknown", "Unknown", 
             "Unknown", "Unknown", "Unknown", 
-            "Unknown", "Unknown", "Unknown", 
-            "Unknown", "Unknown", "Unknown", 
-            "Unknown", "Unknown", "Unknown", 
-            "Unknown", "Unknown", "Unknown", 
+            "8-bit integer", "16-bit integer", "32-bit integer", "64-bit integer", 
+            "8-bit integer", "16-bit integer", "32-bit integer", "64-bit integer", 
+            "8-bit integer", "16-bit integer", "32-bit integer", "64-bit integer", 
+            "8-bit integer", "16-bit integer", "32-bit integer", "64-bit integer", 
+            "8-bit integer", "16-bit integer", "32-bit integer", "64-bit integer", 
+            "8-bit integer", "16-bit integer", "32-bit integer", "64-bit integer", 
+            "8-bit integer", "16-bit integer", "32-bit integer", "64-bit integer",
+            "8-bit integer", "16-bit integer", "32-bit integer", "64-bit integer", 
+            "8-bit integer", "16-bit integer", "32-bit integer", "64-bit integer", 
+            "8-bit integer", "16-bit integer", "32-bit integer", "64-bit integer", 
+            "8-bit integer", "16-bit integer", "32-bit integer", "64-bit integer", 
+            "8-bit integer", "16-bit integer", "32-bit integer", "64-bit integer", 
             "Object reference", "Object reference", "Object reference", 
             "Object reference", "Object reference", "Object reference", 
             "Object reference", "Object reference", "Object reference", 
@@ -139,7 +155,7 @@ public class DatatypeTest {
 		catch (Exception ex) {
 			ex.printStackTrace();
 		}
-        baseTypes = new Datatype[n_orders * n_signs * (n_classes + 8)]; //INT and ENUM have 4 sizes
+        baseTypes = new Datatype[n_orders * n_signs * (n_classes + 16)]; //INT, ENUM, BITFIELD, OPAQUE have 4 sizes
         int counter = 0;
         for (int i = 0; i < n_classes; i++) {
             for (int j = 0; j < n_orders; j++) {
@@ -148,6 +164,8 @@ public class DatatypeTest {
                     switch (classes[i]) {
                     case Datatype.CLASS_INTEGER:
                     case Datatype.CLASS_ENUM:
+                    case Datatype.CLASS_BITFIELD:
+                    case Datatype.CLASS_OPAQUE:
                         n_sizes = 4;
                         break;
                     case Datatype.CLASS_FLOAT:
@@ -201,6 +219,8 @@ public class DatatypeTest {
                     switch (classes[i]) {
                     case Datatype.CLASS_INTEGER:
                     case Datatype.CLASS_ENUM:
+                    case Datatype.CLASS_BITFIELD:
+                    case Datatype.CLASS_OPAQUE:
                         n_sizes = 4;
                         break;
                     case Datatype.CLASS_FLOAT:
@@ -237,6 +257,8 @@ public class DatatypeTest {
                     switch (classes[i]) {
                     case Datatype.CLASS_INTEGER:
                     case Datatype.CLASS_ENUM:
+                    case Datatype.CLASS_BITFIELD:
+                    case Datatype.CLASS_OPAQUE:
                         n_sizes = 4;
                         break;
                     case Datatype.CLASS_FLOAT:
@@ -273,6 +295,8 @@ public class DatatypeTest {
                     switch (classes[i]) {
                     case Datatype.CLASS_INTEGER:
                     case Datatype.CLASS_ENUM:
+                    case Datatype.CLASS_BITFIELD:
+                    case Datatype.CLASS_OPAQUE:
                         n_sizes = 4;
                         break;
                     case Datatype.CLASS_FLOAT:
@@ -309,6 +333,8 @@ public class DatatypeTest {
                     switch (classes[i]) {
                     case Datatype.CLASS_INTEGER:
                     case Datatype.CLASS_ENUM:
+                    case Datatype.CLASS_BITFIELD:
+                    case Datatype.CLASS_OPAQUE:
                         n_sizes = 4;
                         break;
                     case Datatype.CLASS_FLOAT:
@@ -373,6 +399,8 @@ public class DatatypeTest {
                     switch (classes[i]) {
                     case Datatype.CLASS_INTEGER:
                     case Datatype.CLASS_ENUM:
+                    case Datatype.CLASS_BITFIELD:
+                    case Datatype.CLASS_OPAQUE:
                        n_sizes = 4;
                         break;
                     case Datatype.CLASS_FLOAT:
@@ -411,6 +439,8 @@ public class DatatypeTest {
                     switch (classes[i]) {
                     case Datatype.CLASS_INTEGER:
                     case Datatype.CLASS_ENUM:
+                    case Datatype.CLASS_BITFIELD:
+                    case Datatype.CLASS_OPAQUE:
                         n_sizes = 4;
                         break;
                     case Datatype.CLASS_FLOAT:
@@ -426,7 +456,7 @@ public class DatatypeTest {
                     for (int l = 0; l < n_sizes; l++) {
                         boolean isSigned = baseTypes[counter++].isUnsigned();
                         if (isSigned && (signs[k] != Datatype.SIGN_NONE)) {
-                            fail("isUnsigned Failed.");
+                            fail("isUnsigned Failed for size "+l+" ["+i+","+j+","+k+"].");
                         }
                     }
                 }

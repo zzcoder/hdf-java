@@ -185,8 +185,8 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Aread
     if (status < 0) {
         ENVPTR->ReleaseByteArrayElements(ENVPAR buf,byteP,JNI_ABORT);
         h5libraryError(env);
-    } else  {
-
+    }
+    else  {
         ENVPTR->ReleaseByteArrayElements(ENVPAR buf,byteP,0);
     }
 

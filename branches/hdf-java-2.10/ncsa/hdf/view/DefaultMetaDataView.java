@@ -892,6 +892,7 @@ public class DefaultMetaDataView extends JDialog implements ActionListener, Meta
         panel.add(topPanel, BorderLayout.NORTH);
 
         List<?> attrList = null;
+        log.trace("createAttributePanel: start");
 
         try {
             attrList = hObject.getMetadata();
@@ -902,6 +903,7 @@ public class DefaultMetaDataView extends JDialog implements ActionListener, Meta
         if (attrList != null) {
             numAttributes = attrList.size();
         }
+        log.trace("createAttributePanel:  isH5={} numAttributes={}", isH5, numAttributes);
 
         String[] columnNames = { "Name", "Value", "Type", "Array Size" };
         attrTableModel = new DefaultTableModel(columnNames, numAttributes);
@@ -979,6 +981,7 @@ public class DefaultMetaDataView extends JDialog implements ActionListener, Meta
         panel.add(splitPane, BorderLayout.CENTER);
 
         if (attrList == null) {
+            log.trace("createAttributePanel:  attrList == null");
             return panel;
         }
 
@@ -988,10 +991,8 @@ public class DefaultMetaDataView extends JDialog implements ActionListener, Meta
         for (int i = 0; i < numAttributes; i++) {
             attr = (Attribute) attrList.get(i);
             name = attr.getName();
-
-            // boolean isUnsigned = false;
             type = attr.getType().getDatatypeDescription();
-            // isUnsigned = attr.getType().isUnsigned();
+            log.trace("createAttributePanel:  attr[{}] is {} as {}", i, name, type);
 
             if (attr.isScalar()) {
                 size = "Scalar";
@@ -1016,6 +1017,7 @@ public class DefaultMetaDataView extends JDialog implements ActionListener, Meta
             attrTable.setValueAt(size, i, 3);
         } // for (int i=0; i<n; i++)
 
+        log.trace("createAttributePanel: finish");
         return panel;
     }
 
@@ -1156,7 +1158,7 @@ public class DefaultMetaDataView extends JDialog implements ActionListener, Meta
                 NT = cName.charAt(cIndex + 1);
             }
             boolean isUnsigned = attr.isUnsigned();
-    		log.debug("updateAttributeValue:start array_length={} cName={} NT={} isUnsigned={}", array_length, cName, NT, isUnsigned);
+            log.trace("updateAttributeValue:start array_length={} cName={} NT={} isUnsigned={}", array_length, cName, NT, isUnsigned);
 
             double d = 0;
             String theToken = null;

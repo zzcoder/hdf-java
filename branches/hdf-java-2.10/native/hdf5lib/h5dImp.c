@@ -1405,7 +1405,7 @@ herr_t H5DreadVL_notstr (JNIEnv *env, hid_t did, hid_t tid, hid_t mem_sid,
     status = H5Dread(did, tid, mem_sid, file_sid, xfer_plist_id, rdata);
 
     if (status < 0) {
-        H5Dvlen_reclaim(tid, mem_sid, H5P_DEFAULT, rdata);
+        H5Dvlen_reclaim(tid, mem_sid, xfer_plist_id, rdata);
         free(rdata);
         h5JNIFatalError(env, "H5DreadVL: failed to read data");
         return -1;
@@ -1422,7 +1422,7 @@ herr_t H5DreadVL_notstr (JNIEnv *env, hid_t did, hid_t tid, hid_t mem_sid,
     h5str_new(&h5str, 4 * size);
 
     if (h5str.s == NULL) {
-        H5Dvlen_reclaim(tid, mem_sid, H5P_DEFAULT, rdata);
+        H5Dvlen_reclaim(tid, mem_sid, xfer_plist_id, rdata);
         free(rdata);
         h5JNIFatalError(env, "H5DreadVL:  failed to allocate strng buf");
         return -1;
@@ -1434,9 +1434,9 @@ herr_t H5DreadVL_notstr (JNIEnv *env, hid_t did, hid_t tid, hid_t mem_sid,
         jstr = ENVPTR->NewStringUTF(ENVPAR h5str.s);
         ENVPTR->SetObjectArrayElement(ENVPAR buf, i, jstr);
     }
-
     h5str_free(&h5str);
-    H5Dvlen_reclaim(tid, mem_sid, H5P_DEFAULT, rdata);
+
+    H5Dvlen_reclaim(tid, mem_sid, xfer_plist_id, rdata);
     free(rdata);
 
     return status;
@@ -1462,7 +1462,7 @@ herr_t H5DreadVL_str (JNIEnv *env, hid_t did, hid_t tid, hid_t mem_sid, hid_t
     status = H5Dread(did, tid, mem_sid, file_sid, xfer_plist_id, strs);
 
     if (status < 0) {
-        H5Dvlen_reclaim(tid, mem_sid, H5P_DEFAULT, strs);
+        H5Dvlen_reclaim(tid, mem_sid, xfer_plist_id, strs);
         free(strs);
         h5JNIFatalError(env, "H5DreadVL: failed to read variable length strings");
         return -1;
@@ -1479,7 +1479,7 @@ herr_t H5DreadVL_str (JNIEnv *env, hid_t did, hid_t tid, hid_t mem_sid, hid_t
     H5Dvlen_reclaim() may crash on Windows because the Java GC will not be able to collect
     free space in time. Instead, use "free(strs[i])" above to free individual strings
     after it is done.
-    H5Dvlen_reclaim(tid, mem_sid, H5P_DEFAULT, strs);
+    H5Dvlen_reclaim(tid, mem_sid, xfer_plist_id, strs);
     */
 
     free(strs);
