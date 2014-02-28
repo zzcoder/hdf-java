@@ -66,6 +66,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Vector;
+
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.CellEditor;
@@ -109,6 +110,7 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
+
 import ncsa.hdf.object.CompoundDS;
 import ncsa.hdf.object.Dataset;
 import ncsa.hdf.object.Datatype;
@@ -116,6 +118,7 @@ import ncsa.hdf.object.FileFormat;
 import ncsa.hdf.object.Group;
 import ncsa.hdf.object.HObject;
 import ncsa.hdf.object.ScalarDS;
+import ncsa.hdf.view.ViewProperties;
 import ncsa.hdf.view.ViewProperties.BITMASK_OP;
 
 /**
@@ -1859,7 +1862,9 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
                     String strVal = null;
 
                     if (isRegRef) {
-                        if (val != null && ((String) val).compareTo("NULL") != 0) {
+                        boolean displayValues = ViewProperties.showRegRefValues();
+                        log.trace("JTable.ScalarDS isCellSelected displayValues={}", displayValues);
+                        if (displayValues && val != null && ((String) val).compareTo("NULL") != 0) {
                             String reg = (String) val;
                             boolean isPointSelection = (reg.indexOf('-') <= 0);
 
