@@ -69,7 +69,7 @@ public class UserOptionsDialog extends JDialog implements ActionListener, ItemLi
     private JComboBox             choiceTreeView, choiceMetaDataView, choiceTextView, choiceTableView, choiceImageView,
     choicePaletteView;
     private String                rootDir, workDir;
-    private JCheckBox             checkCurrentUserDir, checkAutoContrast, checkConvertEnum, checkShowValues;
+    private JCheckBox             checkCurrentUserDir, checkAutoContrast, checkConvertEnum, checkShowValues, checkShowRegRefValues;
     private JButton               currentDirButton;
     private JRadioButton          checkReadOnly, checkIndexType, checkIndexOrder, checkIndexNative, checkLibVersion,
     							  checkReadAll;
@@ -380,6 +380,9 @@ public class UserOptionsDialog extends JDialog implements ActionListener, ItemLi
         checkConvertEnum.setSelected(ViewProperties.isConvertEnum());
         p00.add(checkConvertEnum, BorderLayout.CENTER);
         p0.add(p00);
+
+        p0.add(checkShowRegRefValues = new JCheckBox("Show RegRef Values"));
+        checkShowRegRefValues.setSelected(ViewProperties.showRegRefValues());
 
         p00 = new JPanel();
         p00.setLayout(new BorderLayout());
@@ -951,6 +954,7 @@ public class UserOptionsDialog extends JDialog implements ActionListener, ItemLi
         ViewProperties.setAutoContrast(checkAutoContrast.isSelected());
         ViewProperties.setShowImageValue(checkShowValues.isSelected());
         ViewProperties.setConvertEnum(checkConvertEnum.isSelected());
+        ViewProperties.setShowRegRefValue(checkShowRegRefValues.isSelected());
 
         if (indexBaseChoice.getSelectedIndex() == 0)
             ViewProperties.setIndexBase1(false);
