@@ -504,7 +504,6 @@ IF (HDFJAVA_PACK_JREFILE)
     INSTALL (
         FILES "C:/Program Files/Java/jre7"
         DESTINATION ${HJAVA_INSTALL_BIN_DIR}
-        USE_SOURCE_PERMISSIONS 
         COMPONENT libraries
     )
   ENDIF (WIN32)
