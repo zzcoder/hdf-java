@@ -2006,6 +2006,7 @@ public class H5File extends FileFormat {
         String ppath = null;
         DefaultMutableTreeNode pnode = (DefaultMutableTreeNode) parentNode;
         int gid = -1;
+        log.trace("depth_first: start");
 
         H5Group pgroup = (H5Group) (pnode.getUserObject());
         ppath = pgroup.getPath();
@@ -2059,6 +2060,7 @@ public class H5File extends FileFormat {
         for (int i = 0; i < nelems; i++) {
             obj_name = objNames[i];
             obj_type = objTypes[i];
+            log.trace("depth_first: obj_name={}, obj_type={}", obj_name, obj_type);
             long oid[] = { objRefs[i], fNos[i] };
 
             if (obj_name == null) {
@@ -2198,6 +2200,7 @@ public class H5File extends FileFormat {
 
         pgroup.close(gid);
 
+        log.trace("depth_first: finish");
         return nTotal;
     } // private depth_first()
 
@@ -2208,6 +2211,7 @@ public class H5File extends FileFormat {
         String ppath = null;
         DefaultMutableTreeNode pnode = (DefaultMutableTreeNode) parentNode;
         int gid = -1;
+        log.trace("depth_first_old: start");
 
         H5Group pgroup = (H5Group) (pnode.getUserObject());
         ppath = pgroup.getPath();
@@ -2268,6 +2272,7 @@ public class H5File extends FileFormat {
         for (int i = startIndex; i < endIndex; i++) {
             obj_name = objNames[i];
             obj_type = objTypes[i];
+            log.trace("depth_first_old: obj_name={}, obj_type={}", obj_name, obj_type);
             long oid[] = { objRefs[i], fNos[i] };
 
             if (obj_name == null) {
@@ -2395,6 +2400,7 @@ public class H5File extends FileFormat {
         } // for ( i = 0; i < nelems; i++)
 
         pgroup.close(gid);
+        log.trace("depth_first_old: finish");
     } // private depth_first()
 
     private TreeNode copyDataset(Dataset srcDataset, H5Group pgroup, String dstName) throws Exception {

@@ -3495,7 +3495,11 @@ public synchronized static int H5Gget_obj_info_full(int loc_id, String name,
     if (indx_order < 0)
         indx_order = HDF5Constants.H5_ITER_INC;
     
-    return H5Gget_obj_info_full(loc_id, name, oname, otype, ltype, fno, ref, oname.length, indx_type, indx_order);
+    log.trace("H5Gget_obj_info_full: oname_len={}", oname.length);
+    int status = H5Gget_obj_info_full(loc_id, name, oname, otype, ltype, fno, ref, oname.length, indx_type, indx_order);
+    for (int indx=0; indx<oname.length; indx++)
+        log.trace("H5Gget_obj_info_full: oname={}", oname[indx]);
+    return status;
 }
 
 private synchronized static native int H5Gget_obj_info_full(int loc_id,
