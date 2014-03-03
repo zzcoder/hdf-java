@@ -140,6 +140,8 @@ public class ViewProperties extends Properties {
 
     private static boolean          showImageValues        = false;
 
+    private static boolean          showRegRefValues       = false;
+
     /**
      * flag to indicate if default open file is read only. By default, use
      * read/write.
@@ -1030,6 +1032,11 @@ public class ViewProperties extends Properties {
             convertEnum = ("true".equalsIgnoreCase(propVal));
         }
 
+        propVal = (String) get("regref.showvalues");
+        if (propVal != null) {
+            showRegRefValues = ("true".equalsIgnoreCase(propVal));
+        }
+
         propVal = (String) get("index.base1");
         if (propVal != null) {
             isIndexBase1 = ("true".equalsIgnoreCase(propVal));
@@ -1246,6 +1253,10 @@ public class ViewProperties extends Properties {
         }
 
         put("enum.conversion", String.valueOf(convertEnum));
+        if (showRegRefValues)
+            put("regref.showvalues", "true");
+        else
+            put("regref.showvalues", "false");
         put("index.base1", String.valueOf(isIndexBase1));
 
         // save the list of most recent files
@@ -1647,7 +1658,16 @@ public class ViewProperties extends Properties {
     }
 
     /**
-     * @return the convertEnum
+     * Returns true if "show regref values" is set.
+     * 
+     * @return true if "show regref values" is set; otherwise, returns false.
+     */
+    public static boolean showRegRefValues() {
+        return showRegRefValues;
+    }
+
+    /**
+     * @return the isIndexBase1
      */
     public static boolean isIndexBase1() {
         return isIndexBase1;
@@ -1662,8 +1682,20 @@ public class ViewProperties extends Properties {
     }
 
     /**
-     * @param convertEnum
-     *            the convertEnum to set
+     * Set the flag to indicate if "show RegRef values" is set.
+     * 
+     * @param b
+     *            the flag to indicate if if "show RegRef values" is set.
+     */
+    public static void setShowRegRefValue(boolean b) {
+        showRegRefValues = b;
+    }
+
+    /**
+     * Set the flag to indicate if IndexBase should start at 1.
+     * 
+     * @param b
+     *            the flag to indicate if IndexBase should start at 1.
      */
     public static void setIndexBase1(boolean b) {
         ViewProperties.isIndexBase1 = b;
