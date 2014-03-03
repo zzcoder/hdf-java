@@ -145,7 +145,7 @@ public class UserOptionsDialog extends JDialog implements ActionListener, ItemLi
         contentPane.setBorder(BorderFactory.createEmptyBorder(15, 5, 5, 5));
 
         int w = 700 + (ViewProperties.getFontSize() - 12) * 15;
-        int h = 550 + (ViewProperties.getFontSize() - 12) * 15;
+        int h = 550 + (ViewProperties.getFontSize() - 12) * 16;
         contentPane.setPreferredSize(new Dimension(w, h));
 
         JTabbedPane tabbedPane = new JTabbedPane();
@@ -366,7 +366,7 @@ public class UserOptionsDialog extends JDialog implements ActionListener, ItemLi
         centerP.add(p0, c);
 
         p0 = new JPanel();
-        p0.setLayout(new GridLayout(1, 3, 20, 8));
+        p0.setLayout(new GridLayout(2, 3, 20, 4));
 
         p00 = new JPanel();
         p00.setLayout(new BorderLayout());
@@ -379,10 +379,11 @@ public class UserOptionsDialog extends JDialog implements ActionListener, ItemLi
         checkConvertEnum = new JCheckBox("Convert Enum");
         checkConvertEnum.setSelected(ViewProperties.isConvertEnum());
         p00.add(checkConvertEnum, BorderLayout.CENTER);
-        p0.add(p00);
+        p0.add(p00, BorderLayout.NORTH);
 
-        p0.add(checkShowRegRefValues = new JCheckBox("Show RegRef Values"));
+        checkShowRegRefValues = new JCheckBox("Show RegRef Values");
         checkShowRegRefValues.setSelected(ViewProperties.showRegRefValues());
+        p0.add(checkShowRegRefValues, BorderLayout.NORTH);
 
         p00 = new JPanel();
         p00.setLayout(new BorderLayout());
@@ -396,13 +397,13 @@ public class UserOptionsDialog extends JDialog implements ActionListener, ItemLi
 
         p00.add(new JLabel("Index Base: "), BorderLayout.WEST);
         p00.add(indexBaseChoice, BorderLayout.CENTER);
-        p0.add(p00);
+        p0.add(p00, BorderLayout.SOUTH);
 
         p00 = new JPanel();
         p00.setLayout(new BorderLayout());
         p00.add(new JLabel("Data Delimiter:"), BorderLayout.WEST);
         p00.add(delimiterChoice, BorderLayout.CENTER);
-        p0.add(p00);
+        p0.add(p00, BorderLayout.SOUTH);
 
         tborder = new TitledBorder("Data");
         tborder.setTitleColor(Color.darkGray);
