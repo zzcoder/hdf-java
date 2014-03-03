@@ -345,7 +345,7 @@ IF (HDFJAVA_PACK_EXAMPLES)
       DESTINATION ${HJAVA_INSTALL_DATA_DIR}
       COMPONENT docs
   )
-  IF (${HDFJAVA_EXAMPLES_COMPRESSED})
+  IF (NOT ${HDFJAVA_EXAMPLES_COMPRESSED} STREQUAL "")
     IF (EXISTS "${HDFJAVA_EXAMPLES_COMPRESSED_DIR}/${HDFJAVA_EXAMPLES_COMPRESSED}")
       INSTALL (
           FILES
@@ -355,7 +355,7 @@ IF (HDFJAVA_PACK_EXAMPLES)
           COMPONENT docs
       )
     ENDIF (EXISTS "${HDFJAVA_EXAMPLES_COMPRESSED_DIR}/${HDFJAVA_EXAMPLES_COMPRESSED}")
-  ENDIF (${HDFJAVA_EXAMPLES_COMPRESSED})
+  ENDIF (NOT ${HDFJAVA_EXAMPLES_COMPRESSED} STREQUAL "")
 ENDIF (HDFJAVA_PACK_EXAMPLES)
 
 #SET (CREATE_JAVADOCS "TRUE")
@@ -399,7 +399,7 @@ IF (HDFJAVA_PACK_SAMPLES)
   )
 ENDIF (HDFJAVA_PACK_SAMPLES)
 
-IF (${HDFJAVA_USERSGUIDE_COMPRESSED})
+IF (NOT ${HDFJAVA_USERSGUIDE_COMPRESSED} STREQUAL "")
   IF (EXISTS "${HDFJAVA_USERSGUIDE_COMPRESSED_DIR}/${HDFJAVA_USERSGUIDE_COMPRESSED}")
     INSTALL (
         FILES
@@ -408,15 +408,7 @@ IF (${HDFJAVA_USERSGUIDE_COMPRESSED})
         COMPONENT docs
     )
   ENDIF (EXISTS "${HDFJAVA_USERSGUIDE_COMPRESSED_DIR}/${HDFJAVA_USERSGUIDE_COMPRESSED}")
-ENDIF (${HDFJAVA_USERSGUIDE_COMPRESSED})
-
-#INSTALL (
-#    DIRECTORY ${HDFJAVA_SOURCE_DIR}/docs/hdfview/UsersGuide
-#    DESTINATION ${HJAVA_INSTALL_DATA_DIR}
-#    USE_SOURCE_PERMISSIONS 
-#    COMPONENT docs
-#    PATTERN ".svn" EXCLUDE
-#)
+ENDIF (NOT ${HDFJAVA_USERSGUIDE_COMPRESSED} STREQUAL "")
 
 #-----------------------------------------------------------------------------
 # Add Target(s) to CMake Install for import into other projects
@@ -498,16 +490,16 @@ ENDIF (NOT HDFJAVA_EXTERNALLY_CONFIGURED)
 #-----------------------------------------------------------------------------
 # Option to include jre
 #-----------------------------------------------------------------------------
-OPTION (HDFJAVA_PACK_JREFILE  "Package a JRE installer file" OFF)
-IF (HDFJAVA_PACK_JREFILE)
+OPTION (HDFJAVA_PACK_JRE  "Package a JRE installer file" OFF)
+IF (HDFJAVA_PACK_JRE)
   IF (WIN32)
     INSTALL (
-        FILES "C:/Program Files/Java/jre7"
+        FILES \"C:/Program Files/Java/jre7\"
         DESTINATION ${HJAVA_INSTALL_BIN_DIR}
         COMPONENT libraries
     )
   ENDIF (WIN32)
-ENDIF (HDFJAVA_PACK_JREFILE)
+ENDIF (HDFJAVA_PACK_JRE)
 
 #-----------------------------------------------------------------------------
 # Configure the README.txt file for the binary package
