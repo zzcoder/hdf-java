@@ -494,9 +494,9 @@ OPTION (HDFJAVA_PACK_JRE  "Package a JRE installer file" OFF)
 IF (HDFJAVA_PACK_JRE)
   IF (WIN32)
     INSTALL (
-        FILES \"C:/Program Files/Java/jre7\"
+        DIRECTORY "C:/Program Files/Java/jre7"
         DESTINATION ${HJAVA_INSTALL_BIN_DIR}
-        COMPONENT libraries
+        USE_SOURCE_PERMISSIONS
     )
   ENDIF (WIN32)
 ENDIF (HDFJAVA_PACK_JRE)
