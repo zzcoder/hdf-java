@@ -519,7 +519,7 @@ HDF_PACKAGE_EXTLIBS            "CPACK - include external libraries"             
 HDF_USE_FOLDERS                "Enable folder grouping of projects in IDEs."              OFF
 HDF_ENABLE_COVERAGE            "Enable code coverage for Libraries and Programs"          OFF
 HDFJAVA_PACK_SAMPLES           "Package the HDFJAVA File Samples"                         OFF
-HDFJAVA_PACK_JREFILE           "Package a JRE installer file"                             OFF
+HDFJAVA_PACK_JRE           "Package a JRE installer file"                             OFF
 
 ---------------- External Library Options ---------------------
 HDF_ALLOW_EXTERNAL_SUPPORT      "Allow External Library Building"                         "NO"
