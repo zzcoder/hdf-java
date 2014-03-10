@@ -1729,32 +1729,39 @@ public synchronized static int H5Dread(int dataset_id, int mem_type_id,
     String cname = dataClass.getName();
     is1D = (cname.lastIndexOf('[') == cname.indexOf('['));
     char dname = cname.charAt(cname.lastIndexOf("[") + 1);
+    log.trace("H5Dread: cname={} is1D={} dname={}", cname, is1D, dname);
 
     if (is1D && (dname == 'B')) {
+        log.trace("H5Dread_dname_B");
         status = H5Dread(dataset_id, mem_type_id, mem_space_id,
                 file_space_id, xfer_plist_id, (byte[]) obj,
                 isCriticalPinning);
     }
     else if (is1D && (dname == 'S')) {
+        log.trace("H5Dread_dname_S");
         status = H5Dread_short(dataset_id, mem_type_id, mem_space_id,
                 file_space_id, xfer_plist_id, (short[]) obj,
                 isCriticalPinning);
     }
     else if (is1D && (dname == 'I')) {
+        log.trace("H5Dread_dname_I");
         status = H5Dread_int(dataset_id, mem_type_id, mem_space_id,
                 file_space_id, xfer_plist_id, (int[]) obj,
                 isCriticalPinning);
     }
     else if (is1D && (dname == 'J')) {
+        log.trace("H5Dread_dname_J");
         status = H5Dread_long(dataset_id, mem_type_id, mem_space_id,
                 file_space_id, xfer_plist_id, (long[]) obj);
     }
     else if (is1D && (dname == 'F')) {
+        log.trace("H5Dread_dname_F");
         status = H5Dread_float(dataset_id, mem_type_id, mem_space_id,
                 file_space_id, xfer_plist_id, (float[]) obj,
                 isCriticalPinning);
     }
     else if (is1D && (dname == 'D')) {
+        log.trace("H5Dread_dname_D");
         status = H5Dread_double(dataset_id, mem_type_id, mem_space_id,
                 file_space_id, xfer_plist_id, (double[]) obj,
                 isCriticalPinning);
@@ -1765,6 +1772,7 @@ public synchronized static int H5Dread(int dataset_id, int mem_type_id,
                 file_space_id, xfer_plist_id, (String[]) obj);
     }
     else if (is1D && (dataClass.getComponentType() == String.class)) {
+        log.trace("H5Dread_else");
         // Rosetta Biosoftware - add support for
         // Strings (variable length)
         if (H5.H5Tis_variable_str(mem_type_id)) {
@@ -1781,6 +1789,7 @@ public synchronized static int H5Dread(int dataset_id, int mem_type_id,
         // into a Java Array
         HDFArray theArray = new HDFArray(obj);
         byte[] buf = theArray.emptyBytes();
+        log.trace("H5Dread_else");
 
         // will raise exception if read fails
         status = H5Dread(dataset_id, mem_type_id, mem_space_id,

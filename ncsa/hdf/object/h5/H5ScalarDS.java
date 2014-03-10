@@ -894,7 +894,7 @@ public class H5ScalarDS extends ScalarDS {
                 }
 
                 tid = H5.H5Dget_type(did);
-                log.trace("H5ScalarDS read: isNativeDatatype", isNativeDatatype);
+                log.trace("H5ScalarDS read: isNativeDatatype={}", isNativeDatatype);
                 if (!isNativeDatatype) {
                     int tmptid = -1;
                     try {
@@ -913,7 +913,8 @@ public class H5ScalarDS extends ScalarDS {
 
                 boolean isREF = (H5.H5Tequal(tid, HDF5Constants.H5T_STD_REF_OBJ));
 
-                if ((originalBuf == null) || isText || isREF || ((originalBuf != null) && (lsize[0] != nPoints))) {
+                log.trace("H5ScalarDS read: originalBuf={} isText={} isREF={} lsize[0]={} nPoints={}", originalBuf, isText, isREF, lsize[0], nPoints);
+                if ((originalBuf == null) || isEnum || isText || isREF || ((originalBuf != null) && (lsize[0] != nPoints))) {
                     try {
                         theData = H5Datatype.allocateArray(tid, (int) lsize[0]);
                     }
@@ -932,17 +933,25 @@ public class H5ScalarDS extends ScalarDS {
                         H5.H5DreadVL(did, tid, spaceIDs[0], spaceIDs[1], HDF5Constants.H5P_DEFAULT, (Object[]) theData);
                     }
                     else {
-                        log.trace("H5ScalarDS read: H5Dread");
+                        log.trace("H5ScalarDS read: H5Dread did={} spaceIDs[0]={} spaceIDs[1]={}", did, spaceIDs[0], spaceIDs[1]);
                         H5.H5Dread(did, tid, spaceIDs[0], spaceIDs[1], HDF5Constants.H5P_DEFAULT, theData);
 
-                        if (isText && convertByteToString) {
-                            theData = byteToString((byte[]) theData, H5.H5Tget_size(tid));
+                        try {
+                            if (isText && convertByteToString) {
+                                log.trace("H5ScalarDS read: H5Dread convertByteToString");
+                                theData = byteToString((byte[]) theData, H5.H5Tget_size(tid));
+                            }
+                            else if (isREF) {
+                                log.trace("H5ScalarDS read: H5Dread isREF");
+                                theData = HDFNativeData.byteToLong((byte[]) theData);
+                            }
+                            else if (isEnum && isEnumConverted()) {
+                                log.trace("H5ScalarDS read: H5Dread isEnum theData={}", theData);
+                                theData = H5Datatype.convertEnumValueToName(tid, theData, null);
+                            }
                         }
-                        else if (isREF) {
-                            theData = HDFNativeData.byteToLong((byte[]) theData);
-                        }
-                        else if (isEnum && isEnumConverted()) {
-                            theData = H5Datatype.convertEnumValueToName(tid, theData, null);
+                        catch (Exception ex) {
+                            log.debug("H5ScalarDS read: convert data:", ex);
                         }
                     }
                 } // if (theData != null)
