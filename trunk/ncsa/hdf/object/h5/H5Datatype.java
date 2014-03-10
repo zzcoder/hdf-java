@@ -243,6 +243,7 @@ public class H5Datatype extends Datatype {
     public static final String[] convertEnumValueToName(int tid, Object inValues, String[] outNames)
             throws HDF5Exception {
         int inSize = 0;
+        log.trace("convertEnumValueToName start");
 
         if ((inValues == null) || ((inSize = Array.getLength(inValues)) <= 0)
                 || ((outNames != null) && (inSize != Array.getLength(outNames)))) {
@@ -254,6 +255,7 @@ public class H5Datatype extends Datatype {
             return null;
         }
 
+        log.trace("convertEnumValueToName inSize={} nMembers={}", inSize, nMembers);
         if (outNames == null) {
             outNames = new String[inSize];
         }
@@ -274,6 +276,7 @@ public class H5Datatype extends Datatype {
             names[i] = H5.H5Tget_member_name(tid, i);
             H5.H5Tget_member_value(tid, i, theValue);
             values[i] = theValue[0];
+            log.trace("convertEnumValueToName: extract member[{}] names[i]={} values[i]={}", i, names[i], values[i]);
         }
 
         int val = -1;
@@ -289,6 +292,7 @@ public class H5Datatype extends Datatype {
             }
         }
 
+        log.trace("convertEnumValueToName finish");
         return outNames;
     }
 
@@ -312,6 +316,7 @@ public class H5Datatype extends Datatype {
      */
     public static final int[] convertEnumNameToValue(int tid, String[] in, int[] out) throws HDF5Exception {
         int size = 0;
+        log.trace("convertEnumNameToValue start");
 
         if ((in == null) || ((size = Array.getLength(in)) <= 0) || ((out != null) && (size != Array.getLength(out)))) {
             return null;
@@ -356,6 +361,7 @@ public class H5Datatype extends Datatype {
             }
         }
 
+        log.trace("convertEnumNameToValue finish");
         return out;
     }
 
