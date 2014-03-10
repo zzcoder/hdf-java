@@ -1039,11 +1039,15 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
 
                 }
 
-                int len = Array.getLength(theData);
+                int[] selectedRows = table.getSelectedRows();
+                if (selectedRows == null || selectedRows.length <= 0) {
+                    return;
+                }
+                int len = Array.getLength(selectedRows);
                 for (int i = 0; i < len; i++) {
                     if (isRegRef)
-                        showRegRefData((String) Array.get(theData, i));
-                    else if (isObjRef) showObjRefData(Array.getLong(theData, i));
+                        showRegRefData((String) Array.get(theData, selectedRows[i]));
+                    else if (isObjRef) showObjRefData(Array.getLong(theData, selectedRows[i]));
                 }
             }
         }
@@ -1747,17 +1751,15 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
                     int index = column * rowCount + row;
 
                     if (dataset.getRank() > 1) {
+                        log.trace("createTable:AbstractTableModel:getValueAt rank={} isDataTransposed={} isNaturalOrder={}", dataset.getRank(), isDataTransposed, isNaturalOrder);
                         if ((isDataTransposed && isNaturalOrder) || (!isDataTransposed && !isNaturalOrder))
                             index = column * rowCount + row;
                         else
                             index = row * colCount + column;
                     }
-                    theValue = Array.get(dataValue, index);
                     log.trace("createTable:AbstractTableModel:getValueAt index={} isStr={} isUINT64={}", index, isStr, isUINT64);
+                    theValue = Array.get(dataValue, index);
 
-                    // if (isRegRef)
-                    // showRegRefData((String) theValue);
-                    // else
                     if (isStr) return theValue;
 
                     if (isUINT64) {
@@ -4200,14 +4202,17 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
 
             }
 
-            int len = Array.getLength(theData);
+            int[] selectedRows = table.getSelectedRows();
+            if (selectedRows == null || selectedRows.length <= 0) {
+                return;
+            }
+            int len = Array.getLength(selectedRows);
             for (int i = 0; i < len; i++) {
                 if (isRegRef)
-                    showRegRefData((String) Array.get(theData, i));
-                else if (isObjRef) showObjRefData(Array.getLong(theData, i));
+                    showRegRefData((String) Array.get(theData, selectedRows[i]));
+                else if (isObjRef) showObjRefData(Array.getLong(theData, selectedRows[i]));
             }
         }
-
     }
 
     @Override
