@@ -1751,13 +1751,14 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
                     int index = column * rowCount + row;
 
                     if (dataset.getRank() > 1) {
+                        log.trace("createTable:AbstractTableModel:getValueAt rank={} isDataTransposed={} isNaturalOrder={}", dataset.getRank(), isDataTransposed, isNaturalOrder);
                         if ((isDataTransposed && isNaturalOrder) || (!isDataTransposed && !isNaturalOrder))
                             index = column * rowCount + row;
                         else
                             index = row * colCount + column;
                     }
-                    theValue = Array.get(dataValue, index);
                     log.trace("createTable:AbstractTableModel:getValueAt index={} isStr={} isUINT64={}", index, isStr, isUINT64);
+                    theValue = Array.get(dataValue, index);
 
                     if (isStr) return theValue;
 
