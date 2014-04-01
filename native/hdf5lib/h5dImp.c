@@ -659,12 +659,12 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dvlen_1reclaim
     jboolean isCopy;
 
     if ( buf == NULL ) {
-        h5nullArgument( env, "H5Dwrite:  buf is NULL");
+        h5nullArgument( env, "H5Dvlen_reclaim:  buf is NULL");
         return -1;
     }
     byteP = ENVPTR->GetByteArrayElements(ENVPAR buf, &isCopy);
     if (byteP == NULL) {
-        h5JNIFatalError( env, "H5Dwrite:  buf not pinned");
+        h5JNIFatalError( env, "H5Dvlen_reclaim:  buf not pinned");
         return -1;
     }
 

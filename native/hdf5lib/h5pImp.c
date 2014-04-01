@@ -2440,6 +2440,8 @@ JNIEXPORT jstring JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1class_1name
     }
 
     j_str = ENVPTR->NewStringUTF(ENVPAR c_str);
+    H5free_memory(c_str);
+
     if (j_str == NULL) {
         h5JNIFatalError(env,"H5Pget_class_name: return string failed");
     }
