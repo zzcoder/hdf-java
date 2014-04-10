@@ -750,24 +750,24 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dread_1short
     /* recursive detect any vlen data values in type (compound, array ...) */
     data_class = H5Tdetect_class(mem_type_id, H5T_VLEN);
     if((data_class == 1) || (data_class < 0)) {
-        h5badArgument( env, "H5Dread:  buf does not support variable length type");
+        h5badArgument( env, "H5Dread_short:  buf does not support variable length type");
         return -1;
     }
     /* recursive detect any vlen string in type (compound, array ...) */
     data_class = H5Tdetect_variable_str(mem_type_id);
     if((data_class == 1) || (data_class < 0)) {
-        h5badArgument( env, "H5Dread:  buf does not support variable length string type");
+        h5badArgument( env, "H5Dread_short:  buf does not support variable length string type");
         return -1;
     }
 
     if (buf == NULL) {
-        h5nullArgument(env, "H5Dread:  buf is NULL");
+        h5nullArgument(env, "H5Dread_short:  buf is NULL");
         return -1;
     }
 
     PIN_SHORT_ARRAY();
     if (buffP == NULL) {
-        h5JNIFatalError(env, "H5Dread:  buf not pinned");
+        h5JNIFatalError(env, "H5Dread_short:  buf not pinned");
         return -1;
     }
 
@@ -802,24 +802,24 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dread_1int
     /* recursive detect any vlen data values in type (compound, array ...) */
     data_class = H5Tdetect_class(mem_type_id, H5T_VLEN);
     if((data_class == 1) || (data_class < 0)) {
-        h5badArgument( env, "H5Dread:  buf does not support variable length type");
+        h5badArgument( env, "H5Dread_int:  buf does not support variable length type");
         return -1;
     }
     /* recursive detect any vlen string in type (compound, array ...) */
     data_class = H5Tdetect_variable_str(mem_type_id);
     if((data_class == 1) || (data_class < 0)) {
-        h5badArgument( env, "H5Dread:  buf does not support variable length string type");
+        h5badArgument( env, "H5Dread_int:  buf does not support variable length string type");
         return -1;
     }
 
     if (buf == NULL) {
-        h5nullArgument(env, "H5Dread:  buf is NULL");
+        h5nullArgument(env, "H5Dread_int:  buf is NULL");
         return -1;
     }
 
     PIN_INT_ARRAY();
     if (buffP == NULL) {
-        h5JNIFatalError(env, "H5Dread:  buf not pinned");
+        h5JNIFatalError(env, "H5Dread_int:  buf not pinned");
         return -1;
     }
 
@@ -854,24 +854,24 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dread_1long
     /* recursive detect any vlen data values in type (compound, array ...) */
     data_class = H5Tdetect_class(mem_type_id, H5T_VLEN);
     if((data_class == 1) || (data_class < 0)) {
-        h5badArgument( env, "H5Dread:  buf does not support variable length type");
+        h5badArgument( env, "H5Dread_long:  buf does not support variable length type");
         return -1;
     }
     /* recursive detect any vlen string in type (compound, array ...) */
     data_class = H5Tdetect_variable_str(mem_type_id);
     if((data_class == 1) || (data_class < 0)) {
-        h5badArgument( env, "H5Dread:  buf does not support variable length string type");
+        h5badArgument( env, "H5Dread_long:  buf does not support variable length string type");
         return -1;
     }
 
     if (buf == NULL) {
-        h5nullArgument(env, "H5Dread:  buf is NULL");
+        h5nullArgument(env, "H5Dread_long:  buf is NULL");
         return -1;
     }
 
     PIN_LONG_ARRAY();
     if (buffP == NULL) {
-        h5JNIFatalError(env, "H5Dread:  buf not pinned");
+        h5JNIFatalError(env, "H5Dread_long:  buf not pinned");
         return -1;
     }
 
@@ -906,24 +906,24 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dread_1float
     /* recursive detect any vlen data values in type (compound, array ...) */
     data_class = H5Tdetect_class(mem_type_id, H5T_VLEN);
     if((data_class == 1) || (data_class < 0)) {
-        h5badArgument( env, "H5Dread:  buf does not support variable length type");
+        h5badArgument( env, "H5Dread_float:  buf does not support variable length type");
         return -1;
     }
     /* recursive detect any vlen string in type (compound, array ...) */
     data_class = H5Tdetect_variable_str(mem_type_id);
     if((data_class == 1) || (data_class < 0)) {
-        h5badArgument( env, "H5Dread:  buf does not support variable length string type");
+        h5badArgument( env, "H5Dread_float:  buf does not support variable length string type");
         return -1;
     }
 
     if (buf == NULL) {
-        h5nullArgument(env, "H5Dread:  buf is NULL");
+        h5nullArgument(env, "H5Dread_float:  buf is NULL");
         return -1;
     }
 
     PIN_FLOAT_ARRAY();
     if (buffP == NULL) {
-        h5JNIFatalError(env, "H5Dread:  buf not pinned");
+        h5JNIFatalError(env, "H5Dread_float:  buf not pinned");
         return -1;
     }
 
@@ -958,24 +958,24 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dread_1double
     /* recursive detect any vlen data values in type (compound, array ...) */
     data_class = H5Tdetect_class(mem_type_id, H5T_VLEN);
     if((data_class == 1) || (data_class < 0)) {
-        h5badArgument( env, "H5Dread:  buf does not support variable length type");
+        h5badArgument( env, "H5Dread_double:  buf does not support variable length type");
         return -1;
     }
     /* recursive detect any vlen string in type (compound, array ...) */
     data_class = H5Tdetect_variable_str(mem_type_id);
     if((data_class == 1) || (data_class < 0)) {
-        h5badArgument( env, "H5Dread:  buf does not support variable length string type");
+        h5badArgument( env, "H5Dread_double:  buf does not support variable length string type");
         return -1;
     }
 
     if (buf == NULL) {
-        h5nullArgument(env, "H5Dread:  buf is NULL");
+        h5nullArgument(env, "H5Dread_double:  buf is NULL");
         return -1;
     }
 
     PIN_DOUBLE_ARRAY();
     if (buffP == NULL) {
-        h5JNIFatalError(env, "H5Dread:  buf not pinned");
+        h5JNIFatalError(env, "H5Dread_double:  buf not pinned");
         return -1;
     }
     status = H5Dread((hid_t)dataset_id, (hid_t)mem_type_id, (hid_t)mem_space_id,
@@ -1012,13 +1012,13 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dread_1string
 
     c_buf = cstr = NULL;
     if (j_buf == NULL) {
-        h5nullArgument(env, "H5Dread:  buf is NULL");
+        h5nullArgument(env, "H5Dread_string:  buf is NULL");
         return -1;
     }
 
     n = ENVPTR->GetArrayLength(ENVPAR j_buf);
     if (n <= 0) {
-        h5nullArgument(env, "H5Dread:  buf length <=0");
+        h5nullArgument(env, "H5Dread_string:  buf length <=0");
         return -1;
     }
 
@@ -1086,13 +1086,13 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dwrite_1short
     jboolean isCopy;
 
     if (buf == NULL ) {
-        h5nullArgument(env, "H5Dwrite:  buf is NULL");
+        h5nullArgument(env, "H5Dwrite_short:  buf is NULL");
         return -1;
     }
 
     PIN_SHORT_ARRAY();
     if (buffP == NULL) {
-        h5JNIFatalError(env, "H5Dwrite:  buf not pinned");
+        h5JNIFatalError(env, "H5Dwrite_short:  buf not pinned");
         return -1;
     }
 
@@ -1122,13 +1122,13 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dwrite_1int
     jboolean isCopy;
 
     if (buf == NULL) {
-        h5nullArgument(env, "H5Dwrite:  buf is NULL");
+        h5nullArgument(env, "H5Dwrite_int:  buf is NULL");
         return -1;
     }
 
     PIN_INT_ARRAY();
     if (buffP == NULL) {
-        h5JNIFatalError(env, "H5Dwrite:  buf not pinned");
+        h5JNIFatalError(env, "H5Dwrite_int:  buf not pinned");
         return -1;
     }
 
@@ -1158,13 +1158,13 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dwrite_1long
     jboolean isCopy;
 
     if (buf == NULL) {
-        h5nullArgument(env, "H5Dwrite:  buf is NULL");
+        h5nullArgument(env, "H5Dwrite_long:  buf is NULL");
         return -1;
     }
 
     PIN_LONG_ARRAY();
     if (buffP == NULL) {
-        h5JNIFatalError(env, "H5Dwrite:  buf not pinned");
+        h5JNIFatalError(env, "H5Dwrite_long:  buf not pinned");
         return -1;
     }
 
@@ -1193,13 +1193,13 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dwrite_1float
     jboolean isCopy;
 
     if (buf == NULL) {
-        h5nullArgument(env, "H5Dwrite:  buf is NULL");
+        h5nullArgument(env, "H5Dwrite_float:  buf is NULL");
         return -1;
     }
 
     PIN_FLOAT_ARRAY();
     if (buffP == NULL) {
-        h5JNIFatalError(env, "H5Dwrite:  buf not pinned");
+        h5JNIFatalError(env, "H5Dwrite_float:  buf not pinned");
         return -1;
     }
 
@@ -1228,13 +1228,13 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dwrite_1double
     jboolean isCopy;
 
     if (buf == NULL) {
-        h5nullArgument(env, "H5Dwrite:  buf is NULL");
+        h5nullArgument(env, "H5Dwrite_double:  buf is NULL");
         return -1;
     }
 
     PIN_DOUBLE_ARRAY();
     if (buffP == NULL) {
-        h5JNIFatalError(env, "H5Dwrite:  buf not pinned");
+        h5JNIFatalError(env, "H5Dwrite_double:  buf not pinned");
         return -1;
     }
 
@@ -1265,7 +1265,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5DwriteString
     jint    i;
 
     if (buf == NULL) {
-        h5nullArgument(env, "H5Dwrite:  buf is NULL");
+        h5nullArgument(env, "H5DwriteString:  buf is NULL");
         return -1;
     }
 
@@ -1398,7 +1398,7 @@ herr_t H5DreadVL_notstr (JNIEnv *env, hid_t did, hid_t tid, hid_t mem_sid,
 
     rdata = (hvl_t*)calloc(n, sizeof(hvl_t));
     if (rdata == NULL) {
-        h5JNIFatalError(env, "H5DreadVL:  failed to allocate buff for read");
+        h5JNIFatalError(env, "H5DreadVL_notstr:  failed to allocate buff for read");
         return -1;
     }
 
@@ -1407,7 +1407,7 @@ herr_t H5DreadVL_notstr (JNIEnv *env, hid_t did, hid_t tid, hid_t mem_sid,
     if (status < 0) {
         H5Dvlen_reclaim(tid, mem_sid, xfer_plist_id, rdata);
         free(rdata);
-        h5JNIFatalError(env, "H5DreadVL: failed to read data");
+        h5JNIFatalError(env, "H5DreadVL_notstr: failed to read data");
         return -1;
     }
 
@@ -1424,7 +1424,7 @@ herr_t H5DreadVL_notstr (JNIEnv *env, hid_t did, hid_t tid, hid_t mem_sid,
     if (h5str.s == NULL) {
         H5Dvlen_reclaim(tid, mem_sid, xfer_plist_id, rdata);
         free(rdata);
-        h5JNIFatalError(env, "H5DreadVL:  failed to allocate strng buf");
+        h5JNIFatalError(env, "H5DreadVL_notstr:  failed to allocate strng buf");
         return -1;
     }
 
@@ -1455,7 +1455,7 @@ herr_t H5DreadVL_str (JNIEnv *env, hid_t did, hid_t tid, hid_t mem_sid, hid_t
     strs =(char**)calloc(n, sizeof(char*));
 
     if (strs == NULL) {
-        h5JNIFatalError(env, "H5DreadVL:  failed to allocate buff for read variable length strings");
+        h5JNIFatalError(env, "H5DreadVL_str:  failed to allocate buff for read variable length strings");
         return -1;
     }
 
@@ -1464,7 +1464,7 @@ herr_t H5DreadVL_str (JNIEnv *env, hid_t did, hid_t tid, hid_t mem_sid, hid_t
     if (status < 0) {
         H5Dvlen_reclaim(tid, mem_sid, xfer_plist_id, strs);
         free(strs);
-        h5JNIFatalError(env, "H5DreadVL: failed to read variable length strings");
+        h5JNIFatalError(env, "H5DreadVL_str: failed to read variable length strings");
         return -1;
     }
 
@@ -1574,7 +1574,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dread_1reg_1ref_1data (JNIEnv 
     ref_data = (hdset_reg_ref_t*)malloc(size * n);
 
     if (ref_data == NULL) {
-        h5JNIFatalError(env, "H5Dread_reg_ref:  failed to allocate buff for read");
+        h5JNIFatalError(env, "H5Dread_reg_ref_data:  failed to allocate buff for read");
         return -1;
     }
 
@@ -1582,7 +1582,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dread_1reg_1ref_1data (JNIEnv 
 
     if (status < 0) {
         free(ref_data);
-        h5JNIFatalError(env, "H5Dread_reg_ref: failed to read data");
+        h5JNIFatalError(env, "H5Dread_reg_ref_data: failed to read data");
         return -1;
     }
 
@@ -1633,12 +1633,12 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Dcreate2
     jboolean isCopy;
 
     if (name == NULL) {
-        h5nullArgument(env, "H5Dcreate:  name is NULL");
+        h5nullArgument(env, "_H5Dcreate2:  name is NULL");
         return -1;
     }
     file = (char *)ENVPTR->GetStringUTFChars(ENVPAR name, &isCopy);
     if (file == NULL) {
-        h5JNIFatalError(env, "H5Dcreate:  file name not pinned");
+        h5JNIFatalError(env, "_H5Dcreate2:  file name not pinned");
         return -1;
     }
 
@@ -1664,13 +1664,13 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Dopen2
     jboolean isCopy;
 
     if (name == NULL) {
-        h5nullArgument(env, "H5Dopen:  name is NULL");
+        h5nullArgument(env, "_H5Dopen2:  name is NULL");
         return -1;
     }
 
     file = (char *)ENVPTR->GetStringUTFChars(ENVPAR name, &isCopy);
     if (file == NULL) {
-        h5JNIFatalError(env, "H5Dopen:  file name not pinned");
+        h5JNIFatalError(env, "_H5Dopen2:  file name not pinned");
         return -1;
     }
 
