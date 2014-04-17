@@ -141,7 +141,8 @@ jint buf_len)
         if (data != NULL) HDfree((char *)data);
         ENVPTR->ReleaseStringUTFChars(ENVPAR filename,str);
         return JNI_FALSE;
-    } else {
+    }
+    else {
 
         ENVPTR->ReleaseStringUTFChars(ENVPAR filename,str);
 
@@ -165,6 +166,7 @@ jint buf_len)
             return JNI_FALSE;
         }
         ENVPTR->SetObjectArrayElement(ENVPAR desc_buf,0,(jobject)rstring);
+        ENVPTR->DeleteLocalRef(ENVPAR o);
 
         if (data != NULL)
             HDfree((char *)data);
@@ -223,7 +225,8 @@ jint isfirst)
     if (rval == FAIL) {
         if (data != NULL)
             HDfree((char *)data);
-    } else {
+    }
+    else {
 
         rstring = ENVPTR->NewStringUTF(ENVPAR  data);
         o = ENVPTR->GetObjectArrayElement(ENVPAR desc_buf,0);
@@ -245,6 +248,7 @@ jint isfirst)
             return FAIL;
         }
         ENVPTR->SetObjectArrayElement(ENVPAR desc_buf,0,(jobject)rstring);
+        ENVPTR->DeleteLocalRef(ENVPAR o);
 
         if (data != NULL)
             HDfree((char *)data);
@@ -295,7 +299,8 @@ jint isfirst)
     if (rval == FAIL) {
         if (data != NULL)
             HDfree((char *)data);
-    } else {
+    }
+    else {
 
         rstring = ENVPTR->NewStringUTF(ENVPAR  data);
         o = ENVPTR->GetObjectArrayElement(ENVPAR desc_buf,0);
@@ -317,6 +322,7 @@ jint isfirst)
             return FAIL;
         }
         ENVPTR->SetObjectArrayElement(ENVPAR desc_buf,0,(jobject)rstring);
+        ENVPTR->DeleteLocalRef(ENVPAR o);
 
         if (data != NULL)
             HDfree((char *)data);
@@ -372,7 +378,8 @@ jint buf_len)
         if (data != NULL)
             HDfree((char *)data);
         ENVPTR->ReleaseStringUTFChars(ENVPAR filename,str);
-    } else {
+    }
+    else {
 
         ENVPTR->ReleaseStringUTFChars(ENVPAR filename,str);
         rstring = ENVPTR->NewStringUTF(ENVPAR  data);
@@ -395,6 +402,7 @@ jint buf_len)
             return FAIL;
         }
         ENVPTR->SetObjectArrayElement(ENVPAR label_buf,0,(jobject)rstring);
+        ENVPTR->DeleteLocalRef(ENVPAR o);
 
         if (data != NULL)
             HDfree((char *)data);
@@ -469,7 +477,8 @@ jint start_pos)
             HDfree((char *)data);
         ENVPTR->ReleaseStringUTFChars(ENVPAR filename,str);
         ENVPTR->ReleaseShortArrayElements(ENVPAR ref_list,(jshort *)sarr, JNI_ABORT);
-    } else {
+    }
+    else {
 
         ENVPTR->ReleaseStringUTFChars(ENVPAR filename,str);
         ENVPTR->ReleaseShortArrayElements(ENVPAR ref_list,(jshort *)sarr, 0);
@@ -494,6 +503,7 @@ jint start_pos)
             return FAIL;
         }
         ENVPTR->SetObjectArrayElement(ENVPAR label_list,0,(jobject)rstring);
+        ENVPTR->DeleteLocalRef(ENVPAR o);
 
         if (data != NULL)
             HDfree((char *)data);

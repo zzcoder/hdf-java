@@ -489,7 +489,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dextend
 
     status = H5Dextend((hid_t)dataset_id, (hsize_t*)sa);
 
-    ENVPTR->ReleaseByteArrayElements(ENVPAR size, P, 0);
+    ENVPTR->ReleaseByteArrayElements(ENVPAR size, P, JNI_ABORT);
     free(sa);
 
     if (status < 0) {
@@ -671,7 +671,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dvlen_1reclaim
     status = H5Dvlen_reclaim((hid_t)type_id,
         (hid_t)space_id, (hid_t)xfer_plist_id, byteP);
 
-    ENVPTR->ReleaseByteArrayElements(ENVPAR buf, byteP, 0);
+    ENVPTR->ReleaseByteArrayElements(ENVPAR buf, byteP, JNI_ABORT);
 
     if (status < 0) {
         h5libraryError(env);
@@ -1285,9 +1285,10 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5DwriteString
             const char *utf8 = ENVPTR->GetStringUTFChars(ENVPAR obj, 0);
 
             if (utf8) {
-                wdata[i] = (char*)malloc(strlen(utf8) + 1);
+                wdata[i] = (char*)malloc(length + 1);
                 if (wdata[i]) {
-                  strcpy(wdata[i], utf8);
+                  memset(wdata[i], 0, (length + 1));
+                  strncpy(wdata[i], utf8, length);
                 }
            }
 
@@ -1303,6 +1304,94 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5DwriteString
     for (i = 0; i < size; i++) {
        if(wdata[i]) {
            free(wdata[i]);
+       }
+    }
+    free(wdata);
+
+    if (status < 0) {
+        h5libraryError(env);
+    }
+
+    return (jint)status;
+}
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5DwriteNotString
+ * Signature: (IIIII[BZ)I
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5DwriteNotString
+  (JNIEnv *env, jclass clss, jint dataset_id, jint mem_type_id, jint mem_space_id,
+  jint file_space_id, jint xfer_plist_id, jbyteArray buf, jboolean isCriticalPinning)
+{
+    herr_t  status;
+    hvl_t  *wdata;
+    size_t  size;
+    jsize   n;
+    jbyte   *buffP;
+    jboolean isCopy;
+    jint    i;
+    jint    j;
+
+    if (buf == NULL) {
+        h5nullArgument(env, "H5DwriteNotString:  buf is NULL");
+        return -1;
+    }
+
+    PIN_BYTE_ARRAY();
+
+    if (buffP == NULL) {
+        h5JNIFatalError( env, "H5DwriteNotString:  buf not pinned");
+        return -1;
+    }
+
+    /* rebuild VL structure */
+    n = ENVPTR->GetArrayLength(ENVPAR (jarray) buf);
+    wdata = (hvl_t*)calloc(n, sizeof(hvl_t));
+
+    if (!wdata) {
+        h5JNIFatalError(env, "H5DwriteNotString:  cannot allocate buffer");
+        return -1;
+    }
+
+    size = H5Tget_size(mem_type_id);
+    memset(wdata, 0, n * sizeof(hvl_t));
+    /* Allocate and initialize VL data to write */
+//    for (i = 0; i < n; i++) {
+//        jbyte *obj = (jbyte *) ENVPTR->GetByteArrayElement(ENVPAR (jbyteArray) buf, i);
+//        if (obj != 0) {
+//            jsize length = ENVPTR->GetStringUTFLength(ENVPAR obj);
+//            const char *utf8 = ENVPTR->GetStringUTFChars(ENVPAR obj, 0);
+//
+//            if (utf8) {
+//                wdata[i].p = malloc(length * size);
+//                if (wdata[i].p == NULL) {
+//                    h5JNIFatalError(env, "H5DwriteNotString:  cannot allocate memory for VL data!");
+//                    return -1;
+//                } /* end if */
+//                wdata[i].len = length;
+//                for(j = 0; j < length; j++)
+//                    switch(mem_type_id) {
+//                    case float:
+//                        ((float *)wdata[i].p)[j] = (float)(utf8);
+//                        break;
+//                    }
+//            }
+//
+//            ENVPTR->ReleaseStringUTFChars(ENVPAR obj, utf8);
+//            ENVPTR->ReleaseByteArrayElements(ENVPAR ref, refP, JNI_ABORT);
+//        }
+//    } /*for (i = 0; i < n; ++i) */
+
+    UNPIN_BYTE_ARRAY(0);
+
+    status = H5Dwrite((hid_t)dataset_id, (hid_t)mem_type_id, (hid_t)mem_space_id,
+                      (hid_t)file_space_id, (hid_t)xfer_plist_id, wdata);
+
+    // now free memory
+    for (i = 0; i < n; i++) {
+       if(wdata[i].p) {
+           free(wdata[i].p);
        }
     }
     free(wdata);
@@ -1475,7 +1564,7 @@ herr_t H5DreadVL_str (JNIEnv *env, hid_t did, hid_t tid, hid_t mem_sid, hid_t
     }
 
     /*
-    for repeatly reading a dataset with a large number of strs (e.g., 1,000,000 strings,
+    for repeatedly reading a dataset with a large number of strs (e.g., 1,000,000 strings,
     H5Dvlen_reclaim() may crash on Windows because the Java GC will not be able to collect
     free space in time. Instead, use "free(strs[i])" above to free individual strings
     after it is done.
@@ -1823,9 +1912,7 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dfill
         ENVPTR->ReleaseByteArrayElements(ENVPAR buf, buffP, 0);
     }
     if(fillP) {
-        if (isCopy1 == JNI_TRUE) {
-            ENVPTR->ReleaseByteArrayElements(ENVPAR fill, fillP, JNI_ABORT);
-        }
+        ENVPTR->ReleaseByteArrayElements(ENVPAR fill, fillP, JNI_ABORT);
     }
 }
 
@@ -1869,7 +1956,7 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dset_1extent
 
     free (dims);
 
-    ENVPTR->ReleaseLongArrayElements(ENVPAR buf, buffP, 0);
+    ENVPTR->ReleaseLongArrayElements(ENVPAR buf, buffP, JNI_ABORT);
 
     if (status < 0) {
         h5libraryError(env);

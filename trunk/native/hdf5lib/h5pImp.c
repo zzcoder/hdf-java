@@ -459,7 +459,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1chunk
 
     status = H5Pset_chunk((hid_t)plist, (int)ndims, da);
 
-    ENVPTR->ReleaseByteArrayElements(ENVPAR dim, theArray, 0);
+    ENVPTR->ReleaseByteArrayElements(ENVPAR dim, theArray, JNI_ABORT);
     free(da);
 
     if (status < 0) {
@@ -744,7 +744,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1fill_1value
     }
 
     if (value != NULL) {
-        ENVPTR->ReleaseByteArrayElements(ENVPAR value, byteP, 0);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR value, byteP, JNI_ABORT);
     }
 
     return status;
@@ -807,7 +807,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1filter
         }
         status = H5Pset_filter((hid_t)plist, (H5Z_filter_t)filter,
                 (unsigned int)flags, (size_t)cd_nelmts, (const unsigned int *)theArray);
-        ENVPTR->ReleaseIntArrayElements(ENVPAR cd_values, theArray, 0);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR cd_values, theArray, JNI_ABORT);
     }
 
     if (status < 0) {
@@ -1871,7 +1871,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pmodify_1filter
     status = H5Pmodify_filter((hid_t)plist, (H5Z_filter_t)filter,(const unsigned int)flags,
               (size_t)cd_nelmts, (unsigned int *)cd_valuesP);
 
-    ENVPTR->ReleaseIntArrayElements(ENVPAR cd_values, cd_valuesP, 0);
+    ENVPTR->ReleaseIntArrayElements(ENVPAR cd_values, cd_valuesP, JNI_ABORT);
 
     if (status < 0) {
         h5libraryError(env);
@@ -4147,6 +4147,7 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1fapl_1multi
                     return;
                 }
                 ENVPTR->SetObjectArrayElement(ENVPAR memb_name, i, (jobject)rstring);
+                ENVPTR->DeleteLocalRef(ENVPAR o);
                 free(member_name[i]);
             }
         }

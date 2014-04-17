@@ -49,7 +49,8 @@ jint fid)
     rval = Vstart((int32)fid);
     if (rval == FAIL) {
         return JNI_FALSE;
-    } else {
+    }
+    else {
         return JNI_TRUE;
     }
 }
@@ -158,6 +159,7 @@ jobjectArray hdfclassname)
         return ;
     }
     ENVPTR->SetObjectArrayElement(ENVPAR hdfclassname,0,(jobject)rstring);
+    ENVPTR->DeleteLocalRef(ENVPAR o);
 
     free(className);
     return;
@@ -202,6 +204,7 @@ jobjectArray hdfname)
         return ;
     }
     ENVPTR->SetObjectArrayElement(ENVPAR hdfname,0,(jobject)rstring);
+    ENVPTR->DeleteLocalRef(ENVPAR o);
 
     free(name);
     return;
@@ -219,7 +222,8 @@ jint vgroup_ref)
 
     if (rval == TRUE || rval == 1) {
         return JNI_TRUE;
-    } else {
+    }
+    else {
         return JNI_FALSE;
     }
 }
@@ -236,7 +240,8 @@ jint vdata_ref)
 
     if (rval == TRUE || rval == 1) {
         return JNI_TRUE;
-    } else {
+    }
+    else {
         return JNI_FALSE;
     }
 
@@ -271,7 +276,8 @@ jint size)
     if ( retVal == FAIL ) {
         ENVPTR->ReleaseIntArrayElements(ENVPAR tags,tagVal,JNI_ABORT);
         ENVPTR->ReleaseIntArrayElements(ENVPAR refs,refVal,JNI_ABORT);
-    } else {
+    }
+    else {
         ENVPTR->ReleaseIntArrayElements(ENVPAR tags,tagVal,0);
         ENVPTR->ReleaseIntArrayElements(ENVPAR refs,refVal,0);
     }
@@ -299,7 +305,8 @@ jintArray tagref)  /* OUT:  int tag, ref */
     if (retVal == FAIL) {
         ENVPTR->ReleaseIntArrayElements(ENVPAR tagref,theArgs,JNI_ABORT);
         return JNI_FALSE;
-    } else {
+    }
+    else {
         ENVPTR->ReleaseIntArrayElements(ENVPAR tagref,theArgs,0);
         return JNI_TRUE;
     }
@@ -337,7 +344,8 @@ jint arraysize)
 
     if (ref_array == NULL) {
         arr = NULL;
-    } else {
+    }
+    else {
         arr = ENVPTR->GetIntArrayElements(ENVPAR ref_array,&bb);
     }
 
@@ -381,7 +389,8 @@ jint file_id)
 
     if (rval == FAIL) {
         return JNI_FALSE;
-    } else {
+    }
+    else {
         return JNI_TRUE;
     }
 }
@@ -480,7 +489,8 @@ jobjectArray vgroup_name) /* OUT: String */
         ENVPTR->ReleaseIntArrayElements(ENVPAR n_entries,theArg, JNI_ABORT);
         free(name);
         return JNI_FALSE;
-    } else {
+    }
+    else {
         ENVPTR->ReleaseIntArrayElements(ENVPAR n_entries,theArg, 0);
         jc = ENVPTR->FindClass(ENVPAR  "java/lang/String");
         if (jc == NULL) {
@@ -499,6 +509,8 @@ jobjectArray vgroup_name) /* OUT: String */
         }
         rstring = ENVPTR->NewStringUTF(ENVPAR name);
         ENVPTR->SetObjectArrayElement(ENVPAR vgroup_name,0,(jobject)rstring);
+        ENVPTR->DeleteLocalRef(ENVPAR o);
+
         free(name);
         return JNI_TRUE;
     }
@@ -558,7 +570,8 @@ jstring hdfclassname)
 
     if (rval == FAIL) {
         return JNI_FALSE;
-    } else {
+    }
+    else {
         return JNI_TRUE;
     }
 }
@@ -580,7 +593,8 @@ jstring name)
 
     if (rval == FAIL) {
         return JNI_FALSE;
-    } else {
+    }
+    else {
         return JNI_TRUE;
     }
 }
@@ -612,7 +626,8 @@ jintArray argv)  /* OUT:  NT, count, size */
     if (retVal == FAIL) {
         ENVPTR->ReleaseIntArrayElements(ENVPAR argv,theArgs,JNI_ABORT);
         return JNI_FALSE;
-    } else {
+    }
+    else {
 
         ENVPTR->ReleaseIntArrayElements(ENVPAR argv,theArgs,0);
 
@@ -630,6 +645,8 @@ jintArray argv)  /* OUT:  NT, count, size */
             return JNI_FALSE;
         }
         ENVPTR->SetObjectArrayElement(ENVPAR name,0,(jobject)str);
+        ENVPTR->DeleteLocalRef(ENVPAR o);
+
         return JNI_TRUE;
     }
 }
@@ -668,7 +685,8 @@ jbyteArray values)  /* OUT: byte[] */
     if (rval == FAIL) {
         ENVPTR->ReleaseByteArrayElements(ENVPAR values,arr,JNI_ABORT);
         return JNI_FALSE;
-    } else {
+    }
+    else {
         ENVPTR->ReleaseByteArrayElements(ENVPAR values,arr,0);
         return JNI_TRUE;
     }
@@ -714,7 +732,8 @@ jstring values)  /* IN: String */
 
     if (rval == FAIL) {
         return JNI_FALSE;
-    } else {
+    }
+    else {
         return JNI_TRUE;
     }
 }
@@ -744,7 +763,8 @@ jbyteArray values)  /* IN: byte[] */
 
     if (rval == FAIL) {
         return JNI_FALSE;
-    } else {
+    }
+    else {
         return JNI_TRUE;
     }
 }
