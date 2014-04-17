@@ -167,7 +167,8 @@ jintArray argv)  /* OUT: rank, NT, nattr */
         ENVPTR->ReleaseIntArrayElements(ENVPAR argv,(jint *)theArgs,JNI_ABORT);
         free(cname);
         return JNI_FALSE;
-    } else {
+    }
+    else {
 
         ENVPTR->ReleaseIntArrayElements(ENVPAR dimsizes,(jint *)dims,0);
         ENVPTR->ReleaseIntArrayElements(ENVPAR argv,(jint *)theArgs,0);
@@ -189,6 +190,8 @@ jintArray argv)  /* OUT: rank, NT, nattr */
             return JNI_FALSE;
         }
         ENVPTR->SetObjectArrayElement(ENVPAR name,0,(jobject)str);
+        ENVPTR->DeleteLocalRef(ENVPAR o);
+
         free(cname);
         return JNI_TRUE;
     }
@@ -293,7 +296,8 @@ jintArray argv)  /* OUT: count, NT, nattrs */
     if (retVal == FAIL) {
         ENVPTR->ReleaseIntArrayElements(ENVPAR argv,theArgs,JNI_ABORT);
         return JNI_FALSE;
-    } else {
+    }
+    else {
 
         ENVPTR->ReleaseIntArrayElements(ENVPAR argv,theArgs,0);
 
@@ -311,6 +315,8 @@ jintArray argv)  /* OUT: count, NT, nattrs */
             return JNI_FALSE;
         }
         ENVPTR->SetObjectArrayElement(ENVPAR dimname,0,(jobject)str);
+        ENVPTR->DeleteLocalRef(ENVPAR o);
+
         return JNI_TRUE;
     }
 }
@@ -358,7 +364,8 @@ jintArray argv)  /* OUT:  NT, count */
     if (retVal == FAIL) {
         ENVPTR->ReleaseIntArrayElements(ENVPAR argv,theArgs,JNI_ABORT);
         return JNI_FALSE;
-    } else {
+    }
+    else {
 
         ENVPTR->ReleaseIntArrayElements(ENVPAR argv,theArgs,0);
 
@@ -376,6 +383,8 @@ jintArray argv)  /* OUT:  NT, count */
             return JNI_FALSE;
         }
         ENVPTR->SetObjectArrayElement(ENVPAR name,0,(jobject)str);
+        ENVPTR->DeleteLocalRef(ENVPAR o);
+
         return JNI_TRUE;
     }
 }
@@ -501,23 +510,27 @@ jint len)  /* IN */
             /* exception */
             return JNI_FALSE;
         }
+        ENVPTR->DeleteLocalRef(ENVPAR o);
     }
 
     label = (jstring)ENVPTR->GetObjectArrayElement(ENVPAR strings,0);
     /* allocate space */
     if (label == NULL) {
         labVal = NULL; /* don't read label */
-    } else {
+    }
+    else {
         labVal =  (char *)HDmalloc(len+1);
         if (labVal == NULL) {
             h4outOfMemory(env,  "SDgetdatastrs");
             return JNI_FALSE;
         }
     }
+    ENVPTR->DeleteLocalRef(ENVPAR label);
     unit = (jstring)ENVPTR->GetObjectArrayElement(ENVPAR strings,1);
     if (unit == NULL) {
         unitVal = NULL;
-    } else {
+    }
+    else {
         unitVal =  (char *)HDmalloc(len+1);
         if (unitVal == NULL) {
             if (labVal != NULL) HDfree(labVal);
@@ -525,11 +538,13 @@ jint len)  /* IN */
             return JNI_FALSE;
         }
     }
+    ENVPTR->DeleteLocalRef(ENVPAR unit);
 
     format = (jstring)ENVPTR->GetObjectArrayElement(ENVPAR strings,2);
     if (format == NULL) {
         fmtVal = NULL;
-    } else {
+    }
+    else {
         fmtVal =  (char *)HDmalloc(len+1);
         if (fmtVal == NULL) {
             if (labVal != NULL) HDfree(labVal);
@@ -538,6 +553,8 @@ jint len)  /* IN */
             return JNI_FALSE;
         }
     }
+    ENVPTR->DeleteLocalRef(ENVPAR format);
+
     coordsys = (jstring)ENVPTR->GetObjectArrayElement(ENVPAR strings,3);
     if (coordsys == NULL) {
         coordsysVal = NULL;
@@ -551,6 +568,7 @@ jint len)  /* IN */
             return JNI_FALSE;
         }
     }
+    ENVPTR->DeleteLocalRef(ENVPAR coordsys);
 
     retVal = SDgetdatastrs((int32)sdsid, labVal, unitVal, fmtVal, coordsysVal,(int32)len);
 
@@ -624,17 +642,21 @@ jint len)
     o = ENVPTR->GetObjectArrayElement(ENVPAR argv,0);
     if (o == NULL) {
         labVal = NULL; /* don't read label */
-    } else {
+    }
+    else {
         labVal =  (char *)HDmalloc(len+1);
         if (labVal == NULL) {
             h4outOfMemory(env,  "SDgetdimstrs");
             return JNI_FALSE;
         }
     }
+    ENVPTR->DeleteLocalRef(ENVPAR o);
+
     o = ENVPTR->GetObjectArrayElement(ENVPAR argv,1);
     if (o == NULL) {
         unitVal = NULL;
-    } else {
+    }
+    else {
         unitVal =  (char *)HDmalloc(len+1);
         if (unitVal == NULL) {
             if (labVal != NULL) HDfree(labVal);
@@ -642,11 +664,13 @@ jint len)
             return JNI_FALSE;
         }
     }
+    ENVPTR->DeleteLocalRef(ENVPAR o);
 
     o = ENVPTR->GetObjectArrayElement(ENVPAR argv,2);
     if (o == NULL) {
         fmtVal = NULL;
-    } else {
+    }
+    else {
         fmtVal =  (char *)HDmalloc(len+1);
         if (fmtVal == NULL) {
             if (labVal != NULL) HDfree(labVal);
@@ -655,6 +679,7 @@ jint len)
             return JNI_FALSE;
         }
     }
+    ENVPTR->DeleteLocalRef(ENVPAR o);
 
     retVal = SDgetdimstrs((int32)dimid, labVal, unitVal, fmtVal, (int32)len);
 
@@ -663,7 +688,8 @@ jint len)
         if (unitVal != NULL) HDfree(unitVal);
         if (fmtVal != NULL) HDfree(fmtVal);
         return JNI_FALSE;
-    } else {
+    }
+    else {
         Sjc = ENVPTR->FindClass(ENVPAR  "java/lang/String");
         if (Sjc == NULL) {
             if (labVal != NULL) HDfree(labVal);
@@ -690,7 +716,9 @@ jint len)
             labVal[len] = '\0';
             str = ENVPTR->NewStringUTF(ENVPAR labVal);
             ENVPTR->SetObjectArrayElement(ENVPAR argv,0,(jobject)str);
+            ENVPTR->DeleteLocalRef(ENVPAR o);
         }
+
         if (unitVal != NULL) {
             o = ENVPTR->GetObjectArrayElement(ENVPAR argv,1);
             if (o == NULL) {
@@ -709,7 +737,9 @@ jint len)
             unitVal[len] = '\0';
             str = ENVPTR->NewStringUTF(ENVPAR unitVal);
             ENVPTR->SetObjectArrayElement(ENVPAR argv,1,(jobject)str);
+            ENVPTR->DeleteLocalRef(ENVPAR o);
         }
+
         if (fmtVal != NULL) {
             o = ENVPTR->GetObjectArrayElement(ENVPAR argv,2);
             if (o == NULL) {
@@ -728,7 +758,9 @@ jint len)
             fmtVal[len] = '\0';
             str = ENVPTR->NewStringUTF(ENVPAR fmtVal);
             ENVPTR->SetObjectArrayElement(ENVPAR argv,2,(jobject)str);
+            ENVPTR->DeleteLocalRef(ENVPAR o);
         }
+
         if (labVal != NULL) HDfree(labVal);
         if (unitVal != NULL) HDfree(unitVal);
         if (fmtVal != NULL) HDfree(fmtVal);

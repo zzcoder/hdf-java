@@ -1755,7 +1755,23 @@ public class H5File extends FileFormat {
                 if (attrValue != null) {
                     boolean isVlen = (H5.H5Tget_class(tid) == HDF5Constants.H5T_VLEN || H5.H5Tis_variable_str(tid));
                     if (isVlen) {
-                        throw (new HDF5Exception("Writing variable-length attributes is not supported"));
+                        try {
+                            /*
+                             * must use native type to write attribute data to file (see bug 1069)
+                             */
+                            int tmptid = tid;
+                            tid = H5.H5Tget_native_type(tmptid);
+                            try {
+                                H5.H5Tclose(tmptid);
+                            }
+                            catch (Exception ex) {
+                                log.debug("{} writeAttribute H5Tclose failure: ", name, ex);
+                            }
+                            H5.H5AwriteVL(aid, tid, (String[])attrValue);
+                        }
+                        catch (Exception ex) {
+                            log.debug("{} writeAttribute native type failure: ", name, ex);
+                        }
                     }
 
                     if (attr.getType().getDatatypeClass() == Datatype.CLASS_REFERENCE && attrValue instanceof String) {

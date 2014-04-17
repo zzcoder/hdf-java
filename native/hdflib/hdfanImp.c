@@ -83,7 +83,8 @@ jintArray info)  /* OUT: n_file_label, n_file_desc, n_data_label, n_data_desc */
     if (retVal == FAIL) {
         ENVPTR->ReleaseIntArrayElements(ENVPAR info,theArgs,JNI_ABORT);
         return JNI_FALSE;
-    } else {
+    }
+    else {
         ENVPTR->ReleaseIntArrayElements(ENVPAR info,theArgs,0);
         return JNI_TRUE;
     }
@@ -166,7 +167,8 @@ jintArray annlist  /* OUT: int[] */
 
     if (retVal == FAIL) {
         ENVPTR->ReleaseIntArrayElements(ENVPAR annlist,iarr,JNI_ABORT);
-    } else {
+    }
+    else {
         ENVPTR->ReleaseIntArrayElements(ENVPAR annlist,iarr,0);
     }
     return (jint)retVal;
@@ -209,7 +211,8 @@ jint maxlen)
     if (retVal == FAIL) {
         if (data != NULL) HDfree((char *)data);
         return JNI_FALSE;
-    } else {
+    }
+    else {
 
         o = ENVPTR->GetObjectArrayElement(ENVPAR annbuf,0);
         if (o == NULL) {
@@ -229,6 +232,7 @@ jint maxlen)
 
         rstring = ENVPTR->NewStringUTF(ENVPAR  data);
         ENVPTR->SetObjectArrayElement(ENVPAR annbuf,0,(jobject)rstring);
+        ENVPTR->DeleteLocalRef(ENVPAR o);
 
         if (data != NULL)
             HDfree((char *)data);
@@ -276,7 +280,8 @@ jshortArray tagref) /* OUT: short tag, ref */
 
     if (rval == FAIL) {
         ENVPTR->ReleaseShortArrayElements(ENVPAR tagref,theArgs,JNI_ABORT);
-    } else {
+    }
+    else {
         ENVPTR->ReleaseShortArrayElements(ENVPAR tagref,theArgs,0);
     }
     return rval;
@@ -300,7 +305,8 @@ jshortArray tagref) /* OUT: short tag, ref */
     if (rval == FAIL) {
         ENVPTR->ReleaseShortArrayElements(ENVPAR tagref,theArgs,JNI_ABORT);
         return JNI_FALSE;
-    } else {
+    }
+    else {
         ENVPTR->ReleaseShortArrayElements(ENVPAR tagref,theArgs,0);
         return JNI_TRUE;
     }

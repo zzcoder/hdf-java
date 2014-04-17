@@ -949,8 +949,8 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gget_1obj_1info_1max
         return -1;
     }
 
-    ENVPTR->ReleaseIntArrayElements(ENVPAR lType,ltarr,0);
-    ENVPTR->ReleaseIntArrayElements(ENVPAR oType,otarr,0);
+    ENVPTR->ReleaseIntArrayElements(ENVPAR lType,ltarr,JNI_ABORT);
+    ENVPTR->ReleaseIntArrayElements(ENVPAR oType,otarr,JNI_ABORT);
 
     if (refs) {
         for (i=0; i<n; i++) {
