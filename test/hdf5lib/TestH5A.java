@@ -16,12 +16,9 @@ import ncsa.hdf.hdf5lib.structs.H5A_info_t;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class TestH5A {
-    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(TestH5A.class);
-
     private static final String H5_FILE = "test.h5";
     private static final int DIM_X = 4;
     private static final int DIM_Y = 6;
