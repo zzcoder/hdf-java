@@ -1773,37 +1773,38 @@ public class H5File extends FileFormat {
                             log.debug("{} writeAttribute native type failure: ", name, ex);
                         }
                     }
-
-                    if (attr.getType().getDatatypeClass() == Datatype.CLASS_REFERENCE && attrValue instanceof String) {
-                        // reference is a path+name to the object
-                        attrValue = H5.H5Rcreate(getFID(), (String) attrValue, HDF5Constants.H5R_OBJECT, -1);
-                    }
-                    else if (Array.get(attrValue, 0) instanceof String) {
-                        int size = H5.H5Tget_size(tid);
-                        int len = ((String[]) attrValue).length;
-                        byte[] bval = Dataset.stringToByte((String[]) attrValue, size);
-                        if (bval != null && bval.length == size * len) {
-                            bval[bval.length - 1] = 0;
-                            attrValue = bval;
+                    else {
+                        if (attr.getType().getDatatypeClass() == Datatype.CLASS_REFERENCE && attrValue instanceof String) {
+                            // reference is a path+name to the object
+                            attrValue = H5.H5Rcreate(getFID(), (String) attrValue, HDF5Constants.H5R_OBJECT, -1);
                         }
-                    }
+                        else if (Array.get(attrValue, 0) instanceof String) {
+                            int size = H5.H5Tget_size(tid);
+                            int len = ((String[]) attrValue).length;
+                            byte[] bval = Dataset.stringToByte((String[]) attrValue, size);
+                            if (bval != null && bval.length == size * len) {
+                                bval[bval.length - 1] = 0;
+                                attrValue = bval;
+                            }
+                        }
 
-                    try {
-                        /*
-                         * must use native type to write attribute data to file (see bug 1069)
-                         */
-                        int tmptid = tid;
-                        tid = H5.H5Tget_native_type(tmptid);
                         try {
-                            H5.H5Tclose(tmptid);
+                            /*
+                             * must use native type to write attribute data to file (see bug 1069)
+                             */
+                            int tmptid = tid;
+                            tid = H5.H5Tget_native_type(tmptid);
+                            try {
+                                H5.H5Tclose(tmptid);
+                            }
+                            catch (Exception ex) {
+                                log.debug("{} writeAttribute H5Tclose failure: ", name, ex);
+                            }
+                            H5.H5Awrite(aid, tid, attrValue);
                         }
                         catch (Exception ex) {
-                            log.debug("{} writeAttribute H5Tclose failure: ", name, ex);
+                            log.debug("{} writeAttribute native type failure: ", name, ex);
                         }
-                        H5.H5Awrite(aid, tid, attrValue);
-                    }
-                    catch (Exception ex) {
-                        log.debug("{} writeAttribute native type failure: ", name, ex);
                     }
                 } // if (attrValue != null) {
             }

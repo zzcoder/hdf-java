@@ -30,6 +30,9 @@ if "!%JAVABIN%!\java.exe"=="\java.exe" (
         exit /b 1
 )
 
-start "HDFView" "%JAVABIN%\javaw.exe" -Xmx1024M -Djava.library.path="%INSTALLDIR%\lib;%INSTALLDIR%\lib\ext" -Dhdfview.root="%INSTALLDIR%\lib" -jar "%INSTALLDIR%\lib\@HDFVIEW_JAR@" -root "%INSTALLDIR%\share" %1
+start "HDFView" "%JAVABIN%\javaw.exe" -Xmx1024M -Djava.library.path="%INSTALLDIR%\lib;%INSTALLDIR%\lib\ext" -Dhdfview.root="%INSTALLDIR%" -jar "%INSTALLDIR%\lib\@HDFVIEW_JAR@" -root "%INSTALLDIR%\share" %1
+
+rem Alternate invocation when using modules
+rem start "HDFView" "%JAVABIN%\javaw.exe" -Xmx1024M -Djava.library.path="%INSTALLDIR%\lib;%INSTALLDIR%\lib\ext" -Dhdfview.root="$INSTALLDIR" -cp "%INSTALLDIR%\lib\@HDFVIEW_JAR@" ncsa.hdf.view.HDFView -root "%INSTALLDIR%\share" $*
 
 exit /b 0
