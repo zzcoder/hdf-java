@@ -523,6 +523,7 @@ public class H5CompoundDS extends CompoundDS {
 
                 extractCompoundInfo(tid, null, null, atomicList);
                 for (int i = 0; i < n; i++) {
+                    log.trace("write: Member[{}] of {}", i, n);
                     if (!isMemberSelected[i]) {
                         log.debug("write: Member[{}] is not selected", i);
                         continue; // the field is not selected
@@ -539,7 +540,7 @@ public class H5CompoundDS extends CompoundDS {
 
                     boolean isVL = false;
                     try {
-                        isVL = (H5.H5Tdetect_class(atom_tid, HDF5Constants.H5T_VLEN));
+                        isVL = (H5.H5Tget_class(atom_tid) == HDF5Constants.H5T_VLEN || H5.H5Tis_variable_str(atom_tid));
                     }
                     catch (Exception ex) {
                         log.debug("isVL:", ex);
@@ -547,7 +548,6 @@ public class H5CompoundDS extends CompoundDS {
 
                     if (isVL) {
                         log.debug("write: Member[{}] is VL", i);
-                        continue;
                     }
 
                     try {
@@ -568,36 +568,44 @@ public class H5CompoundDS extends CompoundDS {
                         comp_tid = createCompoundFieldType(atom_tid, member_name, compInfo);
                         log.debug("write: {} Member[{}] compInfo[class]={} compInfo[size]={} compInfo[unsigned]={}",
                                 member_name, i, compInfo[0], compInfo[1], compInfo[2]);
-                        if (compInfo[2] != 0) {
-                            // check if need to convert integer data
-                            int tsize = H5.H5Tget_size(comp_tid);
-                            String cname = member_data.getClass().getName();
-                            char dname = cname.charAt(cname.lastIndexOf("[") + 1);
-                            boolean doConversion = (((tsize == 1) && (dname == 'S'))
-                                    || ((tsize == 2) && (dname == 'I')) || ((tsize == 4) && (dname == 'J')));
+                        if(isVL) {
+                            H5.H5DwriteString(did, comp_tid,
+                                    spaceIDs[0], spaceIDs[1],
+                                    HDF5Constants.H5P_DEFAULT, (String[])tmpData);
+                        }
+                        else {
+                            if (compInfo[2] != 0) {
+                                // check if need to convert integer data
+                                int tsize = H5.H5Tget_size(comp_tid);
+                                String cname = member_data.getClass().getName();
+                                char dname = cname.charAt(cname.lastIndexOf("[") + 1);
+                                boolean doConversion = (((tsize == 1) && (dname == 'S'))
+                                        || ((tsize == 2) && (dname == 'I')) || ((tsize == 4) && (dname == 'J')));
 
-                            tmpData = member_data;
-                            if (doConversion) {
-                                tmpData = convertToUnsignedC(member_data, null);
+                                tmpData = member_data;
+                                if (doConversion) {
+                                    tmpData = convertToUnsignedC(member_data, null);
+                                }
+                                log.trace("write: {} Member[{}] convertToUnsignedC", member_name, i);
                             }
-                            log.trace("write: {} Member[{}] convertToUnsignedC", member_name, i);
-                        }
-                        else if ((member_class == HDF5Constants.H5T_STRING)
-                                && (Array.get(member_data, 0) instanceof String)) {
-                            tmpData = stringToByte((String[]) member_data, member_size);
-                            log.trace("write: {} Member[{}] stringToByte", member_name, i);
-                        }
-                        else if (isEnum && (Array.get(member_data, 0) instanceof String)) {
-                            tmpData = H5Datatype.convertEnumNameToValue(atom_tid, (String[]) member_data, null);
-                            log.trace("write: {} Member[{}] convertEnumNameToValue", member_name, i);
-                        }
+                            else if (!isVL && (member_class == HDF5Constants.H5T_STRING)
+                                    && (Array.get(member_data, 0) instanceof String)) {
+                                tmpData = stringToByte((String[]) member_data, member_size);
+                                log.trace("write: {} Member[{}] stringToByte", member_name, i);
+                            }
+                            else if (isEnum && (Array.get(member_data, 0) instanceof String)) {
+                                tmpData = H5Datatype.convertEnumNameToValue(atom_tid, (String[]) member_data, null);
+                                log.trace("write: {} Member[{}] convertEnumNameToValue", member_name, i);
+                            }
 
-                        if (tmpData != null) {
-                            // BUG!!! does not write nested compound data and no
-                            // exception was caught
-                            // need to check if it is a java error or C library
-                            // error
-                            H5.H5Dwrite(did, comp_tid, spaceIDs[0], spaceIDs[1], HDF5Constants.H5P_DEFAULT, tmpData);
+                            if (tmpData != null) {
+                                // BUG!!! does not write nested compound data and no
+                                // exception was caught
+                                // need to check if it is a java error or C library
+                                // error
+                                log.debug("write: H5Dwrite warning - does not write nested compound data");
+                                H5.H5Dwrite(did, comp_tid, spaceIDs[0], spaceIDs[1], HDF5Constants.H5P_DEFAULT, tmpData);
+                            }
                         }
                     }
                     catch (Exception ex1) {

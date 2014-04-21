@@ -2507,7 +2507,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
 
     /** paste data from the system clipboard to the spreadsheet. */
     private void pasteData ( ) {
-        int pasteDataFlag = JOptionPane.showConfirmDialog(this, "Do you want to paste selected data ?", this.getTitle(),
+        int pasteDataFlag = JOptionPane.showConfirmDialog(this, "Do you want to paste selected data?", this.getTitle(),
                 JOptionPane.YES_NO_OPTION);
         if (pasteDataFlag == JOptionPane.NO_OPTION) {
             return;
@@ -2582,7 +2582,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
      * import data values from text file.
      */
     private void importTextData (String fname) {
-        int pasteDataFlag = JOptionPane.showConfirmDialog(this, "Do you want to paste selected data ?", this.getTitle(),
+        int pasteDataFlag = JOptionPane.showConfirmDialog(this, "Do you want to paste selected data?", this.getTitle(),
                 JOptionPane.YES_NO_OPTION);
         if (pasteDataFlag == JOptionPane.NO_OPTION) {
             return;
@@ -2740,7 +2740,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
         }
         String fname = choosedFile.getAbsolutePath();
 
-        int pasteDataFlag = JOptionPane.showConfirmDialog(this, "Do you want to paste selected data ?", this.getTitle(),
+        int pasteDataFlag = JOptionPane.showConfirmDialog(this, "Do you want to paste selected data?", this.getTitle(),
                 JOptionPane.YES_NO_OPTION);
         if (pasteDataFlag == JOptionPane.NO_OPTION) {
             return;
@@ -3031,7 +3031,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
         }
 
         if (choosedFile.exists()) {
-            int newFileFlag = JOptionPane.showConfirmDialog(this, "File exists. Do you want to replace it ?", this.getTitle(),
+            int newFileFlag = JOptionPane.showConfirmDialog(this, "File exists. Do you want to replace it?", this.getTitle(),
                     JOptionPane.YES_NO_OPTION);
             if (newFileFlag == JOptionPane.NO_OPTION) {
                 return;
@@ -3121,7 +3121,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
 
         // check if the file exists
         if (choosedFile.exists()) {
-            int newFileFlag = JOptionPane.showConfirmDialog(this, "File exists. Do you want to replace it ?", this.getTitle(),
+            int newFileFlag = JOptionPane.showConfirmDialog(this, "File exists. Do you want to replace it?", this.getTitle(),
                     JOptionPane.YES_NO_OPTION);
             if (newFileFlag == JOptionPane.NO_OPTION) {
                 return;
