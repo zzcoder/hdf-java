@@ -1523,7 +1523,7 @@ public class H4File extends FileFormat {
         }
 
 		ver += vers[0] + "." + vers[1] + "." + vers[2];
-		log.info("libversion is {}", ver);
+		log.debug("libversion is {}", ver);
 
 		return ver;
 	}

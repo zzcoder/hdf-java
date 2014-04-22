@@ -96,7 +96,7 @@ extern "C" {
 
         sa = lp = (hsize_t *)malloc(rank * sizeof(hsize_t));
         if (sa == NULL) {
-            ENVPTR->ReleaseLongArrayElements(ENVPAR dims,dimsP,JNI_ABORT);
+            ENVPTR->ReleaseLongArrayElements(ENVPAR dims, dimsP, JNI_ABORT);
             h5JNIFatalError(env, "H5Screate_simple:  dims not converted to hsize_t");
             return -1;
         }
@@ -113,19 +113,19 @@ extern "C" {
             msa = (hsize_t *)maxdimsP;
         } 
         else {
-            maxdimsP = ENVPTR->GetLongArrayElements(ENVPAR maxdims,&isCopy);
+            maxdimsP = ENVPTR->GetLongArrayElements(ENVPAR maxdims, &isCopy);
             if (maxdimsP == NULL)  {
-                ENVPTR->ReleaseLongArrayElements(ENVPAR dims,dimsP,JNI_ABORT);
+                ENVPTR->ReleaseLongArrayElements(ENVPAR dims, dimsP, JNI_ABORT);
                 free (sa);
-                h5JNIFatalError(env,  "H5Screate_simple:  maxdims not pinned");
+                h5JNIFatalError(env, "H5Screate_simple:  maxdims not pinned");
                 return -1;
             }
             msa = lp = (hsize_t *)malloc(rank * sizeof(hsize_t));
             if (msa == NULL) {
-                ENVPTR->ReleaseLongArrayElements(ENVPAR dims,dimsP,JNI_ABORT);
-                ENVPTR->ReleaseLongArrayElements(ENVPAR maxdims,maxdimsP,JNI_ABORT);
+                ENVPTR->ReleaseLongArrayElements(ENVPAR dims, dimsP, JNI_ABORT);
+                ENVPTR->ReleaseLongArrayElements(ENVPAR maxdims, maxdimsP, JNI_ABORT);
                 free (sa);
-                h5JNIFatalError(env,  "H5Screate_simple:  dims not converted to hsize_t");
+                h5JNIFatalError(env, "H5Screate_simple:  dims not converted to hsize_t");
                 return -1;
             }
             jlp = (jlong *)maxdimsP;
@@ -139,13 +139,12 @@ extern "C" {
         status = H5Screate_simple(rank, (const hsize_t *)sa, (const hsize_t *)msa);
         
         if (maxdimsP != NULL) {
-            ENVPTR->ReleaseLongArrayElements(ENVPAR maxdims,maxdimsP,JNI_ABORT);
+            ENVPTR->ReleaseLongArrayElements(ENVPAR maxdims, maxdimsP, JNI_ABORT);
             if (msa) 
                 free (msa);
         }
 
-        ENVPTR->ReleaseLongArrayElements(ENVPAR dims,dimsP,0);
-
+        ENVPTR->ReleaseLongArrayElements(ENVPAR dims, dimsP, JNI_ABORT);
         if (sa) 
             free (sa);
 
@@ -217,7 +216,7 @@ extern "C" {
         }
 
         status = H5Sselect_elements (space_id, (H5S_seloper_t)op, num_elemn, (const hssize_t **)&sa);
-        ENVPTR->ReleaseLongArrayElements(ENVPAR env, coord, P, 0);
+        ENVPTR->ReleaseLongArrayElements(ENVPAR env, coord, P, JNI_ABORT);
         free(sa);
 
         if (status < 0)
@@ -269,7 +268,7 @@ extern "C" {
 
         status = H5Sselect_elements (space_id, (H5S_seloper_t)op, num_elemn, (const hsize_t *)llp);
 
-        ENVPTR->ReleaseByteArrayElements(ENVPAR coord, P, 0);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR coord, P, JNI_ABORT);
 
         if (llp) free (llp);
 
@@ -885,16 +884,16 @@ extern "C" {
 
         status = H5Sselect_hyperslab (space_id, (H5S_seloper_t)op, (const hsize_t *)strt, (const hsize_t *)strd, (const hsize_t *)cnt, (const hsize_t *)blk);
 
-        ENVPTR->ReleaseLongArrayElements(ENVPAR start, startP,0);
-        ENVPTR->ReleaseLongArrayElements(ENVPAR count, countP,0);
+        ENVPTR->ReleaseLongArrayElements(ENVPAR start, startP, JNI_ABORT);
+        ENVPTR->ReleaseLongArrayElements(ENVPAR count, countP, JNI_ABORT);
         free(strt);
         free(cnt);
         if (strideP != NULL) {
-            ENVPTR->ReleaseLongArrayElements(ENVPAR stride, strideP,0);
+            ENVPTR->ReleaseLongArrayElements(ENVPAR stride, strideP, JNI_ABORT);
             free(strd);
         }
         if (blockP != NULL)  {
-            ENVPTR->ReleaseLongArrayElements(ENVPAR block, blockP,0);
+            ENVPTR->ReleaseLongArrayElements(ENVPAR block, blockP, JNI_ABORT);
             free(blk);
         }
 
@@ -1229,7 +1228,7 @@ extern "C" {
             h5libraryError(env);
             return -1;
         }
-        ENVPTR->ReleaseByteArrayElements(ENVPAR buf, bufP, 0);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR buf, bufP, JNI_ABORT);
 
         return (jint)sid;
     }

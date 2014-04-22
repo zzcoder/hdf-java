@@ -801,6 +801,68 @@ public class TestH5A {
         }
     }
 
+    @Test
+    public void testH5Awrite_readVL() {
+        String attr_name = "VLdata";
+        int attr_id = -1;
+        int atype_id = -1;
+        int aspace_id = -1;
+        String[] str_data = { "Parting", "is such", "sweet", "sorrow." };
+        long[] dims = { str_data.length };
+        long lsize = 1;
+
+        try {
+            atype_id = H5.H5Tcopy(HDF5Constants.H5T_C_S1);
+            assertTrue("testH5Awrite_readVL: ", atype_id >= 0);
+            H5.H5Tset_size(atype_id, HDF5Constants.H5T_VARIABLE);
+        }
+        catch (Exception err) {
+            err.printStackTrace();
+            fail("H5.testH5Awrite_readVL: " + err);
+        }
+
+        try {
+            aspace_id = H5.H5Screate_simple(1, dims, null);
+            assertTrue(aspace_id > 0);
+            attr_id = H5.H5Acreate(H5did, attr_name, atype_id, aspace_id,
+                    HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+            assertTrue("testH5Awrite_readVL: ", attr_id >= 0);
+            
+            H5.H5AwriteVL(attr_id, atype_id, str_data);
+
+            H5.H5Fflush(H5fid, HDF5Constants.H5F_SCOPE_LOCAL);
+
+            for (int j = 0; j < dims.length; j++) {
+                lsize *= dims[j];
+            }
+            String[] strs = new String[(int) lsize];
+            for (int j = 0; j < lsize; j++) {
+                strs[j] = "";
+            }
+            try {
+                H5.H5AreadVL(attr_id, atype_id, strs);
+            }
+            catch (Exception ex) {
+                ex.printStackTrace();
+            }
+            assertTrue("testH5Awrite_readVL:", str_data[0].equals(strs[0]));
+            assertTrue("testH5Awrite_readVL:", str_data[1].equals(strs[1]));
+            assertTrue("testH5Awrite_readVL:", str_data[2].equals(strs[2]));
+            assertTrue("testH5Awrite_readVL:", str_data[3].equals(strs[3]));
+        } 
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.testH5Awrite_readVL: " + err);
+        } 
+        finally {
+            if (attr_id > 0)
+                try {H5.H5Aclose(attr_id);} catch (Exception ex) {}
+            if (aspace_id > 0)
+                try {H5.H5Sclose(aspace_id);} catch (Exception ex) {}
+            if (atype_id > 0)
+                try {H5.H5Tclose(atype_id);} catch (Exception ex) {}
+        }
+    }
 }
 
 

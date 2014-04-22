@@ -226,9 +226,10 @@ jobjectArray string)  /* OUT: String[] */
             /* exception */
             return JNI_FALSE;
         }
+        ENVPTR->DeleteLocalRef(ENVPAR o);
         name = ENVPTR->NewStringUTF(ENVPAR s);
         if (name != NULL) {
-                        ENVPTR->SetObjectArrayElement(ENVPAR string,0,(jobject)name);
+            ENVPTR->SetObjectArrayElement(ENVPAR string,0,(jobject)name);
         }
         return JNI_TRUE;
     }
@@ -272,9 +273,10 @@ jobjectArray string)  /* OUT: String[] */
             /* exception */
             return JNI_FALSE;
         }
+        ENVPTR->DeleteLocalRef(ENVPAR o);
         name = ENVPTR->NewStringUTF(ENVPAR s);
         if (name != NULL) {
-                        ENVPTR->SetObjectArrayElement(ENVPAR string,0,(jobject)name);
+            ENVPTR->SetObjectArrayElement(ENVPAR string,0,(jobject)name);
         }
         return JNI_TRUE;
     }

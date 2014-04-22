@@ -171,22 +171,6 @@ SET (HDFJAVA_PACKAGE_TARNAME "hdf-java")
 SET (HDFJAVA_PACKAGE_URL "http://www.hdfgroup.org/hdfjava")
 SET (HDFJAVA_PACKAGE_BUGREPORT "help@hdfgroup.org")
 
-#-----------------------------------------------------------------------------
-# Set Install folder value
-#-----------------------------------------------------------------------------
-IF (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-  IF(CMAKE_HOST_UNIX)
-    SET(CMAKE_INSTALL_PREFIX "/HDF_Group/${HDFJAVA_PACKAGE_NAME}/${HDFJAVA_PACKAGE_VERSION}"
-      CACHE PATH "Install path prefix, prepended onto install directories." FORCE)
-  ELSE(CMAKE_HOST_UNIX)
-    GetDefaultWindowsPrefixBase(CMAKE_GENERIC_PROGRAM_FILES)
-    SET(CMAKE_INSTALL_PREFIX
-      "${CMAKE_GENERIC_PROGRAM_FILES}/HDF_Group/${HDFJAVA_PACKAGE_NAME}/${HDFJAVA_PACKAGE_VERSION}"
-      CACHE PATH "Install path prefix, prepended onto install directories." FORCE)
-    SET(CMAKE_GENERIC_PROGRAM_FILES)
-  ENDIF(CMAKE_HOST_UNIX)
-ENDIF (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-
 FIND_PACKAGE(Java)
 #-----------------------------------------------------------------------------
 # Include some macros for reusable code
@@ -600,10 +584,8 @@ IF (WIN32)
 ELSEIF (APPLE)
 #  LIST (APPEND CPACK_GENERATOR "DragNDrop") 
   SET (CPACK_COMPONENTS_ALL_IN_ONE_PACKAGE ON)
-  SET (CPACK_PACKAGE_DEFAULT_LOCATION "/opt/${CPACK_PACKAGE_NAME}")
-  SET (CPACK_PACKAGING_INSTALL_PREFIX "/")
+  set (CPACK_PACKAGING_INSTALL_PREFIX "/${CPACK_PACKAGE_INSTALL_DIRECTORY}")
   SET (CPACK_PACKAGE_ICON "${HDFJAVA_RESOURCES_DIR}/HDFView.icns")
-  SET (CPACK_SET_DESTDIR TRUE) # Required when packaging, and set CMAKE_INSTALL_PREFIX to "/".
     
   IF (HDFJAVA_PACK_MACOSX_BUNDLE)
     LIST (APPEND CPACK_GENERATOR "Bundle")

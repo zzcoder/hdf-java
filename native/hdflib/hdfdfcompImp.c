@@ -54,15 +54,16 @@ jint method)
     jbyte *im;
     jboolean bb;
 
-    im = ENVPTR->GetByteArrayElements(ENVPAR image,&bb);
+    im = ENVPTR->GetByteArrayElements(ENVPAR image, &bb);
 
     rval = DFgetcomp((int32) file_id, (uint16) tag, (uint16) ref,
         (uint8 *)image, (int32) xdim, (int32) ydim,  (int16) method);
     if (rval == FAIL) {
-        ENVPTR->ReleaseByteArrayElements(ENVPAR image,im,JNI_ABORT);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR image, im, JNI_ABORT);
         return JNI_FALSE;
-    } else {
-        ENVPTR->ReleaseByteArrayElements(ENVPAR image,im,0);
+    }
+    else {
+        ENVPTR->ReleaseByteArrayElements(ENVPAR image, im, 0);
         return JNI_TRUE;
     }
 }
@@ -94,24 +95,23 @@ jobject c_info)  /* IN: HDFCompInfo c_info */
 
     /* check for success... */
 
-    im = ENVPTR->GetByteArrayElements(ENVPAR image,&bb);
-    p = ENVPTR->GetByteArrayElements(ENVPAR palette,&bb);
-    np = ENVPTR->GetByteArrayElements(ENVPAR newpal,&bb);
+    im = ENVPTR->GetByteArrayElements(ENVPAR image, &bb);
+    p = ENVPTR->GetByteArrayElements(ENVPAR palette, &bb);
+    np = ENVPTR->GetByteArrayElements(ENVPAR newpal, &bb);
 
 
     rval = DFputcomp((int32) file_id, (uint16) tag, (uint16) ref,
         (uint8 *)im, (int32) xdim, (int32) ydim, (uint8 *)p,
         (uint8 *)np, (int16) scheme, (comp_info *)&cinf);
 
+    ENVPTR->ReleaseByteArrayElements(ENVPAR image, im, JNI_ABORT);
+    ENVPTR->ReleaseByteArrayElements(ENVPAR palette, p, JNI_ABORT);
     if (rval == FAIL) {
-        ENVPTR->ReleaseByteArrayElements(ENVPAR image,im,JNI_ABORT);
-        ENVPTR->ReleaseByteArrayElements(ENVPAR palette,p,JNI_ABORT);
-        ENVPTR->ReleaseByteArrayElements(ENVPAR newpal,np,JNI_ABORT);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR newpal, np, JNI_ABORT);
         return JNI_FALSE;
-    } else {
-        ENVPTR->ReleaseByteArrayElements(ENVPAR image,im,0);
-        ENVPTR->ReleaseByteArrayElements(ENVPAR palette,p,0);
-        ENVPTR->ReleaseByteArrayElements(ENVPAR newpal,np,0);
+    }
+    else {
+        ENVPTR->ReleaseByteArrayElements(ENVPAR newpal, np, 0);
         return JNI_TRUE;
     }
 }

@@ -108,7 +108,8 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5get_1libversion
     if (status < 0) {
         ENVPTR->ReleaseIntArrayElements(ENVPAR libversion,(jint *)theArray,JNI_ABORT);
         h5libraryError(env);
-    } else {
+    }
+    else {
         ENVPTR->ReleaseIntArrayElements(ENVPAR libversion,(jint *)theArray,0);
     }
     return (jint)status;
