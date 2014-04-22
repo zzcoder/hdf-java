@@ -49,20 +49,20 @@ jintArray n_records) /* OUT: int */
 {
     intn rval;
     jint * theArg;
-        jboolean bb;
+    jboolean bb;
 
-        theArg = ENVPTR->GetIntArrayElements(ENVPAR n_records,&bb);
+    theArg = ENVPTR->GetIntArrayElements(ENVPAR n_records,&bb);
 
     rval = VSQuerycount((int32) vdata_id, (int32 *)&(theArg[0]));
 
-        if (rval == FAIL) {
+    if (rval == FAIL) {
         ENVPTR->ReleaseIntArrayElements(ENVPAR n_records,theArg,JNI_ABORT);
-                return JNI_FALSE;
-        } else {
+        return JNI_FALSE;
+    }
+    else {
         ENVPTR->ReleaseIntArrayElements(ENVPAR n_records,theArg,0);
-                return JNI_TRUE;
-        }
-
+        return JNI_TRUE;
+    }
 }
 
 
@@ -84,7 +84,8 @@ jobjectArray fields)  /* OUT: String */
 
     if (rval == FAIL) {
         return JNI_FALSE;
-    } else {
+    }
+    else {
         /* convert it to java string */
         rstring = ENVPTR->NewStringUTF(ENVPAR flds);
 
@@ -102,6 +103,8 @@ jobjectArray fields)  /* OUT: String */
             return JNI_FALSE;
         }
         ENVPTR->SetObjectArrayElement(ENVPAR fields,0,(jobject)rstring);
+        ENVPTR->DeleteLocalRef(ENVPAR o);
+
         return JNI_TRUE;
     }
 }
@@ -114,20 +117,20 @@ jintArray interlace) /* OUT: int */
 {
     intn rval;
     jint * theArg;
-        jboolean bb;
+    jboolean bb;
 
-        theArg = ENVPTR->GetIntArrayElements(ENVPAR interlace,&bb);
+    theArg = ENVPTR->GetIntArrayElements(ENVPAR interlace,&bb);
 
     rval = VSQueryinterlace((int32) vdata_id, (int32 *)&(theArg[0]));
 
-        if (rval == FAIL) {
+    if (rval == FAIL) {
         ENVPTR->ReleaseIntArrayElements(ENVPAR interlace,theArg,JNI_ABORT);
-                return JNI_FALSE;
-        } else {
+        return JNI_FALSE;
+    }
+    else {
         ENVPTR->ReleaseIntArrayElements(ENVPAR interlace,theArg,0);
         return JNI_TRUE;
-        }
-
+    }
 }
 
 
@@ -156,7 +159,8 @@ jobjectArray vdata_name)  /* OUT: String */
     if (rval == FAIL) {
         free(nm);
         return JNI_FALSE;
-    } else {
+    }
+    else {
         /* convert it to java string */
         rstring = ENVPTR->NewStringUTF(ENVPAR nm);
 
@@ -177,6 +181,8 @@ jobjectArray vdata_name)  /* OUT: String */
             return JNI_FALSE;
         }
         ENVPTR->SetObjectArrayElement(ENVPAR vdata_name,0,(jobject)rstring);
+        ENVPTR->DeleteLocalRef(ENVPAR o);
+
         free(nm);
         return JNI_TRUE;
     }
@@ -206,19 +212,20 @@ jintArray vdata_size) /* OUT: int */
 {
     intn rval;
     jint * theArg;
-        jboolean bb;
+    jboolean bb;
 
-        theArg = ENVPTR->GetIntArrayElements(ENVPAR vdata_size,&bb);
+    theArg = ENVPTR->GetIntArrayElements(ENVPAR vdata_size,&bb);
 
     rval = VSQueryvsize((int32) vdata_id, (int32 *)&(theArg[0]));
 
-        if (rval == FAIL) {
+    if (rval == FAIL) {
         ENVPTR->ReleaseIntArrayElements(ENVPAR vdata_size,theArg,JNI_ABORT);
-                return JNI_FALSE;
-        } else {
+        return JNI_FALSE;
+    }
+    else {
         ENVPTR->ReleaseIntArrayElements(ENVPAR vdata_size,theArg,0);
-                return JNI_TRUE;
-        }
+        return JNI_TRUE;
+    }
 }
 
 #ifdef __cplusplus

@@ -1211,6 +1211,10 @@ public synchronized static int H5Awrite(int attr_id, int mem_type_id,
     return retVal;
 }
 
+public synchronized static native int H5AwriteVL(int attr_id,
+        int mem_type_id, String[] buf)
+        throws HDF5LibraryException, NullPointerException;
+
 ///////// unimplemented ////////
 //herr_t  H5Aiterate2(hid_t loc_id, H5_index_t idx_type, H5_iter_order_t order, hsize_t *idx, H5A_operator2_t op, void *op_data);
 //herr_t  H5Aiterate_by_name(hid_t loc_id, const char *obj_name, H5_index_t idx_type,

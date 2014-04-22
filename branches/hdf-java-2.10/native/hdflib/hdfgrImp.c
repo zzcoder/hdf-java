@@ -208,7 +208,8 @@ jintArray dim_sizes) /* OUT: int[2] */
         ENVPTR->ReleaseIntArrayElements(ENVPAR argv,theArgs,JNI_ABORT);
         if (str != NULL) HDfree(str);
         return JNI_FALSE;
-    } else {
+    }
+    else {
         ENVPTR->ReleaseIntArrayElements(ENVPAR dim_sizes,dims,0);
         ENVPTR->ReleaseIntArrayElements(ENVPAR argv,theArgs,0);
         if (str != NULL) {
@@ -227,6 +228,7 @@ jintArray dim_sizes) /* OUT: int[2] */
             return JNI_FALSE;
         }
         ENVPTR->SetObjectArrayElement(ENVPAR gr_name,0,(jobject)rstring);
+        ENVPTR->DeleteLocalRef(ENVPAR o);
 
         HDfree(str);
         }
@@ -433,7 +435,8 @@ jintArray argv) /* OUT:  data_type, length */
     if (rval == FAIL) {
         ENVPTR->ReleaseIntArrayElements(ENVPAR argv,theArgs,JNI_ABORT);
         return JNI_FALSE;
-    } else {
+    }
+    else {
         ENVPTR->ReleaseIntArrayElements(ENVPAR argv,theArgs,0);
         if (str != NULL) {
         str[MAX_GR_NAME] = '\0';
@@ -451,6 +454,8 @@ jintArray argv) /* OUT:  data_type, length */
             return JNI_FALSE;
         }
         ENVPTR->SetObjectArrayElement(ENVPAR name,0,(jobject)rstring);
+        ENVPTR->DeleteLocalRef(ENVPAR o);
+
         HDfree(str);
         }
         return JNI_TRUE;

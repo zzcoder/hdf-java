@@ -224,7 +224,7 @@ public abstract class FileFormat extends File {
             }
         }
 
-        // add HDF4 to default modules
+        // add HDF5 to default modules
         if (FileFormat.getFileFormat(FILE_TYPE_HDF5) == null) {
             try {
                 Class fileclass = Class.forName("ncsa.hdf.object.h5.H5File");

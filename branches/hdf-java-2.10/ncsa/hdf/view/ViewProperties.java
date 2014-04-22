@@ -41,8 +41,10 @@ import ncsa.hdf.object.FileFormat;
 public class ViewProperties extends Properties {
     private static final long   serialVersionUID     = -6411465283887959066L;
 
+    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ViewProperties.class);
+    
     /** the version of the HDFViewer */
-    public static final String  VERSION              = "2.10.1";
+    public static final String  VERSION              = "2.99";
 
     /** the local property file name */
     private static final String USER_PROPERTY_FILE   = ".hdfview" + VERSION;
@@ -125,7 +127,7 @@ public class ViewProperties extends Properties {
     private static String           workDir                = "user.dir";
 
     /** default HDF4 file extension */
-    private static String           fileExt                = "hdf, h4, hdf4, h5, hdf5, he4, he5";
+    private static String           fileExt                = "hdf, h4, hdf4, h5, hdf5, he2, he5";
 
     private static ClassLoader      extClassLoader         = null;
 
@@ -266,13 +268,25 @@ public class ViewProperties extends Properties {
             // default classloader
             extClassLoader = ClassLoader.getSystemClassLoader();
         }
+        log.trace("loadExtClass: default classloader is {}", extClassLoader);
 
         String rootPath = System.getProperty("hdfview.root");
-        if (rootPath == null) rootPath = System.getProperty("user.dir");
+        if (rootPath == null) {
+            rootPath = System.getProperty("user.dir");
+            log.debug("loadExtClass: user.dir rootPath is {}", rootPath);
+        }
 
         String dirname = rootPath + File.separator + "lib" + File.separator + "ext" + File.separator;
-        File extdir = new File(dirname);
-        String[] jars = extdir.list();
+        String[] jars = null;
+        File extdir = null;
+        try {
+            extdir = new File(dirname);
+            jars = extdir.list();
+            log.trace("loadExtClass: dirname is {} with {} jars", dirname, jars.length);
+        }
+        catch (Exception ex0) {
+            log.debug("loadExtClass: load dirname: {}+lib/ext failed", rootPath, ex0);
+        }
 
         if ((jars == null) || (jars.length <= 0)) {
             return extClassLoader;
@@ -281,6 +295,7 @@ public class ViewProperties extends Properties {
         Vector<String> jarList = new Vector<String>(50);
         Vector<String> classList = new Vector<String>(50);
         for (int i = 0; i < jars.length; i++) {
+            log.trace("loadExtClass: load jar[{}]", i);
             if (jars[i].endsWith(".jar")) {
                 jarList.add(jars[i]);
                 // add class names to the list of classes
@@ -291,6 +306,7 @@ public class ViewProperties extends Properties {
                     while (emu.hasMoreElements()) {
                         JarEntry jarEntry = (JarEntry) emu.nextElement();
                         String entryName = jarEntry.getName();
+                        log.trace("loadExtClass: reading jar[{}] class={}", i, entryName);
                         int idx = entryName.indexOf(".class");
                         if ((idx > 0) && (entryName.indexOf('$') <= 0)) {
                             entryName = entryName.replace('/', '.');
@@ -299,12 +315,14 @@ public class ViewProperties extends Properties {
                     }
                 }
                 catch (Exception ex) {
+                    log.debug("loadExtClass: load jar[{}] failed", i, ex);
                 }
             } // if (jars[i].endsWith(".jar")) {
         } // for (int i=0; i<jars.length; i++) {
 
         int n = jarList.size();
         if (n <= 0) {
+            log.debug("loadExtClass: jarList empty");
             return extClassLoader;
         }
 
@@ -312,9 +330,10 @@ public class ViewProperties extends Properties {
         for (int i = 0; i < n; i++) {
             try {
                 urls[i] = new URL("file:///" + rootPath + "/lib/ext/" + jarList.get(i));
+                log.trace("loadExtClass: load urls[{}] is {}", i, urls[i]);
             }
             catch (MalformedURLException mfu) {
-                ;
+                log.debug("loadExtClass: load urls[{}] failed", i, mfu);
             }
         }
 
@@ -330,6 +349,7 @@ public class ViewProperties extends Properties {
         n = classList.size();
         for (int i = 0; i < n; i++) {
             String theName = classList.get(i);
+            log.trace("loadExtClass: load classList[{}] is {}", i, theName);
             try {
                 // enables use of JHDF5 in JNLP (Web Start) applications, the
                 // system class loader with reflection first.
@@ -338,55 +358,64 @@ public class ViewProperties extends Properties {
                     theClass = Class.forName(theName);
                 }
                 catch (Exception ex) {
-                    theClass = extClassLoader.loadClass(theName);
+                    try {
+                        theClass = extClassLoader.loadClass(theName);
+                    }
+                    catch (Exception exc) {
+                        log.debug("load: loadClass({}) failed", theName, ex);
+                    }
                 }
 
-                Class<?>[] interfaces = theClass.getInterfaces();
-                if (interfaces != null) {
-                    for (int j = 0; j < interfaces.length; j++) {
-                        String interfaceName = interfaces[j].getName();
-
-                        if ("ncsa.hdf.view.TreeView".equals(interfaceName) && !moduleListTreeView.contains(theName)) {
-                            moduleListTreeView.add(theName);
-                            break;
-                        }
-                        else if ("ncsa.hdf.view.MetaDataView".equals(interfaceName)
-                                && !moduleListMetaDataView.contains(theName)) {
-                            moduleListMetaDataView.add(theName);
-                            break;
-                        }
-                        else if ("ncsa.hdf.view.TextView".equals(interfaceName)
-                                && !moduleListTextView.contains(theName)) {
-                            moduleListTextView.add(theName);
-                            break;
-                        }
-                        else if ("ncsa.hdf.view.TableView".equals(interfaceName)
-                                && !moduleListTableView.contains(theName)) {
-                            moduleListTableView.add(theName);
-                            break;
-                        }
-                        else if ("ncsa.hdf.view.ImageView".equals(interfaceName)
-                                && !moduleListImageView.contains(theName)) {
-                            moduleListImageView.add(theName);
-                            break;
-                        }
-                        else if ("ncsa.hdf.view.PaletteView".equals(interfaceName)
-                                && !moduleListPaletteView.contains(theName)) {
-                            moduleListPaletteView.add(theName);
-                            break;
-                        }
-                        else if ("ncsa.hdf.view.HelpView".equals(interfaceName)
-                                && !moduleListHelpView.contains(theName)) {
-                            moduleListHelpView.add(theName);
-                            break;
-                        }
-                    } // for (int j=0; j<interfaces.length; j++) {
-                } // if (interfaces != null) {
+                if(theClass != null) {
+                    Class<?>[] interfaces = theClass.getInterfaces();
+                    if (interfaces != null) {
+                        for (int j = 0; j < interfaces.length; j++) {
+                            String interfaceName = interfaces[j].getName();
+                            log.trace("loadExtClass: load interfaces[{}] is {}", j, interfaceName);
+    
+                            if ("ncsa.hdf.view.TreeView".equals(interfaceName) && !moduleListTreeView.contains(theName)) {
+                                moduleListTreeView.add(theName);
+                                break;
+                            }
+                            else if ("ncsa.hdf.view.MetaDataView".equals(interfaceName)
+                                    && !moduleListMetaDataView.contains(theName)) {
+                                moduleListMetaDataView.add(theName);
+                                break;
+                            }
+                            else if ("ncsa.hdf.view.TextView".equals(interfaceName)
+                                    && !moduleListTextView.contains(theName)) {
+                                moduleListTextView.add(theName);
+                                break;
+                            }
+                            else if ("ncsa.hdf.view.TableView".equals(interfaceName)
+                                    && !moduleListTableView.contains(theName)) {
+                                moduleListTableView.add(theName);
+                                break;
+                            }
+                            else if ("ncsa.hdf.view.ImageView".equals(interfaceName)
+                                    && !moduleListImageView.contains(theName)) {
+                                moduleListImageView.add(theName);
+                                break;
+                            }
+                            else if ("ncsa.hdf.view.PaletteView".equals(interfaceName)
+                                    && !moduleListPaletteView.contains(theName)) {
+                                moduleListPaletteView.add(theName);
+                                break;
+                            }
+                            else if ("ncsa.hdf.view.HelpView".equals(interfaceName)
+                                    && !moduleListHelpView.contains(theName)) {
+                                moduleListHelpView.add(theName);
+                                break;
+                            }
+                        } // for (int j=0; j<interfaces.length; j++) {
+                    } // if (interfaces != null) {
+                }
             }
             catch (Exception ex) {
-                ;
+                log.debug("loadExtClass: load classList[{}] of {} failed", i, theName, ex);
             }
         } // for (int i=0; i<n; i++)
+        log.trace("loadExtClass: finished");
 
         return extClassLoader;
     }
@@ -921,6 +950,7 @@ public class ViewProperties extends Properties {
         if (propertyFile == null) {
             return;
         }
+        log.trace("load: begin");
 
         // add default module.
         String[] moduleKeys = { "module.treeview", "module.metadataview", "module.textview", "module.tableview",
@@ -933,6 +963,7 @@ public class ViewProperties extends Properties {
 
         // add default implementation of modules
         for (int i = 0; i < 6; i++) {
+            log.trace("load: add default moduleList[{}] is {}", i, moduleNames[i]);
             if (!moduleList[i].contains(moduleNames[i])) {
                 moduleList[i].addElement(moduleNames[i]);
             }
@@ -956,15 +987,13 @@ public class ViewProperties extends Properties {
             }
         }
 
-        // add netcdf and fits file formats
-
         try {
             FileInputStream fis = new FileInputStream(propertyFile);
             load(fis);
             fis.close();
         }
         catch (Exception e) {
-            ;
+            log.debug("load: load propertyFile failed", e);
         }
 
         // add fileformat modules
@@ -973,6 +1002,7 @@ public class ViewProperties extends Properties {
         String fExt = null;
         while (local_enum.hasMoreElements()) {
             theKey = (String) local_enum.nextElement();
+            log.trace("load: add file format {}", theKey);
             if (theKey.startsWith("module.fileformat")) {
                 fExt = theKey.substring(18);
                 try {
@@ -988,6 +1018,7 @@ public class ViewProperties extends Properties {
                             theClass = extClassLoader.loadClass(className);
                         }
                         catch (Exception ex2) {
+                            log.debug("load: extClassLoader.loadClass({}) failed", className, ex2);
                         }
                     }
 
@@ -997,7 +1028,7 @@ public class ViewProperties extends Properties {
                     }
                 }
                 catch (Throwable err) {
-                    ;
+                    log.debug("load: load file format failed", err);
                 }
             }
         }
@@ -1084,6 +1115,7 @@ public class ViewProperties extends Properties {
                 fontSize = Integer.parseInt(propVal);
             }
             catch (Exception ex) {
+                log.debug("load: load fontSize failed", ex);
             }
         }
 
@@ -1098,6 +1130,7 @@ public class ViewProperties extends Properties {
                 max_members = Integer.parseInt(propVal);
             }
             catch (Exception ex) {
+                log.debug("load: load max.members failed", ex);
             }
         }
 
@@ -1163,11 +1196,13 @@ public class ViewProperties extends Properties {
         // set default modules from user property files
         for (int i = 0; i < 6; i++) {
             String moduleName = (String) get(moduleKeys[i]);
+            log.trace("load: default modules from user property is {}", moduleName);
             if ((moduleName != null) && (moduleName.length() > 0)) {
                 if (moduleList[i].contains(moduleName)) moduleList[i].remove(moduleName);
                 moduleList[i].add(0, moduleName);
             }
         }
+        log.trace("load: finish");
     }
 
     /** Save user properties into property file */

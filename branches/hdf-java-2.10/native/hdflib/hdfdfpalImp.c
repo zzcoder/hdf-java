@@ -74,17 +74,18 @@ jbyteArray palette)  /* OUT:  byte[] */
     jbyte *dat;
     jboolean bb;
 
-    f = (char *) ENVPTR->GetStringUTFChars(ENVPAR filename,0);
-    dat = ENVPTR->GetByteArrayElements(ENVPAR palette,&bb);
+    f = (char *) ENVPTR->GetStringUTFChars(ENVPAR filename, 0);
+    dat = ENVPTR->GetByteArrayElements(ENVPAR palette, &bb);
 
     rval = DFPgetpal((char *)f, (VOIDP) dat);
 
     ENVPTR->ReleaseStringUTFChars(ENVPAR filename,f);
     if (rval == FAIL) {
-        ENVPTR->ReleaseByteArrayElements(ENVPAR palette,dat,JNI_ABORT);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR palette, dat, JNI_ABORT);
         return JNI_FALSE;
-    } else {
-        ENVPTR->ReleaseByteArrayElements(ENVPAR palette,dat,0);
+    }
+    else {
+        ENVPTR->ReleaseByteArrayElements(ENVPAR palette, dat, 0);
         return JNI_TRUE;
     }
 }

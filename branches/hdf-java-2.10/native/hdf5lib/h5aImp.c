@@ -36,6 +36,9 @@ herr_t H5AreadVL_str (JNIEnv *env, hid_t aid, hid_t tid, jobjectArray buf);
 herr_t H5AreadVL_num (JNIEnv *env, hid_t aid, hid_t tid, jobjectArray buf);
 herr_t H5AreadVL_comp (JNIEnv *env, hid_t aid, hid_t tid, jobjectArray buf);
 
+herr_t H5AwriteVL_str (JNIEnv *env, hid_t aid, hid_t tid, jobjectArray buf);
+herr_t H5AwriteVL_num (JNIEnv *env, hid_t aid, hid_t tid, jobjectArray buf);
+herr_t H5AwriteVL_comp (JNIEnv *env, hid_t aid, hid_t tid, jobjectArray buf);
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
@@ -153,6 +156,109 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Awrite
     if (status < 0) {
         h5libraryError(env);
     }
+    return (jint)status;
+}
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5AwriteVL
+ * Signature: (II[Ljava/lang/String;)I
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5AwriteVL
+  (JNIEnv *env, jclass clss, jint attr_id, jint mem_type_id, jobjectArray buf)
+{
+    herr_t status;
+
+    if (buf == NULL) {
+        h5nullArgument( env,"H5AwriteVL:  buf is NULL");
+        return -1;
+    }
+
+    if (H5Tis_variable_str((hid_t)mem_type_id) > 0) {
+        status = H5AwriteVL_str (env, (hid_t)attr_id, (hid_t)mem_type_id, buf);
+    }
+    else if (H5Tget_class((hid_t)mem_type_id) == H5T_COMPOUND) {
+        status = H5AwriteVL_comp (env, (hid_t)attr_id, (hid_t)mem_type_id, buf);
+    }
+    else if (H5Tget_class((hid_t)mem_type_id) == H5T_ARRAY) {
+        status = H5AwriteVL_comp (env, (hid_t)attr_id, (hid_t)mem_type_id, buf);
+    }
+    else {
+        status = H5AwriteVL_num (env, (hid_t)attr_id, (hid_t)mem_type_id, buf);
+    }
+
+    return (jint)status;
+}
+
+herr_t H5AwriteVL_num (JNIEnv *env, hid_t aid, hid_t tid, jobjectArray buf)
+{
+    herr_t      status;
+
+    h5unimplemented(env, "H5AwriteVL_num:  not implemented");
+    status = -1;
+
+    return status;
+}
+
+herr_t H5AwriteVL_comp (JNIEnv *env, hid_t aid, hid_t tid, jobjectArray buf)
+{
+    herr_t      status;
+
+    h5unimplemented(env, "H5AwriteVL_comp:  not implemented");
+    status = -1;
+
+    return status;
+}
+
+herr_t H5AwriteVL_str (JNIEnv *env, hid_t aid, hid_t tid, jobjectArray buf)
+{
+    herr_t  status = -1;
+    char  **wdata;
+    jsize   size;
+    jint    i;
+
+    size = ENVPTR->GetArrayLength(ENVPAR (jarray) buf);
+
+    wdata = (char**)malloc(size * sizeof (char*));
+    if (!wdata) {
+        h5JNIFatalError(env, "H5AwriteVL_str:  cannot allocate buffer");
+        return -1;
+    }
+
+    memset(wdata, 0, size * sizeof(char*));
+    for (i = 0; i < size; ++i) {
+        jstring obj = (jstring) ENVPTR->GetObjectArrayElement(ENVPAR (jobjectArray) buf, i);
+        if (obj != 0) {
+            jsize length = ENVPTR->GetStringUTFLength(ENVPAR obj);
+            const char *utf8 = ENVPTR->GetStringUTFChars(ENVPAR obj, 0);
+
+            if (utf8) {
+                wdata[i] = (char*)malloc(length + 1);
+                if (wdata[i]) {
+                    memset(wdata[i], 0, (length + 1));
+                    strncpy(wdata[i], utf8, length);
+                }
+            }
+
+            ENVPTR->ReleaseStringUTFChars(ENVPAR obj, utf8);
+            ENVPTR->DeleteLocalRef(ENVPAR obj);
+        }
+    } /*for (i = 0; i < size; ++i) */
+
+    status = H5Awrite((hid_t)aid, (hid_t)tid, wdata);
+
+    // now free memory
+    for (i = 0; i < size; i++) {
+       if(wdata[i]) {
+           free(wdata[i]);
+       }
+    }
+    free(wdata);
+
+    if (status < 0) {
+        h5libraryError(env);
+    }
+
     return (jint)status;
 }
 
@@ -350,7 +456,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Aclose
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
- * Method:    H5Aread
+ * Method:    H5AreadVL
  * Signature: (II[Ljava/lang/String;)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5AreadVL
@@ -395,7 +501,7 @@ herr_t H5AreadVL_num (JNIEnv *env, hid_t aid, hid_t tid, jobjectArray buf)
     n = ENVPTR->GetArrayLength(ENVPAR buf);
     rdata = (hvl_t *)calloc(n+1, sizeof(hvl_t));
     if (rdata == NULL) {
-        h5JNIFatalError( env, "H5AreadVL:  failed to allocate buff for read");
+        h5JNIFatalError( env, "H5AreadVL_num:  failed to allocate buff for read");
         return -1;
     }
 
@@ -406,7 +512,7 @@ herr_t H5AreadVL_num (JNIEnv *env, hid_t aid, hid_t tid, jobjectArray buf)
         H5Dvlen_reclaim(tid, sid, H5P_DEFAULT, rdata);
         H5Sclose(sid);
         free(rdata);
-        h5JNIFatalError(env, "H5AreadVL: failed to read data");
+        h5JNIFatalError(env, "H5AreadVL_num: failed to read data");
         return -1;
     }
 
@@ -423,7 +529,7 @@ herr_t H5AreadVL_num (JNIEnv *env, hid_t aid, hid_t tid, jobjectArray buf)
         H5Dvlen_reclaim(tid, sid, H5P_DEFAULT, rdata);
         H5Sclose(sid);
         free(rdata);
-        h5JNIFatalError(env, "H5AreadVL:  failed to allocate strng buf");
+        h5JNIFatalError(env, "H5AreadVL_num:  failed to allocate strng buf");
         return -1;
     }
 
@@ -462,7 +568,7 @@ herr_t H5AreadVL_comp (JNIEnv *env, hid_t aid, hid_t tid, jobjectArray buf)
     rdata = (char *)malloc(n * size);
 
     if (rdata == NULL) {
-        h5JNIFatalError(env, "H5AreadVL:  failed to allocate buff for read");
+        h5JNIFatalError(env, "H5AreadVL_comp:  failed to allocate buff for read");
         return -1;
     }
 
@@ -470,7 +576,7 @@ herr_t H5AreadVL_comp (JNIEnv *env, hid_t aid, hid_t tid, jobjectArray buf)
 
     if (status < 0) {
         free(rdata);
-        h5JNIFatalError(env, "H5AreadVL: failed to read data");
+        h5JNIFatalError(env, "H5AreadVL_comp: failed to read data");
         return -1;
     }
 
@@ -479,7 +585,7 @@ herr_t H5AreadVL_comp (JNIEnv *env, hid_t aid, hid_t tid, jobjectArray buf)
 
     if (h5str.s == NULL) {
         free(rdata);
-        h5JNIFatalError(env, "H5AreadVL:  failed to allocate strng buf");
+        h5JNIFatalError(env, "H5AreadVL_comp:  failed to allocate string buf");
         return -1;
     }
 
@@ -507,39 +613,37 @@ herr_t H5AreadVL_str (JNIEnv *env, hid_t aid, hid_t tid, jobjectArray buf)
     hsize_t dims[H5S_MAX_RANK];
 
     n = ENVPTR->GetArrayLength(ENVPAR buf);
-    strs =(char **)malloc(n*sizeof(char *));
 
-    if (strs == NULL)
-    {
-        h5JNIFatalError( env, "H5AreadVL:  failed to allocate buff for read variable length strings");
+    strs =(char **)malloc(n*sizeof(char *));
+    if (strs == NULL) {
+        h5JNIFatalError( env, "H5AreadVL_str:  failed to allocate buff for read variable length strings");
         return -1;
     }
 
     status = H5Aread(aid, tid, strs);
-    dims[0] = n;
-    sid = H5Screate_simple(1, dims, NULL);
-
     if (status < 0) {
+        dims[0] = n;
+        sid = H5Screate_simple(1, dims, NULL);
         H5Dvlen_reclaim(tid, sid, H5P_DEFAULT, strs);
         H5Sclose(sid);
         free(strs);
-        h5JNIFatalError(env, "H5AreadVL: failed to read variable length strings");
+        h5JNIFatalError(env, "H5AreadVL_str: failed to read variable length strings");
         return -1;
     }
 
-    for (i=0; i<n; i++)
-    {
+    for (i=0; i<n; i++) {
         jstr = ENVPTR->NewStringUTF(ENVPAR strs[i]);
         ENVPTR->SetObjectArrayElement(ENVPAR buf, i, jstr);
+        free (strs[i]);
     }
 
-    /*H5Dvlen_reclaim(tid, sid, H5P_DEFAULT, strs);*/
-    H5Sclose(sid);
-
-    for (i=0; i<n; i++) {
-        if (strs[i])
-            free(strs[i]);
-    }
+    /*
+    for repeatedly reading an attribute with a large number of strs (e.g., 1,000,000 strings,
+    H5Dvlen_reclaim() may crash on Windows because the Java GC will not be able to collect
+    free space in time. Instead, use "free(strs[i])" to free individual strings
+    after it is done.
+    H5Dvlen_reclaim(tid, sid, H5P_DEFAULT, strs);
+    */
 
     if (strs)
         free(strs);
