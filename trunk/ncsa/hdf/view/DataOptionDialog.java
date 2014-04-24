@@ -210,9 +210,13 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
         currentIndex = new int[Math.min(3, rank)];
 
         choicePalette = new JComboBox();
+        choicePalette.setName("modulepalette");
         choiceTextView = new JComboBox((Vector<?>) HDFView.getListOfTextView());
+        choiceTextView.setName("moduletext");
         choiceImageView = new JComboBox((Vector<?>) HDFView.getListOfImageView());
+        choiceImageView.setName("moduleimage");
         choiceTableView = new JComboBox((Vector<?>) HDFView.getListOfTableView());
+        choiceTableView.setName("moduletable");
 
         choicePalette.addItem("Select palette");
         if (dataset instanceof ScalarDS) {
@@ -592,11 +596,13 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
         JPanel confirmP = new JPanel();
         contentPane.add(confirmP, BorderLayout.SOUTH);
         button = new JButton("   Ok   ");
+        button.setName("OK");
         button.setMnemonic(KeyEvent.VK_O);
         button.setActionCommand("Ok");
         button.addActionListener(this);
         confirmP.add(button);
         button = new JButton("Cancel");
+        button.setName("Cancel");
         button.setMnemonic(KeyEvent.VK_C);
         button.setActionCommand("Cancel");
         button.addActionListener(this);
