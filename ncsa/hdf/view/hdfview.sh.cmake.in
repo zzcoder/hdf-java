@@ -6,7 +6,7 @@
 export JAVABIN= # bin folder of installed java if not found below
 export INSTALLDIR=@CMAKE_INSTALL_PREFIX@
 
-if [ ! -d $JAVABIN ]; then
+if [ ! -d \$JAVABIN ]; then
     JAVALOC=`which java`
     LASTSLASH=`perl -e "print rindex(\"${JAVALOC}\", '/')"`
     JAVABIN=`perl -e "print substr(\"${JAVALOC}\", 0, $LASTSLASH)"`
