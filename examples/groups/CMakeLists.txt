@@ -8,7 +8,7 @@ INCLUDE_DIRECTORIES(
     ${HDFJAVA_LIB_DIR}
 )
 
-SET (HDF_JAVA_EXAMPLES
+set (HDF_JAVA_EXAMPLES
     H5Ex_G_Create
     H5Ex_G_Iterate
     H5Ex_G_Compact
@@ -18,7 +18,7 @@ SET (HDF_JAVA_EXAMPLES
     H5Ex_G_Visit
 )
 
-SET (HDF_JAVA_OBJECT_EXAMPLES
+set (HDF_JAVA_OBJECT_EXAMPLES
     H5ObjectEx_G_Create
     H5ObjectEx_G_Iterate
     H5ObjectEx_G_Compact
@@ -28,68 +28,68 @@ SET (HDF_JAVA_OBJECT_EXAMPLES
     H5ObjectEx_G_Visit
 )
 
-IF (WIN32 AND NOT CYGWIN)
+if (WIN32)
   SET(CMAKE_JAVA_INCLUDE_FLAG_SEP ";")
-ELSE (WIN32 AND NOT CYGWIN)
+else (WIN32)
   SET(CMAKE_JAVA_INCLUDE_FLAG_SEP ":")
-ENDIF(WIN32 AND NOT CYGWIN)
+ENDIF(WIN32)
 
-SET (CMAKE_JAVA_INCLUDE_PATH "${HDFJAVA_HDF5_JARS}")
+set (CMAKE_JAVA_INCLUDE_PATH "${HDFJAVA_HDF5_JARS}")
 
-SET (CMAKE_JAVA_CLASSPATH ".")
-FOREACH (CMAKE_INCLUDE_PATH ${CMAKE_JAVA_INCLUDE_PATH})
+set (CMAKE_JAVA_CLASSPATH ".")
+foreach (CMAKE_INCLUDE_PATH ${CMAKE_JAVA_INCLUDE_PATH})
   SET(CMAKE_JAVA_CLASSPATH "${CMAKE_JAVA_CLASSPATH}${CMAKE_JAVA_INCLUDE_FLAG_SEP}${CMAKE_INCLUDE_PATH}")
 ENDFOREACH(CMAKE_INCLUDE_PATH)
 
-FOREACH (example ${HDF_JAVA_EXAMPLES})
-  FILE (WRITE ${PROJECT_BINARY_DIR}/Manifest.txt
+foreach (example ${HDF_JAVA_EXAMPLES})
+  file (WRITE ${PROJECT_BINARY_DIR}/Manifest.txt
   "Main-Class: examples.groups.${example}
 "
   )
-  ADD_JAR (${example} MANIFEST ${PROJECT_BINARY_DIR}/Manifest.txt ${example}.java)
+  add_jar (${example} MANIFEST ${PROJECT_BINARY_DIR}/Manifest.txt ${example}.java)
   GET_TARGET_PROPERTY(${example}_JAR_FILE ${example} JAR_FILE)
-#  INSTALL_JAR (${example} ${HJAVA_INSTALL_DATA_DIR}/examples examples)
+#  install_jar (${example} ${HJAVA_INSTALL_DATA_DIR}/examples examples)
   GET_TARGET_PROPERTY(${example}_CLASSPATH ${example} CLASSDIR)
-  ADD_DEPENDENCIES (${example} ${HDFJAVA_NCSA_HDF5_LIB_TARGET})
-ENDFOREACH (example ${HDF_JAVA_EXAMPLES})
+  add_dependencies (${example} ${HDFJAVA_NCSA_HDF5_LIB_TARGET})
+endforeach (example ${HDF_JAVA_EXAMPLES})
 
-SET (CMAKE_JAVA_INCLUDE_PATH "${HDFJAVA_HDF5_JARS};${HDFJAVA_HDF4_JARS};${HDFJAVA_OBJECT_JARS};${HDFJAVA_LOGGING_JAR};${HDFJAVA_LOGGING_NOP_JAR}")
+set (CMAKE_JAVA_INCLUDE_PATH "${HDFJAVA_HDF5_JARS};${HDFJAVA_HDF4_JARS};${HDFJAVA_OBJECT_JARS};${HDFJAVA_LOGGING_JAR};${HDFJAVA_LOGGING_NOP_JAR}")
 
-SET (CMAKE_JAVA_CLASSPATH ".")
-FOREACH (HDFJAVA_JAR ${CMAKE_JAVA_INCLUDE_PATH})
+set (CMAKE_JAVA_CLASSPATH ".")
+foreach (HDFJAVA_JAR ${CMAKE_JAVA_INCLUDE_PATH})
   SET(CMAKE_JAVA_CLASSPATH "${CMAKE_JAVA_CLASSPATH}${CMAKE_JAVA_INCLUDE_FLAG_SEP}${HDFJAVA_JAR}")
 ENDFOREACH(HDFJAVA_JAR)
 
-FOREACH (example ${HDF_JAVA_OBJECT_EXAMPLES})
-  FILE (WRITE ${PROJECT_BINARY_DIR}/Manifest.txt
+foreach (example ${HDF_JAVA_OBJECT_EXAMPLES})
+  file (WRITE ${PROJECT_BINARY_DIR}/Manifest.txt
   "Main-Class: examples.groups.${example}
 "
   )
-  ADD_JAR (${example} MANIFEST ${PROJECT_BINARY_DIR}/Manifest.txt ${example}.java)
+  add_jar (${example} MANIFEST ${PROJECT_BINARY_DIR}/Manifest.txt ${example}.java)
   GET_TARGET_PROPERTY(${example}_JAR_FILE ${example} JAR_FILE)
-#  INSTALL_JAR (${example} ${HJAVA_INSTALL_DATA_DIR}/examples examples)
+#  install_jar (${example} ${HJAVA_INSTALL_DATA_DIR}/examples examples)
   GET_TARGET_PROPERTY(${example}_CLASSPATH ${example} CLASSDIR)
-  ADD_DEPENDENCIES (${example} ${HDFJAVA_NCSA_H5_LIB_TARGET})
-ENDFOREACH (example ${HDF_JAVA_OBJECT_EXAMPLES})
+  add_dependencies (${example} ${HDFJAVA_NCSA_H5_LIB_TARGET})
+endforeach (example ${HDF_JAVA_OBJECT_EXAMPLES})
 
-SET (HDF_JAVA_TEST_FILES
+set (HDF_JAVA_TEST_FILES
     h5ex_g_iterate.h5
     h5ex_g_visit.h5
 )
 
-FOREACH (h5_file ${HDF_JAVA_TEST_FILES})
-  SET (dest "${PROJECT_BINARY_DIR}/${h5_file}")
-  #MESSAGE (STATUS " Copying ${h5_file}")
-  ADD_CUSTOM_COMMAND (
+foreach (h5_file ${HDF_JAVA_TEST_FILES})
+  set (dest "${PROJECT_BINARY_DIR}/${h5_file}")
+  #message (STATUS " Copying ${h5_file}")
+  add_custom_command (
       TARGET     H5Ex_G_Visit
       POST_BUILD
       COMMAND    ${CMAKE_COMMAND}
       ARGS       -E copy_if_different ${PROJECT_SOURCE_DIR}/${h5_file} ${dest}
   )
-ENDFOREACH (h5_file ${HDF_JAVA_TEST_FILES})
+endforeach (h5_file ${HDF_JAVA_TEST_FILES})
 
 MACRO (ADD_H5_TEST resultfile resultcode)
-  ADD_TEST (
+  add_test (
       NAME groups-${resultfile}
       COMMAND "${CMAKE_COMMAND}"
           -D "TEST_TESTER=${CMAKE_Java_RUNTIME};${CMAKE_Java_RUNTIME_FLAGS}"
@@ -103,109 +103,109 @@ MACRO (ADD_H5_TEST resultfile resultcode)
           -D "TEST_REFERENCE=groups/${resultfile}.txt"
           -P "${HDFJAVA_RESOURCES_DIR}/runTest.cmake"
   )
-  IF (NOT "${last_test}" STREQUAL "")
-    SET_TESTS_PROPERTIES (groups-${resultfile} PROPERTIES DEPENDS ${last_test})
-  ENDIF (NOT "${last_test}" STREQUAL "")
-  SET (last_test "groups-${resultfile}")
+  if (NOT "${last_test}" STREQUAL "")
+    set_tests_properties (groups-${resultfile} PROPERTIES DEPENDS ${last_test})
+  endif (NOT "${last_test}" STREQUAL "")
+  set (last_test "groups-${resultfile}")
 ENDMACRO (ADD_H5_TEST file)
 
-IF (BUILD_TESTING)
+if (BUILD_TESTING)
 
-  FOREACH (example ${HDF_JAVA_EXAMPLES})
-    ADD_TEST (
+  foreach (example ${HDF_JAVA_EXAMPLES})
+    add_test (
         NAME groups-${example}-clearall-objects
         COMMAND    ${CMAKE_COMMAND}
             -E remove
             ${example}.out
             ${example}.out.err
     )
-    IF (NOT "${last_test}" STREQUAL "")
-      SET_TESTS_PROPERTIES (groups-${example}-clearall-objects PROPERTIES DEPENDS ${last_test})
-    ENDIF (NOT "${last_test}" STREQUAL "")
-    SET (last_test "groups-${example}-clearall-objects")
-    IF (NOT ${example} STREQUAL "H5Ex_G_Iterate" AND NOT ${example} STREQUAL "H5Ex_G_Visit")
-      IF (${example} STREQUAL "H5Ex_G_Compact")
-        ADD_TEST (
+    if (NOT "${last_test}" STREQUAL "")
+      set_tests_properties (groups-${example}-clearall-objects PROPERTIES DEPENDS ${last_test})
+    endif (NOT "${last_test}" STREQUAL "")
+    set (last_test "groups-${example}-clearall-objects")
+    if (NOT ${example} STREQUAL "H5Ex_G_Iterate" AND NOT ${example} STREQUAL "H5Ex_G_Visit")
+      if (${example} STREQUAL "H5Ex_G_Compact")
+        add_test (
             NAME groups-${example}-clearall-h5s
             COMMAND    ${CMAKE_COMMAND}
                 -E remove
                 ${HDFJAVA_EXAMPLES_BINARY_DIR}/${example}1.h5
                 ${HDFJAVA_EXAMPLES_BINARY_DIR}/${example}2.h5
         )
-      ELSE (${example} STREQUAL "H5Ex_G_Compact")
-        ADD_TEST (
+      else (${example} STREQUAL "H5Ex_G_Compact")
+        add_test (
             NAME groups-${example}-clearall-h5s
             COMMAND    ${CMAKE_COMMAND}
                 -E remove
                 ${HDFJAVA_EXAMPLES_BINARY_DIR}/${example}.h5
         )
-      ENDIF (${example} STREQUAL "H5Ex_G_Compact")
-      IF (NOT "${last_test}" STREQUAL "")
-        SET_TESTS_PROPERTIES (groups-${example}-clearall-h5s PROPERTIES DEPENDS ${last_test})
-      ENDIF (NOT "${last_test}" STREQUAL "")
-      SET (last_test "groups-${example}-clearall-h5s")
-    ENDIF (NOT ${example} STREQUAL "H5Ex_G_Iterate" AND NOT ${example} STREQUAL "H5Ex_G_Visit")
-    ADD_TEST (
+      endif (${example} STREQUAL "H5Ex_G_Compact")
+      if (NOT "${last_test}" STREQUAL "")
+        set_tests_properties (groups-${example}-clearall-h5s PROPERTIES DEPENDS ${last_test})
+      endif (NOT "${last_test}" STREQUAL "")
+      set (last_test "groups-${example}-clearall-h5s")
+    endif (NOT ${example} STREQUAL "H5Ex_G_Iterate" AND NOT ${example} STREQUAL "H5Ex_G_Visit")
+    add_test (
         NAME groups-${example}-copy-objects
         COMMAND    ${CMAKE_COMMAND}
             -E copy_if_different 
             ${HDFJAVA_EXAMPLES_SOURCE_DIR}/testfiles/examples.groups.${example}.txt
             ${HDFJAVA_EXAMPLES_GROUPS_BINARY_DIR}/${example}.txt  
     )
-    IF (NOT "${last_test}" STREQUAL "")
-      SET_TESTS_PROPERTIES (groups-${example}-copy-objects PROPERTIES DEPENDS ${last_test})
-    ENDIF (NOT "${last_test}" STREQUAL "")
-    SET (last_test "groups-${example}-copy-objects")
+    if (NOT "${last_test}" STREQUAL "")
+      set_tests_properties (groups-${example}-copy-objects PROPERTIES DEPENDS ${last_test})
+    endif (NOT "${last_test}" STREQUAL "")
+    set (last_test "groups-${example}-copy-objects")
     ADD_H5_TEST (${example} 0)
-  ENDFOREACH (example ${HDF_JAVA_EXAMPLES})
+  endforeach (example ${HDF_JAVA_EXAMPLES})
 
-  FOREACH (example ${HDF_JAVA_OBJECT_EXAMPLES})
-    ADD_TEST (
+  foreach (example ${HDF_JAVA_OBJECT_EXAMPLES})
+    add_test (
         NAME groups-${example}-clearall-objects
         COMMAND    ${CMAKE_COMMAND}
             -E remove
             ${example}.out
             ${example}.out.err
     )
-    IF (NOT "${last_test}" STREQUAL "")
-      SET_TESTS_PROPERTIES (groups-${example}-clearall-objects PROPERTIES DEPENDS ${last_test})
-    ENDIF (NOT "${last_test}" STREQUAL "")
-    SET (last_test "groups-${example}-clearall-objects")
-    IF (NOT ${example} STREQUAL "H5ObjectEx_G_Iterate" AND NOT ${example} STREQUAL "H5ObjectEx_G_Visit")
-      IF (${example} STREQUAL "H5ObjectEx_G_Compact")
-        ADD_TEST (
+    if (NOT "${last_test}" STREQUAL "")
+      set_tests_properties (groups-${example}-clearall-objects PROPERTIES DEPENDS ${last_test})
+    endif (NOT "${last_test}" STREQUAL "")
+    set (last_test "groups-${example}-clearall-objects")
+    if (NOT ${example} STREQUAL "H5ObjectEx_G_Iterate" AND NOT ${example} STREQUAL "H5ObjectEx_G_Visit")
+      if (${example} STREQUAL "H5ObjectEx_G_Compact")
+        add_test (
             NAME groups-${example}-clearall-h5s
             COMMAND    ${CMAKE_COMMAND}
                 -E remove
                 ${HDFJAVA_EXAMPLES_BINARY_DIR}/${example}1.h5
                 ${HDFJAVA_EXAMPLES_BINARY_DIR}/${example}2.h5
         )
-      ELSE (${example} STREQUAL "H5ObjectEx_G_Compact")
-        ADD_TEST (
+      else (${example} STREQUAL "H5ObjectEx_G_Compact")
+        add_test (
             NAME groups-${example}-clearall-h5s
             COMMAND    ${CMAKE_COMMAND}
                 -E remove
                 ${HDFJAVA_EXAMPLES_BINARY_DIR}/${example}.h5
         )
-      ENDIF (${example} STREQUAL "H5ObjectEx_G_Compact")
-      IF (NOT "${last_test}" STREQUAL "")
-        SET_TESTS_PROPERTIES (groups-${example}-clearall-h5s PROPERTIES DEPENDS ${last_test})
-      ENDIF (NOT "${last_test}" STREQUAL "")
-      SET (last_test "groups-${example}-clearall-h5s")
-    ENDIF (NOT ${example} STREQUAL "H5ObjectEx_G_Iterate" AND NOT ${example} STREQUAL "H5ObjectEx_G_Visit")
-    ADD_TEST (
+      endif (${example} STREQUAL "H5ObjectEx_G_Compact")
+      if (NOT "${last_test}" STREQUAL "")
+        set_tests_properties (groups-${example}-clearall-h5s PROPERTIES DEPENDS ${last_test})
+      endif (NOT "${last_test}" STREQUAL "")
+      set (last_test "groups-${example}-clearall-h5s")
+    endif (NOT ${example} STREQUAL "H5ObjectEx_G_Iterate" AND NOT ${example} STREQUAL "H5ObjectEx_G_Visit")
+    add_test (
         NAME groups-${example}-copy-objects
         COMMAND    ${CMAKE_COMMAND}
             -E copy_if_different 
             ${HDFJAVA_EXAMPLES_SOURCE_DIR}/testfiles/examples.groups.${example}.txt
             ${HDFJAVA_EXAMPLES_GROUPS_BINARY_DIR}/${example}.txt  
     )
-    IF (NOT "${last_test}" STREQUAL "")
-      SET_TESTS_PROPERTIES (groups-${example}-copy-objects PROPERTIES DEPENDS ${last_test})
-    ENDIF (NOT "${last_test}" STREQUAL "")
-    SET (last_test "groups-${example}-copy-objects")
+    if (NOT "${last_test}" STREQUAL "")
+      set_tests_properties (groups-${example}-copy-objects PROPERTIES DEPENDS ${last_test})
+    endif (NOT "${last_test}" STREQUAL "")
+    set (last_test "groups-${example}-copy-objects")
     ADD_H5_TEST (${example} 0)
-  ENDFOREACH (example ${HDF_JAVA_OBJECT_EXAMPLES})
+  endforeach (example ${HDF_JAVA_OBJECT_EXAMPLES})
 
-ENDIF (BUILD_TESTING)
+endif (BUILD_TESTING)
    

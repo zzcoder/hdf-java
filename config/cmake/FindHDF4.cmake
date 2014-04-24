@@ -38,14 +38,14 @@ INCLUDE (SelectLibraryConfigurations)
 INCLUDE (FindPackageHandleStandardArgs)
 
 # The HINTS option should only be used for values computed from the system.
-SET (_HDF4_HINTS
+set (_HDF4_HINTS
     $ENV{HOME}/.local
     $ENV{HDF4_ROOT}
     $ENV{HDF4_ROOT_DIR_HINT}
 )
 # Hard-coded guesses should still go in PATHS. This ensures that the user
 # environment can always override hard guesses.
-SET (_HDF4_PATHS
+set (_HDF4_PATHS
     $ENV{HOME}/.local
     $ENV{HDF4_ROOT}
     $ENV{HDF4_ROOT_DIR_HINT}
@@ -73,9 +73,9 @@ FIND_PATH (HDF4_INCLUDE_DIRS "hdf.h"
 
 # For backwards compatibility we set HDF4_INCLUDE_DIR to the value of
 # HDF4_INCLUDE_DIRS
-SET ( HDF4_INCLUDE_DIR "${HDF4_INCLUDE_DIRS}" )
+set ( HDF4_INCLUDE_DIR "${HDF4_INCLUDE_DIRS}" )
 
-IF (HDF4_INCLUDE_DIR)
-  SET (HDF4_FOUND "YES")
+if (HDF4_INCLUDE_DIR)
+  set (HDF4_FOUND "YES")
   INCLUDE (${HDF4_ROOT_DIR}/hdf4-config.cmake)
-ENDIF (HDF4_INCLUDE_DIR)
+endif (HDF4_INCLUDE_DIR)

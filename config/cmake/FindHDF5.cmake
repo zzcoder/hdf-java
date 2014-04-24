@@ -42,14 +42,14 @@ INCLUDE (SelectLibraryConfigurations)
 INCLUDE (FindPackageHandleStandardArgs)
 
 # The HINTS option should only be used for values computed from the system.
-SET (_HDF5_HINTS
+set (_HDF5_HINTS
     $ENV{HOME}/.local
     $ENV{HDF5_ROOT}
     $ENV{HDF5_ROOT_DIR_HINT}
 )
 # Hard-coded guesses should still go in PATHS. This ensures that the user
 # environment can always override hard guesses.
-SET (_HDF5_PATHS
+set (_HDF5_PATHS
     $ENV{HOME}/.local
     $ENV{HDF5_ROOT}
     $ENV{HDF5_ROOT_DIR_HINT}
@@ -77,9 +77,9 @@ FIND_PATH (HDF5_INCLUDE_DIRS "H5public.h"
 
 # For backwards compatibility we set HDF5_INCLUDE_DIR to the value of
 # HDF5_INCLUDE_DIRS
-SET ( HDF5_INCLUDE_DIR "${HDF5_INCLUDE_DIRS}" )
+set ( HDF5_INCLUDE_DIR "${HDF5_INCLUDE_DIRS}" )
 
-IF (HDF5_INCLUDE_DIR)
-  SET (HDF5_FOUND "YES")
+if (HDF5_INCLUDE_DIR)
+  set (HDF5_FOUND "YES")
   INCLUDE (${HDF5_ROOT_DIR}/hdf5-config.cmake)
-ENDIF (HDF5_INCLUDE_DIR)
+endif (HDF5_INCLUDE_DIR)
