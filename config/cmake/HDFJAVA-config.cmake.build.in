@@ -1,34 +1,34 @@
 #-----------------------------------------------------------------------------
 # HDFJAVA Config file for compiling against HDFJAVA build directory
 #-----------------------------------------------------------------------------
-GET_FILENAME_COMPONENT (SELF_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+get_filename_component (SELF_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
 
 #-----------------------------------------------------------------------------
 # User Options
 #-----------------------------------------------------------------------------
-SET (HDF_ENABLE_PARALLEL @HDF_ENABLE_PARALLEL@)
-SET (BUILD_SHARED_LIBS       @BUILD_SHARED_LIBS@)
-SET (HDF_ENABLE_JPEG_LIB_SUPPORT @HDF_ENABLE_JPEG_LIB_SUPPORT@)
-SET (HDF_ENABLE_Z_LIB_SUPPORT @HDF_ENABLE_Z_LIB_SUPPORT@)
-SET (HDF_ENABLE_SZIP_SUPPORT  @HDF_ENABLE_SZIP_SUPPORT@)
-SET (HDF_ENABLE_SZIP_ENCODING @HDF_ENABLE_SZIP_ENCODING@)
+set (HDF_ENABLE_PARALLEL @HDF_ENABLE_PARALLEL@)
+set (BUILD_SHARED_LIBS       @BUILD_SHARED_LIBS@)
+set (HDF_ENABLE_JPEG_LIB_SUPPORT @HDF_ENABLE_JPEG_LIB_SUPPORT@)
+set (HDF_ENABLE_Z_LIB_SUPPORT @HDF_ENABLE_Z_LIB_SUPPORT@)
+set (HDF_ENABLE_SZIP_SUPPORT  @HDF_ENABLE_SZIP_SUPPORT@)
+set (HDF_ENABLE_SZIP_ENCODING @HDF_ENABLE_SZIP_ENCODING@)
 
 #-----------------------------------------------------------------------------
 # Directories
 #-----------------------------------------------------------------------------
-SET (HDFJAVA_INCLUDE_DIRS "@HDFJAVA_INCLUDES_BUILD_TIME@")
+set (HDFJAVA_INCLUDE_DIRS "@HDFJAVA_INCLUDES_BUILD_TIME@")
 
 #-----------------------------------------------------------------------------
 # Version Strings
 #-----------------------------------------------------------------------------
-SET (HDFJAVA_VERSION_STRING @HDFJAVA_VERSION_STRING@)
-SET (HDFJAVA_VERSION_MAJOR  @HDFJAVA_VERSION_MAJOR@)
-SET (HDFJAVA_VERSION_MINOR  @HDFJAVA_VERSION_MINOR@)
+set (HDFJAVA_VERSION_STRING @HDFJAVA_VERSION_STRING@)
+set (HDFJAVA_VERSION_MAJOR  @HDFJAVA_VERSION_MAJOR@)
+set (HDFJAVA_VERSION_MINOR  @HDFJAVA_VERSION_MINOR@)
 
 #-----------------------------------------------------------------------------
 # Don't include targets if this file is being picked up by another
 # project which has already build HDFJAVA as a subproject
 #-----------------------------------------------------------------------------
-IF (NOT TARGET "@HDFJAVA_PACKAGE@")
+if (NOT TARGET "@HDFJAVA_PACKAGE@")
   INCLUDE (${SELF_DIR}/@HDFJAVA_PACKAGE@@HDF_PACKAGE_EXT@-targets.cmake)
-ENDIF (NOT TARGET "@HDFJAVA_PACKAGE@")
+endif (NOT TARGET "@HDFJAVA_PACKAGE@")

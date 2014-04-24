@@ -1,23 +1,23 @@
 cmake_minimum_required (VERSION 2.8.10)
 PROJECT (HDFJAVA_TEST_UITEST Java)
 
-SET(CMAKE_VERBOSE_MAKEFILE 1)
+set (CMAKE_VERBOSE_MAKEFILE 1)
 
-INCLUDE_DIRECTORIES(
+include_directories (
     ${JAVA_NCSA_HDF_HDF4_BINARY_DIR}
     ${JAVA_NCSA_HDF_HDF5_BINARY_DIR}
     ${JAVA_NCSA_HDF_OBJECT_BINARY_DIR}
     ${HDFJAVA_LIB_DIR}
 )
 
-SET (HDFJAVA_FEST_JARS
+set (HDFJAVA_FEST_JARS
     ${HDFJAVA_LIB_DIR}/fest-swing.jar
     ${HDFJAVA_LIB_DIR}/fest-reflect.jar
     ${HDFJAVA_LIB_DIR}/fest-util.jar
     ${HDFJAVA_LIB_DIR}/fest-assert.jar
 )
 
-SET (HDFJAVA_TEST_UITEST_SRCS
+set (HDFJAVA_TEST_UITEST_SRCS
 #    TestHDFViewCLGeometry.java
     TestHDFViewCLMultipleFiles.java
     TestHDFViewCLRootMultipleFiles.java
@@ -33,21 +33,21 @@ SET (HDFJAVA_TEST_UITEST_SRCS
     TestAll.java
 )
 
-FILE (WRITE ${PROJECT_BINARY_DIR}/Manifest.txt
+file (WRITE ${PROJECT_BINARY_DIR}/Manifest.txt
 "Main-Class: test.uitest.TestAll
 "
 )
 
-SET (CMAKE_JAVA_INCLUDE_PATH "${HDFJAVA_LIB_DIR}/junit.jar;${HDFJAVA_JARS_TO_EXPORT};${HDFJAVA_HDFVIEWJAR_TO_EXPORT};${HDFJAVA_FEST_JARS};${HDFJAVA_LOGGING_JAR};${HDFJAVA_LOGGING_SIMPLE_JAR}")
+set (CMAKE_JAVA_INCLUDE_PATH "${HDFJAVA_LIB_DIR}/junit.jar;${HDFJAVA_JARS_TO_EXPORT};${HDFJAVA_HDFVIEWJAR_TO_EXPORT};${HDFJAVA_FEST_JARS};${HDFJAVA_LOGGING_JAR};${HDFJAVA_LOGGING_SIMPLE_JAR}")
 
-ADD_JAR (${HDFJAVA_TEST_UITEST_TARGET} MANIFEST ${PROJECT_BINARY_DIR}/Manifest.txt ${HDFJAVA_TEST_UITEST_SRCS})
+add_jar (${HDFJAVA_TEST_UITEST_TARGET} MANIFEST ${PROJECT_BINARY_DIR}/Manifest.txt ${HDFJAVA_TEST_UITEST_SRCS})
 
-GET_TARGET_PROPERTY(${HDFJAVA_TEST_UITEST_TARGET}_JAR_FILE ${HDFJAVA_TEST_UITEST_TARGET} JAR_FILE)
-#INSTALL_JAR (${HDFJAVA_TEST_UITEST_TARGET} ${HJAVA_INSTALL_DATA_DIR}/tests tests)
+get_target_property (${HDFJAVA_TEST_UITEST_TARGET}_JAR_FILE ${HDFJAVA_TEST_UITEST_TARGET} JAR_FILE)
+#install_jar (${HDFJAVA_TEST_UITEST_TARGET} ${HJAVA_INSTALL_DATA_DIR}/tests tests)
 
-ADD_DEPENDENCIES (${HDFJAVA_TEST_UITEST_TARGET} ${HDFJAVA_NCSA_HDF5_LIB_TARGET} ${HDFJAVA_NCSA_HDF_LIB_TARGET})
+add_dependencies (${HDFJAVA_TEST_UITEST_TARGET} ${HDFJAVA_NCSA_HDF5_LIB_TARGET} ${HDFJAVA_NCSA_HDF_LIB_TARGET})
 
-SET (HDF_JAVA_TEST_FILES
+set (HDF_JAVA_TEST_FILES
       tattrintsize.h5
       tintsattrs.h5
       tintsize.h5
@@ -62,7 +62,7 @@ SET (HDF_JAVA_TEST_FILES
       tattr2.h5
 )
 
-SET (HDF_JAVA_TEST_REFERENCE
+set (HDF_JAVA_TEST_REFERENCE
 #      JUnit-gui-CL-geom.txt
 #      JUnit-gui-CL-geom.err
       JUnit-gui-CL-multi.txt
@@ -90,59 +90,59 @@ SET (HDF_JAVA_TEST_REFERENCE
       DU64BITS.xbin
 )
 
-SET (HDF_JAVA_EXPORT_REFERENCE
+set (HDF_JAVA_EXPORT_REFERENCE
       DS64BITS.xtxt
 )
 
-FOREACH (h5_file ${HDF_JAVA_TEST_FILES})
-  SET (dest "${PROJECT_BINARY_DIR}/${h5_file}")
-  #MESSAGE (STATUS " Copying ${h5_file}")
-  ADD_CUSTOM_COMMAND (
+foreach (h5_file ${HDF_JAVA_TEST_FILES})
+  set (dest "${PROJECT_BINARY_DIR}/${h5_file}")
+  #message (STATUS " Copying ${h5_file}")
+  add_custom_command (
       TARGET     ${HDFJAVA_TEST_UITEST_TARGET}
       POST_BUILD
       COMMAND    ${CMAKE_COMMAND}
       ARGS       -E copy_if_different ${PROJECT_SOURCE_DIR}/${h5_file} ${dest}
   )
-ENDFOREACH (h5_file ${HDF_JAVA_TEST_FILES})
+endforeach (h5_file ${HDF_JAVA_TEST_FILES})
 
-FOREACH (ref_file ${HDF_JAVA_TEST_REFERENCE})
-  SET (dest "${PROJECT_BINARY_DIR}/${ref_file}")
-  #MESSAGE (STATUS " Copying ${ref_file}")
-  ADD_CUSTOM_COMMAND (
+foreach (ref_file ${HDF_JAVA_TEST_REFERENCE})
+  set (dest "${PROJECT_BINARY_DIR}/${ref_file}")
+  #message (STATUS " Copying ${ref_file}")
+  add_custom_command (
       TARGET     ${HDFJAVA_TEST_UITEST_TARGET}
       POST_BUILD
       COMMAND    ${CMAKE_COMMAND}
       ARGS       -E copy_if_different ${PROJECT_SOURCE_DIR}/${ref_file} ${dest}
   )
-ENDFOREACH (ref_file ${HDF_JAVA_TEST_REFERENCE})
+endforeach (ref_file ${HDF_JAVA_TEST_REFERENCE})
 
-FOREACH (exp_file ${HDF_JAVA_EXPORT_REFERENCE})
-  IF (WIN32 AND NOT CYGWIN)
-    FILE (READ ${PROJECT_SOURCE_DIR}/${exp_file} TEST_STREAM)
-    FILE (WRITE ${PROJECT_BINARY_DIR}/${exp_file} "${TEST_STREAM}")
-  ELSE (WIN32 AND NOT CYGWIN)
-    ADD_CUSTOM_COMMAND (
+foreach (exp_file ${HDF_JAVA_EXPORT_REFERENCE})
+  if (WIN32)
+    file (READ ${PROJECT_SOURCE_DIR}/${exp_file} TEST_STREAM)
+    file (WRITE ${PROJECT_BINARY_DIR}/${exp_file} "${TEST_STREAM}")
+  else (WIN32)
+    add_custom_command (
         TARGET     ${HDFJAVA_TEST_UITEST_TARGET}
         POST_BUILD
         COMMAND    ${CMAKE_COMMAND}
         ARGS       -E copy_if_different ${PROJECT_SOURCE_DIR}/${exp_file} ${PROJECT_BINARY_DIR}/${exp_file}
     )
-  ENDIF (WIN32 AND NOT CYGWIN)
-ENDFOREACH (exp_file ${HDF_JAVA_EXPORT_REFERENCE})
+  endif (WIN32)
+endforeach (exp_file ${HDF_JAVA_EXPORT_REFERENCE})
 
-IF (WIN32 AND NOT CYGWIN)
-  SET(CMAKE_JAVA_INCLUDE_FLAG_SEP ";")
-ELSE (WIN32 AND NOT CYGWIN)
-  SET(CMAKE_JAVA_INCLUDE_FLAG_SEP ":")
-ENDIF(WIN32 AND NOT CYGWIN)
+if (WIN32)
+  set (CMAKE_JAVA_INCLUDE_FLAG_SEP ";")
+else (WIN32)
+  set (CMAKE_JAVA_INCLUDE_FLAG_SEP ":")
+endif (WIN32)
 
-SET (CMAKE_JAVA_CLASSPATH ".")
-FOREACH (CMAKE_INCLUDE_PATH ${CMAKE_JAVA_INCLUDE_PATH})
-  SET(CMAKE_JAVA_CLASSPATH "${CMAKE_JAVA_CLASSPATH}${CMAKE_JAVA_INCLUDE_FLAG_SEP}${CMAKE_INCLUDE_PATH}")
-ENDFOREACH(CMAKE_INCLUDE_PATH)
-SET (CMAKE_JAVA_CLASSPATH "${CMAKE_JAVA_CLASSPATH}${CMAKE_JAVA_INCLUDE_FLAG_SEP}${${HDFJAVA_TEST_UITEST_TARGET}_JAR_FILE}")
+set (CMAKE_JAVA_CLASSPATH ".")
+foreach (CMAKE_INCLUDE_PATH ${CMAKE_JAVA_INCLUDE_PATH})
+  set (CMAKE_JAVA_CLASSPATH "${CMAKE_JAVA_CLASSPATH}${CMAKE_JAVA_INCLUDE_FLAG_SEP}${CMAKE_INCLUDE_PATH}")
+endforeach (CMAKE_INCLUDE_PATH)
+set (CMAKE_JAVA_CLASSPATH "${CMAKE_JAVA_CLASSPATH}${CMAKE_JAVA_INCLUDE_FLAG_SEP}${${HDFJAVA_TEST_UITEST_TARGET}_JAR_FILE}")
 
-ADD_TEST (
+add_test (
     NAME JUnit-gui-clear-objects
     COMMAND    ${CMAKE_COMMAND}
         -E remove 
@@ -186,7 +186,7 @@ ADD_TEST (
         JUnit-gui-CL-root-multi.out.err
 )
 
-ADD_TEST (
+add_test (
     NAME JUnit-gui-menu
     COMMAND "${CMAKE_COMMAND}"
         -D "TEST_TESTER=${CMAKE_Java_RUNTIME};${CMAKE_Java_RUNTIME_FLAGS}"
@@ -203,11 +203,11 @@ ADD_TEST (
         -P "${HDFJAVA_RESOURCES_DIR}/runTest.cmake"
 )
 
-SET_TESTS_PROPERTIES (JUnit-gui-menu PROPERTIES
+set_tests_properties (JUnit-gui-menu PROPERTIES
     DEPENDS JUnit-gui-clear-objects
 )
 
-ADD_TEST (
+add_test (
     NAME JUnit-gui-treeview-newmenu
     COMMAND "${CMAKE_COMMAND}"
         -D "TEST_TESTER=${CMAKE_Java_RUNTIME};${CMAKE_Java_RUNTIME_FLAGS}"
@@ -224,11 +224,11 @@ ADD_TEST (
         -P "${HDFJAVA_RESOURCES_DIR}/runTest.cmake"
 )
 
-SET_TESTS_PROPERTIES (JUnit-gui-treeview-newmenu PROPERTIES
+set_tests_properties (JUnit-gui-treeview-newmenu PROPERTIES
     DEPENDS JUnit-gui-menu
 )
 
-ADD_TEST (
+add_test (
     NAME JUnit-gui-treeview-groups
     COMMAND "${CMAKE_COMMAND}"
         -D "TEST_TESTER=${CMAKE_Java_RUNTIME};${CMAKE_Java_RUNTIME_FLAGS}"
@@ -245,21 +245,21 @@ ADD_TEST (
         -P "${HDFJAVA_RESOURCES_DIR}/runTest.cmake"
 )
 
-SET_TESTS_PROPERTIES (JUnit-gui-treeview-groups PROPERTIES
+set_tests_properties (JUnit-gui-treeview-groups PROPERTIES
     DEPENDS JUnit-gui-treeview-newmenu
 )
 
-ADD_TEST (
+add_test (
     NAME JUnit-gui-treeview-files-copy
     COMMAND    ${CMAKE_COMMAND}
         -E copy ${PROJECT_SOURCE_DIR}/tcmpdintsize.h5 ${PROJECT_BINARY_DIR}/temp_cmpdimport.h5
 )
 
-SET_TESTS_PROPERTIES (JUnit-gui-treeview-files-copy PROPERTIES
+set_tests_properties (JUnit-gui-treeview-files-copy PROPERTIES
     DEPENDS JUnit-gui-treeview-groups
 )
 
-ADD_TEST (
+add_test (
     NAME JUnit-gui-treeview-files
     COMMAND "${CMAKE_COMMAND}"
         -D "TEST_TESTER=${CMAKE_Java_RUNTIME};${CMAKE_Java_RUNTIME_FLAGS}"
@@ -277,11 +277,11 @@ ADD_TEST (
         -P "${HDFJAVA_RESOURCES_DIR}/runTest.cmake"
 )
 
-SET_TESTS_PROPERTIES (JUnit-gui-treeview-files PROPERTIES
+set_tests_properties (JUnit-gui-treeview-files PROPERTIES
     DEPENDS JUnit-gui-treeview-files-copy
 )
 
-ADD_TEST (
+add_test (
     NAME JUnit-gui-treeview-export
     COMMAND "${CMAKE_COMMAND}"
         -D "TEST_TESTER=${CMAKE_Java_RUNTIME};${CMAKE_Java_RUNTIME_FLAGS}"
@@ -298,29 +298,29 @@ ADD_TEST (
         -P "${HDFJAVA_RESOURCES_DIR}/runTest.cmake"
 )
 
-SET_TESTS_PROPERTIES (JUnit-gui-treeview-export PROPERTIES
+set_tests_properties (JUnit-gui-treeview-export PROPERTIES
     DEPENDS JUnit-gui-treeview-files
 )
 
-ADD_TEST (
+add_test (
     NAME JUnit-gui-treeview-export2
     COMMAND ${CMAKE_COMMAND}
         -E compare_files ${PROJECT_BINARY_DIR}/DS64BITS.xtxt ${PROJECT_BINARY_DIR}/DS64BITS.txt
 )
-SET_TESTS_PROPERTIES (JUnit-gui-treeview-export2 PROPERTIES
+set_tests_properties (JUnit-gui-treeview-export2 PROPERTIES
     DEPENDS JUnit-gui-treeview-export
 )
 
-ADD_TEST (
+add_test (
     NAME JUnit-gui-treeview-export3
     COMMAND ${CMAKE_COMMAND}
         -E compare_files ${PROJECT_BINARY_DIR}/DU64BITS.xbin ${PROJECT_BINARY_DIR}/DU64BITS.bin
 )
-SET_TESTS_PROPERTIES (JUnit-gui-treeview-export3 PROPERTIES
+set_tests_properties (JUnit-gui-treeview-export3 PROPERTIES
     DEPENDS JUnit-gui-treeview-export2
 )
    
-ADD_TEST (
+add_test (
     NAME JUnit-gui-tableview-menu
     COMMAND "${CMAKE_COMMAND}"
         -D "TEST_TESTER=${CMAKE_Java_RUNTIME};${CMAKE_Java_RUNTIME_FLAGS}"
@@ -337,11 +337,11 @@ ADD_TEST (
         -P "${HDFJAVA_RESOURCES_DIR}/runTest.cmake"
 )
 
-SET_TESTS_PROPERTIES (JUnit-gui-tableview-menu PROPERTIES
+set_tests_properties (JUnit-gui-tableview-menu PROPERTIES
     DEPENDS JUnit-gui-treeview-export3
 )
 
-ADD_TEST (
+add_test (
     NAME JUnit-gui-treeview-newvldt
     COMMAND "${CMAKE_COMMAND}"
         -D "TEST_TESTER=${CMAKE_Java_RUNTIME};${CMAKE_Java_RUNTIME_FLAGS}"
@@ -358,11 +358,11 @@ ADD_TEST (
         -P "${HDFJAVA_RESOURCES_DIR}/runTest.cmake"
 )
 
-SET_TESTS_PROPERTIES (JUnit-gui-treeview-newvldt PROPERTIES
+set_tests_properties (JUnit-gui-treeview-newvldt PROPERTIES
     DEPENDS JUnit-gui-tableview-menu
 )
 
-ADD_TEST (
+add_test (
     NAME JUnit-gui-treeview-filters
     COMMAND "${CMAKE_COMMAND}"
         -D "TEST_TESTER=${CMAKE_Java_RUNTIME};${CMAKE_Java_RUNTIME_FLAGS}"
@@ -380,11 +380,11 @@ ADD_TEST (
         -P "${HDFJAVA_RESOURCES_DIR}/runTest.cmake"
 )
 
-SET_TESTS_PROPERTIES (JUnit-gui-treeview-filters PROPERTIES
+set_tests_properties (JUnit-gui-treeview-filters PROPERTIES
     DEPENDS JUnit-gui-treeview-newvldt
 )
    
-ADD_TEST (
+add_test (
     NAME JUnit-gui-tattr2
     COMMAND "${CMAKE_COMMAND}"
         -D "TEST_TESTER=${CMAKE_Java_RUNTIME};${CMAKE_Java_RUNTIME_FLAGS}"
@@ -401,11 +401,11 @@ ADD_TEST (
         -P "${HDFJAVA_RESOURCES_DIR}/runTest.cmake"
 )
 
-SET_TESTS_PROPERTIES (JUnit-gui-tattr2 PROPERTIES
+set_tests_properties (JUnit-gui-tattr2 PROPERTIES
     DEPENDS JUnit-gui-treeview-filters
 )
    
-ADD_TEST (
+add_test (
     NAME JUnit-gui-CL-multi
     COMMAND "${CMAKE_COMMAND}"
         -D "TEST_TESTER=${CMAKE_Java_RUNTIME};${CMAKE_Java_RUNTIME_FLAGS}"
@@ -422,11 +422,11 @@ ADD_TEST (
         -P "${HDFJAVA_RESOURCES_DIR}/runTest.cmake"
 )
 
-SET_TESTS_PROPERTIES (JUnit-gui-CL-multi PROPERTIES
+set_tests_properties (JUnit-gui-CL-multi PROPERTIES
     DEPENDS JUnit-gui-tattr2
 )
    
-ADD_TEST (
+add_test (
     NAME JUnit-gui-CL-root-multi
     COMMAND "${CMAKE_COMMAND}"
         -D "TEST_TESTER=${CMAKE_Java_RUNTIME};${CMAKE_Java_RUNTIME_FLAGS}"
@@ -443,11 +443,11 @@ ADD_TEST (
         -P "${HDFJAVA_RESOURCES_DIR}/runTest.cmake"
 )
 
-SET_TESTS_PROPERTIES (JUnit-gui-CL-root-multi PROPERTIES
+set_tests_properties (JUnit-gui-CL-root-multi PROPERTIES
     DEPENDS JUnit-gui-CL-multi
 )
    
-#ADD_TEST (
+#add_test (
 #    NAME JUnit-gui-CL-geom
 #    COMMAND "${CMAKE_COMMAND}"
 #        -D "TEST_TESTER=${CMAKE_Java_RUNTIME};${CMAKE_Java_RUNTIME_FLAGS}"
@@ -464,7 +464,7 @@ SET_TESTS_PROPERTIES (JUnit-gui-CL-root-multi PROPERTIES
 #        -P "${HDFJAVA_RESOURCES_DIR}/runTest.cmake"
 #)
 #
-#SET_TESTS_PROPERTIES (JUnit-gui-CL-geom PROPERTIES
+#set_tests_properties (JUnit-gui-CL-geom PROPERTIES
 #    DEPENDS JUnit-gui-CL-root-multi
 #)
    
