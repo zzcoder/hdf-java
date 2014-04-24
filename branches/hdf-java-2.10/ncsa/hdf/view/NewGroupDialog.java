@@ -191,12 +191,12 @@ public class NewGroupDialog extends JDialog implements ActionListener, ItemListe
         textPanel = new JPanel();
         
         if(!isH5){
-        labelPanel.setLayout(new GridLayout(2, 1));
-        labelPanel.add(new JLabel("Group name: "));
-        labelPanel.add(new JLabel("Parent group: "));
-        textPanel.setLayout(new GridLayout(2, 1));
-        textPanel.add(nameField = new JTextField());
-        textPanel.add(parentChoice);
+            labelPanel.setLayout(new GridLayout(2, 1));
+            labelPanel.add(new JLabel("Group name: "));
+            labelPanel.add(new JLabel("Parent group: "));
+            textPanel.setLayout(new GridLayout(2, 1));
+            textPanel.add(nameField = new JTextField());
+            textPanel.add(parentChoice);
         }
         else{
             labelPanel.setLayout(new GridLayout(3, 1));

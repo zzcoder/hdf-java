@@ -23,14 +23,14 @@ INCLUDE (SelectLibraryConfigurations)
 INCLUDE (FindPackageHandleStandardArgs)
 
 # The HINTS option should only be used for values computed from the system.
-SET (_HDFJAVA_HINTS
+set (_HDFJAVA_HINTS
     $ENV{HOME}/.local
     $ENV{HDFJAVA_ROOT}
     $ENV{HDFJAVA_ROOT_DIR_HINT}
 )
 # Hard-coded guesses should still go in PATHS. This ensures that the user
 # environment can always override hard guesses.
-SET (_HDFJAVA_PATHS
+set (_HDFJAVA_PATHS
     $ENV{HOME}/.local
     $ENV{HDFJAVA_ROOT}
     $ENV{HDFJAVA_ROOT_DIR_HINT}
@@ -56,11 +56,11 @@ FIND_PATH (HDFJAVA_LIBRARY "jhdfview.jar"
         lib
 )
 
-IF (HDFJAVA_ROOT_DIR)
-  SET (HDFJAVA_FOUND "YES")
+if (HDFJAVA_ROOT_DIR)
+  set (HDFJAVA_FOUND "YES")
   INCLUDE (${HDFJAVA_ROOT_DIR}/@HDFJAVA_PACKAGE@@HDF_PACKAGE_EXT@-config.cmake)
-  SET (HDFJAVA_LIBRARIES "${HDFJAVA_LIBRARY}")
-  SET (HDFJAVA_INCLUDE_DIRS 
+  set (HDFJAVA_LIBRARIES "${HDFJAVA_LIBRARY}")
+  set (HDFJAVA_INCLUDE_DIRS 
         ${HDFJAVA_LIBRARY}/jarhdf-@HDFJAVA_PACKAGE_VERSION@.jar
         ${HDFJAVA_LIBRARY}/jarhdf5-@HDFJAVA_PACKAGE_VERSION@.jar
         ${HDFJAVA_LIBRARY}/jarhdfobj.jar
@@ -74,4 +74,4 @@ IF (HDFJAVA_ROOT_DIR)
         ${HDFJAVA_LIBRARY}/slf4j-nop-1.7.5.jar
   )
   
-ENDIF (HDFJAVA_ROOT_DIR)
+endif (HDFJAVA_ROOT_DIR)

@@ -8,7 +8,7 @@ INCLUDE_DIRECTORIES(
     ${HDFJAVA_LIB_DIR}
 )
 
-SET (HDF_JAVA_EXAMPLES
+set (HDF_JAVA_EXAMPLES
     H5Ex_D_Alloc
     H5Ex_D_Checksum
     H5Ex_D_Chunk
@@ -29,7 +29,7 @@ SET (HDF_JAVA_EXAMPLES
     H5Ex_D_Soint
 )
 
-SET (HDF_JAVA_OBJECT_EXAMPLES
+set (HDF_JAVA_OBJECT_EXAMPLES
     H5ObjectEx_D_Alloc
     H5ObjectEx_D_Checksum
     H5ObjectEx_D_Chunk
@@ -50,52 +50,52 @@ SET (HDF_JAVA_OBJECT_EXAMPLES
     H5ObjectEx_D_Soint
 )
 
-IF (WIN32 AND NOT CYGWIN)
+if (WIN32)
   SET(CMAKE_JAVA_INCLUDE_FLAG_SEP ";")
-ELSE (WIN32 AND NOT CYGWIN)
+else (WIN32)
   SET(CMAKE_JAVA_INCLUDE_FLAG_SEP ":")
-ENDIF(WIN32 AND NOT CYGWIN)
+ENDIF(WIN32)
 
-SET (CMAKE_JAVA_INCLUDE_PATH "${HDFJAVA_HDF5_JARS}")
+set (CMAKE_JAVA_INCLUDE_PATH "${HDFJAVA_HDF5_JARS}")
 
-SET (CMAKE_JAVA_CLASSPATH ".")
-FOREACH (HDFJAVA_JAR ${CMAKE_JAVA_INCLUDE_PATH})
+set (CMAKE_JAVA_CLASSPATH ".")
+foreach (HDFJAVA_JAR ${CMAKE_JAVA_INCLUDE_PATH})
   SET(CMAKE_JAVA_CLASSPATH "${CMAKE_JAVA_CLASSPATH}${CMAKE_JAVA_INCLUDE_FLAG_SEP}${HDFJAVA_JAR}")
 ENDFOREACH(HDFJAVA_JAR)
 
-FOREACH (example ${HDF_JAVA_EXAMPLES})
-  FILE (WRITE ${PROJECT_BINARY_DIR}/${example}_Manifest.txt
+foreach (example ${HDF_JAVA_EXAMPLES})
+  file (WRITE ${PROJECT_BINARY_DIR}/${example}_Manifest.txt
   "Main-Class: examples.datasets.${example}
 "
   )
-  ADD_JAR (${example} MANIFEST ${PROJECT_BINARY_DIR}/${example}_Manifest.txt ${example}.java)
+  add_jar (${example} MANIFEST ${PROJECT_BINARY_DIR}/${example}_Manifest.txt ${example}.java)
   GET_TARGET_PROPERTY(${example}_JAR_FILE ${example} JAR_FILE)
-#  INSTALL_JAR (${example} ${HJAVA_INSTALL_DATA_DIR}/examples examples)
+#  install_jar (${example} ${HJAVA_INSTALL_DATA_DIR}/examples examples)
   GET_TARGET_PROPERTY(${example}_CLASSPATH ${example} CLASSDIR)
-  ADD_DEPENDENCIES (${example} ${HDFJAVA_NCSA_HDF5_LIB_TARGET})
-ENDFOREACH (example ${HDF_JAVA_EXAMPLES})
+  add_dependencies (${example} ${HDFJAVA_NCSA_HDF5_LIB_TARGET})
+endforeach (example ${HDF_JAVA_EXAMPLES})
 
-SET (CMAKE_JAVA_INCLUDE_PATH "${HDFJAVA_HDF5_JARS};${HDFJAVA_HDF4_JARS};${HDFJAVA_OBJECT_JARS};${HDFJAVA_LOGGING_JAR};${HDFJAVA_LOGGING_NOP_JAR}")
+set (CMAKE_JAVA_INCLUDE_PATH "${HDFJAVA_HDF5_JARS};${HDFJAVA_HDF4_JARS};${HDFJAVA_OBJECT_JARS};${HDFJAVA_LOGGING_JAR};${HDFJAVA_LOGGING_NOP_JAR}")
 
-SET (CMAKE_JAVA_CLASSPATH ".")
-FOREACH (HDFJAVA_JAR ${CMAKE_JAVA_INCLUDE_PATH})
+set (CMAKE_JAVA_CLASSPATH ".")
+foreach (HDFJAVA_JAR ${CMAKE_JAVA_INCLUDE_PATH})
   SET(CMAKE_JAVA_CLASSPATH "${CMAKE_JAVA_CLASSPATH}${CMAKE_JAVA_INCLUDE_FLAG_SEP}${HDFJAVA_JAR}")
 ENDFOREACH(HDFJAVA_JAR)
 
-FOREACH (example ${HDF_JAVA_OBJECT_EXAMPLES})
-  FILE (WRITE ${PROJECT_BINARY_DIR}/${example}_Manifest.txt
+foreach (example ${HDF_JAVA_OBJECT_EXAMPLES})
+  file (WRITE ${PROJECT_BINARY_DIR}/${example}_Manifest.txt
   "Main-Class: examples.datasets.${example}
 "
   )
-  ADD_JAR (${example} MANIFEST ${PROJECT_BINARY_DIR}/${example}_Manifest.txt ${example}.java)
+  add_jar (${example} MANIFEST ${PROJECT_BINARY_DIR}/${example}_Manifest.txt ${example}.java)
   GET_TARGET_PROPERTY(${example}_JAR_FILE ${example} JAR_FILE)
-#  INSTALL_JAR (${example} ${HJAVA_INSTALL_DATA_DIR}/examples examples)
+#  install_jar (${example} ${HJAVA_INSTALL_DATA_DIR}/examples examples)
   GET_TARGET_PROPERTY(${example}_CLASSPATH ${example} CLASSDIR)
-  ADD_DEPENDENCIES (${example} ${HDFJAVA_NCSA_H5_LIB_TARGET})
-ENDFOREACH (example ${HDF_JAVA_OBJECT_EXAMPLES})
+  add_dependencies (${example} ${HDFJAVA_NCSA_H5_LIB_TARGET})
+endforeach (example ${HDF_JAVA_OBJECT_EXAMPLES})
 
 MACRO (ADD_H5_TEST resultfile resultcode)
-  ADD_TEST (
+  add_test (
       NAME datasets-${resultfile}
       COMMAND "${CMAKE_COMMAND}"
           -D "TEST_TESTER=${CMAKE_Java_RUNTIME};${CMAKE_Java_RUNTIME_FLAGS}"
@@ -109,17 +109,17 @@ MACRO (ADD_H5_TEST resultfile resultcode)
           -D "TEST_REFERENCE=datasets/${resultfile}.txt"
           -P "${HDFJAVA_RESOURCES_DIR}/runTest.cmake"
   )
-  IF (NOT "${last_test}" STREQUAL "")
-    SET_TESTS_PROPERTIES (datasets-${resultfile} PROPERTIES DEPENDS ${last_test})
-  ENDIF (NOT "${last_test}" STREQUAL "")
-  SET (last_test "datasets-${resultfile}")
+  if (NOT "${last_test}" STREQUAL "")
+    set_tests_properties (datasets-${resultfile} PROPERTIES DEPENDS ${last_test})
+  endif (NOT "${last_test}" STREQUAL "")
+  set (last_test "datasets-${resultfile}")
 ENDMACRO (ADD_H5_TEST file)
 
-IF (BUILD_TESTING)
+if (BUILD_TESTING)
 
-  FOREACH (example ${HDF_JAVA_EXAMPLES})
-    IF (${example} STREQUAL "H5Ex_D_External")
-      ADD_TEST (
+  foreach (example ${HDF_JAVA_EXAMPLES})
+    if (${example} STREQUAL "H5Ex_D_External")
+      add_test (
           NAME datasets-${example}-clearall-objects
           COMMAND    ${CMAKE_COMMAND}
               -E remove
@@ -128,8 +128,8 @@ IF (BUILD_TESTING)
               ${example}.out
               ${example}.out.err
       )
-    ELSE (${example} STREQUAL "H5Ex_D_External")
-      ADD_TEST (
+    else (${example} STREQUAL "H5Ex_D_External")
+      add_test (
           NAME datasets-${example}-clearall-objects
           COMMAND    ${CMAKE_COMMAND}
               -E remove
@@ -137,25 +137,25 @@ IF (BUILD_TESTING)
               ${example}.out
               ${example}.out.err
       )
-    ENDIF (${example} STREQUAL "H5Ex_D_External")
-    IF (NOT "${last_test}" STREQUAL "")
-      SET_TESTS_PROPERTIES (datasets-${example}-clearall-objects PROPERTIES DEPENDS ${last_test})
-    ENDIF (NOT "${last_test}" STREQUAL "")
-    ADD_TEST (
+    endif (${example} STREQUAL "H5Ex_D_External")
+    if (NOT "${last_test}" STREQUAL "")
+      set_tests_properties (datasets-${example}-clearall-objects PROPERTIES DEPENDS ${last_test})
+    endif (NOT "${last_test}" STREQUAL "")
+    add_test (
         NAME datasets-${example}-copy-objects
         COMMAND    ${CMAKE_COMMAND}
             -E copy_if_different 
             ${HDFJAVA_EXAMPLES_SOURCE_DIR}/testfiles/examples.datasets.${example}.txt
             ${HDFJAVA_EXAMPLES_DATASETS_BINARY_DIR}/${example}.txt  
     )
-    SET_TESTS_PROPERTIES (datasets-${example}-copy-objects PROPERTIES DEPENDS datasets-${example}-clearall-objects)
-    SET (last_test "datasets-${example}-copy-objects")
+    set_tests_properties (datasets-${example}-copy-objects PROPERTIES DEPENDS datasets-${example}-clearall-objects)
+    set (last_test "datasets-${example}-copy-objects")
     ADD_H5_TEST (${example} 0)
-  ENDFOREACH (example ${HDF_JAVA_EXAMPLES})
+  endforeach (example ${HDF_JAVA_EXAMPLES})
 
-  FOREACH (example ${HDF_JAVA_OBJECT_EXAMPLES})
-    IF (${example} STREQUAL "H5ObjectEx_D_External")
-      ADD_TEST (
+  foreach (example ${HDF_JAVA_OBJECT_EXAMPLES})
+    if (${example} STREQUAL "H5ObjectEx_D_External")
+      add_test (
           NAME datasets-${example}-clearall-objects
           COMMAND    ${CMAKE_COMMAND}
               -E remove
@@ -164,8 +164,8 @@ IF (BUILD_TESTING)
               ${example}.out
               ${example}.out.err
       )
-    ELSE (${example} STREQUAL "H5ObjectEx_D_External")
-      ADD_TEST (
+    else (${example} STREQUAL "H5ObjectEx_D_External")
+      add_test (
           NAME datasets-${example}-clearall-objects
           COMMAND    ${CMAKE_COMMAND}
               -E remove
@@ -173,21 +173,21 @@ IF (BUILD_TESTING)
               ${example}.out
               ${example}.out.err
       )
-    ENDIF (${example} STREQUAL "H5ObjectEx_D_External")
-    IF (NOT "${last_test}" STREQUAL "")
-      SET_TESTS_PROPERTIES (datasets-${example}-clearall-objects PROPERTIES DEPENDS ${last_test})
-    ENDIF (NOT "${last_test}" STREQUAL "")
-    ADD_TEST (
+    endif (${example} STREQUAL "H5ObjectEx_D_External")
+    if (NOT "${last_test}" STREQUAL "")
+      set_tests_properties (datasets-${example}-clearall-objects PROPERTIES DEPENDS ${last_test})
+    endif (NOT "${last_test}" STREQUAL "")
+    add_test (
         NAME datasets-${example}-copy-objects
         COMMAND    ${CMAKE_COMMAND}
             -E copy_if_different 
             ${HDFJAVA_EXAMPLES_SOURCE_DIR}/testfiles/examples.datasets.${example}.txt
             ${HDFJAVA_EXAMPLES_DATASETS_BINARY_DIR}/${example}.txt  
     )
-    SET_TESTS_PROPERTIES (datasets-${example}-copy-objects PROPERTIES DEPENDS datasets-${example}-clearall-objects)
-    SET (last_test "datasets-${example}-copy-objects")
+    set_tests_properties (datasets-${example}-copy-objects PROPERTIES DEPENDS datasets-${example}-clearall-objects)
+    set (last_test "datasets-${example}-copy-objects")
     ADD_H5_TEST (${example} 0)
-  ENDFOREACH (example ${HDF_OBJECT_JAVA_EXAMPLES})
+  endforeach (example ${HDF_OBJECT_JAVA_EXAMPLES})
 
-ENDIF (BUILD_TESTING)
+endif (BUILD_TESTING)
    

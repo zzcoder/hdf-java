@@ -8,8 +8,8 @@ HDFJAVA=@JH45INST@
 export HDFJAVA
 
 # where Java is installed (requires jdk1.4.x or above), e.g. /usr/jdk1.4.2/bin
-JAVAHOME=@JAVABIN@
-export JAVAHOME
+JAVABIN=@JAVABIN@
+export JAVABIN
 
 ###############################################################################
 #            DO NOT MODIFY BELOW THIS LINE
@@ -26,10 +26,10 @@ then
 TEST=`which test`
 fi
 
-if [ ! -d $JAVAHOME ]; then
+if [ ! -d \$JAVABIN ]; then
     JAVALOC=`which java`
     LASTSLASH=`perl -e "print rindex(\"${JAVALOC}\", '/')"`
-    JAVAHOME=`perl -e "print substr(\"${JAVALOC}\", 0, $LASTSLASH)"`
+    JAVABIN=`perl -e "print substr(\"${JAVALOC}\", 0, $LASTSLASH)"`
 fi
 
 if $TEST -z "$CLASSPATH"; then
@@ -38,8 +38,8 @@ fi
 CLASSPATH=$CPATH":"$CLASSPATH
 export CLASSPATH
 
-if $TEST -n "$JAVAHOME" ; then
-	PATH=$JAVAHOME":"$PATH
+if $TEST -n "$JAVABIN" ; then
+	PATH=$JAVABIN":"$PATH
 	export PATH
 fi
 
@@ -90,4 +90,4 @@ esac
 
 export LD_LIBRARY_PATH
 
-$JAVAHOME/java @JAVAX@ -Djava.library.path=$LD_LIBRARY_PATH ncsa.hdf.view.HDFView -root $HDFJAVA $*
+$JAVABIN/java @JAVAX@ -Djava.library.path=$LD_LIBRARY_PATH ncsa.hdf.view.HDFView -root $HDFJAVA $*
