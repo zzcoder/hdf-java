@@ -248,8 +248,7 @@ if [ $exit_code = 0 ]; then
 else
     echo Error encountered CTest script
 fi
-# Using HDFJAVA-*.sh because actual name is unavailable
-install_sh=HDFJAVA-*.sh
+install_sh=HDFView-2.99.0-Linux.sh
 echo installing with $install_sh ...
 ./$install_sh --skip-license > $install_log
 exit_code=$?
