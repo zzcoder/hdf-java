@@ -26,6 +26,15 @@ set (HDFJAVA_TEST_MODULES_SRCS
     GermanTableView.java
 )
 
+set (HDF_JAVA_TEST_FILES
+      tintsize.h5
+)
+
+set (HDF_JAVA_TEST_REFERENCE
+      JUnit-gui-modules.txt
+      JUnit-gui-modules.err
+)
+
 INCLUDE_DIRECTORIES (${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/${HDFJAVA_NCSA_VIEW_LIB_CORENAME}.dir/ncsa/hdf/view)
 
 foreach (HCP_JAR ${HDFJAVA_JARS_TO_EXPORT})
@@ -50,6 +59,28 @@ add_jar (${HDFJAVA_TEST_MODULES_LIB_TARGET} MANIFEST ${HDFJAVA_TEST_MODULES_BINA
 get_target_property (${HDFJAVA_TEST_MODULES_LIB_TARGET}_JAR_FILE ${HDFJAVA_TEST_MODULES_LIB_TARGET} JAR_FILE)
 
 add_dependencies (${HDFJAVA_TEST_MODULES_LIB_TARGET} ${HDFJAVA_NCSA_VIEW_LIB_TARGET} ${HDFJAVA_NCSA_HDF5_LIB_TARGET} ${HDFJAVA_NCSA_HDF_LIB_TARGET})
+
+foreach (h5_file ${HDF_JAVA_TEST_FILES})
+  set (dest "${PROJECT_BINARY_DIR}/${h5_file}")
+  #message (STATUS " Copying ${h5_file}")
+  add_custom_command (
+      TARGET     ${HDFJAVA_TEST_MODULES_LIB_TARGET}
+      POST_BUILD
+      COMMAND    ${CMAKE_COMMAND}
+      ARGS       -E copy_if_different ${PROJECT_SOURCE_DIR}/${h5_file} ${dest}
+  )
+endforeach (h5_file ${HDF_JAVA_TEST_FILES})
+
+foreach (ref_file ${HDF_JAVA_TEST_REFERENCE})
+  set (dest "${PROJECT_BINARY_DIR}/${ref_file}")
+  #message (STATUS " Copying ${ref_file}")
+  add_custom_command (
+      TARGET     ${HDFJAVA_TEST_MODULES_LIB_TARGET}
+      POST_BUILD
+      COMMAND    ${CMAKE_COMMAND}
+      ARGS       -E copy_if_different ${PROJECT_SOURCE_DIR}/${ref_file} ${dest}
+  )
+endforeach (ref_file ${HDF_JAVA_TEST_REFERENCE})
 
 # make test dir
 file (MAKE_DIRECTORY "${PROJECT_BINARY_DIR}/lib")
@@ -79,37 +110,6 @@ get_target_property (${HDFJAVA_TEST_UIMOD_TARGET}_JAR_FILE ${HDFJAVA_TEST_UIMOD_
 #install_jar (${HDFJAVA_TEST_UIMOD_TARGET} ${HJAVA_INSTALL_DATA_DIR}/tests tests)
 
 add_dependencies (${HDFJAVA_TEST_UIMOD_TARGET} ${HDFJAVA_NCSA_HDF5_LIB_TARGET} ${HDFJAVA_NCSA_HDF_LIB_TARGET})
-
-set (HDF_JAVA_TEST_FILES
-      tintsize.h5
-)
-
-set (HDF_JAVA_TEST_REFERENCE
-      JUnit-gui-modules.txt
-      JUnit-gui-modules.err
-)
-
-foreach (h5_file ${HDF_JAVA_TEST_FILES})
-  set (dest "${PROJECT_BINARY_DIR}/${h5_file}")
-  #message (STATUS " Copying ${h5_file}")
-  add_custom_command (
-      TARGET     ${HDFJAVA_TEST_UIMOD_TARGET}
-      POST_BUILD
-      COMMAND    ${CMAKE_COMMAND}
-      ARGS       -E copy_if_different ${PROJECT_SOURCE_DIR}/${h5_file} ${dest}
-  )
-endforeach (h5_file ${HDF_JAVA_TEST_FILES})
-
-foreach (ref_file ${HDF_JAVA_TEST_REFERENCE})
-  set (dest "${PROJECT_BINARY_DIR}/${ref_file}")
-  #message (STATUS " Copying ${ref_file}")
-  add_custom_command (
-      TARGET     ${HDFJAVA_TEST_UIMOD_TARGET}
-      POST_BUILD
-      COMMAND    ${CMAKE_COMMAND}
-      ARGS       -E copy_if_different ${PROJECT_SOURCE_DIR}/${ref_file} ${dest}
-  )
-endforeach (ref_file ${HDF_JAVA_TEST_REFERENCE})
 
 if (WIN32)
   set (CMAKE_JAVA_INCLUDE_FLAG_SEP ";")
