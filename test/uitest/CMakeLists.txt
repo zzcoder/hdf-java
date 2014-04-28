@@ -204,7 +204,7 @@ add_test (
 )
 
 set_tests_properties (JUnit-gui-menu PROPERTIES
-    DEPENDS JUnit-gui-clear-objects
+    DEPENDS "JUnit-gui-clear-objects;JUnit-gui-modules"
 )
 
 add_test (
