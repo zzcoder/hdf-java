@@ -561,6 +561,7 @@ public class TestHDFViewMenu {
 
             mainFrameFixture.dialog().textBox("groupname").setText("grouptestname");
             mainFrameFixture.dialog().button("OK").click();
+            mainFrameFixture.robot.waitForIdle();
 
             JMenuItemFixture fileMenuItem = mainFrameFixture.menuItemWithPath("File", "Save");
             mainFrameFixture.robot.waitForIdle();
