@@ -151,6 +151,7 @@ public class TestTreeViewNewMenu {
 
             mainFrameFixture.dialog().textBox("groupname").setText("testgroupname");
             mainFrameFixture.dialog().button("OK").click();
+            mainFrameFixture.robot.waitForIdle();
 
             filetree = mainFrameFixture.tree().focus();
             assertTrue("File-Dataset-HDF5 filetree shows:", filetree.target.getRowCount()==2);
