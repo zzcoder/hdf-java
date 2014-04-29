@@ -149,6 +149,7 @@ public class TestGermanViewMenu {
             mainFrameFixture.robot.waitForIdle();
             mainFrameFixture.dialog().comboBox("moduletable").selectItem("test.modules.GermanTableView");
             mainFrameFixture.dialog().button("OK").click();
+            mainFrameFixture.robot.waitForIdle();
             
             JTableFixture dataset1table = mainFrameFixture.table("data");
             JTableCellFixture cell1 = dataset1table.cell(row(0).column(0));
