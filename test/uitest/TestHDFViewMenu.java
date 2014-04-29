@@ -561,6 +561,7 @@ public class TestHDFViewMenu {
 
             mainFrameFixture.dialog().textBox("groupname").setText("grouptestname");
             mainFrameFixture.dialog().button("OK").click();
+            mainFrameFixture.robot.waitForIdle();
 
             JMenuItemFixture fileMenuItem = mainFrameFixture.menuItemWithPath("File", "Save");
             mainFrameFixture.robot.waitForIdle();
@@ -742,7 +743,7 @@ public class TestHDFViewMenu {
             fileMenuItem.click();
             mainFrameFixture.robot.waitForIdle();
             
-            mainFrameFixture.dialog().optionPane().requirePlainMessage().requireMessage("HDF Viewer, Version 2.10.1\\sFor.*\\s\\sCopyright.*2006-2014 The HDF Group.\\sAll rights reserved.");
+            mainFrameFixture.dialog().optionPane().requirePlainMessage().requireMessage("HDF Viewer, Version 2.99\\sFor.*\\s\\sCopyright.*2006-2014 The HDF Group.\\sAll rights reserved.");
             mainFrameFixture.dialog().optionPane().button("OptionPane.button").click();
             mainFrameFixture.robot.waitForIdle();
         }

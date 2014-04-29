@@ -155,6 +155,7 @@ public class TestTreeViewNewVLDatatypes {
             mainFrameFixture.dialog().comboBox("dtclass").selectItem("VLEN_INTEGER");
             mainFrameFixture.dialog().comboBox("dtsize").selectItem("16");
             mainFrameFixture.dialog().button("OK").click();
+            mainFrameFixture.robot.waitForIdle();
 
             filetree = mainFrameFixture.tree().focus();
             assertTrue("File-Dataset-HDF5 filetree shows:", filetree.target.getRowCount()==2);
@@ -196,6 +197,7 @@ public class TestTreeViewNewVLDatatypes {
             mainFrameFixture.dialog().comboBox("datasetclass").selectItem("VLEN_FLOAT");
             mainFrameFixture.dialog().comboBox("datasetsize").selectItem("32");
             mainFrameFixture.dialog().button("OK").click();
+            mainFrameFixture.robot.waitForIdle();
 
             filetree = mainFrameFixture.tree().focus();
             assertTrue("File-Dataset-HDF5 filetree shows:", filetree.target.getRowCount()==2);
@@ -250,6 +252,7 @@ public class TestTreeViewNewVLDatatypes {
             propDialog.comboBox("attrclass").selectItem("VLEN_STRING");
             propDialog.textBox("attrvalue").setText("");
             propDialog.button("OK").click();
+            mainFrameFixture.robot.waitForIdle();
 
             filetree = mainFrameFixture.tree().focus();
             assertTrue("File-Dataset-HDF5 filetree shows:", filetree.target.getRowCount()==1);
