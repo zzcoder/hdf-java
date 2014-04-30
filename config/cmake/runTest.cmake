@@ -42,7 +42,7 @@ if (WIN32 AND NOT MINGW)
 endif (WIN32 AND NOT MINGW)
 
 # run the test program, capture the stdout/stderr and the result var
-EXECUTE_PROCESS (
+execute_process (
     COMMAND ${TEST_TESTER} -Xmx1024M
     -Dorg.slf4j.simpleLogger.defaultLogLevel=${LOG_LEVEL}
     -Djava.library.path=${TEST_LIBRARY_DIRECTORY}
@@ -76,14 +76,14 @@ if (TEST_MASK_ERROR)
   else (NOT TEST_ERRREF)
     file (READ ${TEST_FOLDER}/${TEST_OUTPUT}.err TEST_STREAM)
   endif (NOT TEST_ERRREF)
-  STRING(REGEX REPLACE "Time:[^\n]+\n" "Time:  XXXX\n" TEST_STREAM "${TEST_STREAM}") 
-  STRING(REGEX REPLACE "thread [0-9]*:" "thread (IDs):" TEST_STREAM "${TEST_STREAM}") 
-  STRING(REGEX REPLACE ": ([^\n]*)[.]c " ": (file name) " TEST_STREAM "${TEST_STREAM}") 
-  STRING(REGEX REPLACE " line [0-9]*" " line (number)" TEST_STREAM "${TEST_STREAM}") 
-  #STRING(REGEX REPLACE "v[1-9]*[.][0-9]*[.]" "version (number)." TEST_STREAM "${TEST_STREAM}") 
-  STRING(REGEX REPLACE "HDF5 .[1-9]*[.][0-9]*[.][0-9]*[^)]*" "HDF5 (version (number)" TEST_STREAM "${TEST_STREAM}") 
-  STRING(REGEX REPLACE "H5Eget_auto[1-2]*" "H5Eget_auto(1 or 2)" TEST_STREAM "${TEST_STREAM}") 
-  STRING(REGEX REPLACE "H5Eset_auto[1-2]*" "H5Eset_auto(1 or 2)" TEST_STREAM "${TEST_STREAM}") 
+  string (REGEX REPLACE "Time:[^\n]+\n" "Time:  XXXX\n" TEST_STREAM "${TEST_STREAM}") 
+  string (REGEX REPLACE "thread [0-9]*:" "thread (IDs):" TEST_STREAM "${TEST_STREAM}") 
+  string (REGEX REPLACE ": ([^\n]*)[.]c " ": (file name) " TEST_STREAM "${TEST_STREAM}") 
+  string (REGEX REPLACE " line [0-9]*" " line (number)" TEST_STREAM "${TEST_STREAM}") 
+  #string (REGEX REPLACE "v[1-9]*[.][0-9]*[.]" "version (number)." TEST_STREAM "${TEST_STREAM}") 
+  string (REGEX REPLACE "HDF5 .[1-9]*[.][0-9]*[.][0-9]*[^)]*" "HDF5 (version (number)" TEST_STREAM "${TEST_STREAM}") 
+  string (REGEX REPLACE "H5Eget_auto[1-2]*" "H5Eget_auto(1 or 2)" TEST_STREAM "${TEST_STREAM}") 
+  string (REGEX REPLACE "H5Eset_auto[1-2]*" "H5Eset_auto(1 or 2)" TEST_STREAM "${TEST_STREAM}") 
   if (NOT TEST_ERRREF)
     file (WRITE ${TEST_FOLDER}/${TEST_OUTPUT} "${TEST_STREAM}")
   else (NOT TEST_ERRREF)
@@ -106,7 +106,7 @@ if (NOT TEST_SKIP_COMPARE)
   endif (WIN32 AND NOT MINGW)
 
   # now compare the output with the reference
-  EXECUTE_PROCESS (
+  execute_process (
       COMMAND ${CMAKE_COMMAND} -E compare_files ${TEST_FOLDER}/${TEST_OUTPUT} ${TEST_FOLDER}/${TEST_REFERENCE}
       RESULT_VARIABLE TEST_RESULT
   )
@@ -148,7 +148,7 @@ if (NOT TEST_SKIP_COMPARE)
     endif (WIN32 AND NOT MINGW)
 
     # now compare the error output with the error reference
-    EXECUTE_PROCESS (
+    execute_process (
         COMMAND ${CMAKE_COMMAND} -E compare_files ${TEST_FOLDER}/${TEST_OUTPUT}.err ${TEST_FOLDER}/${TEST_ERRREF}
         RESULT_VARIABLE TEST_RESULT
     )
@@ -191,16 +191,16 @@ if (TEST_GREP_COMPARE)
   file (READ ${TEST_FOLDER}/${TEST_OUTPUT} TEST_STREAM)
 
   # TEST_REFERENCE should always be matched
-  STRING(REGEX MATCH "${TEST_REFERENCE}" TEST_MATCH ${TEST_STREAM}) 
-  STRING(COMPARE EQUAL "${TEST_REFERENCE}" "${TEST_MATCH}" TEST_RESULT) 
+  string (REGEX MATCH "${TEST_REFERENCE}" TEST_MATCH ${TEST_STREAM}) 
+  string (COMPARE EQUAL "${TEST_REFERENCE}" "${TEST_MATCH}" TEST_RESULT) 
   if (${TEST_RESULT} STREQUAL "0")
     message (FATAL_ERROR "Failed: The output of ${TEST_PROGRAM} did not contain ${TEST_REFERENCE}")
   endif (${TEST_RESULT} STREQUAL "0")
 
-  STRING(REGEX MATCH "${TEST_FILTER}" TEST_MATCH ${TEST_STREAM}) 
+  string (REGEX MATCH "${TEST_FILTER}" TEST_MATCH ${TEST_STREAM}) 
   if (${TEST_EXPECT} STREQUAL "1")
     # TEST_EXPECT (1) interperts TEST_FILTER as NOT to match
-    STRING(LENGTH "${TEST_MATCH}" TEST_RESULT) 
+    string (LENGTH "${TEST_MATCH}" TEST_RESULT) 
     if (NOT ${TEST_RESULT} STREQUAL "0")
       message (FATAL_ERROR "Failed: The output of ${TEST_PROGRAM} did contain ${TEST_FILTER}")
     endif (NOT ${TEST_RESULT} STREQUAL "0")
