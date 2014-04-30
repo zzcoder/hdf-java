@@ -3,7 +3,7 @@ PROJECT (HDFJAVA_TEST_UITEST Java)
 
 set (CMAKE_VERBOSE_MAKEFILE 1)
 
-include_directories (
+INCLUDE_DIRECTORIES (
     ${JAVA_NCSA_HDF_HDF4_BINARY_DIR}
     ${JAVA_NCSA_HDF_HDF5_BINARY_DIR}
     ${JAVA_NCSA_HDF_OBJECT_BINARY_DIR}
@@ -18,7 +18,6 @@ set (HDFJAVA_FEST_JARS
 )
 
 set (HDFJAVA_TEST_UITEST_SRCS
-#    TestHDFViewCLGeometry.java
     TestHDFViewCLMultipleFiles.java
     TestHDFViewCLRootMultipleFiles.java
     TestHDFViewMenu.java
@@ -63,8 +62,6 @@ set (HDF_JAVA_TEST_FILES
 )
 
 set (HDF_JAVA_TEST_REFERENCE
-#      JUnit-gui-CL-geom.txt
-#      JUnit-gui-CL-geom.err
       JUnit-gui-CL-multi.txt
       JUnit-gui-CL-multi.err
       JUnit-gui-CL-root-multi.txt
