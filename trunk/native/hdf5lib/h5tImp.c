@@ -776,8 +776,7 @@ JNIEXPORT jstring JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tget_1member_1name
 
     /* may throw OutOfMemoryError */
     str = ENVPTR->NewStringUTF(ENVPAR name);
-    //H5free_memory(name);
-    free(name);
+    H5free_memory(name);
 
     if (str == NULL)  {
         h5JNIFatalError(env,  "H5Tget_member_name:  returned string not created");
@@ -1002,8 +1001,7 @@ JNIEXPORT jstring JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tget_1tag
 
     /* may throw OutOfMemoryError */
     str = ENVPTR->NewStringUTF(ENVPAR tag);
-    //H5free_memory(tag);
-    free(tag);
+    H5free_memory(tag);
 
     if (str == NULL)  {
         h5JNIFatalError(env,  "H5Tget_tag:  returned string not created");
