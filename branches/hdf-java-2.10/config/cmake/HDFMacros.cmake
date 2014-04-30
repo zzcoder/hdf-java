@@ -6,12 +6,12 @@ ENDMACRO (SET_GLOBAL_VARIABLE)
 #-------------------------------------------------------------------------------
 MACRO (IDE_GENERATED_PROPERTIES SOURCE_PATH HEADERS SOURCES)
   #set(source_group_path "Source/AIM/${NAME}")
-  STRING (REPLACE "/" "\\\\" source_group_path ${SOURCE_PATH})
+  string (REPLACE "/" "\\\\" source_group_path ${SOURCE_PATH})
   source_group (${source_group_path} FILES ${HEADERS} ${SOURCES})
 
   #-- The following is needed if we ever start to use OS X Frameworks but only
   #--  works on CMake 2.6 and greater
-  #SET_PROPERTY (SOURCE ${HEADERS}
+  #set_property (SOURCE ${HEADERS}
   #       PROPERTY MACOSX_PACKAGE_LOCATION Headers/${NAME}
   #)
 ENDMACRO (IDE_GENERATED_PROPERTIES)
@@ -23,12 +23,12 @@ MACRO (IDE_SOURCE_PROPERTIES SOURCE_PATH HEADERS SOURCES)
   #       COMPONENT Headers       
   #  )
 
-  STRING (REPLACE "/" "\\\\" source_group_path ${SOURCE_PATH}  )
+  string (REPLACE "/" "\\\\" source_group_path ${SOURCE_PATH}  )
   source_group (${source_group_path} FILES ${HEADERS} ${SOURCES})
 
   #-- The following is needed if we ever start to use OS X Frameworks but only
   #--  works on CMake 2.6 and greater
-  #SET_PROPERTY (SOURCE ${HEADERS}
+  #set_property (SOURCE ${HEADERS}
   #       PROPERTY MACOSX_PACKAGE_LOCATION Headers/${NAME}
   #)
 ENDMACRO (IDE_SOURCE_PROPERTIES)
@@ -37,7 +37,7 @@ ENDMACRO (IDE_SOURCE_PROPERTIES)
 MACRO (TARGET_NAMING libtarget libtype)
   if (WIN32)
     if (${libtype} MATCHES "SHARED")
-      SET_TARGET_PROPERTIES (${libtarget} PROPERTIES OUTPUT_NAME "${libtarget}dll")
+      set_target_properties (${libtarget} PROPERTIES OUTPUT_NAME "${libtarget}dll")
     endif (${libtype} MATCHES "SHARED")
   endif (WIN32)
 ENDMACRO (TARGET_NAMING)
@@ -100,7 +100,7 @@ MACRO (HDF_SET_LIB_OPTIONS libtarget libname libtype)
     endif (WIN32)
   endif (${libtype} MATCHES "SHARED")
   
-  SET_TARGET_PROPERTIES (${libtarget}
+  set_target_properties (${libtarget}
       PROPERTIES
       DEBUG_OUTPUT_NAME          ${LIB_DEBUG_NAME}
       RELEASE_OUTPUT_NAME        ${LIB_RELEASE_NAME}
@@ -110,7 +110,7 @@ MACRO (HDF_SET_LIB_OPTIONS libtarget libname libtype)
   
   #----- Use MSVC Naming conventions for Shared Libraries
   if (MINGW AND ${libtype} MATCHES "SHARED")
-    SET_TARGET_PROPERTIES (${libtarget}
+    set_target_properties (${libtarget}
         PROPERTIES
         IMPORT_SUFFIX ".lib"
         IMPORT_PREFIX ""
@@ -126,13 +126,13 @@ MACRO (TARGET_C_PROPERTIES wintarget addcompileflags addlinkflags)
     TARGET_MSVC_PROPERTIES (${wintarget} "${addcompileflags} ${WIN_COMPILE_FLAGS}" "${addlinkflags} ${WIN_LINK_FLAGS}")
   else (MSVC)
     if (BUILD_SHARED_LIBS)
-      SET_TARGET_PROPERTIES (${wintarget}
+      set_target_properties (${wintarget}
           PROPERTIES
               COMPILE_FLAGS "${addcompileflags}"
               LINK_FLAGS "${addlinkflags}"
       ) 
     else (BUILD_SHARED_LIBS)
-      SET_TARGET_PROPERTIES (${wintarget}
+      set_target_properties (${wintarget}
           PROPERTIES
               COMPILE_FLAGS "${addcompileflags}"
               LINK_FLAGS "${addlinkflags}"
@@ -145,13 +145,13 @@ ENDMACRO (TARGET_C_PROPERTIES)
 MACRO (TARGET_MSVC_PROPERTIES wintarget addcompileflags addlinkflags)
   if (MSVC)
     if (BUILD_SHARED_LIBS)
-      SET_TARGET_PROPERTIES (${wintarget}
+      set_target_properties (${wintarget}
           PROPERTIES
               COMPILE_FLAGS "${addcompileflags}"
               LINK_FLAGS "${addlinkflags}"
       ) 
     else (BUILD_SHARED_LIBS)
-      SET_TARGET_PROPERTIES (${wintarget}
+      set_target_properties (${wintarget}
           PROPERTIES
               COMPILE_FLAGS "${addcompileflags}"
               LINK_FLAGS "${addlinkflags}"
@@ -171,13 +171,13 @@ ENDMACRO (TARGET_FORTRAN_PROPERTIES)
 MACRO (TARGET_FORTRAN_WIN_PROPERTIES forttarget addcompileflags addlinkflags)
   if (MSVC)
     if (BUILD_SHARED_LIBS)
-      SET_TARGET_PROPERTIES (${forttarget}
+      set_target_properties (${forttarget}
           PROPERTIES
               COMPILE_FLAGS "/dll ${addcompileflags}"
               LINK_FLAGS "/SUBSYSTEM:CONSOLE ${addlinkflags}"
       ) 
     else (BUILD_SHARED_LIBS)
-      SET_TARGET_PROPERTIES (${forttarget}
+      set_target_properties (${forttarget}
           PROPERTIES
               COMPILE_FLAGS "${addcompileflags}"
               LINK_FLAGS "/SUBSYSTEM:CONSOLE ${addlinkflags}"

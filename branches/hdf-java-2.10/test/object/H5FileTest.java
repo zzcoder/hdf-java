@@ -116,46 +116,46 @@ public class H5FileTest {
 
     @BeforeClass
     public static void createFile() throws Exception {
-                try {
-                        int openID = H5.getOpenIDCount();
-                        if(openID > 0)
-                                System.out.println("H5FileTest BeforeClass: Number of IDs still open: "+ openID);
-                } 
-                catch (Exception ex) {
-                        ex.printStackTrace();
-                }
-                try {
-                        H5TestFile.createTestFile(null);
-                }
-                catch (final Exception ex) {
-                        System.out.println("*** Unable to create HDF5 test file. " + ex);
-                        System.exit(-1);
-                }
+		try {
+			int openID = H5.getOpenIDCount();
+			if(openID > 0)
+				System.out.println("H5FileTest BeforeClass: Number of IDs still open: "+ openID);
+		} 
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		try {
+			H5TestFile.createTestFile(null);
+		}
+		catch (final Exception ex) {
+			System.out.println("*** Unable to create HDF5 test file. " + ex);
+			System.exit(-1);
+		}
     }
     
     @AfterClass
     public static void checkIDs() throws Exception {
-                try {
-                        int openID = H5.getOpenIDCount();
-                        if(openID>0)
-                                System.out.println("H5FileTest AfterClass: Number of IDs still open: "+ openID);
-                } 
-                catch (Exception ex) {
-                        ex.printStackTrace();
-                }
+		try {
+			int openID = H5.getOpenIDCount();
+			if(openID>0)
+				System.out.println("H5FileTest AfterClass: Number of IDs still open: "+ openID);
+		} 
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
 
     }
     
     @Before
     public void openFiles() throws Exception {
-                try {
-                        int openID = H5.getOpenIDCount();
-                        if(openID > 0)
-                                log.debug("Before: Number of IDs still open: "+ openID);
-                } 
-                catch (Exception ex) {
-                        ex.printStackTrace();
-                }
+		try {
+			int openID = H5.getOpenIDCount();
+			if(openID > 0)
+				log.debug("Before: Number of IDs still open: "+ openID);
+		} 
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
         typeInt = new H5Datatype(Datatype.CLASS_INTEGER,
                 H5TestFile.DATATYPE_SIZE, -1, -1);
         typeFloat = new H5Datatype(Datatype.CLASS_FLOAT,
@@ -175,14 +175,14 @@ public class H5FileTest {
     @After
     public void removeFiles() throws Exception {
         closeFile();
-                try {
-                        int openID = H5.getOpenIDCount();
-                        if(openID > 0)
-                                log.debug("After: Number of IDs still open: "+ openID);
-                } 
-                catch (Exception ex) {
-                        ex.printStackTrace();
-                }
+		try {
+			int openID = H5.getOpenIDCount();
+			if(openID > 0)
+				log.debug("After: Number of IDs still open: "+ openID);
+		} 
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
     }
 
     /**
@@ -197,7 +197,7 @@ public class H5FileTest {
      */
     @Test
     public void testOpen() {
-        log.debug("testOpen");
+    	log.debug("testOpen");
         try {
             testFile.close();
         }
@@ -275,7 +275,7 @@ public class H5FileTest {
      */
     @Test
     public void testCreateString() {
-        log.debug("testCreateString");
+    	log.debug("testCreateString");
         final String nameNew = "testH5File.h5";
         H5File file = null;
 
@@ -314,7 +314,7 @@ public class H5FileTest {
      */
     @Test
     public void testGetRootNode() {
-        log.debug("testGetRootNode");
+    	log.debug("testGetRootNode");
         final javax.swing.tree.TreeNode root = testFile.getRootNode();
         assertNotNull(root);
         assertTrue(root.getChildCount() > 0);
@@ -334,7 +334,7 @@ public class H5FileTest {
      */
     @Test
     public void testIsReadOnly() {
-        log.debug("testIsReadOnly");
+    	log.debug("testIsReadOnly");
         assertFalse(testFile.isReadOnly());
         int nObjs = 0;
         try {
@@ -362,7 +362,7 @@ public class H5FileTest {
      */
     @Test
     public void testCreateGroup() {
-        log.debug("testCreateGroup");
+    	log.debug("testCreateGroup");
         final String nameNew = "testH5File.h5";
         H5File file = null;
 
@@ -429,7 +429,7 @@ public class H5FileTest {
      */
     @Test
     public void testCreateGroupWithGroupplist() {
-        log.debug("testCreateGroupWithGroupplist");
+    	log.debug("testCreateGroupWithGroupplist");
         final String nameNew = "testH5File2.h5";
         H5File file = null;
         int fid = -1;
@@ -541,7 +541,7 @@ public class H5FileTest {
      */
     @Test
     public void testcreateGcpl() {
-        log.debug("testcreateGcpl");
+    	log.debug("testcreateGcpl");
         final String nameNew = "test8.h5";
         H5File file = null;
         int fid = -1;
@@ -642,7 +642,7 @@ public class H5FileTest {
      */
     @Test
     public void testCreateObjects() {
-        log.debug("testCreateObjects");
+    	log.debug("testCreateObjects");
         final String nameNew = "testH5File.h5";
         H5File file = null;
 
@@ -697,7 +697,7 @@ public class H5FileTest {
      */
     @Test
     public void testIsThisTypeString() {
-        log.debug("testIsThisTypeString");
+    	log.debug("testIsThisTypeString");
         assertTrue(H5FILE.isThisType(H5TestFile.NAME_FILE_H5));
         assertFalse(H5FILE.isThisType("No such file"));
         int nObjs = 0;
@@ -723,7 +723,7 @@ public class H5FileTest {
      */
     @Test
     public void testIsThisTypeFileFormat() {
-        log.debug("testIsThisTypeFileFormat");
+    	log.debug("testIsThisTypeFileFormat");
         assertTrue(H5FILE.isThisType(testFile));
         int nObjs = 0;
         try {
@@ -752,7 +752,7 @@ public class H5FileTest {
      */
     @Test
     public void testCopyHObjectGroup() {
-        log.debug("testCopyHObjectGroup");
+    	log.debug("testCopyHObjectGroup");
         Group root = null;
         HObject srcObj = null, dstObj = null;
         final String nameNewFile = "testH5File.h5";
@@ -855,7 +855,7 @@ public class H5FileTest {
      */
     @Test
     public void testDeleteHObject() {
-        log.debug("testDeleteHObject");
+    	log.debug("testDeleteHObject");
         Group root = null;
         HObject obj = null;
         final String nameNewFile = "testH5File.h5";
@@ -935,7 +935,7 @@ public class H5FileTest {
      */
     @Test
     public void testGet() {
-        log.debug("testGet");
+    	log.debug("testGet");
         int nObjs = 0; // number of object left open
         HObject obj = null;
 
@@ -1005,7 +1005,7 @@ public class H5FileTest {
      */
     @Test
     public void testGetFromOpen() {
-        log.debug("testGetFromOpen");
+    	log.debug("testGetFromOpen");
         int nObjs = 0; // number of object left open
         HObject obj = null;
 
@@ -1081,7 +1081,7 @@ public class H5FileTest {
      */
     @Test
     public void testH5FileStringInt() {
-        log.debug("testH5FileStringInt");
+    	log.debug("testH5FileStringInt");
         Dataset dset = null;
         final String nameNewFile = "testH5File.h5";
         H5File file = null;
@@ -1207,7 +1207,7 @@ public class H5FileTest {
      */
     @Test
     public void testOpenInt() {
-        log.debug("testOpenInt");
+    	log.debug("testOpenInt");
         try {
             testFile.close();
         }
@@ -1299,7 +1299,7 @@ public class H5FileTest {
      */
     @Test
     public void testUpdateReferenceDataset() {
-        log.debug("testUpdateReferenceDataset");
+    	log.debug("testUpdateReferenceDataset");
         Group root = null;
         HObject srcObj = null, dstObj = null;
         final String nameNewFile = "testH5File.h5";
@@ -1433,7 +1433,7 @@ public class H5FileTest {
      */
     @Test
     public void testCreateImageAttributes() {
-        log.debug("testCreateImageAttributes");
+    	log.debug("testCreateImageAttributes");
         H5ScalarDS img = null;
 
         try {
@@ -1463,7 +1463,7 @@ public class H5FileTest {
      */
     @Test
     public void testSetLibBounds() {
-        log.debug("testSetLibBounds");
+    	log.debug("testSetLibBounds");
         int low = HDF5Constants.H5F_LIBVER_LATEST;
         int high = HDF5Constants.H5F_LIBVER_LATEST;
 
@@ -1522,7 +1522,7 @@ public class H5FileTest {
      */
     @Test
     public void testCreateLink() {
-        log.debug("testCreateLink");
+    	log.debug("testCreateLink");
         final String nameNew = "testH5FileLinks1.h5";
         H5File file = null;
         int fid = -1;
@@ -1685,7 +1685,7 @@ public class H5FileTest {
      */
     @Test
     public void testCreateLinkExternal() {
-        log.debug("testCreateLinkExternal");
+    	log.debug("testCreateLinkExternal");
         final String nameNew = "TESTFILE1.h5";
         H5File file1 = null;
         H5File file2 = null;
@@ -1855,7 +1855,7 @@ public class H5FileTest {
      */
     @Test
     public void testCreateAttribute() {
-        log.debug("testCreateAttribute");
+    	log.debug("testCreateAttribute");
         final String nameNew = "TESTFILEAttr1.h5";
         H5File file = null;
         int fid = -1;
@@ -1954,7 +1954,7 @@ public class H5FileTest {
      */
     @Test
     public void testDatatypehasAttribute() {
-        log.debug("testDatatypehasAttribute");
+    	log.debug("testDatatypehasAttribute");
         final String nameNew = "testH5FileDatatype.h5";
         H5File file = null;
         int fid = -1;
@@ -2016,7 +2016,7 @@ public class H5FileTest {
      */
     @Test
     public void testrenameAttribute() {
-        log.debug("testrenameAttribute");
+    	log.debug("testrenameAttribute");
         final String nameNew = "testAttrName.h5";
         H5File file = null;
         int fid = -1;
@@ -2087,7 +2087,7 @@ public class H5FileTest {
      */
     @Test
     public void testIsSerializable() {
-        log.debug("testIsSerializable");
+    	log.debug("testIsSerializable");
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         ObjectOutputStream oos;
         try {
@@ -2118,7 +2118,7 @@ public class H5FileTest {
     @Test
     public void testSerializeToDisk()
     {
-        log.debug("testSerializeToDisk");
+    	log.debug("testSerializeToDisk");
         try {
 
             FileOutputStream fos = new FileOutputStream("temph5file.ser");

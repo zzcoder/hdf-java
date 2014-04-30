@@ -2,9 +2,9 @@ cmake_minimum_required (VERSION 2.8.10)
 PROJECT (HDFJAVA_JNI C)
 
 message (STATUS "JAVA: JAVA_HOME=$ENV{JAVA_HOME} JAVA_ROOT=$ENV{JAVA_ROOT}")
-FIND_PACKAGE(JNI)
+find_package (JNI)
 
-INCLUDE_DIRECTORIES( ${JNI_INCLUDE_DIRS} )
+INCLUDE_DIRECTORIES ( ${JNI_INCLUDE_DIRS} )
 
 #-----------------------------------------------------------------------------
 # Option to Build Shared/Static libs, default is static
@@ -110,7 +110,7 @@ if (CMAKE_COMPILER_IS_GNUCXX)
   set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fmessage-length=0")
 endif (CMAKE_COMPILER_IS_GNUCXX)
 
-INCLUDE (ExternalProject)
+include (ExternalProject)
 option (HDF_ALLOW_EXTERNAL_SUPPORT "Allow External Library Building" "NO")
 option (HDF4_USE_EXTERNAL "Use External Library Building for HDF4" 0)
 option (HDF5_USE_EXTERNAL "Use External Library Building for HDF5" 0)
@@ -287,8 +287,8 @@ if (HDF_PACKAGE_EXTLIBS)
   endif (HDF5_FOUND)
 endif (HDF_PACKAGE_EXTLIBS)
 
-ADD_SUBDIRECTORY(${HDFJAVA_JNI_SOURCE_DIR}/hdflib      hdflib)
-ADD_SUBDIRECTORY(${HDFJAVA_JNI_SOURCE_DIR}/hdf5lib     hdf5lib)
+add_subdirectory (${HDFJAVA_JNI_SOURCE_DIR}/hdflib      hdflib)
+add_subdirectory (${HDFJAVA_JNI_SOURCE_DIR}/hdf5lib     hdf5lib)
 
 if (HDF_ALLOW_EXTERNAL_SUPPORT MATCHES "SVN" OR HDF_ALLOW_EXTERNAL_SUPPORT MATCHES "TGZ")
   if (JPEG_FOUND)

@@ -1,25 +1,25 @@
 #-----------------------------------------------------------------------------
 # Include all the necessary files for macros
 #-----------------------------------------------------------------------------
-INCLUDE (${CMAKE_ROOT}/Modules/CheckFunctionExists.cmake)
-INCLUDE (${CMAKE_ROOT}/Modules/CheckIncludeFile.cmake)
-INCLUDE (${CMAKE_ROOT}/Modules/CheckIncludeFiles.cmake)
-INCLUDE (${CMAKE_ROOT}/Modules/CheckLibraryExists.cmake)
-INCLUDE (${CMAKE_ROOT}/Modules/CheckSymbolExists.cmake)
-INCLUDE (${CMAKE_ROOT}/Modules/CheckTypeSize.cmake)
+include (${CMAKE_ROOT}/Modules/CheckFunctionExists.cmake)
+include (${CMAKE_ROOT}/Modules/CheckIncludeFile.cmake)
+include (${CMAKE_ROOT}/Modules/CheckIncludeFiles.cmake)
+include (${CMAKE_ROOT}/Modules/CheckLibraryExists.cmake)
+include (${CMAKE_ROOT}/Modules/CheckSymbolExists.cmake)
+include (${CMAKE_ROOT}/Modules/CheckTypeSize.cmake)
 
 #-----------------------------------------------------------------------------
 # Always SET this for now IF we are on an OS X box
 #-----------------------------------------------------------------------------
 if (APPLE)
-  LIST(LENGTH CMAKE_OSX_ARCHITECTURES ARCH_LENGTH)
-  IF(ARCH_LENGTH GREATER 1)
+  list (LENGTH CMAKE_OSX_ARCHITECTURES ARCH_LENGTH)
+  if (ARCH_LENGTH GREATER 1)
     set (CMAKE_OSX_ARCHITECTURES "" CACHE STRING "" FORCE)
     message(FATAL_ERROR "Building Universal Binaries on OS X is NOT supported by the HDF5 project. This is"
     "due to technical reasons. The best approach would be build each architecture in separate directories"
     "and use the 'lipo' tool to combine them into a single executable or library. The 'CMAKE_OSX_ARCHITECTURES'"
     "variable has been set to a blank value which will build the default architecture for this system.")
-  ENDIF()
+  endif ()
   set (HJAVA_AC_APPLE_UNIVERSAL_BUILD 0)
 endif (APPLE)
 
@@ -264,7 +264,7 @@ if (NOT WINDOWS)
   option (HDF_ENABLE_LARGE_FILE "Enable support for large (64-bit) files on Linux." ON)
   if (HDF_ENABLE_LARGE_FILE)
     set (msg "Performing TEST_LFS_WORKS")
-    TRY_RUN (TEST_LFS_WORKS_RUN   TEST_LFS_WORKS_COMPILE
+    try_run (TEST_LFS_WORKS_RUN   TEST_LFS_WORKS_COMPILE
         ${HDFJAVA_BINARY_DIR}/CMake
         ${HDFJAVA_RESOURCES_DIR}/HDFTests.c
         CMAKE_FLAGS -DCOMPILE_DEFINITIONS:STRING=-DTEST_LFS_WORKS
@@ -506,7 +506,7 @@ if (NOT HJAVA_PRINTF_LL_WIDTH OR HJAVA_PRINTF_LL_WIDTH MATCHES "unknown")
     if (HJAVA_SIZEOF_LONG_LONG)
       set (CURRENT_TEST_DEFINITIONS "${CURRENT_TEST_DEFINITIONS} -DHAVE_LONG_LONG")
     endif (HJAVA_SIZEOF_LONG_LONG)
-    TRY_RUN (HJAVA_PRINTF_LL_TEST_RUN   HJAVA_PRINTF_LL_TEST_COMPILE
+    try_run (HJAVA_PRINTF_LL_TEST_RUN   HJAVA_PRINTF_LL_TEST_COMPILE
         ${HDFJAVA_BINARY_DIR}/CMake
         ${HDFJAVA_RESOURCES_DIR}/HDFTests.c
         CMAKE_FLAGS -DCOMPILE_DEFINITIONS:STRING=${CURRENT_TEST_DEFINITIONS}

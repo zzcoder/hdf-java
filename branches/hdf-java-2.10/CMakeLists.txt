@@ -141,13 +141,13 @@ endif (NOT HJAVA_INSTALL_DATA_DIR)
 # parse the full version number from hjava.h and include in HJAVA_VERS_INFO
 #-----------------------------------------------------------------------------
 file (READ ${HDFJAVA_SOURCE_DIR}/VERSION _hjava_version_contents)
-STRING (REGEX REPLACE ".*VERSION=hdf-java-([0-9]*.[0-9]*).*$"
+string (REGEX REPLACE ".*VERSION=hdf-java-([0-9]*.[0-9]*).*$"
     "\\1" HJAVA_FULL_VERSION ${_hjava_version_contents})
-STRING (REGEX REPLACE ".*VERSION=hdf-java-([0-9]*).*$"
+string (REGEX REPLACE ".*VERSION=hdf-java-([0-9]*).*$"
     "\\1" HJAVA_VERS_MAJOR ${_hjava_version_contents})
-STRING (REGEX REPLACE ".*VERSION=hdf-java-[0-9]*.([0-9]*).*$"
+string (REGEX REPLACE ".*VERSION=hdf-java-[0-9]*.([0-9]*).*$"
     "\\1" HJAVA_VERS_MINOR ${_hjava_version_contents})
-STRING (REGEX REPLACE ".*VERSION=hdf-java-[0-9]*.[0-9]*.([0-9]*).*$"
+string (REGEX REPLACE ".*VERSION=hdf-java-[0-9]*.[0-9]*.([0-9]*).*$"
     "\\1" HJAVA_VERS_RELEASE ${_hjava_version_contents})
 message (STATUS "VERSION: ${HJAVA_FULL_VERSION}")
 message (STATUS "VERSION MAJOR: ${HJAVA_VERS_MAJOR}")
@@ -171,15 +171,15 @@ set (HDFJAVA_PACKAGE_TARNAME "hdf-java")
 set (HDFJAVA_PACKAGE_URL "http://www.hdfgroup.org/hdfjava")
 set (HDFJAVA_PACKAGE_BUGREPORT "help@hdfgroup.org")
 
-FIND_PACKAGE(Java)
+find_package (Java)
 #-----------------------------------------------------------------------------
 # Include some macros for reusable code
 #-----------------------------------------------------------------------------
 set (CMAKE_MODULE_PATH ${HDFJAVA_RESOURCES_DIR})
-INCLUDE (${HDFJAVA_RESOURCES_DIR}/UseJava.cmake)
-INCLUDE (${HDFJAVA_RESOURCES_DIR}/HDFMacros.cmake)
-INCLUDE (${HDFJAVA_RESOURCES_DIR}/HDF45Macros.cmake)
-INCLUDE (${HDFJAVA_RESOURCES_DIR}/HDFJavaMacros.cmake)
+include (${HDFJAVA_RESOURCES_DIR}/UseJava.cmake)
+include (${HDFJAVA_RESOURCES_DIR}/HDFMacros.cmake)
+include (${HDFJAVA_RESOURCES_DIR}/HDF45Macros.cmake)
+include (${HDFJAVA_RESOURCES_DIR}/HDFJavaMacros.cmake)
 
 #-----------------------------------------------------------------------------
 # Setup output Directories
@@ -243,7 +243,7 @@ endif (HDF_ENABLE_COVERAGE)
 #-----------------------------------------------------------------------------
 # Include user macros
 #-----------------------------------------------------------------------------
-INCLUDE (UserMacros.cmake)
+include (UserMacros.cmake)
 
 #-----------------------------------------------------------------------------
 # Include the main src and config directories
@@ -278,20 +278,20 @@ if (BUILD_TESTING)
       CACHE INTEGER
       "Timeout in seconds for each test (default 1200=20minutes)"
   )
-  ENABLE_TESTING ()
-  INCLUDE (CTest)
-  INCLUDE (${HDFJAVA_SOURCE_DIR}/CTestConfig.cmake)
+  enable_testing ()
+  include (CTest)
+  include (${HDFJAVA_SOURCE_DIR}/CTestConfig.cmake)
   configure_file (${HDFJAVA_RESOURCES_DIR}/CTestCustom.cmake ${HDFJAVA_BINARY_DIR}/CTestCustom.ctest @ONLY)
 endif (BUILD_TESTING)
 
 #-----------------------------------------------------------------------------
 # Add the HDFJAVA Library Target to the build
 #-----------------------------------------------------------------------------
-ADD_SUBDIRECTORY(${HDFJAVA_SOURCE_DIR}/native    native)
-ADD_SUBDIRECTORY(${HDFJAVA_SOURCE_DIR}/ncsa      ncsa)
+add_subdirectory (${HDFJAVA_SOURCE_DIR}/native    native)
+add_subdirectory (${HDFJAVA_SOURCE_DIR}/ncsa      ncsa)
 if (BUILD_TESTING)
   if (NOT HDFJAVA_EXTERNALLY_CONFIGURED)
-    ADD_SUBDIRECTORY (${HDFJAVA_SOURCE_DIR}/test ${PROJECT_BINARY_DIR}/test)
+    add_subdirectory (${HDFJAVA_SOURCE_DIR}/test ${PROJECT_BINARY_DIR}/test)
   endif (NOT HDFJAVA_EXTERNALLY_CONFIGURED)
 endif (BUILD_TESTING)
 
@@ -299,7 +299,7 @@ endif (BUILD_TESTING)
 # Option to build HDFJAVA Examples
 #-----------------------------------------------------------------------------
 if (HDF_BUILD_EXAMPLES)
-  ADD_SUBDIRECTORY (${HDFJAVA_SOURCE_DIR}/examples    examples)
+  add_subdirectory (${HDFJAVA_SOURCE_DIR}/examples    examples)
 endif (HDF_BUILD_EXAMPLES)
 
 #-----------------------------------------------------------------------------
@@ -409,7 +409,7 @@ endif (NOT HDFJAVA_EXTERNALLY_CONFIGURED)
 # Export all exported targets to the build tree for use by parent project
 #-----------------------------------------------------------------------------
 if (NOT HDFJAVA_EXTERNALLY_CONFIGURED)
-  EXPORT (
+  export (
       TARGETS ${HDFJAVA_LIBRARIES_TO_EXPORT} ${HDFJAVA_LIB_DEPENDENCIES}
       FILE ${HDFJAVA_PACKAGE}${HDF_PACKAGE_EXT}-targets.cmake
   )
@@ -646,8 +646,8 @@ set (CPACK_NSIS_MUI_FINISHPAGE_RUN ${HDFVIEW_SCRIPT})
 ## By default, do not warn when built on machines using only VS Express:
 #if (NOT DEFINED CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS_NO_WARNINGS)
 #  set (CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS_NO_WARNINGS ON)
-#ENDIF(NOT DEFINED CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS_NO_WARNINGS)
-#INCLUDE(InstallRequiredSystemLibraries)
+#endif( NOT DEFINED CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS_NO_WARNINGS)
+#include (InstallRequiredSystemLibraries)
 
 set (CPACK_INSTALL_CMAKE_PROJECTS "${HDFJAVA_BINARY_DIR};HDFJAVA;ALL;/")
   
@@ -670,26 +670,26 @@ if (HDF_PACKAGE_EXTLIBS)
   endif (HDF_ALLOW_EXTERNAL_SUPPORT MATCHES "SVN" OR HDF_ALLOW_EXTERNAL_SUPPORT MATCHES "TGZ")
 endif (HDF_PACKAGE_EXTLIBS)
 
-INCLUDE (CPack)
+include (CPack)
 
 #-----------------------------------------------------------------------------
 # Now list the cpack commands
 #-----------------------------------------------------------------------------
-CPACK_ADD_COMPONENT (apps 
+cpack_add_component (apps 
     DISPLAY_NAME "HDFJAVA Applications" 
     DEPENDS libraries
     GROUP Applications
 )
-CPACK_ADD_COMPONENT (libraries 
+cpack_add_component (libraries 
     DISPLAY_NAME "HDFJAVA Libraries"
     GROUP Runtime
 )
-CPACK_ADD_COMPONENT (headers 
+cpack_add_component (headers 
     DISPLAY_NAME "HDFJAVA Headers" 
     DEPENDS libraries
     GROUP Development
 )
-CPACK_ADD_COMPONENT (docs 
+cpack_add_component (docs 
     DISPLAY_NAME "HDFJAVA Documents" 
     DEPENDS libraries
     GROUP Documents
