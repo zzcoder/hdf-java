@@ -25,6 +25,7 @@ import ncsa.hdf.object.CompoundDS;
 import ncsa.hdf.object.Dataset;
 import ncsa.hdf.object.Datatype;
 import ncsa.hdf.object.FileFormat;
+import ncsa.hdf.object.Group;
 
 /**
  * H4Vdata describes a multi-dimension array of HDF4 vdata, inheriting CompoundDS.
@@ -36,7 +37,7 @@ import ncsa.hdf.object.FileFormat;
  * <p>
  * <b>How to Select a Subset</b>
  * <p>
- * Dataset defines APIs for read, write and subet a dataset. No function is defined
+ * Dataset defines APIs for read, write and subset a dataset. No function is defined
  * to select a subset of a data array. The selection is done in an implicit way.
  * Function calls to dimension information such as getSelectedDims() return an array
  * of dimension values, which is a reference to the array in the dataset object.
@@ -76,7 +77,7 @@ import ncsa.hdf.object.FileFormat;
     selected[1] = dims[1]/stride[1];
     selected[2] = dims[1]/stride[2];
 
-    // when dataset.read() is called, the slection above will be used since
+    // when dataset.read() is called, the selection above will be used since
     // the dimension arrays is passed by reference. Changes of these arrays
     // outside the dataset object directly change the values of these array
     // in the dataset object.
@@ -138,7 +139,6 @@ public class H4Vdata extends CompoundDS
         numberOfRecords = 0;
         numberOfMembers = 0;
         memberOrders = null;
-
     }
 
     /*
@@ -195,6 +195,7 @@ public class H4Vdata extends CompoundDS
             allNames += ","+memberNames[i];
         }
 
+        log.trace("readBytes(): start");
         try {
             // moves the access pointer to the start position
             HDFLibrary.VSseek(id, (int)startDims[0]);
@@ -214,6 +215,7 @@ public class H4Vdata extends CompoundDS
             close(id);
         }
 
+        log.trace("readBytes(): finish");
         return theData;
     }
 
@@ -235,6 +237,7 @@ public class H4Vdata extends CompoundDS
             return null;
         }
 
+        log.trace("read(): start");
         list = new Vector();
 
         // assume external data files are located in the same directory as the main file.
@@ -260,6 +263,7 @@ public class H4Vdata extends CompoundDS
             int n = memberOrders[i]*(int)selectedDims[0];
             member_data = H4Datatype.allocateArray(memberTIDs[i], n);
 
+            log.trace("read(): index={} isMemberSelected[i]={} memberOrders[i]={} array size={}", i, isMemberSelected[i], memberOrders[i], n);
             if (member_data == null) {
                 String[] nullValues = new String[n];
                 for (int j=0; j<n; j++) {
@@ -278,12 +282,14 @@ public class H4Vdata extends CompoundDS
                 if ((memberTIDs[i] == HDFConstants.DFNT_CHAR) ||
                     (memberTIDs[i] ==  HDFConstants.DFNT_UCHAR8)) {
                     // convert characters to string
+                    log.trace("read(): convert characters to string");
                     member_data = Dataset.byteToString((byte[])member_data, memberOrders[i]);
                     memberTypes[i] = new H4Datatype(Datatype.CLASS_STRING, memberOrders[i], -1, -1);
                     memberOrders[i] = 1; //one String
                 } 
                 else if (H4Datatype.isUnsigned(memberTIDs[i])) {
                     // convert unsigned integer to appropriate Java integer
+                    log.trace("read(): convert unsigned integer to appropriate Java integer");
                     member_data = Dataset.convertFromUnsignedC(member_data);
                 }
             } 
@@ -301,6 +307,7 @@ public class H4Vdata extends CompoundDS
 
         close(id);
 
+        log.trace("read(): finish");
         return list;
     }
 
@@ -313,6 +320,7 @@ public class H4Vdata extends CompoundDS
         //not be changed. Thus, to update some fields of a record after the
         //first write, the user must read all the fields to a buffer, update
         //the buffer, then write the entire record back to the vdata.
+        log.trace("write(): disabled");
 /*
         if (buf == null || numberOfMembers <= 0 || !(buf instanceof List))
             return; // no data to write
@@ -382,6 +390,7 @@ public class H4Vdata extends CompoundDS
             return attributeList;
         }
 
+        log.trace("getMetadata(): start");
         int n=0;
         try {
             n = HDFLibrary.VSnattrs(id);
@@ -448,6 +457,7 @@ public class H4Vdata extends CompoundDS
 
         // todo: We shall also load attributes of fields
 
+        log.trace("getMetadata(): finish");
         return attributeList;
     }
 
@@ -458,6 +468,7 @@ public class H4Vdata extends CompoundDS
         if (!(info instanceof Attribute)) {
             return;
         }
+        log.trace("writeMetadata(): start");
 
         getFileFormat().writeAttribute(this, (Attribute)info, true);
 
@@ -467,10 +478,14 @@ public class H4Vdata extends CompoundDS
 
         attributeList.add(info);
         nAttributes = attributeList.size();
+        log.trace("writeMetadata(): finish");
     }
 
     // To do: Implementing DataFormat
-    public void removeMetadata(Object info) throws HDFException { ; }
+    public void removeMetadata(Object info) throws HDFException 
+    { 
+        log.trace("removeMetadata(): disabled");
+    }
 
     // Implementing DataFormat
     @Override
@@ -479,6 +494,7 @@ public class H4Vdata extends CompoundDS
         int vsid = -1;
 
         // try to open with write permission
+        log.trace("open(): start");
         try {
             vsid = HDFLibrary.VSattach(getFID(), (int)oid[1], "w");
         } 
@@ -496,6 +512,7 @@ public class H4Vdata extends CompoundDS
             }
         }
 
+        log.trace("open(): finish");
         return vsid;
     }
 
@@ -517,6 +534,7 @@ public class H4Vdata extends CompoundDS
     @Override
     public void init()
     {
+        log.trace("init(): start");
         if (rank>0) {
             return; // already called. Initialize only once
         }
@@ -568,6 +586,7 @@ public class H4Vdata extends CompoundDS
                 // mask off the litend bit
                 memberTIDs[i] = memberTIDs[i] & (~HDFConstants.DFNT_LITEND);
                 memberOrders[i] = HDFLibrary.VFfieldorder(id, i);
+                log.trace("init():{}> isMemberSelected[i]={} memberNames[i]={} memberTIDs[i]={} memberOrders[i]={}", i, isMemberSelected[i], memberNames[i], memberTIDs[i], memberOrders[i]);
             } 
             catch (HDFException ex) {
                 continue;
@@ -575,6 +594,7 @@ public class H4Vdata extends CompoundDS
         } // for (int i=0; i<numberOfMembers; i++)
 
         close(id);
+        log.trace("init(): finish");
     }
 
     /**
@@ -604,5 +624,11 @@ public class H4Vdata extends CompoundDS
     //Implementing DataFormat
     public List getMetadata(int... attrPropList) throws Exception {
         throw new UnsupportedOperationException("getMetadata(int... attrPropList) is not supported");
+    }
+    
+    public Dataset copy(Group pgroup, String name, long[] dims, Object data)
+            throws Exception {
+        throw new UnsupportedOperationException(
+                "Writing a vdata to a new dataset is not implemented.");
     }
 }

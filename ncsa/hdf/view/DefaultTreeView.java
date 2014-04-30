@@ -759,7 +759,7 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
 
     /** paste selected objects */
     private void pasteObject() {
-
+        log.trace("pasteObject(): start");
         if (moveFlag == true) {
             HObject theObj = null;
             for (int i = 0; i < currentSelectionsForMove.length; i++) {
@@ -847,14 +847,15 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
 
         int op = -1;
         if (moveFlag == true) {
-            String moveMsg = "Do you want to paste the selected object(s) to \nGroup: " + fullPath + "\nFile: "
+            String moveMsg = "Do you want to move the selected object(s) to \nGroup: " + fullPath + "\nFile: "
                     + dstFile.getFilePath();
-            op = JOptionPane.showConfirmDialog(this, moveMsg, "Copy object", JOptionPane.YES_NO_OPTION, msgType);
+            op = JOptionPane.showConfirmDialog(this, moveMsg, "Move object", JOptionPane.YES_NO_OPTION, msgType);
         }
         else {
             op = JOptionPane.showConfirmDialog(this, msg, "Copy object", JOptionPane.YES_NO_OPTION, msgType);
         }
 
+        log.trace("pasteObject(): op={}", op);
         if (op == JOptionPane.NO_OPTION) {
             return;
         }
@@ -868,6 +869,7 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
             currentSelectionsForMove = null;
             objectsToCopy = null;
         }
+        log.trace("pasteObject(): finish");
     }
 
     /** paste selected objects */
@@ -878,6 +880,7 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
 
         ((HObject) objList.get(0)).getFileFormat();
         Group pgroup = (Group) ((DefaultMutableTreeNode) pnode).getUserObject();
+        log.trace("pasteObject(...): start");
 
         HObject theObj = null;
         TreeNode newNode = null;
@@ -906,6 +909,7 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
             }
 
             try {
+                log.trace("pasteObject(...): dstFile.copy(theObj, pgroup, null)");
                 newNode = dstFile.copy(theObj, pgroup, null);
             }
             catch (Exception ex) {
@@ -920,6 +924,7 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
             }
 
         } // while (iterator.hasNext())
+        log.trace("pasteObject(...): finish");
     }
 
     private void removeSelectedObjects() {

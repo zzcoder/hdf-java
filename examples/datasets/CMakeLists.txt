@@ -1,9 +1,9 @@
 cmake_minimum_required (VERSION 2.8.10)
 PROJECT (HDFJAVA_EXAMPLES_DATASETS Java)
 
-SET(CMAKE_VERBOSE_MAKEFILE 1)
+set (CMAKE_VERBOSE_MAKEFILE 1)
 
-INCLUDE_DIRECTORIES(
+INCLUDE_DIRECTORIES (
     ${JAVA_NCSA_HDF_HDF5_BINARY_DIR}
     ${HDFJAVA_LIB_DIR}
 )
@@ -51,17 +51,17 @@ set (HDF_JAVA_OBJECT_EXAMPLES
 )
 
 if (WIN32)
-  SET(CMAKE_JAVA_INCLUDE_FLAG_SEP ";")
+  set (CMAKE_JAVA_INCLUDE_FLAG_SEP ";")
 else (WIN32)
-  SET(CMAKE_JAVA_INCLUDE_FLAG_SEP ":")
-ENDIF(WIN32)
+  set (CMAKE_JAVA_INCLUDE_FLAG_SEP ":")
+endif (WIN32)
 
 set (CMAKE_JAVA_INCLUDE_PATH "${HDFJAVA_HDF5_JARS}")
 
 set (CMAKE_JAVA_CLASSPATH ".")
 foreach (HDFJAVA_JAR ${CMAKE_JAVA_INCLUDE_PATH})
-  SET(CMAKE_JAVA_CLASSPATH "${CMAKE_JAVA_CLASSPATH}${CMAKE_JAVA_INCLUDE_FLAG_SEP}${HDFJAVA_JAR}")
-ENDFOREACH(HDFJAVA_JAR)
+  set (CMAKE_JAVA_CLASSPATH "${CMAKE_JAVA_CLASSPATH}${CMAKE_JAVA_INCLUDE_FLAG_SEP}${HDFJAVA_JAR}")
+endforeach (HDFJAVA_JAR)
 
 foreach (example ${HDF_JAVA_EXAMPLES})
   file (WRITE ${PROJECT_BINARY_DIR}/${example}_Manifest.txt
@@ -69,9 +69,9 @@ foreach (example ${HDF_JAVA_EXAMPLES})
 "
   )
   add_jar (${example} MANIFEST ${PROJECT_BINARY_DIR}/${example}_Manifest.txt ${example}.java)
-  GET_TARGET_PROPERTY(${example}_JAR_FILE ${example} JAR_FILE)
+  get_target_property (${example}_JAR_FILE ${example} JAR_FILE)
 #  install_jar (${example} ${HJAVA_INSTALL_DATA_DIR}/examples examples)
-  GET_TARGET_PROPERTY(${example}_CLASSPATH ${example} CLASSDIR)
+  get_target_property (${example}_CLASSPATH ${example} CLASSDIR)
   add_dependencies (${example} ${HDFJAVA_NCSA_HDF5_LIB_TARGET})
 endforeach (example ${HDF_JAVA_EXAMPLES})
 
@@ -79,8 +79,8 @@ set (CMAKE_JAVA_INCLUDE_PATH "${HDFJAVA_HDF5_JARS};${HDFJAVA_HDF4_JARS};${HDFJAV
 
 set (CMAKE_JAVA_CLASSPATH ".")
 foreach (HDFJAVA_JAR ${CMAKE_JAVA_INCLUDE_PATH})
-  SET(CMAKE_JAVA_CLASSPATH "${CMAKE_JAVA_CLASSPATH}${CMAKE_JAVA_INCLUDE_FLAG_SEP}${HDFJAVA_JAR}")
-ENDFOREACH(HDFJAVA_JAR)
+  set (CMAKE_JAVA_CLASSPATH "${CMAKE_JAVA_CLASSPATH}${CMAKE_JAVA_INCLUDE_FLAG_SEP}${HDFJAVA_JAR}")
+endforeach (HDFJAVA_JAR)
 
 foreach (example ${HDF_JAVA_OBJECT_EXAMPLES})
   file (WRITE ${PROJECT_BINARY_DIR}/${example}_Manifest.txt
@@ -88,9 +88,9 @@ foreach (example ${HDF_JAVA_OBJECT_EXAMPLES})
 "
   )
   add_jar (${example} MANIFEST ${PROJECT_BINARY_DIR}/${example}_Manifest.txt ${example}.java)
-  GET_TARGET_PROPERTY(${example}_JAR_FILE ${example} JAR_FILE)
+  get_target_property (${example}_JAR_FILE ${example} JAR_FILE)
 #  install_jar (${example} ${HJAVA_INSTALL_DATA_DIR}/examples examples)
-  GET_TARGET_PROPERTY(${example}_CLASSPATH ${example} CLASSDIR)
+  get_target_property (${example}_CLASSPATH ${example} CLASSDIR)
   add_dependencies (${example} ${HDFJAVA_NCSA_H5_LIB_TARGET})
 endforeach (example ${HDF_JAVA_OBJECT_EXAMPLES})
 
