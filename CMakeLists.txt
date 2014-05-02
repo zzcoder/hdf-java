@@ -227,11 +227,6 @@ SET_GLOBAL_VARIABLE (HDFJAVA_SOURCE_PACKAGES "")
 SET_GLOBAL_VARIABLE (HDFJAVA_OBJECT_JARS "")
 
 #-----------------------------------------------------------------------------
-# Run all the CMake configuration tests for our build environment
-#-----------------------------------------------------------------------------
-INCLUDE (${HDF_RESOURCES_EXT_DIR}/ConfigureChecks.cmake)
-
-#-----------------------------------------------------------------------------
 # Option to use code coverage
 #-----------------------------------------------------------------------------
 option (HDF_ENABLE_COVERAGE "Enable code coverage for Libraries and Programs" OFF)
