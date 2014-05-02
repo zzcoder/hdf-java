@@ -197,7 +197,7 @@ add_test (
         -D "TEST_MASK_FILE=TRUE"
         -D "TEST_ERRREF=JUnit-gui-menu.err"
         -D "TEST_REFERENCE=JUnit-gui-menu.txt"
-        -P "${HDFJAVA_RESOURCES_DIR}/runTest.cmake"
+        -P "${HDF_RESOURCES_DIR}/runTest.cmake"
 )
 
 set_tests_properties (JUnit-gui-menu PROPERTIES
@@ -218,7 +218,7 @@ add_test (
         -D "TEST_MASK_FILE=TRUE"
         -D "TEST_ERRREF=JUnit-gui-treeview-newmenu.err"
         -D "TEST_REFERENCE=JUnit-gui-treeview-newmenu.txt"
-        -P "${HDFJAVA_RESOURCES_DIR}/runTest.cmake"
+        -P "${HDF_RESOURCES_DIR}/runTest.cmake"
 )
 
 set_tests_properties (JUnit-gui-treeview-newmenu PROPERTIES
@@ -239,7 +239,7 @@ add_test (
         -D "TEST_MASK_FILE=TRUE"
         -D "TEST_ERRREF=JUnit-gui-treeview-groups.err"
         -D "TEST_REFERENCE=JUnit-gui-treeview-groups.txt"
-        -P "${HDFJAVA_RESOURCES_DIR}/runTest.cmake"
+        -P "${HDF_RESOURCES_DIR}/runTest.cmake"
 )
 
 set_tests_properties (JUnit-gui-treeview-groups PROPERTIES
@@ -271,7 +271,7 @@ add_test (
         -D "TEST_MASK_FILE=TRUE"
         -D "TEST_ERRREF=JUnit-gui-treeview-files.err"
         -D "TEST_REFERENCE=JUnit-gui-treeview-files.txt"
-        -P "${HDFJAVA_RESOURCES_DIR}/runTest.cmake"
+        -P "${HDF_RESOURCES_DIR}/runTest.cmake"
 )
 
 set_tests_properties (JUnit-gui-treeview-files PROPERTIES
@@ -292,7 +292,7 @@ add_test (
         -D "TEST_MASK_FILE=TRUE"
         -D "TEST_ERRREF=JUnit-gui-treeview-export.err"
         -D "TEST_REFERENCE=JUnit-gui-treeview-export.txt"
-        -P "${HDFJAVA_RESOURCES_DIR}/runTest.cmake"
+        -P "${HDF_RESOURCES_DIR}/runTest.cmake"
 )
 
 set_tests_properties (JUnit-gui-treeview-export PROPERTIES
@@ -331,7 +331,7 @@ add_test (
         -D "TEST_MASK_FILE=TRUE"
         -D "TEST_ERRREF=JUnit-gui-tableview-menu.err"
         -D "TEST_REFERENCE=JUnit-gui-tableview-menu.txt"
-        -P "${HDFJAVA_RESOURCES_DIR}/runTest.cmake"
+        -P "${HDF_RESOURCES_DIR}/runTest.cmake"
 )
 
 set_tests_properties (JUnit-gui-tableview-menu PROPERTIES
@@ -352,7 +352,7 @@ add_test (
         -D "TEST_MASK_FILE=TRUE"
         -D "TEST_ERRREF=JUnit-gui-treeview-newvldt.err"
         -D "TEST_REFERENCE=JUnit-gui-treeview-newvldt.txt"
-        -P "${HDFJAVA_RESOURCES_DIR}/runTest.cmake"
+        -P "${HDF_RESOURCES_DIR}/runTest.cmake"
 )
 
 set_tests_properties (JUnit-gui-treeview-newvldt PROPERTIES
@@ -374,7 +374,7 @@ add_test (
         -D "TEST_MASK_FILE=TRUE"
         -D "TEST_ERRREF=JUnit-gui-treeview-filters.err"
         -D "TEST_REFERENCE=JUnit-gui-treeview-filters.txt"
-        -P "${HDFJAVA_RESOURCES_DIR}/runTest.cmake"
+        -P "${HDF_RESOURCES_DIR}/runTest.cmake"
 )
 
 set_tests_properties (JUnit-gui-treeview-filters PROPERTIES
@@ -395,7 +395,7 @@ add_test (
         -D "TEST_MASK_FILE=TRUE"
         -D "TEST_ERRREF=JUnit-gui-tattr2.err"
         -D "TEST_REFERENCE=JUnit-gui-tattr2.txt"
-        -P "${HDFJAVA_RESOURCES_DIR}/runTest.cmake"
+        -P "${HDF_RESOURCES_DIR}/runTest.cmake"
 )
 
 set_tests_properties (JUnit-gui-tattr2 PROPERTIES
@@ -416,7 +416,7 @@ add_test (
         -D "TEST_MASK_FILE=TRUE"
         -D "TEST_ERRREF=JUnit-gui-CL-multi.err"
         -D "TEST_REFERENCE=JUnit-gui-CL-multi.txt"
-        -P "${HDFJAVA_RESOURCES_DIR}/runTest.cmake"
+        -P "${HDF_RESOURCES_DIR}/runTest.cmake"
 )
 
 set_tests_properties (JUnit-gui-CL-multi PROPERTIES
@@ -437,7 +437,7 @@ add_test (
         -D "TEST_MASK_FILE=TRUE"
         -D "TEST_ERRREF=JUnit-gui-CL-root-multi.err"
         -D "TEST_REFERENCE=JUnit-gui-CL-root-multi.txt"
-        -P "${HDFJAVA_RESOURCES_DIR}/runTest.cmake"
+        -P "${HDF_RESOURCES_DIR}/runTest.cmake"
 )
 
 set_tests_properties (JUnit-gui-CL-root-multi PROPERTIES
@@ -458,7 +458,7 @@ set_tests_properties (JUnit-gui-CL-root-multi PROPERTIES
 #        -D "TEST_MASK_FILE=TRUE"
 #        -D "TEST_ERRREF=JUnit-gui-CL-geom.err"
 #        -D "TEST_REFERENCE=JUnit-gui-CL-geom.txt"
-#        -P "${HDFJAVA_RESOURCES_DIR}/runTest.cmake"
+#        -P "${HDF_RESOURCES_DIR}/runTest.cmake"
 #)
 #
 #set_tests_properties (JUnit-gui-CL-geom PROPERTIES

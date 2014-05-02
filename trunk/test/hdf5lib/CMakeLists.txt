@@ -103,5 +103,5 @@ add_test (
         -D "TEST_MASK_ERROR=TRUE"
         -D "TEST_FILTER:STRING=${testfilter}"
         -D "TEST_REFERENCE=test/hdf5lib/JUnit-interface.txt"
-        -P "${HDFJAVA_RESOURCES_DIR}/runTest.cmake"
+        -P "${HDF_RESOURCES_DIR}/runTest.cmake"
 )

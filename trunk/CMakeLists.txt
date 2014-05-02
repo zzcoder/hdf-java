@@ -89,7 +89,8 @@ set (HDFJAVA_NCSA_VIEW_LIB_TARGET     ${HDFJAVA_NCSA_VIEW_LIB_CORENAME})
 #-----------------------------------------------------------------------------
 # Define some CMake variables for use later in the project
 #-----------------------------------------------------------------------------
-set (HDFJAVA_RESOURCES_DIR       ${HDFJAVA_SOURCE_DIR}/config/cmake)
+set (HDF_RESOURCES_DIR       ${HDFJAVA_SOURCE_DIR}/config/cmake)
+set (HDF_RESOURCES_EXT_DIR           ${HDFJAVA_SOURCE_DIR}/config/cmake_ext_mod)
 set (HDFJAVA_JNI_SRC_DIR         ${HDFJAVA_SOURCE_DIR}/native)
 set (HDFJAVA_JAVA_SRC_DIR        ${HDFJAVA_SOURCE_DIR}/ncsa/hdf)
 set (HDFJAVA_JAVA_OBJECT_SRC_DIR ${HDFJAVA_SOURCE_DIR}/ncsa/hdf/object)
@@ -175,11 +176,11 @@ find_package (Java)
 #-----------------------------------------------------------------------------
 # Include some macros for reusable code
 #-----------------------------------------------------------------------------
-set (CMAKE_MODULE_PATH ${HDFJAVA_RESOURCES_DIR})
-include (${HDFJAVA_RESOURCES_DIR}/UseJava.cmake)
-include (${HDFJAVA_RESOURCES_DIR}/HDFMacros.cmake)
-include (${HDFJAVA_RESOURCES_DIR}/HDF45Macros.cmake)
-include (${HDFJAVA_RESOURCES_DIR}/HDFJavaMacros.cmake)
+set (CMAKE_MODULE_PATH "${HDF_RESOURCES_DIR};${HDF_RESOURCES_EXT_DIR}")
+include (${HDF_RESOURCES_DIR}/UseJava.cmake)
+include (${HDF_RESOURCES_EXT_DIR}/HDFMacros.cmake)
+include (${HDF_RESOURCES_DIR}/HDF45Macros.cmake)
+include (${HDF_RESOURCES_DIR}/HDFJavaMacros.cmake)
 
 #-----------------------------------------------------------------------------
 # Setup output Directories
@@ -228,7 +229,7 @@ SET_GLOBAL_VARIABLE (HDFJAVA_OBJECT_JARS "")
 #-----------------------------------------------------------------------------
 # Run all the CMake configuration tests for our build environment
 #-----------------------------------------------------------------------------
-INCLUDE (${HDFJAVA_RESOURCES_DIR}/ConfigureChecks.cmake)
+INCLUDE (${HDF_RESOURCES_EXT_DIR}/ConfigureChecks.cmake)
 
 #-----------------------------------------------------------------------------
 # Option to use code coverage
@@ -281,7 +282,7 @@ if (BUILD_TESTING)
   enable_testing ()
   include (CTest)
   include (${HDFJAVA_SOURCE_DIR}/CTestConfig.cmake)
-  configure_file (${HDFJAVA_RESOURCES_DIR}/CTestCustom.cmake ${HDFJAVA_BINARY_DIR}/CTestCustom.ctest @ONLY)
+  configure_file (${HDF_RESOURCES_EXT_DIR}/CTestCustom.cmake ${HDFJAVA_BINARY_DIR}/CTestCustom.ctest @ONLY)
 endif (BUILD_TESTING)
 
 #-----------------------------------------------------------------------------
@@ -321,7 +322,7 @@ install (
 option (HDFJAVA_PACK_EXAMPLES  "Package the HDFJAVA Library Examples Compressed File" OFF)
 if (HDFJAVA_PACK_EXAMPLES)
   configure_file (
-      ${HDFJAVA_RESOURCES_DIR}/HDFJAVA_Examples.cmake.in 
+      ${HDF_RESOURCES_DIR}/HDFJAVA_Examples.cmake.in 
       ${HDFJAVA_BINARY_DIR}/HDFJAVA_Examples.cmake @ONLY
   )
   install (
@@ -334,7 +335,7 @@ if (HDFJAVA_PACK_EXAMPLES)
       install (
           FILES
               ${HDFJAVA_EXAMPLES_COMPRESSED_DIR}/${HDFJAVA_EXAMPLES_COMPRESSED}
-              ${HDFJAVA_RESOURCES_DIR}/USING_CMake_Examples.txt
+              ${HDF_RESOURCES_DIR}/USING_CMake_Examples.txt
           DESTINATION ${HJAVA_INSTALL_DATA_DIR}
           COMPONENT docs
       )
@@ -425,7 +426,7 @@ set (HDFJAVA_INCLUDES_BUILD_TIME
 )
 
 configure_file (
-    ${HDFJAVA_RESOURCES_DIR}/HDFJAVA-config.cmake.build.in 
+    ${HDF_RESOURCES_DIR}/HDFJAVA-config.cmake.build.in 
     ${HDFJAVA_BINARY_DIR}/${HDFJAVA_PACKAGE}${HDF_PACKAGE_EXT}-config.cmake @ONLY
 )
 
@@ -434,7 +435,7 @@ configure_file (
 #-----------------------------------------------------------------------------
 if (NOT H4H5_EXTERNALLY_CONFIGURED)
   configure_file (
-      ${HDFJAVA_RESOURCES_DIR}/FindHDFJAVA.cmake.in 
+      ${HDF_RESOURCES_DIR}/FindHDFJAVA.cmake.in 
       ${HDFJAVA_BINARY_DIR}/CMakeFiles/FindHDFJAVA${HDF_PACKAGE_EXT}.cmake @ONLY
   )
   install (
@@ -448,7 +449,7 @@ endif (NOT H4H5_EXTERNALLY_CONFIGURED)
 #-----------------------------------------------------------------------------
 if (NOT HDFJAVA_EXTERNALLY_CONFIGURED)
   configure_file (
-      ${HDFJAVA_RESOURCES_DIR}/HDFJAVA-config.cmake.install.in
+      ${HDF_RESOURCES_DIR}/HDFJAVA-config.cmake.install.in
       ${HDFJAVA_BINARY_DIR}/CMakeFiles/${HDFJAVA_PACKAGE}${HDF_PACKAGE_EXT}-config.cmake @ONLY
   )
   install (
@@ -462,7 +463,7 @@ endif (NOT HDFJAVA_EXTERNALLY_CONFIGURED)
 #-----------------------------------------------------------------------------
 if (NOT HDFJAVA_EXTERNALLY_CONFIGURED)
   configure_file (
-      ${HDFJAVA_RESOURCES_DIR}/HDFJAVA-config-version.cmake.in
+      ${HDF_RESOURCES_DIR}/HDFJAVA-config-version.cmake.in
       ${HDFJAVA_BINARY_DIR}/CMakeFiles/${HDFJAVA_PACKAGE}${HDF_PACKAGE_EXT}-config-version.cmake @ONLY
   )
   install (
@@ -530,7 +531,7 @@ if (HDFJAVA_PACK_JRE)
 endif (HDFJAVA_PACK_JRE)
 
 configure_file (
-    ${HDFJAVA_RESOURCES_DIR}/README.txt.cmake.in 
+    ${HDF_RESOURCES_DIR}/README.txt.cmake.in 
     ${HDFJAVA_BINARY_DIR}/README.txt @ONLY
 )
 
@@ -553,7 +554,7 @@ set (CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/COPYING")
 set (CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/Readme.txt")
 set (CPACK_PACKAGE_RELOCATABLE TRUE)
 set (CPACK_PACKAGE_INSTALL_DIRECTORY "{CPACK_PACKAGE_VENDOR}/${CPACK_PACKAGE_NAME}/${CPACK_PACKAGE_VERSION}")
-set (CPACK_PACKAGE_ICON "${HDFJAVA_RESOURCES_DIR}/hdf.bmp")
+set (CPACK_PACKAGE_ICON "${HDF_RESOURCES_EXT_DIR}/hdf.bmp")
 
 set (CPACK_GENERATOR "TGZ") 
 if (WIN32)
@@ -572,10 +573,10 @@ if (WIN32)
   endif (CMAKE_CL_64)
   # set the install/unistall icon used for the installer itself
   # There is a bug in NSI that does not handle full unix paths properly.
-  set (CPACK_NSIS_MUI_ICON "${HDFJAVA_RESOURCES_DIR}\\\\hdf.ico")
-  set (CPACK_NSIS_MUI_UNIICON "${HDFJAVA_RESOURCES_DIR}\\\\hdf.ico")
+  set (CPACK_NSIS_MUI_ICON "${HDF_RESOURCES_EXT_DIR}\\\\hdf.ico")
+  set (CPACK_NSIS_MUI_UNIICON "${HDF_RESOURCES_EXT_DIR}\\\\hdf.ico")
   # set the package header icon for MUI
-  set (CPACK_PACKAGE_ICON "${HDFJAVA_RESOURCES_DIR}\\\\hdf.bmp")
+  set (CPACK_PACKAGE_ICON "${HDF_RESOURCES_EXT_DIR}\\\\hdf.bmp")
   set (CPACK_NSIS_DISPLAY_NAME "@CPACK_NSIS_PACKAGE_NAME@, a visual tool for browsing and editing HDF files")
   set (CPACK_PACKAGE_INSTALL_DIRECTORY "${CPACK_PACKAGE_VENDOR}\\\\${CPACK_PACKAGE_NAME}\\\\${CPACK_PACKAGE_VERSION}")
   set (CPACK_MONOLITHIC_INSTALL ON)
@@ -585,19 +586,19 @@ elseif (APPLE)
 #  list (APPEND CPACK_GENERATOR "DragNDrop") 
   set (CPACK_COMPONENTS_ALL_IN_ONE_PACKAGE ON)
   set (CPACK_PACKAGING_INSTALL_PREFIX "/${CPACK_PACKAGE_INSTALL_DIRECTORY}")
-  set (CPACK_PACKAGE_ICON "${HDFJAVA_RESOURCES_DIR}/HDFView.icns")
+  set (CPACK_PACKAGE_ICON "${HDF_RESOURCES_EXT_DIR}/hdf.icns")
     
   if (HDFJAVA_PACK_MACOSX_BUNDLE)
     list (APPEND CPACK_GENERATOR "Bundle")
     set (CPACK_BUNDLE_NAME "${HDFJAVA_PACKAGE_STRING}")
     set (CPACK_BUNDLE_LOCATION "/")    # make sure CMAKE_INSTALL_PREFIX ends in "/"
     set (CMAKE_INSTALL_PREFIX "/${CPACK_BUNDLE_NAME}.app/Contents/Resources")
-    set (CPACK_BUNDLE_ICON "${HDFJAVA_RESOURCES_DIR}/HDFView.icns")
+    set (CPACK_BUNDLE_ICON "${HDF_RESOURCES_EXT_DIR}/hdf.icns")
     set (CPACK_BUNDLE_PLIST "${HDFJAVA_BINARY_DIR}/CMakeFiles/Info.plist")
     if (HDFJAVA_PACK_MACOSX_16_BUNDLE)
       set (CPACK_BUNDLE_STARTUP_COMMAND "/System/Library/Frameworks/JavaVM.framework/Resources/MacOS/JavaApplicationStub")
     else (HDFJAVA_PACK_MACOSX_16_BUNDLE)
-      set (CPACK_BUNDLE_STARTUP_COMMAND "${HDFJAVA_RESOURCES_DIR}/JavaAppLauncher")
+      set (CPACK_BUNDLE_STARTUP_COMMAND "${HDF_RESOURCES_DIR}/JavaAppLauncher")
     endif (HDFJAVA_PACK_MACOSX_16_BUNDLE)
     set (CPACK_APPLE_GUI_BUNDLE_NAME "HDFView")
     set (CPACK_APPLE_GUI_COPYRIGHT "Copyright © 2006-2014 by The HDF Group. All rights reserved.")
@@ -607,15 +608,15 @@ elseif (APPLE)
     # Configure the HDFJAVA-startup.sh and Info.plist file for the install bundle
     #-----------------------------------------------------------------------------
     configure_file (
-        ${HDFJAVA_RESOURCES_DIR}/CPack.Info.plist.in
+        ${HDF_RESOURCES_DIR}/CPack.Info.plist.in
         ${HDFJAVA_BINARY_DIR}/CMakeFiles/Info.plist @ONLY
     )
     configure_file (
-        ${HDFJAVA_RESOURCES_DIR}/PkgInfo.in
+        ${HDF_RESOURCES_DIR}/PkgInfo.in
         ${HDFJAVA_BINARY_DIR}/CMakeFiles/PkgInfo @ONLY
     )
     configure_file (
-        ${HDFJAVA_RESOURCES_DIR}/version.plist.in
+        ${HDF_RESOURCES_EXT_DIR}/version.plist.in
         ${HDFJAVA_BINARY_DIR}/CMakeFiles/version.plist @ONLY
     )
     install (
