@@ -145,7 +145,7 @@ add_test (
         -D "TEST_MASK_FILE=TRUE"
         -D "TEST_ERRREF=JUnit-gui-modules.err"
         -D "TEST_REFERENCE=JUnit-gui-modules.txt"
-        -P "${HDFJAVA_RESOURCES_DIR}/runTest.cmake"
+        -P "${HDF_RESOURCES_DIR}/runTest.cmake"
 )
 
 set_tests_properties (JUnit-gui-modules PROPERTIES

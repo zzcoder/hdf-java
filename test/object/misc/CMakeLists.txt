@@ -49,7 +49,7 @@ add_test (
         -D "TEST_EXPECT=0"
         -D "TEST_REFERENCE=TestH5Object.txt"
         -D "TEST_SKIP_COMPARE=TRUE"
-        -P "${HDFJAVA_RESOURCES_DIR}/runTest.cmake"
+        -P "${HDF_RESOURCES_DIR}/runTest.cmake"
 )
 
 ###########################################################################
@@ -92,7 +92,7 @@ if (HDFJAVA_TEST_H5TABLE)
           -D "TEST_EXPECT=0"
           -D "TEST_REFERENCE=TestH5Table.txt"
           -D "TEST_SKIP_COMPARE=TRUE"
-          -P "${HDFJAVA_RESOURCES_DIR}/runTest.cmake"
+          -P "${HDF_RESOURCES_DIR}/runTest.cmake"
   )
 endif (HDFJAVA_TEST_H5TABLE)
 
@@ -136,7 +136,7 @@ if (HDFJAVA_TEST_DEBUGHDF)
           -D "TEST_EXPECT=0"
           -D "TEST_REFERENCE=DebugHDF.txt"
           -D "TEST_SKIP_COMPARE=TRUE"
-          -P "${HDFJAVA_RESOURCES_DIR}/runTest.cmake"
+          -P "${HDF_RESOURCES_DIR}/runTest.cmake"
   )
 endif (HDFJAVA_TEST_DEBUGHDF)
 
@@ -180,7 +180,7 @@ if (HDFJAVA_TEST_H5FILE)
           -D "TEST_EXPECT=0"
           -D "TEST_REFERENCE=TestH5File.txt"
           -D "TEST_SKIP_COMPARE=TRUE"
-          -P "${HDFJAVA_RESOURCES_DIR}/runTest.cmake"
+          -P "${HDF_RESOURCES_DIR}/runTest.cmake"
   )
 endif (HDFJAVA_TEST_H5FILE)
 
@@ -224,7 +224,7 @@ if (HDFJAVA_TEST_MEMORYLEAK)
           -D "TEST_EXPECT=0"
           -D "TEST_REFERENCE=TestH5MemoryLeak.txt"
           -D "TEST_SKIP_COMPARE=TRUE"
-          -P "${HDFJAVA_RESOURCES_DIR}/runTest.cmake"
+          -P "${HDF_RESOURCES_DIR}/runTest.cmake"
   )
 endif (HDFJAVA_TEST_MEMORYLEAK)
 
@@ -268,6 +268,6 @@ if (HDFJAVA_TEST_H4FILE)
           -D "TEST_EXPECT=0"
           -D "TEST_REFERENCE=TestH4File.txt"
           -D "TEST_SKIP_COMPARE=TRUE"
-          -P "${HDFJAVA_RESOURCES_DIR}/runTest.cmake"
+          -P "${HDF_RESOURCES_DIR}/runTest.cmake"
   )
 endif (HDFJAVA_TEST_H4FILE)

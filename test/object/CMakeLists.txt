@@ -90,6 +90,6 @@ add_test (
         -D "TEST_FILTER:STRING=${testfilter}"
         -D "TEST_REFERENCE=test/object/JUnit-object-interface.txt"
         -D "TEST_MASK_ERROR=TRUE"
-        -P "${HDFJAVA_RESOURCES_DIR}/runTest.cmake"
+        -P "${HDF_RESOURCES_DIR}/runTest.cmake"
 )
  

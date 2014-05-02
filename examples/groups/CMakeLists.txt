@@ -101,7 +101,7 @@ MACRO (ADD_H5_TEST resultfile resultcode)
           -D "TEST_OUTPUT=groups/${resultfile}.out"
           -D "TEST_EXPECT=${resultcode}"
           -D "TEST_REFERENCE=groups/${resultfile}.txt"
-          -P "${HDFJAVA_RESOURCES_DIR}/runTest.cmake"
+          -P "${HDF_RESOURCES_DIR}/runTest.cmake"
   )
   if (NOT "${last_test}" STREQUAL "")
     set_tests_properties (groups-${resultfile} PROPERTIES DEPENDS ${last_test})
