@@ -253,6 +253,8 @@ public class TestTreeViewNewVLDatatypes {
             propDialog.textBox("attrvalue").setText("");
             propDialog.button("OK").click();
             mainFrameFixture.robot.waitForIdle();
+            propDialog.button("Close").click();
+            mainFrameFixture.robot.waitForIdle();
 
             filetree = mainFrameFixture.tree().focus();
             assertTrue("File-Dataset-HDF5 filetree shows:", filetree.target.getRowCount()==1);
