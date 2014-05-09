@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Set up default variable values if not supplied by the user.
 
@@ -6,10 +6,8 @@
 export JAVABIN= # bin folder of installed java if not found below
 export INSTALLDIR=@CMAKE_INSTALL_PREFIX@
 
-if [ ! -d \$JAVABIN ]; then
-    JAVALOC=`which java`
-    LASTSLASH=`perl -e "print rindex(\"${JAVALOC}\", '/')"`
-    JAVABIN=`perl -e "print substr(\"${JAVALOC}\", 0, $LASTSLASH)"`
+if [ ! -d "$JAVABIN" ]; then
+    JAVABIN=$(dirname `which java`)
 fi
 
 $JAVABIN/java -Xmx1024M -Djava.library.path="$INSTALLDIR/lib:$INSTALLDIR/lib/ext" -Dhdfview.root="$INSTALLDIR" -jar "$INSTALLDIR/@HJAVA_INSTALL_JAR_DIR@/@HDFVIEW_JAR@" -root "$INSTALLDIR/share" $*
