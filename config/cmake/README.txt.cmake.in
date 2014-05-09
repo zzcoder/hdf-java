@@ -34,7 +34,7 @@ To test the installation with the examples;
     Copy HDFJAVA_Examples.cmake to this directory.
     Edit HDFJAVA_Examples.cmake line 8 to set INSTALLDIR to where @HDFJAVA_PACKAGE_NAME@ is installed.
     Execute from this directory: 
-        ctest -S HDFJAVA_Examples.cmake,HDFJavaExamples-0.1.1-Source -C Release -O test.log
+        ctest -S HDFJAVA_Examples.cmake,HDFJavaExamples-0.1.1-Source -C Release -V -O test.log
 
 When executed, the ctest script will save the results to the log file, test.log, as
 indicated by the ctest command. If you wish the to see more build and test information, 
