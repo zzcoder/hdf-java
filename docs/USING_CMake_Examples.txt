@@ -1,10 +1,10 @@
 ************************************************************************
-* Build and Test HDF-JAVA Examples with CMake                              *
+* Build and Test HDF-JAVA Examples with CMake                          *
 ************************************************************************
 
-This short set of instructions is for users who want to quickly 
-test the installation of HDF-JAVA by using the CMake tools to build
-and test the HDF-JAVA examples. These instructions will show
+This short set of instructions is for users who want to quickly test 
+the installation of HDFView with hdf-java by using the CMake tools to 
+build and test the HDF-JAVA examples. These instructions will show
 the default usage and then present common changes for non-default
 installations.
 
@@ -44,7 +44,8 @@ I. Preconditions
 II. Building HDF-JAVA Examples with CMake
 ========================================================================
 
-Confirm that these files are in the HDF-JAVA install directory:
+Confirm that these files are in the HDFview with hdf-java install location's 
+share sub-directory:
 
        HDFJavaExamples-0.1.1-Source.zip (or HDFJavaExamples-0.1.1-Source.tar.gz)
        HDFJAVA_Examples.cmake

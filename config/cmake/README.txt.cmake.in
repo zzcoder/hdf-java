@@ -1,4 +1,4 @@
-@HDFJAVA_PACKAGE@/@HDFJAVA_PACKAGE_NAME@ version @HDFJAVA_PACKAGE_VERSION_STRING@
+@HDFJAVA_PACKAGE_NAME@ with @HDFJAVA_PACKAGE@ version @HDFJAVA_PACKAGE_VERSION_STRING@
 ------------------------------------------------------------------------------
 
 This directory contains the binary (release) distribution of 
@@ -25,7 +25,7 @@ After Installation
 ===========================================================================
 The compressed examples file HDFJavaExamples-0.1.1-Source.@BINARY_EXAMPLE_ENDING@, located in the 
 @HDFJAVA_PACKAGE_NAME@ install folder, can be built and tested with CMake and the supplied
-HDFJAVA_Examples.cmake file. The HDFJAVA_Examples.cmake expects @HDFJAVA_PACKAGE@/@HDFJAVA_PACKAGE_NAME@ 
+HDFJAVA_Examples.cmake file. The HDFJAVA_Examples.cmake expects @HDFJAVA_PACKAGE_NAME@ with @HDFJAVA_PACKAGE@ 
 to have been installed in the default location with JAVA @Java_VERSION_MAJOR@.@Java_VERSION_MINOR@ installed.
 
 To test the installation with the examples;
