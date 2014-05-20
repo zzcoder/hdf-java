@@ -49,6 +49,10 @@ share sub-directory:
 
        HDFJavaExamples-0.1.1-Source.zip (or HDFJavaExamples-0.1.1-Source.tar.gz)
        HDFJAVA_Examples.cmake
+   Note:
+       Windows default is C:/Program Files/HDF_Group/HDFView/2.10.1
+       Mac OS X default is /Applications/HDFView.app/Contents/Resources/share
+       Linux default <install root>/HDF_Group/HDFView/2.10.1/share
        
 Run the default installation process:
 
