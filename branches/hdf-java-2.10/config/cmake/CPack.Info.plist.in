@@ -5,9 +5,13 @@
 <dict>
     <key>CFBundleDevelopmentRegion</key>
     <string>English</string>
+    <key>CFBundleInfoDictionaryVersion</key>
+    <string>6.0</string>
     <key>CFBundleExecutable</key>
     <string>@CPACK_PACKAGE_FILE_NAME@</string>
     <key>CFBundleIconFile</key>
+    <string>@CPACK_BUNDLE_ICON@</string>
+    <key>CFBundleTypeIconFile</key>
     <string>@CPACK_BUNDLE_ICON@</string>
     <key>CFBundleIdentifier</key>
     <string>org.@CPACK_PACKAGE_VENDOR@.@CPACK_PACKAGE_NAME@@CPACK_MODULE_VERSION_SUFFIX@</string>
