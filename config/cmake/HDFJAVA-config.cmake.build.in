@@ -21,9 +21,9 @@ set (HDFJAVA_INCLUDE_DIRS "@HDFJAVA_INCLUDES_BUILD_TIME@")
 #-----------------------------------------------------------------------------
 # Version Strings
 #-----------------------------------------------------------------------------
-set (HDFJAVA_VERSION_STRING @HDFJAVA_VERSION_STRING@)
-set (HDFJAVA_VERSION_MAJOR  @HDFJAVA_VERSION_MAJOR@)
-set (HDFJAVA_VERSION_MINOR  @HDFJAVA_VERSION_MINOR@)
+set (HDFJAVA_VERSION_STRING @HDFJAVA_PACKAGE_VERSION@)
+set (HDFJAVA_VERSION_MAJOR  @HDFJAVA_PACKAGE_VERSION_MAJOR@)
+set (HDFJAVA_VERSION_MINOR  @HDFJAVA_PACKAGE_VERSION_MINOR@)
 
 #-----------------------------------------------------------------------------
 # Don't include targets if this file is being picked up by another

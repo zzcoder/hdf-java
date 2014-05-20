@@ -105,7 +105,6 @@ To build HDF-JAVA with all the external libraries you will need to:
          ----2."X.Y"
          ------bin
          ------cmake
-         ------include
          ------javadocs
          ------lib
          ------samples
@@ -124,18 +123,28 @@ To build HDF-JAVA with all the external libraries you will need to:
          --HDFView
          ----2."X.Y"
          ------bin
-         ------include
          ------javadocs
          ------lib
          ------samples
          ------share
-      
       By default the installation will create the folders in the 
       <install destination directory>/HDF_Group/HDFView/2."X.Y" location.
                 
       On Mac you will find HDFView-2."X.Y"-Darwin.dmg in the build folder. Click
       on the dmg file to proceed with installation. After accepting the license,
-      there will be an application packaged named: HDFView
+      there will be an application packaged named: 
+                HDFView
+      By default this will install HDFView and the hdf-java library 
+      into the "/Applications/HDFView.app/Contents/" directory and will create 
+      the following directory structure:
+         Java
+         MacOS
+         Resources
+         --lib
+         --share
+         ----cmake
+         ----javadocs
+         ----samples
 
 
 ========================================================================
@@ -189,7 +198,6 @@ Notes: This short set of instructions is written for users who want to
             ----2."X.Y"
             ------bin
             ------cmake
-            ------include
             ------javadocs
             ------lib
             ------samples
@@ -208,18 +216,28 @@ Notes: This short set of instructions is written for users who want to
             --HDFView
             ----2."X.Y"
             ------bin
-            ------include
             ------javadocs
             ------lib
             ------samples
             ------share
-      
          By default the installation will create the folders in the 
          <install destination directory>/HDF_Group/HDFView/2."X.Y" location.
                 
          On Mac you will find HDFView-2."X.Y"-Darwin.dmg in the build folder. Click
          on the dmg file to proceed with installation. After accepting the license,
-         there will be an application packaged named: HDFView
+         there will be an application packaged named: 
+                HDFView
+         By default this will install HDFView and the hdf-java library 
+         into the "/Applications/HDFView.app/Contents/" directory and will create 
+         the following directory structure:
+            Java
+            MacOS
+            Resources
+            --lib
+            --share
+            ----cmake
+            ----javadocs
+            ----samples
 
 
 ========================================================================
