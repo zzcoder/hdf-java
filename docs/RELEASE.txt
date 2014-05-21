@@ -16,13 +16,14 @@ Platforms
 This release was built and tested for the following platforms:
 
 64-bit distribution -- runs on 64-bit systems with 64-bit JRE only
-    * Linux
-    * Mac Intel
-    * Solaris
-    * Windows
+    * Linux CentOS 5
+    * Mac Intel Java 1.6 and 1.7
+    * Solaris SunOS 5
+    * Windows VS2010 and VS2012
 
 32-bit distribution -- runs on 32-bit systems with 32-bit JRE
-    * Windows
+    * Linux CentOS 5
+    * Windows VS2010 and VS2012
 
 
 Changes to the Java HDF5 Interface(JHI5)
