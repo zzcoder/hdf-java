@@ -28,17 +28,25 @@ This release was built and tested for the following platforms:
 
 Changes to the Java HDF5 Interface(JHI5)
 ==============================================================================
-    * 
+    * Enum H5Datatype objects now work correctly for NATIVE size.
+    * Simple variable-length string values for attributes are allowed.
 
 
 Major Enhancements
-==============================================================================  
-    * 
+============================================================================== 
+    * The data types bit-field, uint64, and H5T_ARRAY are now handled
+    * Enumeration type dataset values are now displayed as the enumeration value
+      rather than their numeric value
+    * Region references are now displayed correctly
+    * Mac style shortcuts are now used for Mac systems, e.g., Comand+C rather
+      than Crtl-C. 
 
 
 Major Bug Fixes
 ============================================================================== 
-    * 
+    * Multiple corrections were made to the display of zero- and one-based
+      indices on plot and dataset row/column labels
+    * Opening datasets having a compound datatype works correctly
 
 
 Limitations / Known Problems
@@ -47,5 +55,6 @@ Limitations / Known Problems
 
 Other Notes
 ==============================================================================
+    * Windows and Mac installation binaries are signed. 
 
 
