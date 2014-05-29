@@ -55,6 +55,7 @@
         <string>-Xmx1024m</string>
         <string>-Djava.library.path=$APP_ROOT/Contents/Resources/lib</string>
         <string>-Dhdfview.root=$APP_ROOT/Contents/Java</string>
+        <string>-Xdock:icon=$APP_ROOT/Contents/Resources/HDFView.icns</string>
         <string>-Dapple.laf.useScreenMenuBar=true</string>
         <string>-Dcom.apple.macos.use-file-dialog-packages=true</string>
         <string>-Dcom.apple.macos.useScreenMenuBar=true</string>

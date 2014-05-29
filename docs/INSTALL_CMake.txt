@@ -144,6 +144,7 @@ To build HDF-JAVA with all the external libraries you will need to:
          --share
          ----cmake
          ----javadocs
+         SharedSupport
          ----samples
 
 
@@ -237,6 +238,7 @@ Notes: This short set of instructions is written for users who want to
             --share
             ----cmake
             ----javadocs
+            SharedSupport
             ----samples
 
 
