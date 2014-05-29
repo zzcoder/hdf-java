@@ -132,9 +132,19 @@ if (NOT HJAVA_INSTALL_DATA_DIR)
   if (NOT WIN32)
     set (HJAVA_INSTALL_DATA_DIR share)
     set (HJAVA_INSTALL_CMAKE_DIR share/cmake)
+    if (APPLE)
+      if (HDFJAVA_PACK_MACOSX_BUNDLE)
+        set (HJAVA_INSTALL_EXTRA_DIR ../SharedSupport)
+      else (HDFJAVA_PACK_MACOSX_BUNDLE)
+        set (HJAVA_INSTALL_EXTRA_DIR share)
+      endif (HDFJAVA_PACK_MACOSX_BUNDLE)
+    else (APPLE)
+      set (HJAVA_INSTALL_EXTRA_DIR share)
+    endif (APPLE)
   else (NOT WIN32)
     set (HJAVA_INSTALL_DATA_DIR ".")
     set (HJAVA_INSTALL_CMAKE_DIR cmake)
+    set (HJAVA_INSTALL_EXTRA_DIR ".")
   endif (NOT WIN32)
 endif (NOT HJAVA_INSTALL_DATA_DIR)
 
@@ -172,11 +182,11 @@ set (HDFJAVA_PACKAGE_TARNAME "hdf-java")
 set (HDFJAVA_PACKAGE_URL "http://www.hdfgroup.org/hdfjava")
 set (HDFJAVA_PACKAGE_BUGREPORT "help@hdfgroup.org")
 
+set (CMAKE_MODULE_PATH "${HDF_RESOURCES_DIR};${HDF_RESOURCES_EXT_DIR};${CMAKE_ROOT}/Modules")
 find_package (Java)
 #-----------------------------------------------------------------------------
 # Include some macros for reusable code
 #-----------------------------------------------------------------------------
-set (CMAKE_MODULE_PATH "${HDF_RESOURCES_DIR};${HDF_RESOURCES_EXT_DIR}")
 include (${HDF_RESOURCES_DIR}/UseJava.cmake)
 include (${HDF_RESOURCES_EXT_DIR}/HDFMacros.cmake)
 include (${HDF_RESOURCES_DIR}/HDF45Macros.cmake)
@@ -322,7 +332,7 @@ if (HDFJAVA_PACK_EXAMPLES)
   )
   install (
       FILES ${HDFJAVA_BINARY_DIR}/HDFJAVA_Examples.cmake
-      DESTINATION ${HJAVA_INSTALL_DATA_DIR}
+      DESTINATION ${HJAVA_INSTALL_EXTRA_DIR}
       COMPONENT docs
   )
   if (NOT ${HDFJAVA_EXAMPLES_COMPRESSED} STREQUAL "")
@@ -331,7 +341,7 @@ if (HDFJAVA_PACK_EXAMPLES)
           FILES
               ${HDFJAVA_EXAMPLES_COMPRESSED_DIR}/${HDFJAVA_EXAMPLES_COMPRESSED}
               ${HDF_RESOURCES_DIR}/USING_CMake_Examples.txt
-          DESTINATION ${HJAVA_INSTALL_DATA_DIR}
+          DESTINATION ${HJAVA_INSTALL_EXTRA_DIR}
           COMPONENT docs
       )
     endif (EXISTS "${HDFJAVA_EXAMPLES_COMPRESSED_DIR}/${HDFJAVA_EXAMPLES_COMPRESSED}")
@@ -372,7 +382,7 @@ option (HDFJAVA_PACK_SAMPLES  "Package the HDFJAVA File Samples" OFF)
 if (HDFJAVA_PACK_SAMPLES)
   install (
       DIRECTORY ${HDFJAVA_SOURCE_DIR}/docs/samples
-      DESTINATION ${HJAVA_INSTALL_DATA_DIR}
+      DESTINATION ${HJAVA_INSTALL_EXTRA_DIR}
       USE_SOURCE_PERMISSIONS 
       COMPONENT docs
       PATTERN ".svn" EXCLUDE
@@ -473,6 +483,12 @@ endif (NOT HDFJAVA_EXTERNALLY_CONFIGURED)
 option (HDFJAVA_PACK_JRE  "Package a JRE installer file" OFF)
 if (HDFJAVA_PACK_JRE)
   if (WIN32)
+    install (
+        DIRECTORY "C:/Program Files/Java/jre7"
+        DESTINATION ${HJAVA_INSTALL_BIN_DIR}
+        USE_SOURCE_PERMISSIONS
+    )
+  else (WIN32)
     install (
         DIRECTORY "C:/Program Files/Java/jre7"
         DESTINATION ${HJAVA_INSTALL_BIN_DIR}
