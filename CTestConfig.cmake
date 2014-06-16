@@ -8,7 +8,11 @@ set (CTEST_PROJECT_NAME "HDFJAVA")
 set (CTEST_NIGHTLY_START_TIME "18:00:00 CST")
 
 set (CTEST_DROP_METHOD "http")
-set (CTEST_DROP_SITE "72.36.68.252")
+if (CDASH_LOCAL)
+  set (CTEST_DROP_SITE "72.36.68.252")
+else (CDASH_LOCAL)
+  set (CTEST_DROP_SITE "cdash.hdfgroup.uiuc.edu")
+endif (CDASH_LOCAL)
 set (CTEST_DROP_LOCATION "/submit.php?project=HDFJava")
 set (CTEST_DROP_SITE_CDASH TRUE)
 
