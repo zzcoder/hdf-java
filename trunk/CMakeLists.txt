@@ -309,6 +309,32 @@ if (HDF_BUILD_EXAMPLES)
 endif (HDF_BUILD_EXAMPLES)
 
 #-----------------------------------------------------------------------------
+# Option for external libraries
+#-----------------------------------------------------------------------------
+option (HDF_PACKAGE_EXTLIBS "CPACK - include external libraries" OFF)
+if (HDF_PACKAGE_EXTLIBS)
+  if (JPEG_FOUND)
+    PACKAGE_JPEG_LIBRARY (${HDF_ALLOW_EXTERNAL_SUPPORT} ${LIB_TYPE})
+  endif (JPEG_FOUND)
+    
+  if (ZLIB_FOUND)
+    PACKAGE_ZLIB_LIBRARY (${HDF_ALLOW_EXTERNAL_SUPPORT} ${LIB_TYPE})
+  endif (ZLIB_FOUND)
+    
+  if (SZIP_FOUND)
+    PACKAGE_SZIP_LIBRARY (${HDF_ALLOW_EXTERNAL_SUPPORT} ${LIB_TYPE})
+  endif (SZIP_FOUND)
+    
+  if (HDF4_FOUND)
+    PACKAGE_HDF4_LIBRARY (${HDF_ALLOW_EXTERNAL_SUPPORT} ${LIB_TYPE})
+  endif (HDF4_FOUND)
+    
+  if (HDF5_FOUND)
+    PACKAGE_HDF5_LIBRARY (${HDF_ALLOW_EXTERNAL_SUPPORT} ${LIB_TYPE})
+  endif (HDF5_FOUND)
+endif (HDF_PACKAGE_EXTLIBS)
+
+#-----------------------------------------------------------------------------
 # Add Required Jar(s)
 #-----------------------------------------------------------------------------
 install (

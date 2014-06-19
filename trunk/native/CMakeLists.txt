@@ -261,32 +261,6 @@ set (HDF5_FOUND 1 PARENT_SCOPE)
 set (HDF5_INCLUDE_DIR_GEN ${HDF5_INCLUDE_DIR_GEN} PARENT_SCOPE)
 set (HDF5_VERSION_STRING ${HDF5_VERSION_STRING} PARENT_SCOPE)
 
-#-----------------------------------------------------------------------------
-# Option for external libraries
-#-----------------------------------------------------------------------------
-option (HDF_PACKAGE_EXTLIBS "CPACK - include external libraries" OFF)
-if (HDF_PACKAGE_EXTLIBS)
-  if (JPEG_FOUND)
-    PACKAGE_JPEG_LIBRARY (${HDF_ALLOW_EXTERNAL_SUPPORT} ${LIB_TYPE})
-  endif (JPEG_FOUND)
-    
-  if (ZLIB_FOUND)
-    PACKAGE_ZLIB_LIBRARY (${HDF_ALLOW_EXTERNAL_SUPPORT} ${LIB_TYPE})
-  endif (ZLIB_FOUND)
-    
-  if (SZIP_FOUND)
-    PACKAGE_SZIP_LIBRARY (${HDF_ALLOW_EXTERNAL_SUPPORT} ${LIB_TYPE})
-  endif (SZIP_FOUND)
-    
-  if (HDF4_FOUND)
-    PACKAGE_HDF4_LIBRARY (${HDF_ALLOW_EXTERNAL_SUPPORT} ${LIB_TYPE})
-  endif (HDF4_FOUND)
-    
-  if (HDF5_FOUND)
-    PACKAGE_HDF5_LIBRARY (${HDF_ALLOW_EXTERNAL_SUPPORT} ${LIB_TYPE})
-  endif (HDF5_FOUND)
-endif (HDF_PACKAGE_EXTLIBS)
-
 add_subdirectory (${HDFJAVA_JNI_SOURCE_DIR}/hdflib      hdflib)
 add_subdirectory (${HDFJAVA_JNI_SOURCE_DIR}/hdf5lib     hdf5lib)
 
