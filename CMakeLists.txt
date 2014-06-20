@@ -189,6 +189,7 @@ find_package (Java)
 #-----------------------------------------------------------------------------
 include (${HDF_RESOURCES_DIR}/UseJava.cmake)
 include (${HDF_RESOURCES_EXT_DIR}/HDFMacros.cmake)
+include (${HDF_RESOURCES_EXT_DIR}/HDFLibMacros.cmake)
 include (${HDF_RESOURCES_DIR}/HDF45Macros.cmake)
 include (${HDF_RESOURCES_DIR}/HDFJavaMacros.cmake)
 
