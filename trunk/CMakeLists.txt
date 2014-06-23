@@ -209,7 +209,11 @@ if (NOT HDFJAVA_EXTERNALLY_CONFIGURED)
   set (CMAKE_JAVA_TARGET_OUTPUT_DIR 
       ${PROJECT_BINARY_DIR}/bin CACHE PATH "Single Directory for all java jars."
   )
-  
+  if (WIN32)
+    set (CMAKE_TEST_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE})
+  else (WIN32)
+    set (CMAKE_TEST_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+  endif (WIN32)
 else (NOT HDFJAVA_EXTERNALLY_CONFIGURED)
   # if we are externally configured, but the project uses old cmake scripts
   # this may not be set and utilities like Hdetect will fail

@@ -138,7 +138,7 @@ add_test (
         -D "TEST_CLASSPATH:STRING=${CMAKE_JAVA_CLASSPATH}"
         -D "TEST_ARGS:STRING=-ea;org.junit.runner.JUnitCore"
         -D "TEST_PROGRAM=test.modules.TestGermanViewMenu"
-        -D "TEST_LIBRARY_DIRECTORY=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
+        -D "TEST_LIBRARY_DIRECTORY=${CMAKE_TEST_OUTPUT_DIRECTORY}"
         -D "TEST_FOLDER=${PROJECT_BINARY_DIR}"
         -D "TEST_OUTPUT=JUnit-gui-modules.out"
         -D "TEST_EXPECT=0"
