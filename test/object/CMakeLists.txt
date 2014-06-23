@@ -83,7 +83,7 @@ add_test (
         -D "TEST_CLASSPATH:STRING=${CMAKE_JAVA_CLASSPATH}"
         -D "TEST_ARGS:STRING="
         -D "TEST_PROGRAM=-ea;org.junit.runner.JUnitCore;test.object.AllH5ObjectTests"
-        -D "TEST_LIBRARY_DIRECTORY=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
+        -D "TEST_LIBRARY_DIRECTORY=${CMAKE_TEST_OUTPUT_DIRECTORY}"
         -D "TEST_FOLDER=${HDFJAVA_BINARY_DIR}"
         -D "TEST_OUTPUT=test/object/JUnit-object-interface.out"
         -D "TEST_EXPECT=0"

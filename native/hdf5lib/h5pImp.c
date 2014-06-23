@@ -595,11 +595,13 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1external
     herr_t   status;
     char    *file;
     jboolean isCopy;
-    long     off;
-    long     sz;
+    off_t    off;
+    hsize_t  sz;
+    hid_t    plid;
 
-    off = (long)offset;
-    sz = (long)size;
+    plid = (hid_t)plist;
+    off = (off_t)offset;
+    sz = (hsize_t)size;
     if (name == NULL) {
         h5nullArgument(env, "H5Pset_external:  name is NULL");
         return -1;
@@ -610,7 +612,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1external
         return -1;
     }
 
-    status = H5Pset_external((hid_t)plist, file, (off_t)off, (hsize_t)sz);
+    status = H5Pset_external(plid, file, off, sz);
 
     ENVPTR->ReleaseStringUTFChars(ENVPAR name, file);
 
