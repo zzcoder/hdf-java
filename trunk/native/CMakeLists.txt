@@ -43,7 +43,7 @@ endif (MSVC)
 # Add some definitions for Debug Builds
 #-----------------------------------------------------------------------------
 if (CMAKE_BUILD_TYPE MATCHES Debug)
-  ADD_DEFINITIONS(-DDEBUG)
+  add_definitions (-DDEBUG)
   #-- NMake Makefiles will overwhelm the console with warnings if -Wall is used.
   if (NOT WIN32)
     add_definitions (-Wall)
@@ -71,9 +71,9 @@ if (HDF_DISABLE_COMPILER_WARNINGS)
   # warning level is given, so remove it.
   if (MSVC)
     set (HDF_WARNINGS_BLOCKED 1)
-    STRING (REGEX REPLACE "(^| )([/-])W[0-9]( |$)" " " CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
+    string (REGEX REPLACE "(^| )([/-])W[0-9]( |$)" " " CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
     set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /w")
-    STRING (REGEX REPLACE "(^| )([/-])W[0-9]( |$)" " " CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+    string (REGEX REPLACE "(^| )([/-])W[0-9]( |$)" " " CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /w")
   endif (MSVC)
   if (WIN32)
@@ -108,7 +108,6 @@ if (CMAKE_COMPILER_IS_GNUCXX)
 endif (CMAKE_COMPILER_IS_GNUCXX)
 
 include (ExternalProject)
-#option (HDF_ALLOW_EXTERNAL_SUPPORT "Allow External Library Building" "NO")
 set (HDF_ALLOW_EXTERNAL_SUPPORT "NO" CACHE STRING "Allow External Library Building (NO SVN TGZ)")
 set_property (CACHE HDF_ALLOW_EXTERNAL_SUPPORT PROPERTY STRINGS NO SVN TGZ)
 option (HDF4_USE_EXTERNAL "Use External Library Building for HDF4" 0)
@@ -140,9 +139,9 @@ endif (NOT BUILD_SHARED_LIBS)
 
 if (NOT HJAVA_HDF4_HEADER)
   if (NOT HDF4_USE_EXTERNAL)
-    FIND_PACKAGE (HDF4 NAMES ${HDF4_PACKAGE_NAME}${HDF_PACKAGE_EXT})
+    find_package (HDF4 NAMES ${HDF4_PACKAGE_NAME}${HDF_PACKAGE_EXT})
     if (NOT HDF4_FOUND)
-      FIND_PACKAGE (HDF4) # Legacy find
+      find_package (HDF4) # Legacy find
     endif (NOT HDF4_FOUND)
   endif (NOT HDF4_USE_EXTERNAL)
   if (HDF4_FOUND)
@@ -208,9 +207,9 @@ endif (NOT BUILD_SHARED_LIBS)
 
 if (NOT HJAVA_HDF5_HEADER)
   if (NOT HDF5_USE_EXTERNAL)
-    FIND_PACKAGE (HDF5 NAMES ${HDF5_PACKAGE_NAME}${HDF_PACKAGE_EXT})
+    find_package (HDF5 NAMES ${HDF5_PACKAGE_NAME}${HDF_PACKAGE_EXT})
     if (NOT HDF5_FOUND)
-      FIND_PACKAGE (HDF5) # Legacy find
+      find_package (HDF5) # Legacy find
     endif (NOT HDF5_FOUND)
   endif (NOT HDF5_USE_EXTERNAL)
   if (HDF5_FOUND)
