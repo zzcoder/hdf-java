@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+
+<plist version="1.0">
+<dict>
+    <key>CFBundleDevelopmentRegion</key>
+    <string>English</string>
+    <key>CFBundleInfoDictionaryVersion</key>
+    <string>6.0</string>
+    <key>CFBundleExecutable</key>
+    <string>@CPACK_PACKAGE_FILE_NAME@</string>
+    <key>CFBundleIconFile</key>
+    <string>@CPACK_BUNDLE_ICON@</string>
+    <key>CFBundleTypeIconFile</key>
+    <string>@CPACK_BUNDLE_ICON@</string>
+    <key>CFBundleIdentifier</key>
+    <string>org.@CPACK_PACKAGE_VENDOR@.@CPACK_PACKAGE_NAME@@CPACK_MODULE_VERSION_SUFFIX@</string>
+    <key>CFBundleName</key>
+    <string>@CPACK_APPLE_GUI_BUNDLE_NAME@</string>
+    <key>CFBundleDisplayName</key>
+    <string>@CPACK_APPLE_GUI_BUNDLE_NAME@</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>CFBundleSignature</key>
+    <string>????</string>
+    <key>CFBundleVersion</key>
+    <string>@CPACK_APPLE_GUI_VERSION_STRING@</string>
+    <key>CFBundleShortVersionString</key>
+    <string>@CPACK_APPLE_GUI_SHORT_VERSION_STRING@</string>
+    <key>CFBundleDocumentTypes</key>
+    <array>
+        <dict>
+        <key>CFBundleTypeExtensions</key>
+        <array>
+          <string>hdf</string>
+          <string>h4</string>
+          <string>hdf4</string>
+          <string>h5</string>
+          <string>hdf5</string>
+        </array>
+        <key>CFBundleTypeName</key>
+        <string>HDF Files</string>
+        <key>CFBundleTypeRole</key>
+        <string>Editor</string>
+        </dict>
+    </array>
+<!--
+    <key>JVMRuntime</key>
+    <string>jre7</string>
+-->
+    <key>JVMMainClassName</key>
+    <string>ncsa.hdf.view.HDFView</string>
+    <key>JVMOptions</key>
+    <array>
+        <string>-Xmx1024m</string>
+        <string>-Djava.library.path=$APP_ROOT/Contents/Resources/lib</string>
+        <string>-Dhdfview.root=$APP_ROOT/Contents/Java</string>
+        <string>-Xdock:icon=$APP_ROOT/Contents/Resources/HDFView.icns</string>
+        <string>-Dapple.laf.useScreenMenuBar=true</string>
+        <string>-Dcom.apple.macos.use-file-dialog-packages=true</string>
+        <string>-Dcom.apple.macos.useScreenMenuBar=true</string>
+        <string>-Dcom.apple.mrj.application.apple.menu.about.name=@CPACK_APPLE_GUI_BUNDLE_NAME@</string>
+        <string>-Dcom.apple.smallTabs=true</string>
+        <string>-jar</string>
+        <string>$APP_ROOT/Contents/Java/jhdfview.jar</string>
+    </array>
+    <key>Java</key>
+    <dict>
+        <key>JVMVersion</key>
+        <string>1.6+</string>
+        <key>MainClass</key>
+        <string>ncsa.hdf.view.HDFView</string>
+        <key>Properties</key>
+            <dict>
+                <key>apple.laf.useScreenMenuBar</key>
+                <string>true</string>
+                <key>com.apple.macos.use-file-dialog-packages</key>
+                <string>true</string>
+                <key>apple.awt.application.name</key>
+                <string>@CPACK_APPLE_GUI_BUNDLE_NAME@</string>
+                <key>com.apple.macos.useScreenMenuBar</key>
+                <string>true</string>
+                <key>com.apple.smallTabs</key>
+                <string>true</string>
+                <key>java.library.path</key>
+                <string>$APP_PACKAGE/Contents/Resources/lib</string>
+                <key>hdfview.root</key>
+                <string>$JAVAROOT</string>
+            </dict>
+        <key>VMOptions</key>
+        <string>-Xmx1024m</string>
+        <key>WorkingDirectory</key>
+        <string>$APP_PACKAGE/Contents/Resources/Java</string>
+        <key>ClassPath</key>
+        <array>
+            <string>$JAVAROOT/jhdfview.jar</string>
+            <string>$JAVAROOT</string>
+        </array>
+    </dict>
+    <key>NSHumanReadableCopyright</key>
+    <string>@CPACK_APPLE_GUI_COPYRIGHT@</string>
+    <key>LSApplicationCategoryType</key>
+    <string>public.app-category.developer-tools</string>
+</dict>
+</plist>

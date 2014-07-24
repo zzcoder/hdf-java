@@ -1,0 +1,8 @@
+[AWT-EventQueue-0] INFO ncsa.hdf.view.HDFView - CurrentDir is (dir name)
+[AWT-EventQueue-0] INFO ncsa.hdf.view.HDFView - MenuBar created
+[AWT-EventQueue-0] INFO ncsa.hdf.hdf5lib.H5 - HDF5 library: jhdf5
+[AWT-EventQueue-0] INFO ncsa.hdf.hdf5lib.H5 -  successfully loaded from java.library.path
+[AWT-EventQueue-0] INFO ncsa.hdf.view.HDFView - ToolBar created
+[AWT-EventQueue-0] INFO ncsa.hdf.view.HDFView - MainWindow created
+[AWT-EventQueue-0] INFO ncsa.hdf.hdflib.HDFLibrary - HDF4 library: jhdf
+[AWT-EventQueue-0] INFO ncsa.hdf.hdflib.HDFLibrary -  successfully loaded from java.library.path

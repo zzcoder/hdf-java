@@ -1,0 +1,27 @@
+#-----------------------------------------------------------------------------
+# HDFJAVA Version file for install directory
+#-----------------------------------------------------------------------------
+
+set (PACKAGE_VERSION @HDFJAVA_PACKAGE_VERSION@)
+
+if ("${PACKAGE_FIND_VERSION_MAJOR}" EQUAL @HJAVA_VERS_MAJOR@)
+
+  # exact match for version @HDFJAVA_VERS_MAJOR@.@HJAVA_VERS_MINOR@
+  if ("${PACKAGE_FIND_VERSION_MINOR}" EQUAL @HJAVA_VERS_MINOR@)
+
+    # compatible with any version @HJAVA_VERS_MAJOR@.@HJAVA_VERS_MINOR@.x
+    set (PACKAGE_VERSION_COMPATIBLE 1) 
+    
+    if ("${PACKAGE_FIND_VERSION_PATCH}" EQUAL @HJAVA_VERS_RELEASE@)
+      set (PACKAGE_VERSION_EXACT 1)    
+
+      if ("${PACKAGE_FIND_VERSION_TWEAK}" EQUAL @HJAVA_VERS_SUBRELEASE@)
+        # not using this yet
+      endif ("${PACKAGE_FIND_VERSION_TWEAK}" EQUAL @HJAVA_VERS_SUBRELEASE@)
+      
+    endif ("${PACKAGE_FIND_VERSION_PATCH}" EQUAL @HJAVA_VERS_RELEASE@)
+    
+  endif ("${PACKAGE_FIND_VERSION_MINOR}" EQUAL @HJAVA_VERS_MINOR@)
+endif ("${PACKAGE_FIND_VERSION_MAJOR}" EQUAL @HJAVA_VERS_MAJOR@)
+
+
