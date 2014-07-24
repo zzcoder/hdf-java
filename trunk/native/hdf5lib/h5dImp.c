@@ -1681,7 +1681,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dread_1reg_1ref_1data (JNIEnv 
         h5str.s[0] = '\0';
 
         /* get name of the dataset the region reference points to using H5Rget_name */
-        region_obj = H5Rdereference(did, H5R_DATASET_REGION, ref_data[i]);
+        region_obj = H5Rdereference2(did, H5P_DEFAULT, H5R_DATASET_REGION, ref_data[i]);
         if (region_obj >= 0) {
             region = H5Rget_region(did, H5R_DATASET_REGION, ref_data[i]);
             if (region >= 0) {

@@ -344,7 +344,7 @@ int h5str_sprintf(h5str_t *str, hid_t container, hid_t tid, void *ptr, int expan
 		            H5S_sel_type region_type;
 
 		            /* get name of the dataset the region reference points to using H5Rget_name */
-		            region_obj = H5Rdereference(container, H5R_DATASET_REGION, ptr);
+		            region_obj = H5Rdereference2(container, H5P_DEFAULT, H5R_DATASET_REGION, ptr);
 		            if (region_obj >= 0) {
 		                region = H5Rget_region(container, H5R_DATASET_REGION, ptr);
 		                if (region >= 0) {
@@ -389,7 +389,7 @@ int h5str_sprintf(h5str_t *str, hid_t container, hid_t tid, void *ptr, int expan
                     hid_t       obj;
 
 		            this_str = (char*) malloc(64);
-                    obj = H5Rdereference(container, H5R_OBJECT, ptr);
+                    obj = H5Rdereference2(container, H5P_DEFAULT, H5R_OBJECT, ptr);
                     H5Oget_info(obj, &oi);
 
                     /* Print object data and close object */
@@ -1298,7 +1298,7 @@ int h5str_render_bin_output(FILE *stream, hid_t container, hid_t tid, void *_mem
 
                         for (block_index = 0; block_index < block_nelmts; block_index++) {
                             mem = ((unsigned char*)_mem) + block_index * size;
-                            region_id = H5Rdereference(container, H5R_DATASET_REGION, mem);
+                            region_id = H5Rdereference2(container, H5P_DEFAULT, H5R_DATASET_REGION, mem);
                             if (region_id >= 0) {
                                 region_space = H5Rget_region(container, H5R_DATASET_REGION, mem);
                                 if (region_space >= 0) {

@@ -97,10 +97,10 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Rcreate
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Rdereference
- * Signature: (II[B)I
+ * Signature: (III[B)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Rdereference
-  (JNIEnv *env, jclass clss, jint dataset, jint ref_type,
+  (JNIEnv *env, jclass clss, jint dataset, jint access_list, jint ref_type,
   jbyteArray ref )
 {
     jboolean isCopy;
@@ -126,7 +126,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Rdereference
         return -1;
     }
 
-    status = H5Rdereference((hid_t)dataset, (H5R_type_t)ref_type, refP);
+    status = H5Rdereference2((hid_t)dataset, (hid_t)access_list, (H5R_type_t)ref_type, refP);
 
     ENVPTR->ReleaseByteArrayElements(ENVPAR ref, refP, JNI_ABORT);
 
