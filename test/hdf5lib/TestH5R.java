@@ -202,11 +202,11 @@ public class TestH5R {
         try {
             //Create reference on dataset 
             ref1 = H5.H5Rcreate(H5fid, "/dset", HDF5Constants.H5R_DATASET_REGION, H5dsid);
-            dataset_id= H5.H5Rdereference(H5fid, HDF5Constants.H5R_DATASET_REGION, ref1);
+            dataset_id= H5.H5Rdereference(H5fid, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5R_DATASET_REGION, ref1);
             
             //Create reference on group
             ref2 = H5.H5Rcreate(H5gid, "/Group1", HDF5Constants.H5R_OBJECT, -1);           
-            group_id= H5.H5Rdereference(H5gid, HDF5Constants.H5R_OBJECT, ref2);
+            group_id= H5.H5Rdereference(H5gid, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5R_OBJECT, ref2);
             assertNotNull(ref1);
             assertNotNull(ref2);
             assertTrue(dataset_id>=0);
@@ -302,7 +302,7 @@ public class TestH5R {
     @Test(expected = NullPointerException.class)
     public void testH5Rdereference_Nullreference() throws Throwable {
         byte[] ref = null;
-        H5.H5Rdereference(H5did2, HDF5Constants.H5R_OBJECT, ref);
+        H5.H5Rdereference(H5did2, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5R_OBJECT, ref);
     }
     
     @Test(expected = IllegalArgumentException.class)
@@ -311,7 +311,7 @@ public class TestH5R {
         byte[] ref2 = null;
         ref1 = H5.H5Rcreate(H5fid, "/dset", HDF5Constants.H5R_DATASET_REGION, H5dsid);
         ref2 = H5.H5Rcreate(H5gid, "/Group1", HDF5Constants.H5R_OBJECT, -1);
-        H5.H5Rdereference(H5gid, HDF5Constants.H5R_OBJECT, ref1);
+        H5.H5Rdereference(H5gid, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5R_OBJECT, ref1);
     }
   
 }

@@ -1458,7 +1458,7 @@ public class H5ScalarDS extends ScalarDS {
         did = open();
         if (did >= 0) {
             try {
-                pal_id = H5.H5Rdereference(getFID(), HDF5Constants.H5R_OBJECT, ref_buf);
+                pal_id = H5.H5Rdereference(getFID(), HDF5Constants.H5P_DEFAULT, HDF5Constants.H5R_OBJECT, ref_buf);
                 H5.H5Iget_name(pal_id, paletteName, size);
             }
             catch (Exception ex) {
@@ -1501,7 +1501,7 @@ public class H5ScalarDS extends ScalarDS {
         did = open();
         if (did >= 0) {
             try {
-                pal_id = H5.H5Rdereference(getFID(), HDF5Constants.H5R_OBJECT, ref_buf);
+                pal_id = H5.H5Rdereference(getFID(), HDF5Constants.H5P_DEFAULT, HDF5Constants.H5R_OBJECT, ref_buf);
                 tid = H5.H5Dget_type(pal_id);
 
                 // support only 3*256 byte palette data

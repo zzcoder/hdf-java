@@ -252,7 +252,7 @@ public class H5 implements java.io.Serializable {
      * 
      * Make sure to update the versions number when a different library is used.
      */
-    public final static int LIB_VERSION[] = { 1, 8, 14 };
+    public final static int LIB_VERSION[] = { 1, 9, 9999 };
 
     public final static String H5PATH_PROPERTY_KEY = "ncsa.hdf.hdf5lib.H5.hdf5lib";
 
@@ -7021,6 +7021,8 @@ public synchronized static byte[] H5Rcreate(int loc_id, String name,
  * 
  * @param dataset
  *            IN: Dataset containing reference object.
+ * @param access_list
+ *            IN: Property list of the object being referenced.
  * @param ref_type
  *            IN: The reference type of ref.
  * @param ref
@@ -7035,18 +7037,18 @@ public synchronized static byte[] H5Rcreate(int loc_id, String name,
  * @exception IllegalArgumentException
  *                - output array is invalid.
  **/
-public static int H5Rdereference(int dataset, int ref_type, byte[] ref)
+public static int H5Rdereference(int dataset, int access_list, int ref_type, byte[] ref)
         throws HDF5LibraryException, NullPointerException,
         IllegalArgumentException
 {
-    int id = _H5Rdereference(dataset, ref_type, ref);
+    int id = _H5Rdereference(dataset, access_list, ref_type, ref);
     if (id > 0)
         OPEN_IDS.addElement(id);
     return id;
 }
 
 private synchronized static native int _H5Rdereference(int dataset,
-        int ref_type, byte[] ref)
+        int access_list, int ref_type, byte[] ref)
         throws HDF5LibraryException, NullPointerException,
         IllegalArgumentException;
 

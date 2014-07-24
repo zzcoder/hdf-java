@@ -2140,12 +2140,6 @@ public class H5FileTest {
             
             // Clean up the file
             new File("temph5file.ser").delete();
-           
-            /* xcao: no need to test lib version. it is tested at the hdf5lib level 
-            String tver = test.getLibversion();
-            String H5ver = "HDF5 " + H5.LIB_VERSION[0] + "." + H5.LIB_VERSION[1] + "." + H5.LIB_VERSION[2];
-            assertEquals("H5.LIB_VERSION", tver, H5ver);
-            */
         }
         catch (Exception ex) {
             fail("Exception thrown during test: " + ex.toString());
