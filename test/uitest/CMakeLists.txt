@@ -29,6 +29,14 @@ set (HDFJAVA_TEST_UITEST_SRCS
     TestTreeViewExport.java
     TestTableViewMenu.java
     TestHDFViewTAttr2.java
+    TestHDFViewCopyPaste.java
+    TestHDFViewCutPaste.java
+    TestHDFViewDatasetFrameSelection.java
+    TestHDFViewImageFrameSelection.java
+    TestHDFViewImageConversion.java
+    TestHDFViewLibBounds.java
+    TestHDFViewLinks.java
+    TestHDFViewTAttr2.java
     TestAll.java
 )
 
@@ -47,7 +55,10 @@ get_target_property (${HDFJAVA_TEST_UITEST_TARGET}_JAR_FILE ${HDFJAVA_TEST_UITES
 add_dependencies (${HDFJAVA_TEST_UITEST_TARGET} ${HDFJAVA_NCSA_VIEW_LIB_TARGET} ${HDFJAVA_NCSA_H5_LIB_TARGET}  ${HDFJAVA_NCSA_H4_LIB_TARGET})
 
 set (HDF_JAVA_TEST_FILES
+      apollo17_earth.jpg
+      hdf5_test.h5
       tattrintsize.h5
+      tframeselection.h5
       tintsattrs.h5
       tintsize.h5
       tcmpdattrintsize.h5
@@ -84,6 +95,20 @@ set (HDF_JAVA_TEST_REFERENCE
       JUnit-gui-treeview-newvldt.err
       JUnit-gui-tattr2.txt
       JUnit-gui-tattr2.err
+      JUnit-gui-test-copypaste.txt
+      JUnit-gui-test-copypaste.err
+      JUnit-gui-test-cutpaste.txt
+      JUnit-gui-test-cutpaste.err
+      JUnit-gui-test-datasetframeselection.txt
+      JUnit-gui-test-datasetframeselection.err
+      JUnit-gui-test-imageframeselection.txt
+      JUnit-gui-test-imageframeselection.err
+      JUnit-gui-image-conversion.txt
+      JUnit-gui-image-conversion.err
+      JUnit-gui-test-libversion.txt
+      JUnit-gui-test-libversion.err
+      JUnit-gui-test-links.txt
+      JUnit-gui-test-links.err
       DU64BITS.xbin
 )
 
@@ -149,12 +174,16 @@ add_test (
         testopenrofile.h5
         testfile.hdf
         testfile.h5
+        apollo17_earth.jpg.hdf
+        apollo17_earth.jpg.h5
+        test_libversion.h5
         closefile.hdf
         closeallfile.hdf
         closeallfile.h5
         testsavefile.h5
         testsaveasfile.h5
         testsaveasfile2.h5
+        testlinks.h5
         testgrp.h5
         testds.h5
         DS64BITS.txt
@@ -181,6 +210,18 @@ add_test (
         JUnit-gui-CL-multi.out.err
         JUnit-gui-CL-root-multi.out
         JUnit-gui-CL-root-multi.out.err
+        JUnit-gui-test-copypaste.out
+        JUnit-gui-test-copypaste.out.err
+        JUnit-gui-test-datasetframeselection.out
+        JUnit-gui-test-datasetframeselection.out.err
+        JUnit-gui-test-imageframeselection.out
+        JUnit-gui-test-imageframeselection.out.err
+		JUnit-gui-image-conversion.out
+		JUnit-gui-image-conversion.out.err
+		JUnit-gui-test-libversion.out
+		JUnit-gui-test-libversion.out.err
+		JUnit-gui-test-links.out
+		JUnit-gui-test-links.out.err
 )
 
 add_test (
@@ -442,6 +483,153 @@ add_test (
 
 set_tests_properties (JUnit-gui-CL-root-multi PROPERTIES
     DEPENDS JUnit-gui-CL-multi
+)
+
+add_test (
+	NAME JUnit-gui-image-conversion
+	COMMAND "${CMAKE_COMMAND}"
+        -D "TEST_TESTER=${CMAKE_Java_RUNTIME};${CMAKE_Java_RUNTIME_FLAGS}"
+        -D "TEST_CLASSPATH:STRING=${CMAKE_JAVA_CLASSPATH}"
+        -D "TEST_ARGS:STRING=-ea;org.junit.runner.JUnitCore"
+        -D "TEST_PROGRAM=test.uitest.TestHDFViewImageConversion"
+        -D "TEST_LIBRARY_DIRECTORY=${CMAKE_TEST_OUTPUT_DIRECTORY}"
+        -D "TEST_FOLDER=${PROJECT_BINARY_DIR}"
+        -D "TEST_OUTPUT=JUnit-gui-image-conversion.out"
+        -D "TEST_EXPECT=0"
+        -D "TEST_MASK_FILE=TRUE"
+        -D "TEST_ERRREF=JUnit-gui-image-conversion.err"
+        -D "TEST_REFERENCE=JUnit-gui-image-conversion.txt"
+        -P "${HDF_RESOURCES_DIR}/runTest.cmake"
+)
+
+set_tests_properties (JUnit-gui-image-conversion PROPERTIES
+	DEPENDS JUnit-gui-CL-root-multi
+)
+
+add_test (
+    NAME JUnit-gui-test-libversion
+    COMMAND "${CMAKE_COMMAND}"
+        -D "TEST_TESTER=${CMAKE_Java_RUNTIME};${CMAKE_Java_RUNTIME_FLAGS}"
+        -D "TEST_CLASSPATH:STRING=${CMAKE_JAVA_CLASSPATH}"
+        -D "TEST_ARGS:STRING=-ea;org.junit.runner.JUnitCore"
+        -D "TEST_PROGRAM=test.uitest.TestHDFViewLibBounds"
+        -D "TEST_LIBRARY_DIRECTORY=${CMAKE_TEST_OUTPUT_DIRECTORY}"
+        -D "TEST_FOLDER=${PROJECT_BINARY_DIR}"
+        -D "TEST_OUTPUT=JUnit-gui-test-libversion.out"
+        -D "TEST_EXPECT=0"
+        -D "TEST_MASK_FILE=TRUE"
+        -D "TEST_ERRREF=JUnit-gui-test-libversion.err"
+        -D "TEST_REFERENCE=JUnit-gui-test-libversion.txt"
+        -P "${HDF_RESOURCES_DIR}/runTest.cmake"
+)
+
+set_tests_properties (JUnit-gui-test-libversion PROPERTIES
+    DEPENDS "JUnit-gui-image-conversion"
+)
+
+add_test (
+    NAME JUnit-gui-test-datasetframeselection
+    COMMAND "${CMAKE_COMMAND}"
+        -D "TEST_TESTER=${CMAKE_Java_RUNTIME};${CMAKE_Java_RUNTIME_FLAGS}"
+        -D "TEST_CLASSPATH:STRING=${CMAKE_JAVA_CLASSPATH}"
+        -D "TEST_ARGS:STRING=-ea;org.junit.runner.JUnitCore"
+        -D "TEST_PROGRAM=test.uitest.TestHDFViewDatasetFrameSelection"
+        -D "TEST_LIBRARY_DIRECTORY=${CMAKE_TEST_OUTPUT_DIRECTORY}"
+        -D "TEST_FOLDER=${PROJECT_BINARY_DIR}"
+        -D "TEST_OUTPUT=JUnit-gui-test-datasetframeselection.out"
+        -D "TEST_EXPECT=0"
+        -D "TEST_MASK_FILE=TRUE"
+        -D "TEST_ERRREF=JUnit-gui-test-datasetframeselection.err"
+        -D "TEST_REFERENCE=JUnit-gui-test-datasetframeselection.txt"
+        -P "${HDF_RESOURCES_DIR}/runTest.cmake"
+)
+
+set_tests_properties (JUnit-gui-test-datasetframeselection PROPERTIES
+    DEPENDS "JUnit-gui-test-libversion"
+)
+
+add_test (
+    NAME JUnit-gui-test-imageframeselection
+    COMMAND "${CMAKE_COMMAND}"
+        -D "TEST_TESTER=${CMAKE_Java_RUNTIME};${CMAKE_Java_RUNTIME_FLAGS}"
+        -D "TEST_CLASSPATH:STRING=${CMAKE_JAVA_CLASSPATH}"
+        -D "TEST_ARGS:STRING=-ea;org.junit.runner.JUnitCore"
+        -D "TEST_PROGRAM=test.uitest.TestHDFViewImageFrameSelection"
+        -D "TEST_LIBRARY_DIRECTORY=${CMAKE_TEST_OUTPUT_DIRECTORY}"
+        -D "TEST_FOLDER=${PROJECT_BINARY_DIR}"
+        -D "TEST_OUTPUT=JUnit-gui-test-imageframeselection.out"
+        -D "TEST_EXPECT=0"
+        -D "TEST_MASK_FILE=TRUE"
+        -D "TEST_ERRREF=JUnit-gui-test-imageframeselection.err"
+        -D "TEST_REFERENCE=JUnit-gui-test-imageframeselection.txt"
+        -P "${HDF_RESOURCES_DIR}/runTest.cmake"
+)
+
+set_tests_properties (JUnit-gui-test-imageframeselection PROPERTIES
+    DEPENDS "JUnit-gui-test-datasetframeselection"
+)
+
+add_test (
+    NAME JUnit-gui-test-links
+    COMMAND "${CMAKE_COMMAND}"
+        -D "TEST_TESTER=${CMAKE_Java_RUNTIME};${CMAKE_Java_RUNTIME_FLAGS}"
+        -D "TEST_CLASSPATH:STRING=${CMAKE_JAVA_CLASSPATH}"
+        -D "TEST_ARGS:STRING=-ea;org.junit.runner.JUnitCore"
+        -D "TEST_PROGRAM=test.uitest.TestHDFViewLinks"
+        -D "TEST_LIBRARY_DIRECTORY=${CMAKE_TEST_OUTPUT_DIRECTORY}"
+        -D "TEST_FOLDER=${PROJECT_BINARY_DIR}"
+        -D "TEST_OUTPUT=JUnit-gui-test-links.out"
+        -D "TEST_EXPECT=0"
+        -D "TEST_MASK_FILE=TRUE"
+        -D "TEST_ERRREF=JUnit-gui-test-links.err"
+        -D "TEST_REFERENCE=JUnit-gui-test-links.txt"
+        -P "${HDF_RESOURCES_DIR}/runTest.cmake"
+)
+
+set_tests_properties (JUnit-gui-test-links PROPERTIES
+    DEPENDS "JUnit-gui-test-imageframeselection"
+)
+
+add_test (
+    NAME JUnit-gui-test-copypaste
+    COMMAND "${CMAKE_COMMAND}"
+        -D "TEST_TESTER=${CMAKE_Java_RUNTIME};${CMAKE_Java_RUNTIME_FLAGS}"
+        -D "TEST_CLASSPATH:STRING=${CMAKE_JAVA_CLASSPATH}"
+        -D "TEST_ARGS:STRING=-ea;org.junit.runner.JUnitCore"
+        -D "TEST_PROGRAM=test.uitest.TestHDFViewCopyPaste"
+        -D "TEST_LIBRARY_DIRECTORY=${CMAKE_TEST_OUTPUT_DIRECTORY}"
+        -D "TEST_FOLDER=${PROJECT_BINARY_DIR}"
+        -D "TEST_OUTPUT=JUnit-gui-test-copypaste.out"
+        -D "TEST_EXPECT=0"
+        -D "TEST_MASK_FILE=TRUE"
+        -D "TEST_ERRREF=JUnit-gui-test-copypaste.err"
+        -D "TEST_REFERENCE=JUnit-gui-test-copypaste.txt"
+        -P "${HDF_RESOURCES_DIR}/runTest.cmake"
+)
+
+set_tests_properties (JUnit-gui-test-copypaste PROPERTIES
+    DEPENDS "JUnit-gui-test-links"
+)
+
+add_test (
+    NAME JUnit-gui-test-cutpaste
+    COMMAND "${CMAKE_COMMAND}"
+        -D "TEST_TESTER=${CMAKE_Java_RUNTIME};${CMAKE_Java_RUNTIME_FLAGS}"
+        -D "TEST_CLASSPATH:STRING=${CMAKE_JAVA_CLASSPATH}"
+        -D "TEST_ARGS:STRING=-ea;org.junit.runner.JUnitCore"
+        -D "TEST_PROGRAM=test.uitest.TestHDFViewCutPaste"
+        -D "TEST_LIBRARY_DIRECTORY=${CMAKE_TEST_OUTPUT_DIRECTORY}"
+        -D "TEST_FOLDER=${PROJECT_BINARY_DIR}"
+        -D "TEST_OUTPUT=JUnit-gui-test-cutpaste.out"
+        -D "TEST_EXPECT=0"
+        -D "TEST_MASK_FILE=TRUE"
+        -D "TEST_ERRREF=JUnit-gui-test-cutpaste.err"
+        -D "TEST_REFERENCE=JUnit-gui-test-cutpaste.txt"
+        -P "${HDF_RESOURCES_DIR}/runTest.cmake"
+)
+
+set_tests_properties (JUnit-gui-test-cutpaste PROPERTIES
+    DEPENDS "JUnit-gui-test-copypaste"
 )
    
 #add_test (

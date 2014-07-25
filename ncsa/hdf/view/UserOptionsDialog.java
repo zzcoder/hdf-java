@@ -298,7 +298,7 @@ public class UserOptionsDialog extends JDialog implements ActionListener, ItemLi
         JPanel p02 = new JPanel();
         p02.setLayout(new GridLayout(1, 2, 8, 8));
         p02.add(checkLibVersion = new JRadioButton("Earliest", ViewProperties.isEarlyLib()));
-        JRadioButton latestLib = new JRadioButton("Latest", !ViewProperties.isReadOnly());
+        JRadioButton latestLib = new JRadioButton("Latest", !ViewProperties.isEarlyLib());
         p02.add(latestLib);
         bgrp = new ButtonGroup();
         bgrp.add(checkLibVersion);

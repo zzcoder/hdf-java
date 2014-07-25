@@ -414,6 +414,7 @@ public class DefaultMetaDataView extends JDialog implements ActionListener, Meta
         rp.setLayout(new GridLayout(5, 1));
 
         JLabel nameField = new JLabel(hObject.getName());
+        nameField.setName("namefield");
         rp.add(nameField);
 
         JPanel targetObjPanel = new JPanel();
@@ -424,6 +425,7 @@ public class DefaultMetaDataView extends JDialog implements ActionListener, Meta
         if (isH5) {
             if (hObject.getLinkTargetObjName() != null) {
                 linkField = new JTextField(hObject.getLinkTargetObjName());
+                linkField.setName("linkField");
                 targetObjPanel.setLayout(new BorderLayout());
                 targetObjPanel.add(linkField, BorderLayout.CENTER);
                 // targetObjPanel.add(ChangeTargetObjButton, BorderLayout.EAST);
@@ -531,6 +533,7 @@ public class DefaultMetaDataView extends JDialog implements ActionListener, Meta
                 libversion = "Earliest and Latest";
             else if ((libver[0] == 1) && (libver[1] == 1)) libversion = "Latest and Latest";
             JLabel libverbound = new JLabel(libversion);
+            libverbound.setName("libverbound");
             rp.add(libverbound);
         }
 
@@ -667,6 +670,7 @@ public class DefaultMetaDataView extends JDialog implements ActionListener, Meta
             d.init();
         }
         JTextField txtf = new JTextField("" + d.getRank());
+        txtf.setName("dimensions");
         txtf.setEditable(false);
         rp.add(txtf);
         log.trace("createDatasetInfoPanel inited");
@@ -713,6 +717,7 @@ public class DefaultMetaDataView extends JDialog implements ActionListener, Meta
             maxDimStr = sb2.toString();
         }
         txtf = new JTextField(dimStr);
+        txtf.setName("dimensionsize");
         txtf.setEditable(false);
         rp.add(txtf);
 

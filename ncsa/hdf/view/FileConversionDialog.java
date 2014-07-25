@@ -136,6 +136,7 @@ public class FileConversionDialog extends JDialog implements ActionListener {
         JButton jButton = new JButton("Browse...");
         jButton.setActionCommand("Browse source file");
         jButton.addActionListener(this);
+        jButton.setName("sourcefilebutton");
         p0.add(jButton);
         jButton = new JButton("Browse...");
         jButton.setActionCommand("Browse target file");
@@ -149,6 +150,7 @@ public class FileConversionDialog extends JDialog implements ActionListener {
         okButton.setMnemonic(KeyEvent.VK_O);
         okButton.setActionCommand("Ok");
         okButton.addActionListener(this);
+        okButton.setName("okbutton");
 
         JButton cancelButton = new JButton("Cancel");
         cancelButton.setMnemonic(KeyEvent.VK_C);

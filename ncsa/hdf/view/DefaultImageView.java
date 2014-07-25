@@ -369,10 +369,12 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
         }
 
         JPanel contentPane = (JPanel) getContentPane();
+        contentPane.setName("imagecontentpane");
         contentPane.setLayout(new BorderLayout());
 
         // add the text field to display pixel data
         contentPane.add(valueField = new JTextField(), BorderLayout.SOUTH);
+        valueField.setName("valuefield");
         valueField.setEditable(false);
         valueField.setVisible(ViewProperties.showImageValues());
 
@@ -393,6 +395,7 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
         JScrollPane scroller = new JScrollPane(imageComponent);
         scroller.getVerticalScrollBar().setUnitIncrement(50);
         scroller.getHorizontalScrollBar().setUnitIncrement(50);
+        scroller.setName("imagecontent");
         imageScroller = scroller;
         contentPane.add(scroller, BorderLayout.CENTER);
 
@@ -676,6 +679,7 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
         imageValueCheckBox.setActionCommand("Show image value");
         imageValueCheckBox.setSelected(ViewProperties.showImageValues());
         rotateRelatedItems.add(imageValueCheckBox);
+        imageValueCheckBox.setName("showvaluebutton");
         menu.add(imageValueCheckBox);
 
         item = new JMenuItem("Show Statistics");
@@ -744,6 +748,7 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
         button.setMargin(margin);
         button.setActionCommand("Zoom in");
         button.setToolTipText("Zoom In");
+        button.setName("zoomin");
 
         // zoom out button
         button = new JButton(ViewProperties.getZoomoutIcon());
@@ -752,6 +757,7 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
         button.setMargin(margin);
         button.addActionListener(this);
         button.setActionCommand("Zoom out");
+        button.setName("zoomout");
 
         if (is3D) {
             bar.add(new JLabel("     "));
@@ -763,6 +769,7 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
             button.setMargin(margin);
             button.addActionListener(this);
             button.setActionCommand("First page");
+            button.setName("firstframebutton");
 
             // previous button
             button = new JButton(ViewProperties.getPreviousIcon());
@@ -771,6 +778,7 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
             button.setMargin(margin);
             button.addActionListener(this);
             button.setActionCommand("Previous page");
+            button.setName("prevframebutton");
 
             frameField = new JTextField(String.valueOf(curFrame));
             frameField.setMaximumSize(new Dimension(50, 30));
@@ -791,6 +799,7 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
             button.setMargin(margin);
             button.addActionListener(this);
             button.setActionCommand("Next page");
+            button.setName("nextframebutton");
 
             // last button
             button = new JButton(ViewProperties.getLastIcon());
@@ -799,6 +808,7 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
             button.setMargin(margin);
             button.addActionListener(this);
             button.setActionCommand("Last page");
+            button.setName("lastframebutton");
 
             button = new JButton(ViewProperties.getAnimationIcon());
             bar.add(button);
