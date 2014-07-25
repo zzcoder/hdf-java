@@ -1499,12 +1499,15 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
         Object[] lowValues = { "Earliest", "Latest" };
         Object[] highValues = { "Latest" };
         JComboBox lowComboBox = new JComboBox(lowValues);
+        lowComboBox.setName("earliestversion");
         JComboBox highComboBox = new JComboBox(highValues);
+        highComboBox.setName("latestversion");
 
         Object[] msg = { "Earliest Version:", lowComboBox, "Latest Version:", highComboBox };
         Object[] options = { "Ok", "Cancel" };
         JOptionPane op = new JOptionPane(msg, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION, null, options);
 
+        op.setName("libselect");
         JDialog dialog = op.createDialog(this, "Set the library version bounds: ");
         dialog.setVisible(true);
 

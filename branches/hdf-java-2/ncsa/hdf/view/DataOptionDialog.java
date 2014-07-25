@@ -239,8 +239,10 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
 
         spreadsheetButton = new JRadioButton("Spreadsheet ", true);
         spreadsheetButton.setMnemonic(KeyEvent.VK_S);
+        spreadsheetButton.setName("spreadsheetbutton");
         imageButton = new JRadioButton("Image ");
         imageButton.setMnemonic(KeyEvent.VK_I);
+        imageButton.setName("imagebutton");
 
         charCheckbox = new JCheckBox("Show As Char", false);
         charCheckbox.setMnemonic(KeyEvent.VK_C);
