@@ -43,7 +43,7 @@ config/cmake/cacheinit.cmake file. HDF Group recommends using the ctest script
 mode to build HDF-JAVA.
 
 The following files referenced below are available at the HDF web site:
-    http://www.hdfgroup.org/hdf-java/release/cmakebuild.html
+    http://www.hdfgroup.org/products/java/release/downloadsrc.html
 
 CMake build script:
     CTestScript.cmake
