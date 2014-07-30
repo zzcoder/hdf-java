@@ -72,7 +72,7 @@ public class HDF5LibraryException extends HDF5Exception {
      * 
      * @return the major error number
      */
-    public native int getMajorErrorNumber();
+    public native long getMajorErrorNumber();
 
     /**
      * Get the minor error number of the first error on the HDF5 library error
@@ -80,7 +80,7 @@ public class HDF5LibraryException extends HDF5Exception {
      * 
      * @return the minor error number
      */
-    public native int getMinorErrorNumber();
+    public native long getMinorErrorNumber();
 
     /**
      * Return a error message for the minor error number.
@@ -92,7 +92,7 @@ public class HDF5LibraryException extends HDF5Exception {
      * 
      * @return the string of the minor error
      */
-    public String getMinorError(int err_code) {
+    public String getMinorError(long err_code) {
         if (err_code == HDF5Constants.H5E_NONE_MINOR) {
             return "special zero no error";
         }

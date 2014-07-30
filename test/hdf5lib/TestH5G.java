@@ -22,11 +22,11 @@ public class TestH5G {
     private static final String[] GROUPS = { "/G1", "/G1/G11", "/G1/G12",
             "/G1/G11/G111", "/G1/G11/G112", "/G1/G11/G113", "/G1/G11/G114" };
     private static final String[] GROUPS2 = { "/G1", "/G1/G14", "/G1/G12", "/G1/G13", "/G1/G11"};
-    int H5fid = -1;
-    int H5fid2 = -1;
+    long H5fid = -1;
+    long H5fid2 = -1;
 
-    private final int _createGroup(int fid, String name) {
-        int gid = -1;
+    private final long _createGroup(long fid, String name) {
+        long gid = -1;
         try {
             gid = H5.H5Gcreate(fid, name, HDF5Constants.H5P_DEFAULT,
                         HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
@@ -39,9 +39,9 @@ public class TestH5G {
         return gid;
     }
     
-    private final int _createGroup2(int fid, String name) {
-    	int gid = -1;
-    	int gcpl = -1;
+    private final long _createGroup2(long fid, String name) {
+        long gid = -1;
+        long gcpl = -1;
     	try{
     		gcpl = H5.H5Pcreate(HDF5Constants.H5P_GROUP_CREATE); //create gcpl
     		if (gcpl >= 0) {
@@ -66,8 +66,8 @@ public class TestH5G {
     	return gid;
     }
 
-    private final int _openGroup(int fid, String name) {
-        int gid = -1;
+    private final long _openGroup(long fid, String name) {
+        long gid = -1;
         try {
             gid = H5.H5Gopen(fid, name, HDF5Constants.H5P_DEFAULT);
         }
@@ -99,7 +99,7 @@ public class TestH5G {
         H5fid2 = H5.H5Fcreate(H5_FILE2, HDF5Constants.H5F_ACC_TRUNC,
                 HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
 
-        int gid = -1;
+        long gid = -1;
 
         for (int i = 0; i < GROUPS.length; i++) {
             gid = _createGroup(H5fid, GROUPS[i]);
@@ -132,7 +132,7 @@ public class TestH5G {
     @Test
     public void testH5Gopen() {
         for (int i = 0; i < GROUPS.length; i++) {
-            int gid = _openGroup(H5fid, GROUPS[i]);
+            long gid = _openGroup(H5fid, GROUPS[i]);
             assertTrue(gid > 0);
             try {
                 H5.H5Gclose(gid);
@@ -144,8 +144,8 @@ public class TestH5G {
 
     @Test
     public void testH5Gget_create_plist() {
-        int gid = -1;
-        int pid = -1;
+        long gid = -1;
+        long pid = -1;
 
         for (int i = 0; i < GROUPS.length; i++) {
             gid = _openGroup(H5fid, GROUPS[i]);
@@ -223,7 +223,7 @@ public class TestH5G {
     public void testH5Gget_obj_info_all() {
         H5G_info_t info = null;
 
-        int gid = _openGroup(H5fid, GROUPS[0]);
+        long gid = _openGroup(H5fid, GROUPS[0]);
 
         try {
             info = H5.H5Gget_info(gid);
@@ -266,7 +266,7 @@ public class TestH5G {
     public void testH5Gget_obj_info_all_gid() {
         H5G_info_t info = null;
 
-        int gid = _openGroup(H5fid, GROUPS[0]);
+        long gid = _openGroup(H5fid, GROUPS[0]);
 
         try {
             info = H5.H5Gget_info(gid);
@@ -314,7 +314,7 @@ public class TestH5G {
     public void testH5Gget_obj_info_all_gid2() {
         H5G_info_t info = null;
 
-        int gid = _openGroup(H5fid, GROUPS[1]);
+        long gid = _openGroup(H5fid, GROUPS[1]);
 
         try {
             info = H5.H5Gget_info(gid);
@@ -360,7 +360,7 @@ public class TestH5G {
 
     @Test
     public void testH5Gget_obj_info_max() {
-        int gid = _openGroup(H5fid, GROUPS[0]);
+        long gid = _openGroup(H5fid, GROUPS[0]);
         int groups_max_size = GROUPS.length + 1;
         String objNames[] = new String[groups_max_size];
         int objTypes[] = new int[groups_max_size];
@@ -398,7 +398,7 @@ public class TestH5G {
 
     @Test
     public void testH5Gget_obj_info_max_limit() {
-        int gid = _openGroup(H5fid, GROUPS[0]);
+        long gid = _openGroup(H5fid, GROUPS[0]);
         int groups_max_size = GROUPS.length - 3;
         String objNames[] = new String[groups_max_size];
         int objTypes[] = new int[groups_max_size];
@@ -437,7 +437,7 @@ public class TestH5G {
     public void testH5Gget_obj_info_all_byIndexType() {
         H5G_info_t info = null;
 
-        int gid = _openGroup(H5fid2, GROUPS2[0]);
+        long gid = _openGroup(H5fid2, GROUPS2[0]);
 
         try {
             info = H5.H5Gget_info(gid);

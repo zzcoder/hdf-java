@@ -79,7 +79,7 @@ public class TestH5Fparams {
 
     @Test
     public void testH5Fcreate() {
-        int fid = -1;
+        long fid = -1;
         File file = null;
 
         try {
@@ -106,7 +106,7 @@ public class TestH5Fparams {
 
     @Test
     public void testH5Fflush_global() {
-        int fid = -1;
+        long fid = -1;
 
         try {
             fid = H5.H5Fcreate("test.h5", HDF5Constants.H5F_ACC_TRUNC,
@@ -132,7 +132,7 @@ public class TestH5Fparams {
 
     @Test
     public void testH5Fflush_local() {
-        int fid = -1;
+        long fid = -1;
 
         try {
             fid = H5.H5Fcreate("test.h5", HDF5Constants.H5F_ACC_TRUNC,

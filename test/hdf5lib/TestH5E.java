@@ -15,8 +15,8 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 public class TestH5E {
-    int hdf_java_classid = -1;
-    int current_stackid = -1;
+    long hdf_java_classid = -1;
+    long current_stackid = -1;
 
     @Before
     public void H5Eget_stack_class() {
@@ -86,7 +86,7 @@ public class TestH5E {
     @Test
     public void testH5Ecreate_msg_major() {
         try {
-            int err_id = H5.H5Ecreate_msg(hdf_java_classid,
+            long err_id = H5.H5Ecreate_msg(hdf_java_classid,
                     HDF5Constants.H5E_MAJOR, "Error in Test");
             assertFalse("H5.H5Ecreate_msg_major: " + err_id, err_id < 0);
             H5.H5Eclose_msg(err_id);
@@ -100,7 +100,7 @@ public class TestH5E {
     @Test
     public void testH5Ecreate_msg_minor() {
         try {
-            int err_id = H5.H5Ecreate_msg(hdf_java_classid,
+            long err_id = H5.H5Ecreate_msg(hdf_java_classid,
                     HDF5Constants.H5E_MINOR, "Error in Test Function");
             assertFalse("H5.H5Ecreate_msg_minor: " + err_id, err_id < 0);
             H5.H5Eclose_msg(err_id);
@@ -114,7 +114,7 @@ public class TestH5E {
     @Test
     public void testH5Eget_msg() {
         int[] error_msg_type = { HDF5Constants.H5E_MINOR };
-        int err_id = -1;
+        long err_id = -1;
         String msg = null;
         try {
             err_id = H5.H5Ecreate_msg(hdf_java_classid,
@@ -203,7 +203,7 @@ public class TestH5E {
 
     @Test
     public void testH5Ecreate_stack() {
-        int stk_id = -1;
+        long stk_id = -1;
         try {
             stk_id = H5.H5Ecreate_stack();
         }

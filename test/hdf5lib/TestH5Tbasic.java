@@ -18,7 +18,7 @@ public class TestH5Tbasic {
     
     @Test
     public void testH5Tcopy() {
-        int H5strdid = -1;
+        long H5strdid = -1;
         try {
             H5strdid = H5.H5Tcopy(HDF5Constants.H5T_C_S1);
             assertTrue("H5.H5Tcopy",H5strdid > 0);
@@ -35,7 +35,7 @@ public class TestH5Tbasic {
     
     @Test
     public void testH5Tequal() {
-        int H5strdid = -1;
+        long H5strdid = -1;
         try {
             H5strdid = H5.H5Tcopy(HDF5Constants.H5T_C_S1);
             assertTrue("H5.H5Tcopy",H5strdid > 0);
@@ -54,7 +54,7 @@ public class TestH5Tbasic {
 
     @Test
     public void testH5Tequal_not() {
-        int H5strdid = -1;
+        long H5strdid = -1;
         try {
             H5strdid = H5.H5Tcopy(HDF5Constants.H5T_STD_U64LE);
             assertTrue("H5.H5Tcopy",H5strdid > 0);
@@ -76,8 +76,8 @@ public class TestH5Tbasic {
         String[] strs = {"a1234","b1234"};
         int srcLen = 5;
         int dstLen = 10;
-        int srcId = -1;
-        int dstId = -1;
+        long srcId = -1;
+        long dstId = -1;
         int dimSize = strs.length;
         byte[]   buf = new byte[dimSize*dstLen];
         
@@ -86,10 +86,10 @@ public class TestH5Tbasic {
    
         try {
             srcId = H5.H5Tcopy(HDF5Constants.H5T_C_S1);
-            H5.H5Tset_size(srcId, srcLen);
+            H5.H5Tset_size(srcId, (long)srcLen);
      
             dstId = H5.H5Tcopy(HDF5Constants.H5T_C_S1);
-            H5.H5Tset_size(dstId, dstLen);
+            H5.H5Tset_size(dstId, (long)dstLen);
      
             H5.H5Tconvert(srcId, dstId, dimSize, buf, null, HDF5Constants.H5P_DEFAULT);
         }
@@ -109,7 +109,7 @@ public class TestH5Tbasic {
     
     @Test
     public void testH5Torder_size() {
-        int H5strdid = -1;
+        long H5strdid = -1;
         try {
             // Fixed length string
             H5strdid = H5.H5Tcopy(HDF5Constants.H5T_C_S1);

@@ -17,5 +17,5 @@ import ncsa.hdf.hdf5lib.structs.H5L_info_t;
 
 //Information class for link callback(for H5Lvisit/H5Lvisit_by_name)
 public interface H5L_iterate_cb extends Callbacks {
-    int callback(int group, String name, H5L_info_t info, H5L_iterate_t op_data);
+    int callback(long group, String name, H5L_info_t info, H5L_iterate_t op_data);
 }

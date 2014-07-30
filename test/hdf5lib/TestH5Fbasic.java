@@ -18,7 +18,7 @@ import org.junit.Test;
 public class TestH5Fbasic {
     private static final String H5_FILE = "test.h5";
     private static final String TXT_FILE = "test.txt";
-    int H5fid = -1;
+    long H5fid = -1;
 
     private final void _deleteFile(String filename) {
         File file = new File(filename);
@@ -71,7 +71,7 @@ public class TestH5Fbasic {
 
     @Test(expected = HDF5LibraryException.class)
     public void testH5Fopen_read_only() throws Throwable {
-        int fid = -1;
+        long fid = -1;
 
         try {
             fid = H5.H5Fopen(H5_FILE, HDF5Constants.H5F_ACC_RDWR,
@@ -106,8 +106,8 @@ public class TestH5Fbasic {
 
     @Test(expected = HDF5LibraryException.class)
     public void testH5Freopen_closed() throws Throwable {
-        int fid = -1;
-        int fid2 = -1;
+        long fid = -1;
+        long fid2 = -1;
 
         try {
             fid = H5.H5Fopen(H5_FILE, HDF5Constants.H5F_ACC_RDWR,
@@ -129,8 +129,8 @@ public class TestH5Fbasic {
 
     @Test
     public void testH5Freopen() {
-        int fid = -1;
-        int fid2 = -1;
+        long fid = -1;
+        long fid2 = -1;
 
         try {
             fid = H5.H5Fopen(H5_FILE, HDF5Constants.H5F_ACC_RDWR,
@@ -163,7 +163,7 @@ public class TestH5Fbasic {
 
     @Test
     public void testH5Fclose() {
-        int fid = -1;
+        long fid = -1;
 
         try {
             fid = H5.H5Fopen(H5_FILE, HDF5Constants.H5F_ACC_RDWR,
@@ -183,7 +183,7 @@ public class TestH5Fbasic {
 
     @Test(expected = HDF5LibraryException.class)
     public void testH5Fclose_twice() throws Throwable {
-        int fid = -1;
+        long fid = -1;
 
         try {
             fid = H5.H5Fopen(H5_FILE, HDF5Constants.H5F_ACC_RDWR,

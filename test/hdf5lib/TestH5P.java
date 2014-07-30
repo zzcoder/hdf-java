@@ -22,20 +22,20 @@ public class TestH5P {
     private static final int DIM_X = 4;
     private static final int DIM_Y = 6;
     long[] H5dims = { DIM_X, DIM_Y };
-    int H5fid = -1;
-    int H5dsid = -1;
-    int H5did = -1;
-    int lapl_id = -1;
-    int fapl_id = -1;
-    int fcpl_id = -1;
-    int ocpl_id = -1;
-    int ocp_plist_id = -1;
-    int lcpl_id = -1;
-    int plapl_id = -1;
-    int plist_id = -1;
-    int gapl_id = -1;
-    int gcpl_id = -1;
-    int acpl_id = -1;
+    long H5fid = -1;
+    long H5dsid = -1;
+    long H5did = -1;
+    long lapl_id = -1;
+    long fapl_id = -1;
+    long fcpl_id = -1;
+    long ocpl_id = -1;
+    long ocp_plist_id = -1;
+    long lcpl_id = -1;
+    long plapl_id = -1;
+    long plist_id = -1;
+    long gapl_id = -1;
+    long gcpl_id = -1;
+    long acpl_id = -1;
 
     private final void _deleteFile(String filename) {
         File file = new File(filename);
@@ -45,8 +45,8 @@ public class TestH5P {
         }
     }
 
-    private final int _createDataset(int fid, int dsid, String name, int dapl) {
-        int did = -1;
+    private final long _createDataset(long fid, long dsid, String name, long dapl) {
+        long did = -1;
         try {
             did = H5.H5Dcreate(fid, name, HDF5Constants.H5T_STD_I32BE, dsid,
                     HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, dapl);
@@ -60,7 +60,7 @@ public class TestH5P {
         return did;
     }
 
-    private final void _createH5File(int fcpl, int fapl) {
+    private final void _createH5File(long fcpl, long fapl) {
         try {
             H5fid = H5.H5Fcreate(H5_FILE, HDF5Constants.H5F_ACC_TRUNC,
                     fcpl, fapl);
