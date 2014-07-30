@@ -14,10 +14,10 @@ import org.junit.Test;
 
 public class TestH5Giterate {
     private static final String H5_FILE = "test/hdf5lib/h5ex_g_iterate.hdf";
-    int H5fid = -1;
+    long H5fid = -1;
 
-    private final int _openGroup(int fid, String name) {
-        int gid = -1;
+    private final long _openGroup(long fid, String name) {
+        long gid = -1;
         try {
             gid = H5.H5Gopen(fid, name, HDF5Constants.H5P_DEFAULT);
         }
@@ -56,7 +56,7 @@ public class TestH5Giterate {
     public void testH5Gget_obj_info_all() {
         H5G_info_t info = null;
 
-        int gid = _openGroup(H5fid, "/");
+        long gid = _openGroup(H5fid, "/");
 
         try {
             info = H5.H5Gget_info(gid);

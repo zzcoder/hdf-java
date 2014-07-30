@@ -19,13 +19,13 @@ public class TestH5Ocopy {
     private static final String FILENAME = "testRefsattribute.h5";
     private static final int DIM_X = 4;
     private static final int DIM_Y = 6;
-    int H5fid = -1;
-    int H5dsid = -1;
-    int H5did1 = -1;
-    int H5did2 = -1;
-    int H5gcpl = -1;
-    int H5gid = -1;
-    int H5dsid2 = -1;
+    long H5fid = -1;
+    long H5dsid = -1;
+    long H5did1 = -1;
+    long H5did2 = -1;
+    long H5gcpl = -1;
+    long H5gid = -1;
+    long H5dsid2 = -1;
     long[] dims = { 2 };
 
     private final void _deleteFile(String filename) {
@@ -41,8 +41,8 @@ public class TestH5Ocopy {
         }
     }
 
-    private final int _createDataset(int fid, int dsid, String name, int dapl) {
-        int did = -1;
+    private final long _createDataset(long fid, long dsid, String name, long dapl) {
+        long did = -1;
         try {
             did = H5.H5Dcreate(fid, name,
                         HDF5Constants.H5T_STD_I32BE, dsid,
@@ -57,8 +57,8 @@ public class TestH5Ocopy {
         return did;
     }
 
-    private final int _createGroup(int fid, String name) {
-        int gid = -1;
+    private final long _createGroup(long fid, String name) {
+        long gid = -1;
         try {
             H5gcpl = HDF5Constants.H5P_DEFAULT;
             gid = H5.H5Gcreate(fid, name, HDF5Constants.H5P_DEFAULT,
@@ -117,10 +117,10 @@ public class TestH5Ocopy {
     
     @Test
     public void testH5OcopyRefsAttr() {
-        int ocp_plist_id = -1;
+        long ocp_plist_id = -1;
         byte rbuf0[]=null , rbuf1[] = null;
         byte[] dset_data = new byte[16];
-        int attribute_id = -1;
+        long attribute_id = -1;
         
         
         try {
@@ -154,9 +154,9 @@ public class TestH5Ocopy {
     public void testH5OcopyRefsDatasettodiffFile() {
         byte rbuf1[] = null;
         byte[] dset_data = new byte[16];
-        int ocp_plist_id = -1;
-        int dataset_id = -1;        
-        int H5fid2 = -1;        
+        long ocp_plist_id = -1;
+        long dataset_id = -1;        
+        long H5fid2 = -1;        
         
         try{
             rbuf1 = H5.H5Rcreate(H5fid, "DS2", HDF5Constants.H5R_OBJECT, -1);
@@ -208,9 +208,9 @@ public class TestH5Ocopy {
     public void testH5OcopyRefsDatasettosameFile() {
         byte rbuf0[]=null , rbuf1[] = null;
         byte[] dset_data = new byte[16];
-        int ocp_plist_id = -1;
-        int dataset_id = -1;
-        int did = -1;
+        long ocp_plist_id = -1;
+        long dataset_id = -1;
+        long did = -1;
         int obj_type = -1;
         int[] otype = { 1 };
         byte[] read_data = new byte[16];
@@ -289,10 +289,10 @@ public class TestH5Ocopy {
     
     @Test
     public void testH5OcopyInvalidRef() { 
-    	final int _pid_ = HDF5Constants.H5P_DEFAULT;
-        int sid = -1;
-        int did = -1;
-        int aid = -1;
+    	final long _pid_ = HDF5Constants.H5P_DEFAULT;
+    	long sid = -1;
+    	long did = -1;
+    	long aid = -1;
 
     	try {
     		sid = H5.H5Screate_simple(1, new long[] {1}, null);
@@ -310,7 +310,7 @@ public class TestH5Ocopy {
     	}			
 
     	try {
-    		int ocp_plist_id = H5.H5Pcreate(HDF5Constants.H5P_OBJECT_COPY);
+    	long ocp_plist_id = H5.H5Pcreate(HDF5Constants.H5P_OBJECT_COPY);
     		H5.H5Pset_copy_object(ocp_plist_id, HDF5Constants.H5O_COPY_EXPAND_REFERENCE_FLAG);
     		try {
     			H5.H5Ocopy(H5fid, "/Dataset_with_invalid_Ref", H5fid, "/Dataset_with_invalid_Ref_cp", ocp_plist_id, _pid_);

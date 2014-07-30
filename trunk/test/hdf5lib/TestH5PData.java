@@ -21,10 +21,10 @@ public class TestH5PData {
     private static final String H5_FILE = "test.h5";
     private static final int DIM_X = 12;
     private static final int DIM_Y = 18;
-    int H5fid = -1;
-    int H5dsid = -1;
-    int H5did = -1;
-    int plist_id = -1;
+    long H5fid = -1;
+    long H5dsid = -1;
+    long H5did = -1;
+    long plist_id = -1;
     long[] H5dims = { DIM_X, DIM_Y };
     double windchillF[][] =
     {{36.0, 31.0, 25.0, 19.0, 13.0, 7.0, 1.0, -5.0, -11.0, -16.0, -22.0, -28.0, -34.0, -40.0, -46.0, -52.0, -57.0, -63.0},
@@ -49,8 +49,8 @@ public class TestH5PData {
         }
     }
 
-    private final int _createFloatDataset(int fid, int dsid, String name, int dapl) {
-        int did = -1;
+    private final long _createFloatDataset(long fid, long dsid, String name, long dapl) {
+        long did = -1;
         try {
             did = H5.H5Dcreate(fid, name, HDF5Constants.H5T_NATIVE_FLOAT, dsid,
                     HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, dapl);

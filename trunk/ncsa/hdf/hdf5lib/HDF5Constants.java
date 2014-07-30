@@ -83,109 +83,109 @@ public class HDF5Constants {
     public static final int H5D_SPACE_STATUS_ERROR = H5D_SPACE_STATUS_ERROR();
     public static final int H5D_SPACE_STATUS_NOT_ALLOCATED = H5D_SPACE_STATUS_NOT_ALLOCATED();
     public static final int H5D_SPACE_STATUS_PART_ALLOCATED = H5D_SPACE_STATUS_PART_ALLOCATED();
-    public static final int H5E_ALIGNMENT = H5E_ALIGNMENT();
-    public static final int H5E_ALREADYEXISTS = H5E_ALREADYEXISTS();
-    public static final int H5E_ALREADYINIT = H5E_ALREADYINIT();
-    public static final int H5E_ARGS = H5E_ARGS();
-    public static final int H5E_ATOM = H5E_ATOM();
-    public static final int H5E_ATTR = H5E_ATTR();
-    public static final int H5E_BADATOM = H5E_BADATOM();
-    public static final int H5E_BADFILE = H5E_BADFILE();
-    public static final int H5E_BADGROUP = H5E_BADGROUP();
-    public static final int H5E_BADMESG = H5E_BADMESG();
-    public static final int H5E_BADRANGE = H5E_BADRANGE();
-    public static final int H5E_BADSELECT = H5E_BADSELECT();
-    public static final int H5E_BADSIZE = H5E_BADSIZE();
-    public static final int H5E_BADTYPE = H5E_BADTYPE();
-    public static final int H5E_BADVALUE = H5E_BADVALUE();
-    public static final int H5E_BTREE = H5E_BTREE();
-    public static final int H5E_CACHE = H5E_CACHE();
-    public static final int H5E_CALLBACK = H5E_CALLBACK();
-    public static final int H5E_CANAPPLY = H5E_CANAPPLY();
-    // public static final int H5E_CANTALLOC = H5E_CANTALLOC();
-    public static final int H5E_CANTCLIP = H5E_CANTCLIP();
-    public static final int H5E_CANTCLOSEFILE = H5E_CANTCLOSEFILE();
-    public static final int H5E_CANTCONVERT = H5E_CANTCONVERT();
-    public static final int H5E_CANTCOPY = H5E_CANTCOPY();
-    public static final int H5E_CANTCOUNT = H5E_CANTCOUNT();
-    public static final int H5E_CANTCREATE = H5E_CANTCREATE();
-    public static final int H5E_CANTDEC = H5E_CANTDEC();
-    public static final int H5E_CANTDECODE = H5E_CANTDECODE();
-    public static final int H5E_CANTDELETE = H5E_CANTDELETE();
-    public static final int H5E_CANTENCODE = H5E_CANTENCODE();
-    public static final int H5E_CANTFLUSH = H5E_CANTFLUSH();
-    public static final int H5E_CANTFREE = H5E_CANTFREE();
-    public static final int H5E_CANTGET = H5E_CANTGET();
-    public static final int H5E_CANTINC = H5E_CANTINC();
-    public static final int H5E_CANTINIT = H5E_CANTINIT();
-    public static final int H5E_CANTINSERT = H5E_CANTINSERT();
-    public static final int H5E_CANTLIST = H5E_CANTLIST();
-    public static final int H5E_CANTLOAD = H5E_CANTLOAD();
-    public static final int H5E_CANTLOCK = H5E_CANTLOCK();
-    public static final int H5E_CANTNEXT = H5E_CANTNEXT();
-    public static final int H5E_CANTOPENFILE = H5E_CANTOPENFILE();
-    public static final int H5E_CANTOPENOBJ = H5E_CANTOPENOBJ();
-    // public static final int H5E_CANTRECV = H5E_CANTRECV();
-    public static final int H5E_CANTREGISTER = H5E_CANTREGISTER();
-    public static final int H5E_CANTRELEASE = H5E_CANTRELEASE();
-    public static final int H5E_CANTSELECT = H5E_CANTSELECT();
-    public static final int H5E_CANTSET = H5E_CANTSET();
-    public static final int H5E_CANTSPLIT = H5E_CANTSPLIT();
-    public static final int H5E_CANTUNLOCK = H5E_CANTUNLOCK();
-    public static final int H5E_CLOSEERROR = H5E_CLOSEERROR();
-    public static final int H5E_COMPLEN = H5E_COMPLEN();
-    public static final int H5E_DATASET = H5E_DATASET();
-    public static final int H5E_DATASPACE = H5E_DATASPACE();
-    public static final int H5E_DATATYPE = H5E_DATATYPE();
-    public static final int H5E_DEFAULT = H5E_DEFAULT();
-    public static final int H5E_DUPCLASS = H5E_DUPCLASS();
-    public static final int H5E_EFL = H5E_EFL();
-    public static final int H5E_EXISTS = H5E_EXISTS();
-    public static final int H5E_FCNTL = H5E_FCNTL();
-    public static final int H5E_FILE = H5E_FILE();
-    public static final int H5E_FILEEXISTS = H5E_FILEEXISTS();
-    public static final int H5E_FILEOPEN = H5E_FILEOPEN();
-    public static final int H5E_FUNC = H5E_FUNC();
-    public static final int H5E_HEAP = H5E_HEAP();
-    public static final int H5E_INTERNAL = H5E_INTERNAL();
-    public static final int H5E_IO = H5E_IO();
-    public static final int H5E_LINK = H5E_LINK();
-    public static final int H5E_LINKCOUNT = H5E_LINKCOUNT();
+    public static final long H5E_ALIGNMENT = H5E_ALIGNMENT();
+    public static final long H5E_ALREADYEXISTS = H5E_ALREADYEXISTS();
+    public static final long H5E_ALREADYINIT = H5E_ALREADYINIT();
+    public static final long H5E_ARGS = H5E_ARGS();
+    public static final long H5E_ATOM = H5E_ATOM();
+    public static final long H5E_ATTR = H5E_ATTR();
+    public static final long H5E_BADATOM = H5E_BADATOM();
+    public static final long H5E_BADFILE = H5E_BADFILE();
+    public static final long H5E_BADGROUP = H5E_BADGROUP();
+    public static final long H5E_BADMESG = H5E_BADMESG();
+    public static final long H5E_BADRANGE = H5E_BADRANGE();
+    public static final long H5E_BADSELECT = H5E_BADSELECT();
+    public static final long H5E_BADSIZE = H5E_BADSIZE();
+    public static final long H5E_BADTYPE = H5E_BADTYPE();
+    public static final long H5E_BADVALUE = H5E_BADVALUE();
+    public static final long H5E_BTREE = H5E_BTREE();
+    public static final long H5E_CACHE = H5E_CACHE();
+    public static final long H5E_CALLBACK = H5E_CALLBACK();
+    public static final long H5E_CANAPPLY = H5E_CANAPPLY();
+    // public static final long H5E_CANTALLOC = H5E_CANTALLOC();
+    public static final long H5E_CANTCLIP = H5E_CANTCLIP();
+    public static final long H5E_CANTCLOSEFILE = H5E_CANTCLOSEFILE();
+    public static final long H5E_CANTCONVERT = H5E_CANTCONVERT();
+    public static final long H5E_CANTCOPY = H5E_CANTCOPY();
+    public static final long H5E_CANTCOUNT = H5E_CANTCOUNT();
+    public static final long H5E_CANTCREATE = H5E_CANTCREATE();
+    public static final long H5E_CANTDEC = H5E_CANTDEC();
+    public static final long H5E_CANTDECODE = H5E_CANTDECODE();
+    public static final long H5E_CANTDELETE = H5E_CANTDELETE();
+    public static final long H5E_CANTENCODE = H5E_CANTENCODE();
+    public static final long H5E_CANTFLUSH = H5E_CANTFLUSH();
+    public static final long H5E_CANTFREE = H5E_CANTFREE();
+    public static final long H5E_CANTGET = H5E_CANTGET();
+    public static final long H5E_CANTINC = H5E_CANTINC();
+    public static final long H5E_CANTINIT = H5E_CANTINIT();
+    public static final long H5E_CANTINSERT = H5E_CANTINSERT();
+    public static final long H5E_CANTLIST = H5E_CANTLIST();
+    public static final long H5E_CANTLOAD = H5E_CANTLOAD();
+    public static final long H5E_CANTLOCK = H5E_CANTLOCK();
+    public static final long H5E_CANTNEXT = H5E_CANTNEXT();
+    public static final long H5E_CANTOPENFILE = H5E_CANTOPENFILE();
+    public static final long H5E_CANTOPENOBJ = H5E_CANTOPENOBJ();
+    // public static final long H5E_CANTRECV = H5E_CANTRECV();
+    public static final long H5E_CANTREGISTER = H5E_CANTREGISTER();
+    public static final long H5E_CANTRELEASE = H5E_CANTRELEASE();
+    public static final long H5E_CANTSELECT = H5E_CANTSELECT();
+    public static final long H5E_CANTSET = H5E_CANTSET();
+    public static final long H5E_CANTSPLIT = H5E_CANTSPLIT();
+    public static final long H5E_CANTUNLOCK = H5E_CANTUNLOCK();
+    public static final long H5E_CLOSEERROR = H5E_CLOSEERROR();
+    public static final long H5E_COMPLEN = H5E_COMPLEN();
+    public static final long H5E_DATASET = H5E_DATASET();
+    public static final long H5E_DATASPACE = H5E_DATASPACE();
+    public static final long H5E_DATATYPE = H5E_DATATYPE();
+    public static final long H5E_DEFAULT = H5E_DEFAULT();
+    public static final long H5E_DUPCLASS = H5E_DUPCLASS();
+    public static final long H5E_EFL = H5E_EFL();
+    public static final long H5E_EXISTS = H5E_EXISTS();
+    public static final long H5E_FCNTL = H5E_FCNTL();
+    public static final long H5E_FILE = H5E_FILE();
+    public static final long H5E_FILEEXISTS = H5E_FILEEXISTS();
+    public static final long H5E_FILEOPEN = H5E_FILEOPEN();
+    public static final long H5E_FUNC = H5E_FUNC();
+    public static final long H5E_HEAP = H5E_HEAP();
+    public static final long H5E_INTERNAL = H5E_INTERNAL();
+    public static final long H5E_IO = H5E_IO();
+    public static final long H5E_LINK = H5E_LINK();
+    public static final long H5E_LINKCOUNT = H5E_LINKCOUNT();
     public static final int H5E_MAJOR = H5E_MAJOR();
     public static final int H5E_MINOR = H5E_MINOR();
-    public static final int H5E_MOUNT = H5E_MOUNT();
-    public static final int H5E_MPI = H5E_MPI();
-    public static final int H5E_MPIERRSTR = H5E_MPIERRSTR();
-    public static final int H5E_NOFILTER = H5E_NOFILTER();
-    public static final int H5E_NOIDS = H5E_NOIDS();
-    public static final int H5E_NONE_MAJOR = H5E_NONE_MAJOR();
-    public static final int H5E_NONE_MINOR = H5E_NONE_MINOR();
-    public static final int H5E_NOSPACE = H5E_NOSPACE();
-    public static final int H5E_NOTCACHED = H5E_NOTCACHED();
-    public static final int H5E_NOTFOUND = H5E_NOTFOUND();
-    public static final int H5E_NOTHDF5 = H5E_NOTHDF5();
-    public static final int H5E_OHDR = H5E_OHDR();
-    public static final int H5E_OVERFLOW = H5E_OVERFLOW();
-    public static final int H5E_PLINE = H5E_PLINE();
-    public static final int H5E_PLIST = H5E_PLIST();
-    public static final int H5E_PROTECT = H5E_PROTECT();
-    public static final int H5E_READERROR = H5E_READERROR();
-    public static final int H5E_REFERENCE = H5E_REFERENCE();
-    public static final int H5E_RESOURCE = H5E_RESOURCE();
-    public static final int H5E_RS = H5E_RS();
-    public static final int H5E_SEEKERROR = H5E_SEEKERROR();
-    public static final int H5E_SETLOCAL = H5E_SETLOCAL();
-    public static final int H5E_STORAGE = H5E_STORAGE();
-    public static final int H5E_SYM = H5E_SYM();
-    public static final int H5E_TRUNCATED = H5E_TRUNCATED();
-    public static final int H5E_TST = H5E_TST();
-    public static final int H5E_UNINITIALIZED = H5E_UNINITIALIZED();
-    public static final int H5E_UNSUPPORTED = H5E_UNSUPPORTED();
-    public static final int H5E_VERSION = H5E_VERSION();
-    public static final int H5E_VFL = H5E_VFL();
-    public static final int H5E_WALK_DOWNWARD = H5E_WALK_DOWNWARD();
-    public static final int H5E_WALK_UPWARD = H5E_WALK_UPWARD();
-    public static final int H5E_WRITEERROR = H5E_WRITEERROR();
+    public static final long H5E_MOUNT = H5E_MOUNT();
+    public static final long H5E_MPI = H5E_MPI();
+    public static final long H5E_MPIERRSTR = H5E_MPIERRSTR();
+    public static final long H5E_NOFILTER = H5E_NOFILTER();
+    public static final long H5E_NOIDS = H5E_NOIDS();
+    public static final long H5E_NONE_MAJOR = H5E_NONE_MAJOR();
+    public static final long H5E_NONE_MINOR = H5E_NONE_MINOR();
+    public static final long H5E_NOSPACE = H5E_NOSPACE();
+    public static final long H5E_NOTCACHED = H5E_NOTCACHED();
+    public static final long H5E_NOTFOUND = H5E_NOTFOUND();
+    public static final long H5E_NOTHDF5 = H5E_NOTHDF5();
+    public static final long H5E_OHDR = H5E_OHDR();
+    public static final long H5E_OVERFLOW = H5E_OVERFLOW();
+    public static final long H5E_PLINE = H5E_PLINE();
+    public static final long H5E_PLIST = H5E_PLIST();
+    public static final long H5E_PROTECT = H5E_PROTECT();
+    public static final long H5E_READERROR = H5E_READERROR();
+    public static final long H5E_REFERENCE = H5E_REFERENCE();
+    public static final long H5E_RESOURCE = H5E_RESOURCE();
+    public static final long H5E_RS = H5E_RS();
+    public static final long H5E_SEEKERROR = H5E_SEEKERROR();
+    public static final long H5E_SETLOCAL = H5E_SETLOCAL();
+    public static final long H5E_STORAGE = H5E_STORAGE();
+    public static final long H5E_SYM = H5E_SYM();
+    public static final long H5E_TRUNCATED = H5E_TRUNCATED();
+    public static final long H5E_TST = H5E_TST();
+    public static final long H5E_UNINITIALIZED = H5E_UNINITIALIZED();
+    public static final long H5E_UNSUPPORTED = H5E_UNSUPPORTED();
+    public static final long H5E_VERSION = H5E_VERSION();
+    public static final long H5E_VFL = H5E_VFL();
+    public static final long H5E_WALK_DOWNWARD = H5E_WALK_DOWNWARD();
+    public static final long H5E_WALK_UPWARD = H5E_WALK_UPWARD();
+    public static final long H5E_WRITEERROR = H5E_WRITEERROR();
     
     public static final int H5F_ACC_CREAT = H5F_ACC_CREAT();
     public static final int H5F_ACC_DEBUG = H5F_ACC_DEBUG();
@@ -309,41 +309,41 @@ public class HDF5Constants {
     public static final int H5O_TYPE_NAMED_DATATYPE = H5O_TYPE_NAMED_DATATYPE();
     public static final int H5O_TYPE_NTYPES = H5O_TYPE_NTYPES();
     
-    public static final int H5P_ROOT = H5P_ROOT();
-    public static final int H5P_OBJECT_CREATE = H5P_OBJECT_CREATE();
-    public static final int H5P_FILE_CREATE = H5P_FILE_CREATE();
-    public static final int H5P_FILE_ACCESS = H5P_FILE_ACCESS();
-    public static final int H5P_DATASET_CREATE = H5P_DATASET_CREATE();
-    public static final int H5P_DATASET_ACCESS = H5P_DATASET_ACCESS();
-    public static final int H5P_DATASET_XFER = H5P_DATASET_XFER();
-    public static final int H5P_FILE_MOUNT = H5P_FILE_MOUNT();
-    public static final int H5P_GROUP_CREATE = H5P_GROUP_CREATE();
-    public static final int H5P_GROUP_ACCESS = H5P_GROUP_ACCESS();
-    public static final int H5P_DATATYPE_CREATE = H5P_DATATYPE_CREATE();
-    public static final int H5P_DATATYPE_ACCESS = H5P_DATATYPE_ACCESS();
-    public static final int H5P_STRING_CREATE = H5P_STRING_CREATE();
-    public static final int H5P_ATTRIBUTE_CREATE = H5P_ATTRIBUTE_CREATE();
-    public static final int H5P_OBJECT_COPY = H5P_OBJECT_COPY();
-    public static final int H5P_LINK_CREATE = H5P_LINK_CREATE();
-    public static final int H5P_LINK_ACCESS = H5P_LINK_ACCESS();
-    public static final int H5P_FILE_CREATE_DEFAULT = H5P_FILE_CREATE_DEFAULT();
-    public static final int H5P_FILE_ACCESS_DEFAULT = H5P_FILE_ACCESS_DEFAULT();
-    public static final int H5P_DATASET_CREATE_DEFAULT = H5P_DATASET_CREATE_DEFAULT();
-    public static final int H5P_DATASET_ACCESS_DEFAULT = H5P_DATASET_ACCESS_DEFAULT();
-    public static final int H5P_DATASET_XFER_DEFAULT = H5P_DATASET_XFER_DEFAULT();
-    public static final int H5P_FILE_MOUNT_DEFAULT = H5P_FILE_MOUNT_DEFAULT();
-    public static final int H5P_GROUP_CREATE_DEFAULT = H5P_GROUP_CREATE_DEFAULT();
-    public static final int H5P_GROUP_ACCESS_DEFAULT = H5P_GROUP_ACCESS_DEFAULT();
-    public static final int H5P_DATATYPE_CREATE_DEFAULT = H5P_DATATYPE_CREATE_DEFAULT();
-    public static final int H5P_DATATYPE_ACCESS_DEFAULT = H5P_DATATYPE_ACCESS_DEFAULT();
-    public static final int H5P_ATTRIBUTE_CREATE_DEFAULT = H5P_ATTRIBUTE_CREATE_DEFAULT();
-    public static final int H5P_OBJECT_COPY_DEFAULT = H5P_OBJECT_COPY_DEFAULT();
-    public static final int H5P_LINK_CREATE_DEFAULT = H5P_LINK_CREATE_DEFAULT();
-    public static final int H5P_LINK_ACCESS_DEFAULT = H5P_LINK_ACCESS_DEFAULT();
+    public static final long H5P_ROOT = H5P_ROOT();
+    public static final long H5P_OBJECT_CREATE = H5P_OBJECT_CREATE();
+    public static final long H5P_FILE_CREATE = H5P_FILE_CREATE();
+    public static final long H5P_FILE_ACCESS = H5P_FILE_ACCESS();
+    public static final long H5P_DATASET_CREATE = H5P_DATASET_CREATE();
+    public static final long H5P_DATASET_ACCESS = H5P_DATASET_ACCESS();
+    public static final long H5P_DATASET_XFER = H5P_DATASET_XFER();
+    public static final long H5P_FILE_MOUNT = H5P_FILE_MOUNT();
+    public static final long H5P_GROUP_CREATE = H5P_GROUP_CREATE();
+    public static final long H5P_GROUP_ACCESS = H5P_GROUP_ACCESS();
+    public static final long H5P_DATATYPE_CREATE = H5P_DATATYPE_CREATE();
+    public static final long H5P_DATATYPE_ACCESS = H5P_DATATYPE_ACCESS();
+    public static final long H5P_STRING_CREATE = H5P_STRING_CREATE();
+    public static final long H5P_ATTRIBUTE_CREATE = H5P_ATTRIBUTE_CREATE();
+    public static final long H5P_OBJECT_COPY = H5P_OBJECT_COPY();
+    public static final long H5P_LINK_CREATE = H5P_LINK_CREATE();
+    public static final long H5P_LINK_ACCESS = H5P_LINK_ACCESS();
+    public static final long H5P_FILE_CREATE_DEFAULT = H5P_FILE_CREATE_DEFAULT();
+    public static final long H5P_FILE_ACCESS_DEFAULT = H5P_FILE_ACCESS_DEFAULT();
+    public static final long H5P_DATASET_CREATE_DEFAULT = H5P_DATASET_CREATE_DEFAULT();
+    public static final long H5P_DATASET_ACCESS_DEFAULT = H5P_DATASET_ACCESS_DEFAULT();
+    public static final long H5P_DATASET_XFER_DEFAULT = H5P_DATASET_XFER_DEFAULT();
+    public static final long H5P_FILE_MOUNT_DEFAULT = H5P_FILE_MOUNT_DEFAULT();
+    public static final long H5P_GROUP_CREATE_DEFAULT = H5P_GROUP_CREATE_DEFAULT();
+    public static final long H5P_GROUP_ACCESS_DEFAULT = H5P_GROUP_ACCESS_DEFAULT();
+    public static final long H5P_DATATYPE_CREATE_DEFAULT = H5P_DATATYPE_CREATE_DEFAULT();
+    public static final long H5P_DATATYPE_ACCESS_DEFAULT = H5P_DATATYPE_ACCESS_DEFAULT();
+    public static final long H5P_ATTRIBUTE_CREATE_DEFAULT = H5P_ATTRIBUTE_CREATE_DEFAULT();
+    public static final long H5P_OBJECT_COPY_DEFAULT = H5P_OBJECT_COPY_DEFAULT();
+    public static final long H5P_LINK_CREATE_DEFAULT = H5P_LINK_CREATE_DEFAULT();
+    public static final long H5P_LINK_ACCESS_DEFAULT = H5P_LINK_ACCESS_DEFAULT();
     public static final int H5P_CRT_ORDER_TRACKED = H5P_CRT_ORDER_TRACKED();
     public static final int H5P_CRT_ORDER_INDEXED = H5P_CRT_ORDER_INDEXED();
-    public static final int H5P_DEFAULT = H5P_DEFAULT();
-    public static final int H5P_NO_CLASS = H5P_NO_CLASS();
+    public static final long H5P_DEFAULT = H5P_DEFAULT();
+    public static final long H5P_NO_CLASS = H5P_NO_CLASS();
 
     public static final int H5R_BADTYPE = H5R_BADTYPE();
     public static final int H5R_DATASET_REGION = H5R_DATASET_REGION();
@@ -373,25 +373,25 @@ public class HDF5Constants {
     public static final int H5S_SELECT_XOR = H5S_SELECT_XOR();
     public static final int H5S_SIMPLE = H5S_SIMPLE();
     public static final int H5S_UNLIMITED = H5S_UNLIMITED();
-    public static final int H5T_ALPHA_B16 = H5T_ALPHA_B16();
-    public static final int H5T_ALPHA_B32 = H5T_ALPHA_B32();
-    public static final int H5T_ALPHA_B64 = H5T_ALPHA_B64();
-    public static final int H5T_ALPHA_B8 = H5T_ALPHA_B8();
-    public static final int H5T_ALPHA_F32 = H5T_ALPHA_F32();
-    public static final int H5T_ALPHA_F64 = H5T_ALPHA_F64();
-    public static final int H5T_ALPHA_I16 = H5T_ALPHA_I16();
-    public static final int H5T_ALPHA_I32 = H5T_ALPHA_I32();
-    public static final int H5T_ALPHA_I64 = H5T_ALPHA_I64();
-    public static final int H5T_ALPHA_I8 = H5T_ALPHA_I8();
-    public static final int H5T_ALPHA_U16 = H5T_ALPHA_U16();
-    public static final int H5T_ALPHA_U32 = H5T_ALPHA_U32();
-    public static final int H5T_ALPHA_U64 = H5T_ALPHA_U64();
-    public static final int H5T_ALPHA_U8 = H5T_ALPHA_U8();
+    public static final long H5T_ALPHA_B16 = H5T_ALPHA_B16();
+    public static final long H5T_ALPHA_B32 = H5T_ALPHA_B32();
+    public static final long H5T_ALPHA_B64 = H5T_ALPHA_B64();
+    public static final long H5T_ALPHA_B8 = H5T_ALPHA_B8();
+    public static final long H5T_ALPHA_F32 = H5T_ALPHA_F32();
+    public static final long H5T_ALPHA_F64 = H5T_ALPHA_F64();
+    public static final long H5T_ALPHA_I16 = H5T_ALPHA_I16();
+    public static final long H5T_ALPHA_I32 = H5T_ALPHA_I32();
+    public static final long H5T_ALPHA_I64 = H5T_ALPHA_I64();
+    public static final long H5T_ALPHA_I8 = H5T_ALPHA_I8();
+    public static final long H5T_ALPHA_U16 = H5T_ALPHA_U16();
+    public static final long H5T_ALPHA_U32 = H5T_ALPHA_U32();
+    public static final long H5T_ALPHA_U64 = H5T_ALPHA_U64();
+    public static final long H5T_ALPHA_U8 = H5T_ALPHA_U8();
     public static final int H5T_ARRAY = H5T_ARRAY();
     public static final int H5T_BITFIELD = H5T_BITFIELD();
     public static final int H5T_BKG_NO = H5T_BKG_NO();
     public static final int H5T_BKG_YES = H5T_BKG_YES();
-    public static final int H5T_C_S1 = H5T_C_S1();
+    public static final long H5T_C_S1 = H5T_C_S1();
     public static final int H5T_COMPOUND = H5T_COMPOUND();
     public static final int H5T_CONV_CONV = H5T_CONV_CONV();
     public static final int H5T_CONV_FREE = H5T_CONV_FREE();
@@ -418,88 +418,88 @@ public class HDF5Constants {
     public static final int H5T_DIR_DESCEND = H5T_DIR_DESCEND();
     public static final int H5T_ENUM = H5T_ENUM();
     public static final int H5T_FLOAT = H5T_FLOAT();
-    public static final int H5T_FORTRAN_S1 = H5T_FORTRAN_S1();
-    public static final int H5T_IEEE_F32BE = H5T_IEEE_F32BE();
-    public static final int H5T_IEEE_F32LE = H5T_IEEE_F32LE();
-    public static final int H5T_IEEE_F64BE = H5T_IEEE_F64BE();
-    public static final int H5T_IEEE_F64LE = H5T_IEEE_F64LE();
+    public static final long H5T_FORTRAN_S1 = H5T_FORTRAN_S1();
+    public static final long H5T_IEEE_F32BE = H5T_IEEE_F32BE();
+    public static final long H5T_IEEE_F32LE = H5T_IEEE_F32LE();
+    public static final long H5T_IEEE_F64BE = H5T_IEEE_F64BE();
+    public static final long H5T_IEEE_F64LE = H5T_IEEE_F64LE();
     public static final int H5T_INTEGER = H5T_INTEGER();
-    public static final int H5T_INTEL_B16 = H5T_INTEL_B16();
-    public static final int H5T_INTEL_B32 = H5T_INTEL_B32();
-    public static final int H5T_INTEL_B64 = H5T_INTEL_B64();
-    public static final int H5T_INTEL_B8 = H5T_INTEL_B8();
-    public static final int H5T_INTEL_F32 = H5T_INTEL_F32();
-    public static final int H5T_INTEL_F64 = H5T_INTEL_F64();
-    public static final int H5T_INTEL_I16 = H5T_INTEL_I16();
-    public static final int H5T_INTEL_I32 = H5T_INTEL_I32();
-    public static final int H5T_INTEL_I64 = H5T_INTEL_I64();
-    public static final int H5T_INTEL_I8 = H5T_INTEL_I8();
-    public static final int H5T_INTEL_U16 = H5T_INTEL_U16();
-    public static final int H5T_INTEL_U32 = H5T_INTEL_U32();
-    public static final int H5T_INTEL_U64 = H5T_INTEL_U64();
-    public static final int H5T_INTEL_U8 = H5T_INTEL_U8();
-    public static final int H5T_MIPS_B16 = H5T_MIPS_B16();
-    public static final int H5T_MIPS_B32 = H5T_MIPS_B32();
-    public static final int H5T_MIPS_B64 = H5T_MIPS_B64();
-    public static final int H5T_MIPS_B8 = H5T_MIPS_B8();
-    public static final int H5T_MIPS_F32 = H5T_MIPS_F32();
-    public static final int H5T_MIPS_F64 = H5T_MIPS_F64();
-    public static final int H5T_MIPS_I16 = H5T_MIPS_I16();
-    public static final int H5T_MIPS_I32 = H5T_MIPS_I32();
-    public static final int H5T_MIPS_I64 = H5T_MIPS_I64();
-    public static final int H5T_MIPS_I8 = H5T_MIPS_I8();
-    public static final int H5T_MIPS_U16 = H5T_MIPS_U16();
-    public static final int H5T_MIPS_U32 = H5T_MIPS_U32();
-    public static final int H5T_MIPS_U64 = H5T_MIPS_U64();
-    public static final int H5T_MIPS_U8 = H5T_MIPS_U8();
-    public static final int H5T_NATIVE_B16 = H5T_NATIVE_B16();
-    public static final int H5T_NATIVE_B32 = H5T_NATIVE_B32();
-    public static final int H5T_NATIVE_B64 = H5T_NATIVE_B64();
-    public static final int H5T_NATIVE_B8 = H5T_NATIVE_B8();
-    public static final int H5T_NATIVE_CHAR = H5T_NATIVE_CHAR();
-    public static final int H5T_NATIVE_DOUBLE = H5T_NATIVE_DOUBLE();
-    public static final int H5T_NATIVE_FLOAT = H5T_NATIVE_FLOAT();
-    public static final int H5T_NATIVE_HADDR = H5T_NATIVE_HADDR();
-    public static final int H5T_NATIVE_HBOOL = H5T_NATIVE_HBOOL();
-    public static final int H5T_NATIVE_HERR = H5T_NATIVE_HERR();
-    public static final int H5T_NATIVE_HSIZE = H5T_NATIVE_HSIZE();
-    public static final int H5T_NATIVE_HSSIZE = H5T_NATIVE_HSSIZE();
-    public static final int H5T_NATIVE_INT = H5T_NATIVE_INT();
-    public static final int H5T_NATIVE_INT_FAST16 = H5T_NATIVE_INT_FAST16();
-    public static final int H5T_NATIVE_INT_FAST32 = H5T_NATIVE_INT_FAST32();
-    public static final int H5T_NATIVE_INT_FAST64 = H5T_NATIVE_INT_FAST64();
-    public static final int H5T_NATIVE_INT_FAST8 = H5T_NATIVE_INT_FAST8();
-    public static final int H5T_NATIVE_INT_LEAST16 = H5T_NATIVE_INT_LEAST16();
-    public static final int H5T_NATIVE_INT_LEAST32 = H5T_NATIVE_INT_LEAST32();
-    public static final int H5T_NATIVE_INT_LEAST64 = H5T_NATIVE_INT_LEAST64();
-    public static final int H5T_NATIVE_INT_LEAST8 = H5T_NATIVE_INT_LEAST8();
-    public static final int H5T_NATIVE_INT16 = H5T_NATIVE_INT16();
-    public static final int H5T_NATIVE_INT32 = H5T_NATIVE_INT32();
-    public static final int H5T_NATIVE_INT64 = H5T_NATIVE_INT64();
-    public static final int H5T_NATIVE_INT8 = H5T_NATIVE_INT8();
-    public static final int H5T_NATIVE_LDOUBLE = H5T_NATIVE_LDOUBLE();
-    public static final int H5T_NATIVE_LLONG = H5T_NATIVE_LLONG();
-    public static final int H5T_NATIVE_LONG = H5T_NATIVE_LONG();
-    public static final int H5T_NATIVE_OPAQUE = H5T_NATIVE_OPAQUE();
-    public static final int H5T_NATIVE_SCHAR = H5T_NATIVE_SCHAR();
-    public static final int H5T_NATIVE_SHORT = H5T_NATIVE_SHORT();
-    public static final int H5T_NATIVE_UCHAR = H5T_NATIVE_UCHAR();
-    public static final int H5T_NATIVE_UINT = H5T_NATIVE_UINT();
-    public static final int H5T_NATIVE_UINT_FAST16 = H5T_NATIVE_UINT_FAST16();
-    public static final int H5T_NATIVE_UINT_FAST32 = H5T_NATIVE_UINT_FAST32();
-    public static final int H5T_NATIVE_UINT_FAST64 = H5T_NATIVE_UINT_FAST64();
-    public static final int H5T_NATIVE_UINT_FAST8 = H5T_NATIVE_UINT_FAST8();
-    public static final int H5T_NATIVE_UINT_LEAST16 = H5T_NATIVE_UINT_LEAST16();
-    public static final int H5T_NATIVE_UINT_LEAST32 = H5T_NATIVE_UINT_LEAST32();
-    public static final int H5T_NATIVE_UINT_LEAST64 = H5T_NATIVE_UINT_LEAST64();
-    public static final int H5T_NATIVE_UINT_LEAST8 = H5T_NATIVE_UINT_LEAST8();
-    public static final int H5T_NATIVE_UINT16 = H5T_NATIVE_UINT16();
-    public static final int H5T_NATIVE_UINT32 = H5T_NATIVE_UINT32();
-    public static final int H5T_NATIVE_UINT64 = H5T_NATIVE_UINT64();
-    public static final int H5T_NATIVE_UINT8 = H5T_NATIVE_UINT8();
-    public static final int H5T_NATIVE_ULLONG = H5T_NATIVE_ULLONG();
-    public static final int H5T_NATIVE_ULONG = H5T_NATIVE_ULONG();
-    public static final int H5T_NATIVE_USHORT = H5T_NATIVE_USHORT();
+    public static final long H5T_INTEL_B16 = H5T_INTEL_B16();
+    public static final long H5T_INTEL_B32 = H5T_INTEL_B32();
+    public static final long H5T_INTEL_B64 = H5T_INTEL_B64();
+    public static final long H5T_INTEL_B8 = H5T_INTEL_B8();
+    public static final long H5T_INTEL_F32 = H5T_INTEL_F32();
+    public static final long H5T_INTEL_F64 = H5T_INTEL_F64();
+    public static final long H5T_INTEL_I16 = H5T_INTEL_I16();
+    public static final long H5T_INTEL_I32 = H5T_INTEL_I32();
+    public static final long H5T_INTEL_I64 = H5T_INTEL_I64();
+    public static final long H5T_INTEL_I8 = H5T_INTEL_I8();
+    public static final long H5T_INTEL_U16 = H5T_INTEL_U16();
+    public static final long H5T_INTEL_U32 = H5T_INTEL_U32();
+    public static final long H5T_INTEL_U64 = H5T_INTEL_U64();
+    public static final long H5T_INTEL_U8 = H5T_INTEL_U8();
+    public static final long H5T_MIPS_B16 = H5T_MIPS_B16();
+    public static final long H5T_MIPS_B32 = H5T_MIPS_B32();
+    public static final long H5T_MIPS_B64 = H5T_MIPS_B64();
+    public static final long H5T_MIPS_B8 = H5T_MIPS_B8();
+    public static final long H5T_MIPS_F32 = H5T_MIPS_F32();
+    public static final long H5T_MIPS_F64 = H5T_MIPS_F64();
+    public static final long H5T_MIPS_I16 = H5T_MIPS_I16();
+    public static final long H5T_MIPS_I32 = H5T_MIPS_I32();
+    public static final long H5T_MIPS_I64 = H5T_MIPS_I64();
+    public static final long H5T_MIPS_I8 = H5T_MIPS_I8();
+    public static final long H5T_MIPS_U16 = H5T_MIPS_U16();
+    public static final long H5T_MIPS_U32 = H5T_MIPS_U32();
+    public static final long H5T_MIPS_U64 = H5T_MIPS_U64();
+    public static final long H5T_MIPS_U8 = H5T_MIPS_U8();
+    public static final long H5T_NATIVE_B16 = H5T_NATIVE_B16();
+    public static final long H5T_NATIVE_B32 = H5T_NATIVE_B32();
+    public static final long H5T_NATIVE_B64 = H5T_NATIVE_B64();
+    public static final long H5T_NATIVE_B8 = H5T_NATIVE_B8();
+    public static final long H5T_NATIVE_CHAR = H5T_NATIVE_CHAR();
+    public static final long H5T_NATIVE_DOUBLE = H5T_NATIVE_DOUBLE();
+    public static final long H5T_NATIVE_FLOAT = H5T_NATIVE_FLOAT();
+    public static final long H5T_NATIVE_HADDR = H5T_NATIVE_HADDR();
+    public static final long H5T_NATIVE_HBOOL = H5T_NATIVE_HBOOL();
+    public static final long H5T_NATIVE_HERR = H5T_NATIVE_HERR();
+    public static final long H5T_NATIVE_HSIZE = H5T_NATIVE_HSIZE();
+    public static final long H5T_NATIVE_HSSIZE = H5T_NATIVE_HSSIZE();
+    public static final long H5T_NATIVE_INT = H5T_NATIVE_INT();
+    public static final long H5T_NATIVE_INT_FAST16 = H5T_NATIVE_INT_FAST16();
+    public static final long H5T_NATIVE_INT_FAST32 = H5T_NATIVE_INT_FAST32();
+    public static final long H5T_NATIVE_INT_FAST64 = H5T_NATIVE_INT_FAST64();
+    public static final long H5T_NATIVE_INT_FAST8 = H5T_NATIVE_INT_FAST8();
+    public static final long H5T_NATIVE_INT_LEAST16 = H5T_NATIVE_INT_LEAST16();
+    public static final long H5T_NATIVE_INT_LEAST32 = H5T_NATIVE_INT_LEAST32();
+    public static final long H5T_NATIVE_INT_LEAST64 = H5T_NATIVE_INT_LEAST64();
+    public static final long H5T_NATIVE_INT_LEAST8 = H5T_NATIVE_INT_LEAST8();
+    public static final long H5T_NATIVE_INT16 = H5T_NATIVE_INT16();
+    public static final long H5T_NATIVE_INT32 = H5T_NATIVE_INT32();
+    public static final long H5T_NATIVE_INT64 = H5T_NATIVE_INT64();
+    public static final long H5T_NATIVE_INT8 = H5T_NATIVE_INT8();
+    public static final long H5T_NATIVE_LDOUBLE = H5T_NATIVE_LDOUBLE();
+    public static final long H5T_NATIVE_LLONG = H5T_NATIVE_LLONG();
+    public static final long H5T_NATIVE_LONG = H5T_NATIVE_LONG();
+    public static final long H5T_NATIVE_OPAQUE = H5T_NATIVE_OPAQUE();
+    public static final long H5T_NATIVE_SCHAR = H5T_NATIVE_SCHAR();
+    public static final long H5T_NATIVE_SHORT = H5T_NATIVE_SHORT();
+    public static final long H5T_NATIVE_UCHAR = H5T_NATIVE_UCHAR();
+    public static final long H5T_NATIVE_UINT = H5T_NATIVE_UINT();
+    public static final long H5T_NATIVE_UINT_FAST16 = H5T_NATIVE_UINT_FAST16();
+    public static final long H5T_NATIVE_UINT_FAST32 = H5T_NATIVE_UINT_FAST32();
+    public static final long H5T_NATIVE_UINT_FAST64 = H5T_NATIVE_UINT_FAST64();
+    public static final long H5T_NATIVE_UINT_FAST8 = H5T_NATIVE_UINT_FAST8();
+    public static final long H5T_NATIVE_UINT_LEAST16 = H5T_NATIVE_UINT_LEAST16();
+    public static final long H5T_NATIVE_UINT_LEAST32 = H5T_NATIVE_UINT_LEAST32();
+    public static final long H5T_NATIVE_UINT_LEAST64 = H5T_NATIVE_UINT_LEAST64();
+    public static final long H5T_NATIVE_UINT_LEAST8 = H5T_NATIVE_UINT_LEAST8();
+    public static final long H5T_NATIVE_UINT16 = H5T_NATIVE_UINT16();
+    public static final long H5T_NATIVE_UINT32 = H5T_NATIVE_UINT32();
+    public static final long H5T_NATIVE_UINT64 = H5T_NATIVE_UINT64();
+    public static final long H5T_NATIVE_UINT8 = H5T_NATIVE_UINT8();
+    public static final long H5T_NATIVE_ULLONG = H5T_NATIVE_ULLONG();
+    public static final long H5T_NATIVE_ULONG = H5T_NATIVE_ULONG();
+    public static final long H5T_NATIVE_USHORT = H5T_NATIVE_USHORT();
     public static final int H5T_NCLASSES = H5T_NCLASSES();
     public static final int H5T_NO_CLASS = H5T_NO_CLASS();
     public static final int H5T_NORM_ERROR = H5T_NORM_ERROR();
@@ -526,32 +526,32 @@ public class HDF5Constants {
     public static final int H5T_SGN_2 = H5T_SGN_2();
     public static final int H5T_SGN_ERROR = H5T_SGN_ERROR();
     public static final int H5T_SGN_NONE = H5T_SGN_NONE();
-    public static final int H5T_STD_B16BE = H5T_STD_B16BE();
-    public static final int H5T_STD_B16LE = H5T_STD_B16LE();
-    public static final int H5T_STD_B32BE = H5T_STD_B32BE();
-    public static final int H5T_STD_B32LE = H5T_STD_B32LE();
-    public static final int H5T_STD_B64BE = H5T_STD_B64BE();
-    public static final int H5T_STD_B64LE = H5T_STD_B64LE();
-    public static final int H5T_STD_B8BE = H5T_STD_B8BE();
-    public static final int H5T_STD_B8LE = H5T_STD_B8LE();
-    public static final int H5T_STD_I16BE = H5T_STD_I16BE();
-    public static final int H5T_STD_I16LE = H5T_STD_I16LE();
-    public static final int H5T_STD_I32BE = H5T_STD_I32BE();
-    public static final int H5T_STD_I32LE = H5T_STD_I32LE();
-    public static final int H5T_STD_I64BE = H5T_STD_I64BE();
-    public static final int H5T_STD_I64LE = H5T_STD_I64LE();
-    public static final int H5T_STD_I8BE = H5T_STD_I8BE();
-    public static final int H5T_STD_I8LE = H5T_STD_I8LE();
-    public static final int H5T_STD_REF_DSETREG = H5T_STD_REF_DSETREG();
-    public static final int H5T_STD_REF_OBJ = H5T_STD_REF_OBJ();
-    public static final int H5T_STD_U16BE = H5T_STD_U16BE();
-    public static final int H5T_STD_U16LE = H5T_STD_U16LE();
-    public static final int H5T_STD_U32BE = H5T_STD_U32BE();
-    public static final int H5T_STD_U32LE = H5T_STD_U32LE();
-    public static final int H5T_STD_U64BE = H5T_STD_U64BE();
-    public static final int H5T_STD_U64LE = H5T_STD_U64LE();
-    public static final int H5T_STD_U8BE = H5T_STD_U8BE();
-    public static final int H5T_STD_U8LE = H5T_STD_U8LE();
+    public static final long H5T_STD_B16BE = H5T_STD_B16BE();
+    public static final long H5T_STD_B16LE = H5T_STD_B16LE();
+    public static final long H5T_STD_B32BE = H5T_STD_B32BE();
+    public static final long H5T_STD_B32LE = H5T_STD_B32LE();
+    public static final long H5T_STD_B64BE = H5T_STD_B64BE();
+    public static final long H5T_STD_B64LE = H5T_STD_B64LE();
+    public static final long H5T_STD_B8BE = H5T_STD_B8BE();
+    public static final long H5T_STD_B8LE = H5T_STD_B8LE();
+    public static final long H5T_STD_I16BE = H5T_STD_I16BE();
+    public static final long H5T_STD_I16LE = H5T_STD_I16LE();
+    public static final long H5T_STD_I32BE = H5T_STD_I32BE();
+    public static final long H5T_STD_I32LE = H5T_STD_I32LE();
+    public static final long H5T_STD_I64BE = H5T_STD_I64BE();
+    public static final long H5T_STD_I64LE = H5T_STD_I64LE();
+    public static final long H5T_STD_I8BE = H5T_STD_I8BE();
+    public static final long H5T_STD_I8LE = H5T_STD_I8LE();
+    public static final long H5T_STD_REF_DSETREG = H5T_STD_REF_DSETREG();
+    public static final long H5T_STD_REF_OBJ = H5T_STD_REF_OBJ();
+    public static final long H5T_STD_U16BE = H5T_STD_U16BE();
+    public static final long H5T_STD_U16LE = H5T_STD_U16LE();
+    public static final long H5T_STD_U32BE = H5T_STD_U32BE();
+    public static final long H5T_STD_U32LE = H5T_STD_U32LE();
+    public static final long H5T_STD_U64BE = H5T_STD_U64BE();
+    public static final long H5T_STD_U64LE = H5T_STD_U64LE();
+    public static final long H5T_STD_U8BE = H5T_STD_U8BE();
+    public static final long H5T_STD_U8LE = H5T_STD_U8LE();
     public static final int H5T_STR_ERROR = H5T_STR_ERROR();
     public static final int H5T_STR_NULLPAD = H5T_STR_NULLPAD();
     public static final int H5T_STR_NULLTERM = H5T_STR_NULLTERM();
@@ -571,12 +571,12 @@ public class HDF5Constants {
     public static final int H5T_STR_SPACEPAD = H5T_STR_SPACEPAD();
     public static final int H5T_STRING = H5T_STRING();
     public static final int H5T_TIME = H5T_TIME();
-    public static final int H5T_UNIX_D32BE = H5T_UNIX_D32BE();
-    public static final int H5T_UNIX_D32LE = H5T_UNIX_D32LE();
-    public static final int H5T_UNIX_D64BE = H5T_UNIX_D64BE();
-    public static final int H5T_UNIX_D64LE = H5T_UNIX_D64LE();
-    public static final int H5T_VARIABLE = H5T_VARIABLE();
-    public static final int H5T_VLEN = H5T_VLEN();
+    public static final long H5T_UNIX_D32BE = H5T_UNIX_D32BE();
+    public static final long H5T_UNIX_D32LE = H5T_UNIX_D32LE();
+    public static final long H5T_UNIX_D64BE = H5T_UNIX_D64BE();
+    public static final long H5T_UNIX_D64LE = H5T_UNIX_D64LE();
+    public static final long H5T_VARIABLE = H5T_VARIABLE();
+    public static final long H5T_VLEN = H5T_VLEN();
     public static final int H5Z_CB_CONT = H5Z_CB_CONT();
     public static final int H5Z_CB_ERROR = H5Z_CB_ERROR();
     public static final int H5Z_CB_FAIL = H5Z_CB_FAIL();
@@ -725,209 +725,209 @@ public class HDF5Constants {
 
     private static native final int H5D_SPACE_STATUS_PART_ALLOCATED();
 
-    private static native final int H5E_ALIGNMENT();
+    private static native final long H5E_ALIGNMENT();
 
-    private static native final int H5E_ALREADYEXISTS();
+    private static native final long H5E_ALREADYEXISTS();
 
-    private static native final int H5E_ALREADYINIT();
+    private static native final long H5E_ALREADYINIT();
 
-    private static native final int H5E_ARGS();
+    private static native final long H5E_ARGS();
 
-    private static native final int H5E_ATOM();
+    private static native final long H5E_ATOM();
 
-    private static native final int H5E_ATTR();
+    private static native final long H5E_ATTR();
 
-    private static native final int H5E_BADATOM();
+    private static native final long H5E_BADATOM();
 
-    private static native final int H5E_BADFILE();
+    private static native final long H5E_BADFILE();
 
-    private static native final int H5E_BADGROUP();
+    private static native final long H5E_BADGROUP();
 
-    private static native final int H5E_BADMESG();
+    private static native final long H5E_BADMESG();
 
-    private static native final int H5E_BADRANGE();
+    private static native final long H5E_BADRANGE();
 
-    private static native final int H5E_BADSELECT();
+    private static native final long H5E_BADSELECT();
 
-    private static native final int H5E_BADSIZE();
+    private static native final long H5E_BADSIZE();
 
-    private static native final int H5E_BADTYPE();
+    private static native final long H5E_BADTYPE();
 
-    private static native final int H5E_BADVALUE();
+    private static native final long H5E_BADVALUE();
 
-    private static native final int H5E_BTREE();
+    private static native final long H5E_BTREE();
 
-    private static native final int H5E_CACHE();
+    private static native final long H5E_CACHE();
 
-    private static native final int H5E_CALLBACK();
+    private static native final long H5E_CALLBACK();
 
-    private static native final int H5E_CANAPPLY();
+    private static native final long H5E_CANAPPLY();
 
-    // private static native final int H5E_CANTALLOC();
-    private static native final int H5E_CANTCLIP();
+    // private static native final long H5E_CANTALLOC();
+    private static native final long H5E_CANTCLIP();
 
-    private static native final int H5E_CANTCLOSEFILE();
+    private static native final long H5E_CANTCLOSEFILE();
 
-    private static native final int H5E_CANTCONVERT();
+    private static native final long H5E_CANTCONVERT();
 
-    private static native final int H5E_CANTCOPY();
+    private static native final long H5E_CANTCOPY();
 
-    private static native final int H5E_CANTCOUNT();
+    private static native final long H5E_CANTCOUNT();
 
-    private static native final int H5E_CANTCREATE();
+    private static native final long H5E_CANTCREATE();
 
-    private static native final int H5E_CANTDEC();
+    private static native final long H5E_CANTDEC();
 
-    private static native final int H5E_CANTDECODE();
+    private static native final long H5E_CANTDECODE();
 
-    private static native final int H5E_CANTDELETE();
+    private static native final long H5E_CANTDELETE();
 
-    private static native final int H5E_CANTENCODE();
+    private static native final long H5E_CANTENCODE();
 
-    private static native final int H5E_CANTFLUSH();
+    private static native final long H5E_CANTFLUSH();
 
-    private static native final int H5E_CANTFREE();
+    private static native final long H5E_CANTFREE();
 
-    private static native final int H5E_CANTGET();
+    private static native final long H5E_CANTGET();
 
-    private static native final int H5E_CANTINC();
+    private static native final long H5E_CANTINC();
 
-    private static native final int H5E_CANTINIT();
+    private static native final long H5E_CANTINIT();
 
-    private static native final int H5E_CANTINSERT();
+    private static native final long H5E_CANTINSERT();
 
-    private static native final int H5E_CANTLIST();
+    private static native final long H5E_CANTLIST();
 
-    private static native final int H5E_CANTLOAD();
+    private static native final long H5E_CANTLOAD();
 
-    private static native final int H5E_CANTLOCK();
+    private static native final long H5E_CANTLOCK();
 
-    private static native final int H5E_CANTNEXT();
+    private static native final long H5E_CANTNEXT();
 
-    private static native final int H5E_CANTOPENFILE();
+    private static native final long H5E_CANTOPENFILE();
 
-    private static native final int H5E_CANTOPENOBJ();
+    private static native final long H5E_CANTOPENOBJ();
 
-    // private static native final int H5E_CANTRECV();
-    private static native final int H5E_CANTREGISTER();
+    // private static native final long H5E_CANTRECV();
+    private static native final long H5E_CANTREGISTER();
 
-    private static native final int H5E_CANTRELEASE();
+    private static native final long H5E_CANTRELEASE();
 
-    private static native final int H5E_CANTSELECT();
+    private static native final long H5E_CANTSELECT();
 
-    private static native final int H5E_CANTSET();
+    private static native final long H5E_CANTSET();
 
-    private static native final int H5E_CANTSPLIT();
+    private static native final long H5E_CANTSPLIT();
 
-    private static native final int H5E_CANTUNLOCK();
+    private static native final long H5E_CANTUNLOCK();
 
-    private static native final int H5E_CLOSEERROR();
+    private static native final long H5E_CLOSEERROR();
 
-    private static native final int H5E_COMPLEN();
+    private static native final long H5E_COMPLEN();
 
-    private static native final int H5E_DATASET();
+    private static native final long H5E_DATASET();
 
-    private static native final int H5E_DATASPACE();
+    private static native final long H5E_DATASPACE();
 
-    private static native final int H5E_DATATYPE();
+    private static native final long H5E_DATATYPE();
 
-    private static native final int H5E_DEFAULT();
+    private static native final long H5E_DEFAULT();
 
-    private static native final int H5E_DUPCLASS();
+    private static native final long H5E_DUPCLASS();
 
-    private static native final int H5E_EFL();
+    private static native final long H5E_EFL();
 
-    private static native final int H5E_EXISTS();
+    private static native final long H5E_EXISTS();
 
-    private static native final int H5E_FCNTL();
+    private static native final long H5E_FCNTL();
 
-    private static native final int H5E_FILE();
+    private static native final long H5E_FILE();
 
-    private static native final int H5E_FILEEXISTS();
+    private static native final long H5E_FILEEXISTS();
 
-    private static native final int H5E_FILEOPEN();
+    private static native final long H5E_FILEOPEN();
 
-    private static native final int H5E_FUNC();
+    private static native final long H5E_FUNC();
 
-    private static native final int H5E_HEAP();
+    private static native final long H5E_HEAP();
 
-    private static native final int H5E_INTERNAL();
+    private static native final long H5E_INTERNAL();
 
-    private static native final int H5E_IO();
+    private static native final long H5E_IO();
 
-    private static native final int H5E_LINK();
+    private static native final long H5E_LINK();
 
-    private static native final int H5E_LINKCOUNT();
+    private static native final long H5E_LINKCOUNT();
 
     private static native final int H5E_MAJOR();
 
     private static native final int H5E_MINOR();
 
-    private static native final int H5E_MOUNT();
+    private static native final long H5E_MOUNT();
 
-    private static native final int H5E_MPI();
+    private static native final long H5E_MPI();
 
-    private static native final int H5E_MPIERRSTR();
+    private static native final long H5E_MPIERRSTR();
 
-    private static native final int H5E_NOFILTER();
+    private static native final long H5E_NOFILTER();
 
-    private static native final int H5E_NOIDS();
+    private static native final long H5E_NOIDS();
 
-    private static native final int H5E_NONE_MAJOR();
+    private static native final long H5E_NONE_MAJOR();
 
-    private static native final int H5E_NONE_MINOR();
+    private static native final long H5E_NONE_MINOR();
 
-    private static native final int H5E_NOSPACE();
+    private static native final long H5E_NOSPACE();
 
-    private static native final int H5E_NOTCACHED();
+    private static native final long H5E_NOTCACHED();
 
-    private static native final int H5E_NOTFOUND();
+    private static native final long H5E_NOTFOUND();
 
-    private static native final int H5E_NOTHDF5();
+    private static native final long H5E_NOTHDF5();
 
-    private static native final int H5E_OHDR();
+    private static native final long H5E_OHDR();
 
-    private static native final int H5E_OVERFLOW();
+    private static native final long H5E_OVERFLOW();
 
-    private static native final int H5E_PLINE();
+    private static native final long H5E_PLINE();
 
-    private static native final int H5E_PLIST();
+    private static native final long H5E_PLIST();
 
-    private static native final int H5E_PROTECT();
+    private static native final long H5E_PROTECT();
 
-    private static native final int H5E_READERROR();
+    private static native final long H5E_READERROR();
 
-    private static native final int H5E_REFERENCE();
+    private static native final long H5E_REFERENCE();
 
-    private static native final int H5E_RESOURCE();
+    private static native final long H5E_RESOURCE();
 
-    private static native final int H5E_RS();
+    private static native final long H5E_RS();
 
-    private static native final int H5E_SEEKERROR();
+    private static native final long H5E_SEEKERROR();
 
-    private static native final int H5E_SETLOCAL();
+    private static native final long H5E_SETLOCAL();
 
-    private static native final int H5E_STORAGE();
+    private static native final long H5E_STORAGE();
 
-    private static native final int H5E_SYM();
+    private static native final long H5E_SYM();
 
-    private static native final int H5E_TRUNCATED();
+    private static native final long H5E_TRUNCATED();
 
-    private static native final int H5E_TST();
+    private static native final long H5E_TST();
 
-    private static native final int H5E_UNINITIALIZED();
+    private static native final long H5E_UNINITIALIZED();
 
-    private static native final int H5E_UNSUPPORTED();
+    private static native final long H5E_UNSUPPORTED();
 
-    private static native final int H5E_VERSION();
+    private static native final long H5E_VERSION();
 
-    private static native final int H5E_VFL();
+    private static native final long H5E_VFL();
 
-    private static native final int H5E_WALK_DOWNWARD();
+    private static native final long H5E_WALK_DOWNWARD();
 
-    private static native final int H5E_WALK_UPWARD();
+    private static native final long H5E_WALK_UPWARD();
 
-    private static native final int H5E_WRITEERROR();
+    private static native final long H5E_WRITEERROR();
 
     private static native final int H5F_ACC_CREAT();
 
@@ -1169,75 +1169,75 @@ public class HDF5Constants {
     
     private static native final int H5O_TYPE_NTYPES();
     
-    private static native final int H5P_ROOT();
+    private static native final long H5P_ROOT();
     
-    private static native final int H5P_OBJECT_CREATE();
+    private static native final long H5P_OBJECT_CREATE();
     
-    private static native final int H5P_FILE_CREATE();
+    private static native final long H5P_FILE_CREATE();
     
-    private static native final int H5P_FILE_ACCESS();
+    private static native final long H5P_FILE_ACCESS();
     
-    private static native final int H5P_DATASET_CREATE();
+    private static native final long H5P_DATASET_CREATE();
         
-    private static native final int H5P_DATASET_ACCESS();
+    private static native final long H5P_DATASET_ACCESS();
         
-    private static native final int H5P_DATASET_XFER();
+    private static native final long H5P_DATASET_XFER();
         
-    private static native final int H5P_FILE_MOUNT();
+    private static native final long H5P_FILE_MOUNT();
         
-    private static native final int H5P_GROUP_CREATE();
+    private static native final long H5P_GROUP_CREATE();
         
-    private static native final int H5P_GROUP_ACCESS();
+    private static native final long H5P_GROUP_ACCESS();
         
-    private static native final int H5P_DATATYPE_CREATE();
+    private static native final long H5P_DATATYPE_CREATE();
         
-    private static native final int H5P_DATATYPE_ACCESS();
+    private static native final long H5P_DATATYPE_ACCESS();
         
-    private static native final int H5P_STRING_CREATE();
+    private static native final long H5P_STRING_CREATE();
         
-    private static native final int H5P_ATTRIBUTE_CREATE();
+    private static native final long H5P_ATTRIBUTE_CREATE();
         
-    private static native final int H5P_OBJECT_COPY();
+    private static native final long H5P_OBJECT_COPY();
         
-    private static native final int H5P_LINK_CREATE();
+    private static native final long H5P_LINK_CREATE();
         
-    private static native final int H5P_LINK_ACCESS();
+    private static native final long H5P_LINK_ACCESS();
         
-    private static native final int H5P_FILE_CREATE_DEFAULT();
+    private static native final long H5P_FILE_CREATE_DEFAULT();
         
-    private static native final int H5P_FILE_ACCESS_DEFAULT();
+    private static native final long H5P_FILE_ACCESS_DEFAULT();
         
-    private static native final int H5P_DATASET_CREATE_DEFAULT();
+    private static native final long H5P_DATASET_CREATE_DEFAULT();
         
-    private static native final int H5P_DATASET_ACCESS_DEFAULT();
+    private static native final long H5P_DATASET_ACCESS_DEFAULT();
         
-    private static native final int H5P_DATASET_XFER_DEFAULT();
+    private static native final long H5P_DATASET_XFER_DEFAULT();
         
-    private static native final int H5P_FILE_MOUNT_DEFAULT();
+    private static native final long H5P_FILE_MOUNT_DEFAULT();
         
-    private static native final int H5P_GROUP_CREATE_DEFAULT();
+    private static native final long H5P_GROUP_CREATE_DEFAULT();
         
-    private static native final int H5P_GROUP_ACCESS_DEFAULT();
+    private static native final long H5P_GROUP_ACCESS_DEFAULT();
         
-    private static native final int H5P_DATATYPE_CREATE_DEFAULT();
+    private static native final long H5P_DATATYPE_CREATE_DEFAULT();
         
-    private static native final int H5P_DATATYPE_ACCESS_DEFAULT();
+    private static native final long H5P_DATATYPE_ACCESS_DEFAULT();
         
-    private static native final int H5P_ATTRIBUTE_CREATE_DEFAULT();
+    private static native final long H5P_ATTRIBUTE_CREATE_DEFAULT();
         
-    private static native final int H5P_OBJECT_COPY_DEFAULT();
+    private static native final long H5P_OBJECT_COPY_DEFAULT();
         
-    private static native final int H5P_LINK_CREATE_DEFAULT();
+    private static native final long H5P_LINK_CREATE_DEFAULT();
         
-    private static native final int H5P_LINK_ACCESS_DEFAULT();
+    private static native final long H5P_LINK_ACCESS_DEFAULT();
     
     private static native final int H5P_CRT_ORDER_TRACKED();
     
     private static native final int H5P_CRT_ORDER_INDEXED();
 
-    private static native final int H5P_DEFAULT();
+    private static native final long H5P_DEFAULT();
 
-    private static native final int H5P_NO_CLASS();
+    private static native final long H5P_NO_CLASS();
 
     private static native final int H5R_BADTYPE();
 
@@ -1295,33 +1295,33 @@ public class HDF5Constants {
 
     private static native final int H5S_UNLIMITED();
 
-    private static native final int H5T_ALPHA_B16();
+    private static native final long H5T_ALPHA_B16();
 
-    private static native final int H5T_ALPHA_B32();
+    private static native final long H5T_ALPHA_B32();
 
-    private static native final int H5T_ALPHA_B64();
+    private static native final long H5T_ALPHA_B64();
 
-    private static native final int H5T_ALPHA_B8();
+    private static native final long H5T_ALPHA_B8();
 
-    private static native final int H5T_ALPHA_F32();
+    private static native final long H5T_ALPHA_F32();
 
-    private static native final int H5T_ALPHA_F64();
+    private static native final long H5T_ALPHA_F64();
 
-    private static native final int H5T_ALPHA_I16();
+    private static native final long H5T_ALPHA_I16();
 
-    private static native final int H5T_ALPHA_I32();
+    private static native final long H5T_ALPHA_I32();
 
-    private static native final int H5T_ALPHA_I64();
+    private static native final long H5T_ALPHA_I64();
 
-    private static native final int H5T_ALPHA_I8();
+    private static native final long H5T_ALPHA_I8();
 
-    private static native final int H5T_ALPHA_U16();
+    private static native final long H5T_ALPHA_U16();
 
-    private static native final int H5T_ALPHA_U32();
+    private static native final long H5T_ALPHA_U32();
 
-    private static native final int H5T_ALPHA_U64();
+    private static native final long H5T_ALPHA_U64();
 
-    private static native final int H5T_ALPHA_U8();
+    private static native final long H5T_ALPHA_U8();
 
     private static native final int H5T_ARRAY();
 
@@ -1331,7 +1331,7 @@ public class HDF5Constants {
 
     private static native final int H5T_BKG_YES();
 
-    private static native final int H5T_C_S1();
+    private static native final long H5T_C_S1();
 
     private static native final int H5T_COMPOUND();
 
@@ -1385,169 +1385,169 @@ public class HDF5Constants {
 
     private static native final int H5T_FLOAT();
 
-    private static native final int H5T_FORTRAN_S1();
+    private static native final long H5T_FORTRAN_S1();
 
-    private static native final int H5T_IEEE_F32BE();
+    private static native final long H5T_IEEE_F32BE();
 
-    private static native final int H5T_IEEE_F32LE();
+    private static native final long H5T_IEEE_F32LE();
 
-    private static native final int H5T_IEEE_F64BE();
+    private static native final long H5T_IEEE_F64BE();
 
-    private static native final int H5T_IEEE_F64LE();
+    private static native final long H5T_IEEE_F64LE();
 
     private static native final int H5T_INTEGER();
 
-    private static native final int H5T_INTEL_B16();
+    private static native final long H5T_INTEL_B16();
 
-    private static native final int H5T_INTEL_B32();
+    private static native final long H5T_INTEL_B32();
 
-    private static native final int H5T_INTEL_B64();
+    private static native final long H5T_INTEL_B64();
 
-    private static native final int H5T_INTEL_B8();
+    private static native final long H5T_INTEL_B8();
 
-    private static native final int H5T_INTEL_F32();
+    private static native final long H5T_INTEL_F32();
 
-    private static native final int H5T_INTEL_F64();
+    private static native final long H5T_INTEL_F64();
 
-    private static native final int H5T_INTEL_I16();
+    private static native final long H5T_INTEL_I16();
 
-    private static native final int H5T_INTEL_I32();
+    private static native final long H5T_INTEL_I32();
 
-    private static native final int H5T_INTEL_I64();
+    private static native final long H5T_INTEL_I64();
 
-    private static native final int H5T_INTEL_I8();
+    private static native final long H5T_INTEL_I8();
 
-    private static native final int H5T_INTEL_U16();
+    private static native final long H5T_INTEL_U16();
 
-    private static native final int H5T_INTEL_U32();
+    private static native final long H5T_INTEL_U32();
 
-    private static native final int H5T_INTEL_U64();
+    private static native final long H5T_INTEL_U64();
 
-    private static native final int H5T_INTEL_U8();
+    private static native final long H5T_INTEL_U8();
 
-    private static native final int H5T_MIPS_B16();
+    private static native final long H5T_MIPS_B16();
 
-    private static native final int H5T_MIPS_B32();
+    private static native final long H5T_MIPS_B32();
 
-    private static native final int H5T_MIPS_B64();
+    private static native final long H5T_MIPS_B64();
 
-    private static native final int H5T_MIPS_B8();
+    private static native final long H5T_MIPS_B8();
 
-    private static native final int H5T_MIPS_F32();
+    private static native final long H5T_MIPS_F32();
 
-    private static native final int H5T_MIPS_F64();
+    private static native final long H5T_MIPS_F64();
 
-    private static native final int H5T_MIPS_I16();
+    private static native final long H5T_MIPS_I16();
 
-    private static native final int H5T_MIPS_I32();
+    private static native final long H5T_MIPS_I32();
 
-    private static native final int H5T_MIPS_I64();
+    private static native final long H5T_MIPS_I64();
 
-    private static native final int H5T_MIPS_I8();
+    private static native final long H5T_MIPS_I8();
 
-    private static native final int H5T_MIPS_U16();
+    private static native final long H5T_MIPS_U16();
 
-    private static native final int H5T_MIPS_U32();
+    private static native final long H5T_MIPS_U32();
 
-    private static native final int H5T_MIPS_U64();
+    private static native final long H5T_MIPS_U64();
 
-    private static native final int H5T_MIPS_U8();
+    private static native final long H5T_MIPS_U8();
 
-    private static native final int H5T_NATIVE_B16();
+    private static native final long H5T_NATIVE_B16();
 
-    private static native final int H5T_NATIVE_B32();
+    private static native final long H5T_NATIVE_B32();
 
-    private static native final int H5T_NATIVE_B64();
+    private static native final long H5T_NATIVE_B64();
 
-    private static native final int H5T_NATIVE_B8();
+    private static native final long H5T_NATIVE_B8();
 
-    private static native final int H5T_NATIVE_CHAR();
+    private static native final long H5T_NATIVE_CHAR();
 
-    private static native final int H5T_NATIVE_DOUBLE();
+    private static native final long H5T_NATIVE_DOUBLE();
 
-    private static native final int H5T_NATIVE_FLOAT();
+    private static native final long H5T_NATIVE_FLOAT();
 
-    private static native final int H5T_NATIVE_HADDR();
+    private static native final long H5T_NATIVE_HADDR();
 
-    private static native final int H5T_NATIVE_HBOOL();
+    private static native final long H5T_NATIVE_HBOOL();
 
-    private static native final int H5T_NATIVE_HERR();
+    private static native final long H5T_NATIVE_HERR();
 
-    private static native final int H5T_NATIVE_HSIZE();
+    private static native final long H5T_NATIVE_HSIZE();
 
-    private static native final int H5T_NATIVE_HSSIZE();
+    private static native final long H5T_NATIVE_HSSIZE();
 
-    private static native final int H5T_NATIVE_INT();
+    private static native final long H5T_NATIVE_INT();
 
-    private static native final int H5T_NATIVE_INT_FAST16();
+    private static native final long H5T_NATIVE_INT_FAST16();
 
-    private static native final int H5T_NATIVE_INT_FAST32();
+    private static native final long H5T_NATIVE_INT_FAST32();
 
-    private static native final int H5T_NATIVE_INT_FAST64();
+    private static native final long H5T_NATIVE_INT_FAST64();
 
-    private static native final int H5T_NATIVE_INT_FAST8();
+    private static native final long H5T_NATIVE_INT_FAST8();
 
-    private static native final int H5T_NATIVE_INT_LEAST16();
+    private static native final long H5T_NATIVE_INT_LEAST16();
 
-    private static native final int H5T_NATIVE_INT_LEAST32();
+    private static native final long H5T_NATIVE_INT_LEAST32();
 
-    private static native final int H5T_NATIVE_INT_LEAST64();
+    private static native final long H5T_NATIVE_INT_LEAST64();
 
-    private static native final int H5T_NATIVE_INT_LEAST8();
+    private static native final long H5T_NATIVE_INT_LEAST8();
 
-    private static native final int H5T_NATIVE_INT16();
+    private static native final long H5T_NATIVE_INT16();
 
-    private static native final int H5T_NATIVE_INT32();
+    private static native final long H5T_NATIVE_INT32();
 
-    private static native final int H5T_NATIVE_INT64();
+    private static native final long H5T_NATIVE_INT64();
 
-    private static native final int H5T_NATIVE_INT8();
+    private static native final long H5T_NATIVE_INT8();
 
-    private static native final int H5T_NATIVE_LDOUBLE();
+    private static native final long H5T_NATIVE_LDOUBLE();
 
-    private static native final int H5T_NATIVE_LLONG();
+    private static native final long H5T_NATIVE_LLONG();
 
-    private static native final int H5T_NATIVE_LONG();
+    private static native final long H5T_NATIVE_LONG();
 
-    private static native final int H5T_NATIVE_OPAQUE();
+    private static native final long H5T_NATIVE_OPAQUE();
 
-    private static native final int H5T_NATIVE_SCHAR();
+    private static native final long H5T_NATIVE_SCHAR();
 
-    private static native final int H5T_NATIVE_SHORT();
+    private static native final long H5T_NATIVE_SHORT();
 
-    private static native final int H5T_NATIVE_UCHAR();
+    private static native final long H5T_NATIVE_UCHAR();
 
-    private static native final int H5T_NATIVE_UINT();
+    private static native final long H5T_NATIVE_UINT();
 
-    private static native final int H5T_NATIVE_UINT_FAST16();
+    private static native final long H5T_NATIVE_UINT_FAST16();
 
-    private static native final int H5T_NATIVE_UINT_FAST32();
+    private static native final long H5T_NATIVE_UINT_FAST32();
 
-    private static native final int H5T_NATIVE_UINT_FAST64();
+    private static native final long H5T_NATIVE_UINT_FAST64();
 
-    private static native final int H5T_NATIVE_UINT_FAST8();
+    private static native final long H5T_NATIVE_UINT_FAST8();
 
-    private static native final int H5T_NATIVE_UINT_LEAST16();
+    private static native final long H5T_NATIVE_UINT_LEAST16();
 
-    private static native final int H5T_NATIVE_UINT_LEAST32();
+    private static native final long H5T_NATIVE_UINT_LEAST32();
 
-    private static native final int H5T_NATIVE_UINT_LEAST64();
+    private static native final long H5T_NATIVE_UINT_LEAST64();
 
-    private static native final int H5T_NATIVE_UINT_LEAST8();
+    private static native final long H5T_NATIVE_UINT_LEAST8();
 
-    private static native final int H5T_NATIVE_UINT16();
+    private static native final long H5T_NATIVE_UINT16();
 
-    private static native final int H5T_NATIVE_UINT32();
+    private static native final long H5T_NATIVE_UINT32();
 
-    private static native final int H5T_NATIVE_UINT64();
+    private static native final long H5T_NATIVE_UINT64();
 
-    private static native final int H5T_NATIVE_UINT8();
+    private static native final long H5T_NATIVE_UINT8();
 
-    private static native final int H5T_NATIVE_ULLONG();
+    private static native final long H5T_NATIVE_ULLONG();
 
-    private static native final int H5T_NATIVE_ULONG();
+    private static native final long H5T_NATIVE_ULONG();
 
-    private static native final int H5T_NATIVE_USHORT();
+    private static native final long H5T_NATIVE_USHORT();
 
     private static native final int H5T_NCLASSES();
 
@@ -1601,57 +1601,57 @@ public class HDF5Constants {
 
     private static native final int H5T_SGN_NONE();
 
-    private static native final int H5T_STD_B16BE();
+    private static native final long H5T_STD_B16BE();
 
-    private static native final int H5T_STD_B16LE();
+    private static native final long H5T_STD_B16LE();
 
-    private static native final int H5T_STD_B32BE();
+    private static native final long H5T_STD_B32BE();
 
-    private static native final int H5T_STD_B32LE();
+    private static native final long H5T_STD_B32LE();
 
-    private static native final int H5T_STD_B64BE();
+    private static native final long H5T_STD_B64BE();
 
-    private static native final int H5T_STD_B64LE();
+    private static native final long H5T_STD_B64LE();
 
-    private static native final int H5T_STD_B8BE();
+    private static native final long H5T_STD_B8BE();
 
-    private static native final int H5T_STD_B8LE();
+    private static native final long H5T_STD_B8LE();
 
-    private static native final int H5T_STD_I16BE();
+    private static native final long H5T_STD_I16BE();
 
-    private static native final int H5T_STD_I16LE();
+    private static native final long H5T_STD_I16LE();
 
-    private static native final int H5T_STD_I32BE();
+    private static native final long H5T_STD_I32BE();
 
-    private static native final int H5T_STD_I32LE();
+    private static native final long H5T_STD_I32LE();
 
-    private static native final int H5T_STD_I64BE();
+    private static native final long H5T_STD_I64BE();
 
-    private static native final int H5T_STD_I64LE();
+    private static native final long H5T_STD_I64LE();
 
-    private static native final int H5T_STD_I8BE();
+    private static native final long H5T_STD_I8BE();
 
-    private static native final int H5T_STD_I8LE();
+    private static native final long H5T_STD_I8LE();
 
-    private static native final int H5T_STD_REF_DSETREG();
+    private static native final long H5T_STD_REF_DSETREG();
 
-    private static native final int H5T_STD_REF_OBJ();
+    private static native final long H5T_STD_REF_OBJ();
 
-    private static native final int H5T_STD_U16BE();
+    private static native final long H5T_STD_U16BE();
 
-    private static native final int H5T_STD_U16LE();
+    private static native final long H5T_STD_U16LE();
 
-    private static native final int H5T_STD_U32BE();
+    private static native final long H5T_STD_U32BE();
 
-    private static native final int H5T_STD_U32LE();
+    private static native final long H5T_STD_U32LE();
 
-    private static native final int H5T_STD_U64BE();
+    private static native final long H5T_STD_U64BE();
 
-    private static native final int H5T_STD_U64LE();
+    private static native final long H5T_STD_U64LE();
 
-    private static native final int H5T_STD_U8BE();
+    private static native final long H5T_STD_U8BE();
 
-    private static native final int H5T_STD_U8LE();
+    private static native final long H5T_STD_U8LE();
 
     private static native final int H5T_STR_ERROR();
 
@@ -1691,17 +1691,17 @@ public class HDF5Constants {
 
     private static native final int H5T_TIME();
 
-    private static native final int H5T_UNIX_D32BE();
+    private static native final long H5T_UNIX_D32BE();
 
-    private static native final int H5T_UNIX_D32LE();
+    private static native final long H5T_UNIX_D32LE();
 
-    private static native final int H5T_UNIX_D64BE();
+    private static native final long H5T_UNIX_D64BE();
 
-    private static native final int H5T_UNIX_D64LE();
+    private static native final long H5T_UNIX_D64LE();
 
-    private static native final int H5T_VARIABLE();
+    private static native final long H5T_VARIABLE();
 
-    private static native final int H5T_VLEN();
+    private static native final long H5T_VLEN();
 
     private static native final int H5Z_CB_CONT();
 

@@ -19,7 +19,7 @@ import org.junit.Test;
 
 public class TestH5Lbasic {
     private static final String H5_FILE = "test/hdf5lib/h5ex_g_iterate.hdf";
-    int H5fid = -1;
+    long H5fid = -1;
 
     @Before
     public void openH5file()
@@ -220,7 +220,7 @@ public class TestH5Lbasic {
         }
         H5L_iterate_t iter_data = new H5L_iter_data();
         class H5L_iter_callback implements H5L_iterate_cb {
-            public int callback(int group, String name, H5L_info_t info, H5L_iterate_t op_data) {
+            public int callback(long group, String name, H5L_info_t info, H5L_iterate_t op_data) {
                 idata id = new idata(name, info.type);
                 ((H5L_iter_data)op_data).iterdata.add(id);
                 return 0;
@@ -258,7 +258,7 @@ public class TestH5Lbasic {
         }
         H5L_iterate_t iter_data = new H5L_iter_data();
         class H5L_iter_callback implements H5L_iterate_cb {
-            public int callback(int group, String name, H5L_info_t info, H5L_iterate_t op_data) {
+            public int callback(long group, String name, H5L_info_t info, H5L_iterate_t op_data) {
                 idata id = new idata(name, info.type);
                 ((H5L_iter_data)op_data).iterdata.add(id);
                 return 0;
@@ -292,7 +292,7 @@ public class TestH5Lbasic {
         }
         H5L_iterate_t iter_data = new H5L_iter_data();
         class H5L_iter_callback implements H5L_iterate_cb {
-            public int callback(int group, String name, H5L_info_t info, H5L_iterate_t op_data) {
+            public int callback(long group, String name, H5L_info_t info, H5L_iterate_t op_data) {
                 idata id = new idata(name, info.type);
                 ((H5L_iter_data)op_data).iterdata.add(id);
                 return 0;
@@ -329,7 +329,7 @@ public class TestH5Lbasic {
         }
         H5L_iterate_t iter_data = new H5L_iter_data();
         class H5L_iter_callback implements H5L_iterate_cb {
-            public int callback(int group, String name, H5L_info_t info, H5L_iterate_t op_data) {
+            public int callback(long group, String name, H5L_info_t info, H5L_iterate_t op_data) {
                 idata id = new idata(name, info.type);
                 ((H5L_iter_data)op_data).iterdata.add(id);
                 return 0;

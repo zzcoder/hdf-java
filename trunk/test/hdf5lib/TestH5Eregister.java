@@ -36,7 +36,7 @@ public class TestH5Eregister {
 
     @Test
     public void testH5Eregister_class() {
-        int hdf_java_classid = -1;
+        long hdf_java_classid = -1;
         try {
             hdf_java_classid = H5.H5Eregister_class("HDF-Java-Error",
                     "hdf-java", "2.5");

@@ -50,10 +50,10 @@ extern "C" {
     /*
      * Class:     ncsa_hdf_hdf5lib_H5
      * Method:    _H5Oopen
-     * Signature: (ILjava/lang/String;I)I
+     * Signature: (JLjava/lang/String;J)J
      */
-    JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Oopen
-      (JNIEnv *env, jclass clss, jint loc_id, jstring name, jint access_plist_id)
+    JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Oopen
+      (JNIEnv *env, jclass clss, jlong loc_id, jstring name, jlong access_plist_id)
     {
         hid_t    status;
         char*    oName;
@@ -77,16 +77,16 @@ extern "C" {
         if (status < 0) {
             h5libraryError(env);
         }
-        return (jint)status;
+        return (jlong)status;
     }
 
     /*
      * Class:     ncsa_hdf_hdf5lib_H5
      * Method:    _H5Oclose
-     * Signature: (I)I
+     * Signature: (J)I
      */
     JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Oclose
-      (JNIEnv *env, jclass clss, jint object_id)
+      (JNIEnv *env, jclass clss, jlong object_id)
     {
         herr_t retVal =  H5Oclose((hid_t)object_id) ;
 
@@ -100,10 +100,10 @@ extern "C" {
     /*
      * Class:     ncsa_hdf_hdf5lib_H5
      * Method:    H5Ocopy
-     * Signature: (ILjava/lang/String;ILjava/lang/String;II)V
+     * Signature: (JLjava/lang/String;JLjava/lang/String;JJ)V
      */
     JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Ocopy
-      (JNIEnv *env, jclass clss, jint cur_loc_id, jstring cur_name, jint dst_loc_id, jstring dst_name, jint create_id, jint access_id)
+      (JNIEnv *env, jclass clss, jlong cur_loc_id, jstring cur_name, jlong dst_loc_id, jstring dst_name, jlong create_id, jlong access_id)
     {
         char    *lCurName;
         char    *lDstName;
@@ -150,10 +150,10 @@ extern "C" {
     /*
      * Class:     ncsa_hdf_hdf5lib_H5
      * Method:    H5Oget_info
-     * Signature: (I)Lncsa/hdf/hdf5lib/structs/H5O_info_t;
+     * Signature: (J)Lncsa/hdf/hdf5lib/structs/H5O_info_t;
      */
     JNIEXPORT jobject JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Oget_1info
-    (JNIEnv *env, jclass clss, jint loc_id)
+    (JNIEnv *env, jclass clss, jlong loc_id)
     {
         herr_t      status;
         H5O_info_t  infobuf;
@@ -247,10 +247,10 @@ extern "C" {
     /*
      * Class:     ncsa_hdf_hdf5lib_H5
      * Method:    H5Oget_info_by_name
-     * Signature: (ILjava/lang/String;IIJI)Lncsa/hdf/hdf5lib/structs/H5O_info_t;
+     * Signature: (JLjava/lang/String;J)Lncsa/hdf/hdf5lib/structs/H5O_info_t;
      */
     JNIEXPORT jobject JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Oget_1info_1by_1name
-    (JNIEnv *env, jclass clss, jint loc_id, jstring name, jint access_id)
+    (JNIEnv *env, jclass clss, jlong loc_id, jstring name, jlong access_id)
     {
         char       *lName;
         herr_t      status;
@@ -359,10 +359,10 @@ extern "C" {
     /*
      * Class:     ncsa_hdf_hdf5lib_H5
      * Method:    H5Oget_info_by_idx
-     * Signature: (ILjava/lang/String;IIJI)Lncsa/hdf/hdf5lib/structs/H5O_info_t;
+     * Signature: (JLjava/lang/String;IIJJ)Lncsa/hdf/hdf5lib/structs/H5O_info_t;
      */
     JNIEXPORT jobject JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Oget_1info_1by_1idx
-    (JNIEnv *env, jclass clss, jint loc_id, jstring name, jint index_field, jint order, jlong link_n, jint access_id)
+    (JNIEnv *env, jclass clss, jlong loc_id, jstring name, jint index_field, jint order, jlong link_n, jlong access_id)
     {
         char       *lName;
         herr_t      status;
@@ -471,10 +471,10 @@ extern "C" {
     /*
      * Class:     ncsa_hdf_hdf5lib_H5
      * Method:    H5Olink
-     * Signature: (IILjava/lang/String;II)V
+     * Signature: (JJLjava/lang/String;JJ)V
      */
     JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Olink
-      (JNIEnv *env, jclass clss, jint cur_loc_id, jint dst_loc_id, jstring dst_name, jint create_id, jint access_id)
+      (JNIEnv *env, jclass clss, jlong cur_loc_id, jlong dst_loc_id, jstring dst_name, jlong create_id, jlong access_id)
     {
         char    *lDstName;
         jboolean isCopy;
@@ -613,10 +613,10 @@ extern "C" {
     /*
      * Class:     ncsa_hdf_hdf5lib_H5
      * Method:    H5Ovisit
-     * Signature: (IIILjava/lang/Object;Ljava/lang/Object;)I
+     * Signature: (JIILjava/lang/Object;Ljava/lang/Object;)I
      */
     JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Ovisit
-      (JNIEnv *env, jclass clss, jint grp_id, jint idx_type, jint order,
+      (JNIEnv *env, jclass clss, jlong grp_id, jint idx_type, jint order,
               jobject callback_op, jobject op_data)
     {
         herr_t        status = -1;
@@ -646,11 +646,11 @@ extern "C" {
     /*
      * Class:     ncsa_hdf_hdf5lib_H5
      * Method:    H5Ovisit_by_name
-     * Signature: (ILjava/lang/String;IILjava/lang/Object;Ljava/lang/Object;I)I
+     * Signature: (JLjava/lang/String;IILjava/lang/Object;Ljava/lang/Object;J)I
      */
     JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Ovisit_1by_1name
-      (JNIEnv *env, jclass clss, jint grp_id, jstring name, jint idx_type, jint order,
-              jobject callback_op, jobject op_data, jint access_id)
+      (JNIEnv *env, jclass clss, jlong grp_id, jstring name, jint idx_type, jint order,
+              jobject callback_op, jobject op_data, jlong access_id)
     {
         jboolean      isCopy;
         char         *lName;
@@ -694,10 +694,10 @@ extern "C" {
     /*
      * Class:     ncsa_hdf_hdf5lib_H5
      * Method:    H5Oset_comment
-     * Signature: (ILjava/lang/String;)V
+     * Signature: (JLjava/lang/String;)V
      */
     JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Oset_1comment
-      (JNIEnv *env, jclass clss, jint loc_id, jstring comment)
+      (JNIEnv *env, jclass clss, jlong loc_id, jstring comment)
     {
         herr_t  status;
         char    *oComment;
@@ -726,10 +726,10 @@ extern "C" {
     /*
      * Class:     ncsa_hdf_hdf5lib_H5
      * Method:    H5Oset_comment_by_name
-     * Signature: (ILjava/lang/String;Ljava/lang/String;I)V
+     * Signature: (JLjava/lang/String;Ljava/lang/String;J)V
      */
     JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Oset_1comment_1by_1name
-      (JNIEnv *env, jclass clss, jint loc_id, jstring name, jstring comment, jint access_id)
+      (JNIEnv *env, jclass clss, jlong loc_id, jstring name, jstring comment, jlong access_id)
     {
         herr_t   status;
         char    *oName;
@@ -771,10 +771,10 @@ extern "C" {
     /*
      * Class:     ncsa_hdf_hdf5lib_H5
      * Method:    H5Oget_comment
-     * Signature: (I)Ljava/lang/String;
+     * Signature: (J)Ljava/lang/String;
      */
     JNIEXPORT jstring JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Oget_1comment
-      (JNIEnv *env, jclass clss, jint loc_id)
+      (JNIEnv *env, jclass clss, jlong loc_id)
     {
         char   *oComment;
         size_t  buf_size;
@@ -822,10 +822,10 @@ extern "C" {
     /*
      * Class:     ncsa_hdf_hdf5lib_H5
      * Method:    H5Oget_comment_by_name
-     * Signature: (ILjava/lang/String;I)Ljava/lang/String;
+     * Signature: (JLjava/lang/String;J)Ljava/lang/String;
      */
     JNIEXPORT jstring JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Oget_1comment_1by_1name
-      (JNIEnv *env, jclass clss, jint loc_id, jstring name, jint access_id)
+      (JNIEnv *env, jclass clss, jlong loc_id, jstring name, jlong access_id)
     {
         char    *oComment;
         char    *oName;

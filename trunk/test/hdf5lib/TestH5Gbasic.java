@@ -17,10 +17,10 @@ import org.junit.Test;
 
 public class TestH5Gbasic {
     private static final String H5_FILE = "test.h5";
-    int H5fid = -1;
+    long H5fid = -1;
 
-    private final int _createGroup(int fid, String name) {
-        int gid = -1;
+    private final long _createGroup(long fid, String name) {
+        long gid = -1;
         try {
             gid = H5.H5Gcreate(fid, name, HDF5Constants.H5P_DEFAULT,
                         HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
@@ -67,7 +67,7 @@ public class TestH5Gbasic {
 
     @Test(expected = NullPointerException.class)
     public void testH5Gcreate_null() throws Throwable {
-        int gid = -1;
+        long gid = -1;
 
         // it should fail because the group name is null
         gid = H5.H5Gcreate(H5fid, null, HDF5Constants.H5P_DEFAULT,
@@ -84,7 +84,7 @@ public class TestH5Gbasic {
 
     @Test
     public void testH5Gcreate() {
-        int gid = -1;
+        long gid = -1;
         try {
             gid = H5.H5Gcreate(H5fid, "/testH5Gcreate",
                         HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT,
@@ -101,7 +101,7 @@ public class TestH5Gbasic {
 
     @Test
     public void testH5Gclose() {
-        int gid = _createGroup(H5fid, "/testH5Gcreate");
+        long gid = _createGroup(H5fid, "/testH5Gcreate");
         assertTrue(gid > 0);
 
         try {
@@ -114,7 +114,7 @@ public class TestH5Gbasic {
 
     @Test(expected = HDF5LibraryException.class)
     public void testH5Gcreate_exists() throws Throwable {
-        int gid = _createGroup(H5fid, "/testH5Gcreate");
+        long gid = _createGroup(H5fid, "/testH5Gcreate");
         assertTrue(gid > 0);
 
         try {H5.H5Gclose(gid);} catch (Exception ex) {}
@@ -127,7 +127,7 @@ public class TestH5Gbasic {
 
     @Test
     public void testH5Gcreate_anon() {
-        int gid = -1;
+        long gid = -1;
         try {
             gid = H5.H5Gcreate_anon(H5fid, HDF5Constants.H5P_DEFAULT,
                     HDF5Constants.H5P_DEFAULT);
@@ -143,7 +143,7 @@ public class TestH5Gbasic {
 
     @Test(expected = NullPointerException.class)
     public void testH5Gopen_null() throws Throwable {
-        int gid = -1;
+        long gid = -1;
 
         gid = H5.H5Gopen(H5fid, null, HDF5Constants.H5P_DEFAULT);
 
@@ -157,7 +157,7 @@ public class TestH5Gbasic {
 
     @Test(expected = HDF5LibraryException.class)
     public void testH5Gopen_not_exists() throws Throwable {
-        int gid = -1;
+        long gid = -1;
 
          gid = H5.H5Gopen(H5fid, "Never_created", HDF5Constants.H5P_DEFAULT);
 
@@ -166,7 +166,7 @@ public class TestH5Gbasic {
 
     @Test
     public void testH5Gopen() {
-        int gid = _createGroup(H5fid, "/testH5Gcreate");
+        long gid = _createGroup(H5fid, "/testH5Gcreate");
         assertTrue(gid > 0);
 
         try {H5.H5Gclose(gid);} catch (Exception ex) {}
@@ -191,8 +191,8 @@ public class TestH5Gbasic {
 
     @Test
     public void testH5Gget_create_plist() {
-        int pid = -1;
-        int gid = _createGroup(H5fid, "/testH5Gcreate");
+        long pid = -1;
+        long gid = _createGroup(H5fid, "/testH5Gcreate");
         assertTrue(gid > 0);
 
         try {
@@ -218,7 +218,7 @@ public class TestH5Gbasic {
     @Test
     public void testH5Gget_info() {
         H5G_info_t info = null;
-        int gid = _createGroup(H5fid, "/testH5Gcreate");
+        long gid = _createGroup(H5fid, "/testH5Gcreate");
         assertTrue(gid > 0);
 
         try {
@@ -253,7 +253,7 @@ public class TestH5Gbasic {
     @Test
     public void testH5Gget_info_by_name() {
         H5G_info_t info = null;
-        int gid = _createGroup(H5fid, "/testH5Gcreate");
+        long gid = _createGroup(H5fid, "/testH5Gcreate");
         assertTrue(gid > 0);
 
         try {
@@ -273,7 +273,7 @@ public class TestH5Gbasic {
     @Test
     public void testH5Gget_info_by_name_fileid() {
         H5G_info_t info = null;
-        int gid = _createGroup(H5fid, "/testH5Gcreate");
+        long gid = _createGroup(H5fid, "/testH5Gcreate");
         assertTrue(gid > 0);
         try {H5.H5Gclose(gid);} catch (Exception ex) {}
 
@@ -293,27 +293,27 @@ public class TestH5Gbasic {
 
     @Test(expected = NullPointerException.class)
     public void testH5Gget_info_by_idx_null() throws Throwable {
-        H5.H5Gget_info_by_idx(-1, null, HDF5Constants.H5P_DEFAULT,
-                HDF5Constants.H5_ITER_INC, 1, HDF5Constants.H5P_DEFAULT);
+        H5.H5Gget_info_by_idx(-1, null, HDF5Constants.H5_INDEX_NAME,
+                HDF5Constants.H5_ITER_INC, 1L, HDF5Constants.H5P_DEFAULT);
     }
 
     @Test(expected = HDF5LibraryException.class)
     public void testH5Gget_info_by_idx_invalid() throws Throwable {
-        H5.H5Gget_info_by_idx(-1, "/testH5Gcreate", HDF5Constants.H5P_DEFAULT,
-                HDF5Constants.H5_ITER_INC, 1, HDF5Constants.H5P_DEFAULT);
+        H5.H5Gget_info_by_idx(-1, "/testH5Gcreate", HDF5Constants.H5_INDEX_NAME,
+                HDF5Constants.H5_ITER_INC, 1L, HDF5Constants.H5P_DEFAULT);
     }
 
     @Test(expected = HDF5LibraryException.class)
     public void testH5Gget_info_by_idx_not_exists() throws Throwable {
         H5.H5Gget_info_by_idx(H5fid, "/testH5Gcreate",
-                HDF5Constants.H5_INDEX_NAME, HDF5Constants.H5_ITER_INC, 1,
+                HDF5Constants.H5_INDEX_NAME, HDF5Constants.H5_ITER_INC, 1L,
                 HDF5Constants.H5P_DEFAULT);
     }
 
     @Test
     public void testH5Gget_info_by_idx() {
         H5G_info_t info = null;
-        int gid = _createGroup(H5fid, "/testH5Gcreate");
+        long gid = _createGroup(H5fid, "/testH5Gcreate");
         assertTrue(gid > 0);
 
         try {
@@ -332,7 +332,7 @@ public class TestH5Gbasic {
     @Test
     public void testH5Gget_info_by_idx_fileid() {
         H5G_info_t info = null;
-        int gid = _createGroup(H5fid, "/testH5Gcreate");
+        long gid = _createGroup(H5fid, "/testH5Gcreate");
         assertTrue(gid > 0);
         try {H5.H5Gclose(gid);} catch (Exception ex) {}
 

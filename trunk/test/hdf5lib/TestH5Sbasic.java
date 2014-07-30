@@ -37,7 +37,7 @@ public class TestH5Sbasic {
 
     @Test
     public void testH5Screate_scalar() {
-        int sid = -1;
+        long sid = -1;
         int class_type = -1;
         try {
             sid = H5.H5Screate(HDF5Constants.H5S_SCALAR);
@@ -56,7 +56,7 @@ public class TestH5Sbasic {
 
     @Test
     public void testH5Screate_null() {
-        int sid = -1;
+        long sid = -1;
         int class_type = -1;
         try {
             sid = H5.H5Screate(HDF5Constants.H5S_NULL);
@@ -106,7 +106,7 @@ public class TestH5Sbasic {
 
     @Test
     public void testH5Screate_simple() {
-        int sid = -1;
+        long sid = -1;
         int class_type = -1;
         int rank = 2;
         long dims[] = {5, 5};
@@ -129,7 +129,7 @@ public class TestH5Sbasic {
     
     @Test
     public void testH5Screate_simple_unlimted() {
-        int sid = -1;
+        long sid = -1;
         int class_type = -1;
         int rank = 2;
         long dims[] = {5, 5};
@@ -152,7 +152,7 @@ public class TestH5Sbasic {
     
     @Test
     public void testH5Screate_simple_unlimted_1d() {
-        int sid = -1;
+        long sid = -1;
         int class_type = -1;
         int rank = 1;
         long dims[] = {5};
@@ -175,7 +175,7 @@ public class TestH5Sbasic {
 
     @Test
     public void testH5Screate_simple_max_default() {
-        int sid = -1;
+        long sid = -1;
         int rank = 2;
         long dims[] = {5, 5};
         
@@ -194,7 +194,7 @@ public class TestH5Sbasic {
 
     @Test
     public void testH5Screate_simple_extent() {
-        int sid = -1;
+        long sid = -1;
         int rank = 2;
         long dims[] = {5, 5};
         long maxdims[] = {10, 10};

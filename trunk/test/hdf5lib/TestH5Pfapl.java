@@ -29,17 +29,17 @@ public class TestH5Pfapl {
     private static final int DIM_Y = 6;
     private static final int DIMF_X = 12;
     private static final int DIMF_Y = 18;
-    int H5fid = -1;
-    int H5dsid = -1;
-    int H5did = -1;
-    int H5Fdsid = -1;
-    int H5Fdid = -1;
+    long H5fid = -1;
+    long H5dsid = -1;
+    long H5did = -1;
+    long H5Fdsid = -1;
+    long H5Fdid = -1;
     long[] H5dims = { DIM_X, DIM_Y };
-    int fapl_id = -1;
-    int plapl_id = -1;
-    int dapl_id = -1;
-    int plist_id = -1;
-    int btplist_id = -1;
+    long fapl_id = -1;
+    long plapl_id = -1;
+    long dapl_id = -1;
+    long plist_id = -1;
+    long btplist_id = -1;
     long[] H5Fdims = { DIMF_X, DIMF_Y };
     double windchillF[][] =
     {{36.0, 31.0, 25.0, 19.0, 13.0, 7.0, 1.0, -5.0, -11.0, -16.0, -22.0, -28.0, -34.0, -40.0, -46.0, -52.0, -57.0, -63.0},
@@ -111,8 +111,8 @@ public class TestH5Pfapl {
         }
     }
 
-    private final int _createDataset(int fid, int dsid, String name, int dapl) {
-        int did = -1;
+    private final long _createDataset(long fid, long dsid, String name, long dapl) {
+        long did = -1;
         try {
             did = H5.H5Dcreate(fid, name, HDF5Constants.H5T_STD_I32BE, dsid,
                     HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, dapl);
@@ -162,7 +162,7 @@ public class TestH5Pfapl {
         }
     }
 
-    private final void _createH5File(int fapl) {
+    private final void _createH5File(long fapl) {
         try {
             H5fid = H5.H5Fcreate(H5_FILE, HDF5Constants.H5F_ACC_TRUNC,
                     HDF5Constants.H5P_DEFAULT, fapl);
@@ -185,7 +185,7 @@ public class TestH5Pfapl {
         }
     }
 
-    private final void _createH5familyFile(int fapl) {
+    private final void _createH5familyFile(long fapl) {
         try {
             H5fid = H5.H5Fcreate(H5_FAMILY_FILE+".h5", HDF5Constants.H5F_ACC_TRUNC,
                     HDF5Constants.H5P_DEFAULT, fapl);
@@ -208,7 +208,7 @@ public class TestH5Pfapl {
         }
     }
 
-    private final void _createH5multiFile(int fapl) {
+    private final void _createH5multiFile(long fapl) {
         try {
             H5fid = H5.H5Fcreate(H5_MULTI_FILE, HDF5Constants.H5F_ACC_TRUNC,
                     HDF5Constants.H5P_DEFAULT, fapl);
@@ -363,7 +363,7 @@ public class TestH5Pfapl {
     
     @Test
     public void testH5Pget_elink_fapl() {
-        int ret_val_id = -1;
+        long ret_val_id = -1;
         try {
             ret_val_id = H5.H5Pget_elink_fapl(plapl_id);
             assertTrue("H5Pget_elink_fapl", ret_val_id >= 0);
@@ -381,7 +381,7 @@ public class TestH5Pfapl {
     
     @Test
     public void testH5P_elink_fapl() {
-        int ret_val_id = -1;
+        long ret_val_id = -1;
         try {
             H5.H5Pset_elink_fapl(plapl_id, fapl_id );
             ret_val_id = H5.H5Pget_elink_fapl(plapl_id);
@@ -399,7 +399,7 @@ public class TestH5Pfapl {
     
     @Test
     public void testH5P_elink_file_cache_size() {
-        int elink_fapl_id = -1;
+        long elink_fapl_id = -1;
         int efc_size = 0;
         try {
             H5.H5Pset_elink_fapl(plapl_id, fapl_id );
@@ -759,7 +759,7 @@ public class TestH5Pfapl {
         }
         try {
             long[] member_size = {0};
-            int[] member_fapl = {-1};
+            long[] member_fapl = {-1};
             H5.H5Pget_fapl_family(fapl_id, member_size, member_fapl);
             assertTrue("H5Pget_fapl_family: member_size="+member_size[0], member_size[0]==1024);
             assertTrue("H5Pget_fapl_family: member_fapl ", H5.H5P_equal(member_fapl[0], HDF5Constants.H5P_FILE_ACCESS_DEFAULT));
@@ -864,7 +864,7 @@ public class TestH5Pfapl {
             return;
         
         int[] member_map = null;
-        int[] member_fapl = null;
+        long[] member_fapl = null;
         String[] member_name = null;
         long[] member_addr = null;
         
@@ -895,7 +895,7 @@ public class TestH5Pfapl {
             return;
         long HADDRMAX = HDF5Constants.H5FD_DEFAULT_HADDR_SIZE;
         int[] member_map = null;
-        int[] member_fapl = null;
+        long[] member_fapl = null;
         String[] member_name = null;
         long[] member_addr = null;
         
@@ -910,7 +910,7 @@ public class TestH5Pfapl {
         }
         try {
             member_map = new int[HDF5Constants.H5FD_MEM_NTYPES];
-            member_fapl = new int[HDF5Constants.H5FD_MEM_NTYPES];
+            member_fapl = new long[HDF5Constants.H5FD_MEM_NTYPES];
             member_name = new String[HDF5Constants.H5FD_MEM_NTYPES];
             member_addr = new long[HDF5Constants.H5FD_MEM_NTYPES];
             boolean relax = H5.H5Pget_fapl_multi(fapl_id, member_map, member_fapl, member_name, member_addr);
@@ -945,7 +945,7 @@ public class TestH5Pfapl {
         long HADDRMAX = HDF5Constants.H5FD_DEFAULT_HADDR_SIZE;
         
         int[] member_map = new int[HDF5Constants.H5FD_MEM_NTYPES];
-        int[] member_fapl = new int[HDF5Constants.H5FD_MEM_NTYPES];
+        long[] member_fapl = new long[HDF5Constants.H5FD_MEM_NTYPES];
         String[] member_name = new String[HDF5Constants.H5FD_MEM_NTYPES];
         long[] member_addr = new long[HDF5Constants.H5FD_MEM_NTYPES];
 
@@ -1068,7 +1068,7 @@ public class TestH5Pfapl {
         }
         try {
             int[] member_map = new int[HDF5Constants.H5FD_MEM_NTYPES];
-            int[] member_fapl = new int[HDF5Constants.H5FD_MEM_NTYPES];
+            long[] member_fapl = new long[HDF5Constants.H5FD_MEM_NTYPES];
             String[] member_name = new String[HDF5Constants.H5FD_MEM_NTYPES];
             long[] member_addr = new long[HDF5Constants.H5FD_MEM_NTYPES];
             boolean relax = H5.H5Pget_fapl_multi(fapl_id, member_map, member_fapl, member_name, member_addr);
@@ -1158,7 +1158,7 @@ public class TestH5Pfapl {
         long HADDRMAX = HDF5Constants.H5FD_DEFAULT_HADDR_SIZE;
 
         int[] member_map = new int[HDF5Constants.H5FD_MEM_NTYPES];
-        int[] member_fapl = new int[HDF5Constants.H5FD_MEM_NTYPES];
+        long[] member_fapl = new long[HDF5Constants.H5FD_MEM_NTYPES];
         String[] member_name = new String[HDF5Constants.H5FD_MEM_NTYPES];
         long[] member_addr = new long[HDF5Constants.H5FD_MEM_NTYPES];
 

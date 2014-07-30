@@ -17,7 +17,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class TestH5S {
-    int H5sid = -1;
+    long H5sid = -1;
     int H5rank = 2;
     long H5dims[] = {5, 5};
     long H5maxdims[] = {10, 10};
@@ -166,7 +166,7 @@ public class TestH5S {
 
     @Test
     public void testH5Scopy() {
-        int sid = -1;
+        long sid = -1;
         int read_rank = -1;
 
         try {
@@ -186,7 +186,7 @@ public class TestH5S {
 
     @Test
     public void testH5Sextent_copy() {
-        int sid = -1;
+        long sid = -1;
         int class_type = -1;
         
         try {
@@ -207,7 +207,7 @@ public class TestH5S {
 
     @Test
     public void testH5Sextent_equal() {
-        int sid = -1;
+        long sid = -1;
         boolean result = false;
         
         try {
@@ -237,8 +237,8 @@ public class TestH5S {
 
     @Test
     public void testH5Sencode_decode_null_dataspace() {
-        int sid = -1;
-        int decoded_sid = -1;
+        long sid = -1;
+        long decoded_sid = -1;
         byte[] null_sbuf = null;
         boolean result = false;
         
@@ -284,8 +284,8 @@ public class TestH5S {
 
     @Test
     public void testH5Sencode_decode_scalar_dataspace() {
-        int sid = -1;
-        int decoded_sid = -1;
+        long sid = -1;
+        long decoded_sid = -1;
         byte[] scalar_sbuf = null;
         boolean result = false;
         int iresult = -1;
@@ -455,7 +455,7 @@ public class TestH5S {
 
     @Test
     public void testH5Sget_select_hyper() {
-        int space1 = -1;
+        long space1 = -1;
         long start[] = {0,0}; 
         long stride[] = {1,1}; 
         long count[] = {1,1}; 
@@ -493,7 +493,7 @@ public class TestH5S {
 
     @Test
     public void testH5Sget_select_valid() {
-        int space1 = -1;
+        long space1 = -1;
         long start[] = {1,0}; 
         long stride[] = {1,1}; 
         long count[] = {2,3}; 

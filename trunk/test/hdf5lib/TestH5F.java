@@ -31,7 +31,7 @@ public class TestH5F {
             HDF5Constants.H5F_OBJ_DATASET, HDF5Constants.H5F_OBJ_GROUP,
             HDF5Constants.H5F_OBJ_DATATYPE, HDF5Constants.H5F_OBJ_ATTR,
             HDF5Constants.H5F_OBJ_ALL };
-    int H5fid = -1;
+    long H5fid = -1;
 
     private final void _deleteFile(String filename) {
         File file = new File(filename);
@@ -62,7 +62,7 @@ public class TestH5F {
 
     @Test
     public void testH5Fget_create_plist() {
-        int plist = -1;
+        long plist = -1;
 
         try {
             plist = H5.H5Fget_create_plist(H5fid);
@@ -76,7 +76,7 @@ public class TestH5F {
 
     @Test(expected = HDF5LibraryException.class)
     public void testH5Fget_create_plist_closed() throws Throwable {
-        int fid = -1;
+        long fid = -1;
         
         if (H5fid > 0) {
             try {H5.H5Fclose(H5fid);} catch (Exception ex) {}
@@ -102,7 +102,7 @@ public class TestH5F {
 
     @Test
     public void testH5Fget_access_plist() {
-        int plist = -1;
+        long plist = -1;
 
         try {
             plist = H5.H5Fget_access_plist(H5fid);
@@ -116,7 +116,7 @@ public class TestH5F {
 
     @Test(expected = HDF5LibraryException.class)
     public void testH5Fget_access_plist_closed() throws Throwable {
-        int fid = -1;
+        long fid = -1;
         
         if (H5fid > 0) {
             try {H5.H5Fclose(H5fid);} catch (Exception ex) {}
@@ -143,7 +143,7 @@ public class TestH5F {
     @Test
     public void testH5Fget_intent_rdwr() {
         int intent = 0;
-        int fid = -1;
+        long fid = -1;
         
         if (H5fid > 0) {
             try {H5.H5Fclose(H5fid);} catch (Exception ex) {}
@@ -175,7 +175,7 @@ public class TestH5F {
     @Test
     public void testH5Fget_intent_rdonly() {
         int intent = 0;
-        int fid = -1;
+        long fid = -1;
         
         if (H5fid > 0) {
             try {H5.H5Fclose(H5fid);} catch (Exception ex) {}
@@ -224,7 +224,7 @@ public class TestH5F {
     public void testH5Fget_obj_ids() {
         long count = 0;
         int max_objs = 100;
-        int[] obj_id_list = new int[max_objs];
+        long[] obj_id_list = new long[max_objs];
         int[] open_obj_counts = new int[OBJ_TYPES.length];
 
         for (int i = 0; i < OBJ_TYPES.length; i++)

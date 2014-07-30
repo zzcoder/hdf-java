@@ -17,8 +17,8 @@ import org.junit.Test;
 
 public class TestH5T {
     private static final String H5_FILE = "test.h5";
-    int H5fid = -1;
-    int H5strdid = -1;
+    long H5fid = -1;
+    long H5strdid = -1;
 
     private final void _deleteFile(String filename) {
         File file = null;
@@ -111,7 +111,7 @@ public class TestH5T {
     
     @Test
     public void testH5Tarray_create() {
-       int filetype_id = -1;
+       long filetype_id = -1;
        long[] adims = { 3, 5 };
 
        try {
@@ -130,7 +130,7 @@ public class TestH5T {
     
     @Test
     public void testH5Tget_array_ndims() {
-       int filetype_id = -1;
+       long filetype_id = -1;
        int ndims = 0;
        long[] adims = { 3, 5 };
 
@@ -158,7 +158,7 @@ public class TestH5T {
     
     @Test
     public void testH5Tget_array_dims() {
-       int filetype_id = -1;
+       long filetype_id = -1;
        int ndims = 0;
        long[] adims = { 3, 5 };
        long[] rdims = new long[2];
@@ -189,7 +189,7 @@ public class TestH5T {
     
     @Test
     public void testH5Tenum_functions() {
-        int       filetype_id =-1;
+        long       filetype_id =-1;
         String    enum_type ="Enum_type";
         byte[]    enum_val = new byte[1];
         String    enum_name = null;
@@ -257,7 +257,7 @@ public class TestH5T {
     
     @Test
     public void testH5Tenum_create_functions() {
-        int       filetype_id = -1;
+        long      filetype_id = -1;
         byte[]    enum_val = new byte[1];
 
         // Create a enumerate datatype
@@ -297,7 +297,7 @@ public class TestH5T {
     
     @Test
     public void testH5Topaque_functions() {
-        int       filetype_id = -1;
+        long       filetype_id = -1;
         String    opaque_name = null;
 
         // Create a enumerate datatype
@@ -327,7 +327,7 @@ public class TestH5T {
     
     @Test
     public void testH5Tvlen_create() {
-       int filetype_id = -1;
+        long filetype_id = -1;
 
        try {
            filetype_id = H5.H5Tvlen_create(HDF5Constants.H5T_C_S1);
@@ -345,14 +345,14 @@ public class TestH5T {
     
     @Test
     public void testH5Tis_variable_str() {
-       int filetype_id = -1;
+        long filetype_id = -1;
 
        try {
            filetype_id = H5.H5Tcopy(HDF5Constants.H5T_C_S1);
            assertTrue("testH5Tis_variable_str", filetype_id > 0);
 
            // Convert to variable-length string
-           H5.H5Tset_size(filetype_id, HDF5Constants.H5T_VARIABLE);
+           assertTrue("testH5Tis_variable_str", H5.H5Tset_size(filetype_id, HDF5Constants.H5T_VARIABLE) > 0);
 
            // Check if datatype is VL string
            int vlclass = H5.H5Tget_class(filetype_id);
@@ -375,7 +375,7 @@ public class TestH5T {
     
     @Test
     public void testH5Tcompound_functions() {
-        int       filetype_id =-1;
+        long       filetype_id =-1;
 
         // Create a enumerate datatype
         try {
@@ -414,7 +414,7 @@ public class TestH5T {
             assertTrue("Incorrect offset for member no", index_offset == 8);
             
             // Query member type by member index
-            int index_type = H5.H5Tget_member_type (filetype_id, 0);
+            long index_type = H5.H5Tget_member_type (filetype_id, 0);
             assertTrue("Incorrect type for member index", H5.H5Tequal(HDF5Constants.H5T_NATIVE_DOUBLE, index_type));
             if (index_type >= 0)
                 try {H5.H5Tclose(index_type);} catch (Exception ex) {}

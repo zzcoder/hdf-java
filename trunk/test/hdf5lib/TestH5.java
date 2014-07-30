@@ -136,7 +136,7 @@ public class TestH5 {
      */
     @Test
     public void testH5get_libversion() {
-        int libversion[] = { 0, 0, 0 };
+        int libversion[] = { 1, 9, 0 };
 
         try {
             H5.H5get_libversion(libversion);
@@ -145,10 +145,10 @@ public class TestH5 {
             fail("H5.H5get_libversion: " + err);
         }
 
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < 2; i++)
             assertEquals(H5.LIB_VERSION[i], libversion[i]);
 
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < 2; i++)
             assertFalse(libversion[i] == 0);
     }
 
@@ -158,7 +158,7 @@ public class TestH5 {
      */
     @Test
     public void testH5check_version() {
-        int majnum = 1, minnum = 8, relnum = 14;
+        int majnum = 1, minnum = 9, relnum = 190;
 
         try {
             H5.H5check_version(majnum, minnum, relnum);

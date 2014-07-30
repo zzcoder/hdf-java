@@ -20,11 +20,11 @@ public class TestH5R {
     private static final String H5_FILE = "testH5R.h5";
     private static final int DIM_X = 4;
     private static final int DIM_Y = 6;
-    int H5fid = -1;
-    int H5dsid = -1;
-    int H5did = -1;
-    int H5gid = -1;
-    int H5did2 = -1;
+    long H5fid = -1;
+    long H5dsid = -1;
+    long H5did = -1;
+    long H5gid = -1;
+    long H5did2 = -1;
     long[] H5dims = { DIM_X, DIM_Y };
 
     private final void _deleteFile(String filename) {
@@ -39,8 +39,8 @@ public class TestH5R {
         }
     }
 
-    private final int _createDataset(int fid, int dsid, String name, int dapl) {
-        int did = -1;
+    private final long _createDataset(long fid, long dsid, String name, long dapl) {
+        long did = -1;
         try {
             did = H5.H5Dcreate(fid, name,
                         HDF5Constants.H5T_STD_I32BE, dsid,
@@ -55,8 +55,8 @@ public class TestH5R {
         return did;
     }
     
-    private final int _createGroup(int fid, String name) {
-        int gid = -1;
+    private final long _createGroup(long fid, String name) {
+        long gid = -1;
         try {
             gid = H5.H5Gcreate(fid, name, HDF5Constants.H5P_DEFAULT,
                     HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
@@ -113,7 +113,7 @@ public class TestH5R {
 
     @Test
     public void testH5Rget_name() {
-        int loc_id=H5fid;
+        long loc_id=H5fid;
         int ref_type=HDF5Constants.H5R_OBJECT;
         long ret_val=-1;
         byte[] ref=null;
@@ -197,8 +197,8 @@ public class TestH5R {
     public void testH5Rdereference() {
         byte[] ref1 = null;
         byte[] ref2 = null;
-        int dataset_id = -1;
-        int group_id = -1;
+        long dataset_id = -1;
+        long group_id = -1;
         try {
             //Create reference on dataset 
             ref1 = H5.H5Rcreate(H5fid, "/dset", HDF5Constants.H5R_DATASET_REGION, H5dsid);
@@ -225,7 +225,7 @@ public class TestH5R {
     @Test
     public void testH5Rget_region() {
         byte[] ref = null;
-        int dsid = -1;
+        long dsid = -1;
         try {
             ref = H5.H5Rcreate(H5fid, "/dset", HDF5Constants.H5R_DATASET_REGION, H5dsid);
             dsid = H5.H5Rget_region(H5fid, HDF5Constants.H5R_DATASET_REGION, ref);
