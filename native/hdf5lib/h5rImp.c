@@ -80,7 +80,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Rcreate
         return -1;
     }
 
-    status = H5Rcreate(refP, loc_id, rName, (H5R_type_t)ref_type, space_id);
+    status = H5Rcreate(refP, (hid_t)loc_id, rName, (H5R_type_t)ref_type, (hid_t)space_id);
     ENVPTR->ReleaseStringUTFChars(ENVPAR name, rName);
     if (status < 0) {
         ENVPTR->ReleaseByteArrayElements(ENVPAR ref, refP, JNI_ABORT);
@@ -313,7 +313,7 @@ JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Rget_1name
         return -1;
     }
 
-    ret_val = (jlong) H5Rget_name( (hid_t)loc_id, (H5R_type_t) ref_type, refP, aName, bs) ;
+    ret_val = (jlong) H5Rget_name((hid_t)loc_id, (H5R_type_t) ref_type, refP, aName, bs) ;
 
     ENVPTR->ReleaseByteArrayElements(ENVPAR ref, refP, JNI_ABORT);
     if (ret_val < 0) {

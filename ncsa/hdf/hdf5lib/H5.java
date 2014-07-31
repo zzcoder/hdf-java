@@ -573,7 +573,7 @@ public synchronized static native int H5Acopy(long src_aid, long dst_aid)
 * @exception HDF5LibraryException - Error from the HDF-5 Library.
 * @exception NullPointerException - Name is null.
 **/
-public static long H5Acreate( long loc_id, String attr_name, long type_id, long space_id, long acpl_id, long aapl_id )
+public static long H5Acreate(long loc_id, String attr_name, long type_id, long space_id, long acpl_id, long aapl_id)
 throws HDF5LibraryException, NullPointerException
 {
     long id = _H5Acreate2(loc_id, attr_name, type_id, space_id, acpl_id, aapl_id );
@@ -589,7 +589,7 @@ throws HDF5LibraryException, NullPointerException
 * @see public static int H5Acreate( int loc_id, String attr_name, int
 *      type_id, int space_id, int acpl_id, int aapl_id )
 **/
-private synchronized static native int _H5Acreate2( long loc_id, String attr_name, long type_id, long space_id, long acpl_id, long aapl_id ) 
+private synchronized static native int _H5Acreate2(long loc_id, String attr_name, long type_id, long space_id, long acpl_id, long aapl_id) 
         throws HDF5LibraryException, NullPointerException;
 
 /**
@@ -5060,7 +5060,7 @@ public synchronized static int H5Pget_fill_value(long plist_id, long type_id,
  *                - Error converting data array
  **/
 public synchronized static native int H5Pset_fill_value(long plist_id,
-        int type_id, byte[] value) throws HDF5Exception;
+        long type_id, byte[] value) throws HDF5Exception;
 
 /**
  * H5Pset_fill_value sets the fill value for a dataset creation property

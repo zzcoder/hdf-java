@@ -814,11 +814,15 @@ public class TestH5A {
         try {
             atype_id = H5.H5Tcopy(HDF5Constants.H5T_C_S1);
             assertTrue("testH5Awrite_readVL: ", atype_id >= 0);
-            H5.H5Tset_size(atype_id, HDF5Constants.H5T_VARIABLE);
+            assertTrue("testH5Awrite_readVL", H5.H5Tset_size(atype_id, HDF5Constants.H5T_VARIABLE) > 0);
         }
         catch (Exception err) {
             err.printStackTrace();
             fail("H5.testH5Awrite_readVL: " + err);
+        }
+        finally {
+            if (atype_id > 0)
+                try {H5.H5Tclose(atype_id);} catch (Exception ex) {}
         }
 
         try {

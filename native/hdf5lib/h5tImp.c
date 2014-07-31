@@ -249,7 +249,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tset_1size
 {
     herr_t retVal = -1;
     size_t tsize = (size_t)size;
-    retVal =  H5Tset_size((hid_t)type_id, (size_t)tsize);
+    retVal =  H5Tset_size((hid_t)type_id, tsize);
     if (retVal < 0) {
         h5libraryError(env);
     }
@@ -1528,7 +1528,6 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tget_1array_1dims
 {
     int status;
     jint *dimsP;
-    jint *permP = NULL;     //parameter perm is never used
     int dlen;
     int i;
     hsize_t *cdims=NULL;
@@ -1829,6 +1828,10 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tconvert
 
     if (bgP)
         ENVPTR->ReleaseByteArrayElements(ENVPAR background, bgP, JNI_ABORT);
+
+    if (status < 0) {
+        h5libraryError(env);
+    }
 }
 
 

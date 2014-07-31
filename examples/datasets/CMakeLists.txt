@@ -55,12 +55,16 @@ foreach (example ${HDF_JAVA_EXAMPLES})
 endforeach (example ${HDF_JAVA_EXAMPLES})
 
 MACRO (ADD_H5_TEST resultfile resultcode)
+  if (CMAKE_BUILD_TYPE MATCHES Debug)
+    set (CMD_ARGS "-Dncsa.hdf.hdf5lib.H5.loadLibraryName=jhdf5_debug;")
+  endif(CMAKE_BUILD_TYPE MATCHES Debug)
+
   add_test (
       NAME datasets-${resultfile}
       COMMAND "${CMAKE_COMMAND}"
           -D "TEST_TESTER=${CMAKE_Java_RUNTIME};${CMAKE_Java_RUNTIME_FLAGS}"
           -D "TEST_CLASSPATH:STRING=${CMAKE_JAVA_CLASSPATH}${CMAKE_JAVA_INCLUDE_FLAG_SEP}${${resultfile}_JAR_FILE}"
-          -D "TEST_ARGS:STRING=${ARGN}"
+          -D "TEST_ARGS:STRING=${CMD_ARGS}${ARGN}"
           -D "TEST_PROGRAM=examples.datasets.${resultfile}"
           -D "TEST_LIBRARY_DIRECTORY=${CMAKE_TEST_OUTPUT_DIRECTORY}"
           -D "TEST_FOLDER=${HDFJAVA_EXAMPLES_BINARY_DIR}"

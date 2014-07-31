@@ -308,6 +308,7 @@ extern "C" {
         char      *lName;
         herr_t     status;
         jboolean   isCopy;
+        hsize_t    n = (hsize_t)link_n;
 
         if (name == NULL) {
             h5nullArgument(env, "H5Ldelete_by_idx:  name is NULL");
@@ -320,7 +321,7 @@ extern "C" {
             return;
         }
 
-        status = H5Ldelete_by_idx((hid_t)loc_id, (const char*)lName, (H5_index_t)index_field, (H5_iter_order_t)order, (hsize_t)link_n, (hid_t)access_id);
+        status = H5Ldelete_by_idx((hid_t)loc_id, (const char*)lName, (H5_index_t)index_field, (H5_iter_order_t)order, n, (hid_t)access_id);
 
         ENVPTR->ReleaseStringUTFChars(ENVPAR name, lName);
 
@@ -829,7 +830,7 @@ extern "C" {
            JVMPTR->DetachCurrentThread(JVMPAR);
            return -1;
         }
-        mid = CBENVPTR->GetMethodID(CBENVPAR cls, "callback", "(ILjava/lang/String;Lncsa/hdf/hdf5lib/structs/H5L_info_t;Lncsa/hdf/hdf5lib/callbacks/H5L_iterate_t;)I");
+        mid = CBENVPTR->GetMethodID(CBENVPAR cls, "callback", "(JLjava/lang/String;Lncsa/hdf/hdf5lib/structs/H5L_info_t;Lncsa/hdf/hdf5lib/callbacks/H5L_iterate_t;)I");
         if (mid == 0) {
             /* printf("JNI H5L_iterate_cb error: GetMethodID failed\n"); */
             JVMPTR->DetachCurrentThread(JVMPAR);
