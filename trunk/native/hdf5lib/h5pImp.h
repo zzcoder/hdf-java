@@ -510,18 +510,18 @@ extern "C" {
     /*
      * Class:     ncsa_hdf_hdf5lib_H5
      * Method:    H5Pset_fapl_family
-     * Signature: (JJI)I
+     * Signature: (JJJ)I
      */
     JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1fapl_1family
-      (JNIEnv *, jclass, jlong, jlong, jint);
+      (JNIEnv *, jclass, jlong, jlong, jlong);
 
     /*
      * Class:     ncsa_hdf_hdf5lib_H5
      * Method:    H5Pget_fapl_family
-     * Signature: (J[J[I)I
+     * Signature: (J[J[J)I
      */
     JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1fapl_1family
-      (JNIEnv *, jclass, jlong, jlongArray, jintArray);
+      (JNIEnv *, jclass, jlong, jlongArray, jlongArray);
 
     /*
      * Class:     ncsa_hdf_hdf5lib_H5

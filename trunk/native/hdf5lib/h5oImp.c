@@ -527,7 +527,7 @@ extern "C" {
            JVMPTR->DetachCurrentThread(JVMPAR);
            return -1;
         }
-        mid = CBENVPTR->GetMethodID(CBENVPAR cls, "callback", "(ILjava/lang/String;Lncsa/hdf/hdf5lib/structs/H5O_info_t;Lncsa/hdf/hdf5lib/callbacks/H5O_iterate_t;)I");
+        mid = CBENVPTR->GetMethodID(CBENVPAR cls, "callback", "(JLjava/lang/String;Lncsa/hdf/hdf5lib/structs/H5O_info_t;Lncsa/hdf/hdf5lib/callbacks/H5O_iterate_t;)I");
         if (mid == 0) {
             /* printf("JNI H5O_iterate_cb error: GetMethodID failed\n"); */
             JVMPTR->DetachCurrentThread(JVMPAR);

@@ -116,7 +116,8 @@ public class TestH5Pfapl {
         try {
             did = H5.H5Dcreate(fid, name, HDF5Constants.H5T_STD_I32BE, dsid,
                     HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, dapl);
-        } catch (Throwable err) {
+        } 
+        catch (Throwable err) {
             err.printStackTrace();
             fail("H5.H5Dcreate: " + err);
         }
@@ -130,7 +131,8 @@ public class TestH5Pfapl {
             H5Fdsid = H5.H5Screate_simple(2, H5Fdims, null);
             H5Fdid = H5.H5Dcreate(H5fid, "dsfloat", HDF5Constants.H5T_NATIVE_FLOAT, H5Fdsid,
                     HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
-        } catch (Throwable err) {
+        } 
+        catch (Throwable err) {
             err.printStackTrace();
             fail("H5.H5Dcreate: " + err);
         }

@@ -562,7 +562,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1alignment
         return -1;
     }
     if (ENVPTR->GetArrayLength(ENVPAR alignment) < 2) {
-        h5badArgument(env, "H5Pget_alignment:  allingment input array < 2");
+        h5badArgument(env, "H5Pget_alignment:  alignment input array < 2");
         return -1;
     }
     theArray = (jlong *)ENVPTR->GetLongArrayElements(ENVPAR alignment, &isCopy);
@@ -2034,10 +2034,10 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1fclose_1degree
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Pset_fapl_family
- * Signature: (JJI)I
+ * Signature: (JJJ)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1fapl_1family
-  (JNIEnv *env, jclass clss, jlong plist, jlong memb_size, jint memb_plist)
+  (JNIEnv *env, jclass clss, jlong plist, jlong memb_size, jlong memb_plist)
 {
     long   ms;
     herr_t retVal = -1;
@@ -2054,14 +2054,14 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1fapl_1family
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Pget_fapl_family
- * Signature: (J[J[I)I
+ * Signature: (J[J[J)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1fapl_1family
-  (JNIEnv *env, jclass clss, jlong tid, jlongArray memb_size, jintArray memb_plist)
+  (JNIEnv *env, jclass clss, jlong tid, jlongArray memb_size, jlongArray memb_plist)
 {
     herr_t   status;
     jlong   *sizeArray;
-    jint    *plistArray;
+    jlong   *plistArray;
     jboolean isCopy;
     hsize_t *sa;
     int      i;
@@ -2088,7 +2088,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1fapl_1family
         h5JNIFatalError(env,  "H5Screate-simple:  dims not converted to hsize_t");
         return -1;
     }
-    plistArray = (jint *)ENVPTR->GetIntArrayElements(ENVPAR memb_plist, &isCopy);
+    plistArray = (jlong *)ENVPTR->GetLongArrayElements(ENVPAR memb_plist, &isCopy);
     if (plistArray == NULL) {
         ENVPTR->ReleaseLongArrayElements(ENVPAR memb_size, sizeArray, JNI_ABORT);
         h5JNIFatalError(env,  "H5Pget_family:  plistArray not pinned");
@@ -2100,7 +2100,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1fapl_1family
     if (status < 0) {
         free(sa);
         ENVPTR->ReleaseLongArrayElements(ENVPAR memb_size, sizeArray, JNI_ABORT);
-        ENVPTR->ReleaseIntArrayElements(ENVPAR memb_plist, plistArray, JNI_ABORT);
+        ENVPTR->ReleaseLongArrayElements(ENVPAR memb_plist, plistArray, JNI_ABORT);
         h5libraryError(env);
         return -1;
     }
@@ -2109,7 +2109,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1fapl_1family
     }
     free(sa);
     ENVPTR->ReleaseLongArrayElements(ENVPAR memb_size, sizeArray, 0);
-    ENVPTR->ReleaseIntArrayElements(ENVPAR memb_plist, plistArray, 0);
+    ENVPTR->ReleaseLongArrayElements(ENVPAR memb_plist, plistArray, 0);
 
     return (jint)status;
 }
@@ -3975,7 +3975,7 @@ JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1fapl_1multi
     herr_t   status;
     int      i;
     jint    *themapArray = NULL;
-    jint    *thefaplArray = NULL;
+    jlong    *thefaplArray = NULL;
     jlong   *theaddrArray = NULL;
     char   **mName = NULL;
     jstring  str;
@@ -3991,7 +3991,7 @@ JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1fapl_1multi
     }
 
     if (memb_fapl) {
-        thefaplArray = (jint *)ENVPTR->GetIntArrayElements(ENVPAR memb_fapl, &isCopy);
+        thefaplArray = (jlong *)ENVPTR->GetLongArrayElements(ENVPAR memb_fapl, &isCopy);
         if (thefaplArray == NULL) {
             if (memb_map) ENVPTR->ReleaseIntArrayElements(ENVPAR memb_map, themapArray, JNI_ABORT);
             h5JNIFatalError(env, "H5Pget_fapl_muti:  memb_fapl not pinned");
@@ -4003,7 +4003,7 @@ JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1fapl_1multi
         theaddrArray = (jlong *)ENVPTR->GetLongArrayElements(ENVPAR memb_addr, &isCopy);
         if (theaddrArray == NULL) {
             if (memb_map) ENVPTR->ReleaseIntArrayElements(ENVPAR memb_map, themapArray, JNI_ABORT);
-            if (memb_fapl) ENVPTR->ReleaseIntArrayElements(ENVPAR memb_fapl, thefaplArray, JNI_ABORT);
+            if (memb_fapl) ENVPTR->ReleaseLongArrayElements(ENVPAR memb_fapl, thefaplArray, JNI_ABORT);
             h5JNIFatalError(env, "H5Pget_fapl_muti:  memb_addr not pinned");
             return -1;
         }
@@ -4014,7 +4014,7 @@ JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1fapl_1multi
     status = H5Pget_fapl_multi((hid_t)tid, (H5FD_mem_t *)themapArray, (hid_t *)thefaplArray, mName, (haddr_t *)theaddrArray, (hbool_t *)&relax);
     if (status < 0) {
         if (memb_map) ENVPTR->ReleaseIntArrayElements(ENVPAR memb_map, themapArray, JNI_ABORT);
-        if (memb_fapl) ENVPTR->ReleaseIntArrayElements(ENVPAR memb_fapl, thefaplArray, JNI_ABORT);
+        if (memb_fapl) ENVPTR->ReleaseLongArrayElements(ENVPAR memb_fapl, thefaplArray, JNI_ABORT);
         if (memb_addr) ENVPTR->ReleaseLongArrayElements(ENVPAR memb_addr, theaddrArray, JNI_ABORT);
         if (memb_name) h5str_array_free(mName, H5FD_MEM_NTYPES);
         h5libraryError(env);
@@ -4026,7 +4026,7 @@ JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1fapl_1multi
     }
 
     if (memb_fapl) {
-        ENVPTR->ReleaseIntArrayElements(ENVPAR memb_fapl, thefaplArray, 0);
+        ENVPTR->ReleaseLongArrayElements(ENVPAR memb_fapl, thefaplArray, 0);
     }
 
     if (memb_addr) {
@@ -4058,7 +4058,7 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1fapl_1multi
 {
     herr_t       status;
     jint        *themapArray = NULL;
-    jint        *thefaplArray = NULL;
+    jlong       *thefaplArray = NULL;
     jlong       *theaddrArray = NULL;
     jboolean     isCopy;
     jclass       Sjc;
@@ -4077,7 +4077,7 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1fapl_1multi
     }
 
     if (memb_fapl) {
-        thefaplArray = (jint *)ENVPTR->GetIntArrayElements(ENVPAR memb_fapl, &isCopy);
+        thefaplArray = (jlong *)ENVPTR->GetLongArrayElements(ENVPAR memb_fapl, &isCopy);
         if (thefaplArray == NULL) {
             if (memb_map) ENVPTR->ReleaseIntArrayElements(ENVPAR memb_map, themapArray, JNI_ABORT);
             h5JNIFatalError(env, "H5Pget_fapl_muti:  memb_fapl not pinned");
@@ -4089,7 +4089,7 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1fapl_1multi
         theaddrArray = (jlong *)ENVPTR->GetLongArrayElements(ENVPAR memb_addr, &isCopy);
         if (theaddrArray == NULL) {
             if (memb_map) ENVPTR->ReleaseIntArrayElements(ENVPAR memb_map, themapArray, JNI_ABORT);
-            if (memb_fapl) ENVPTR->ReleaseIntArrayElements(ENVPAR memb_fapl, thefaplArray, JNI_ABORT);
+            if (memb_fapl) ENVPTR->ReleaseLongArrayElements(ENVPAR memb_fapl, thefaplArray, JNI_ABORT);
             h5JNIFatalError(env, "H5Pget_fapl_muti:  memb_addr not pinned");
             return;
         }
@@ -4122,13 +4122,13 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1fapl_1multi
 
     if (status < 0) {
         if (memb_map) ENVPTR->ReleaseIntArrayElements(ENVPAR memb_map, themapArray, JNI_ABORT);
-        if (memb_fapl) ENVPTR->ReleaseIntArrayElements(ENVPAR memb_fapl, thefaplArray, JNI_ABORT);
+        if (memb_fapl) ENVPTR->ReleaseLongArrayElements(ENVPAR memb_fapl, thefaplArray, JNI_ABORT);
         if (memb_addr) ENVPTR->ReleaseLongArrayElements(ENVPAR memb_addr, theaddrArray, JNI_ABORT);
         h5libraryError(env);
         return;
     }
     if (memb_map) ENVPTR->ReleaseIntArrayElements(ENVPAR memb_map, themapArray, 0);
-    if (memb_fapl) ENVPTR->ReleaseIntArrayElements(ENVPAR memb_fapl, thefaplArray, 0);
+    if (memb_fapl) ENVPTR->ReleaseLongArrayElements(ENVPAR memb_fapl, thefaplArray, 0);
     if (memb_addr) ENVPTR->ReleaseLongArrayElements(ENVPAR memb_addr, theaddrArray, 0);
     if (memb_name) {
         if (mName != NULL) {
