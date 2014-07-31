@@ -926,13 +926,15 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
         boolean isImage = false;
 
         if (dataset instanceof ScalarDS) {
-            ScalarDS sd = (ScalarDS) dataset;
-            isImage = sd.isImageDisplay();
-            isTrueColorImage = sd.isTrueColor();
-            // compound datasets don't have data range or fill values
-            // (JAVA-1825)
-            dataRangeField.setEnabled(isImage);
-            fillValueField.setEnabled(isImage);
+        	if(!((ScalarDS) dataset).isText()) {
+        		ScalarDS sd = (ScalarDS) dataset;
+        		isImage = sd.isImageDisplay();
+        		isTrueColorImage = sd.isTrueColor();
+            	// compound datasets don't have data range or fill values
+            	// (JAVA-1825)
+            	dataRangeField.setEnabled(isImage);
+            	fillValueField.setEnabled(isImage);
+            }
         }
         else if (dataset instanceof CompoundDS) {
             imageButton.setEnabled(false);
@@ -1144,27 +1146,30 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
         }
         else {
             ScalarDS ds = (ScalarDS) dataset;
-            StringTokenizer st = new StringTokenizer(dataRangeField.getText(), ",");
-            if (st.countTokens() == 2) {
-                double min = 0, max = 0;
-                try {
-                    min = Double.valueOf(st.nextToken());
-                    max = Double.valueOf(st.nextToken());
-                }
-                catch (Throwable ex) {
-                }
-                if (max > min)
-                    ds.setImageDataRange(min, max);
-            }
-            st = new StringTokenizer(fillValueField.getText(), ",");
-            while (st.hasMoreTokens()) {
-                double x = 0;
-                try {
-                    x = Double.valueOf(st.nextToken());
-                    ds.addFilteredImageValue(x);
-                }
-                catch (Throwable ex) {
-                }
+            
+            if(!ds.isText()) {
+            	StringTokenizer st = new StringTokenizer(dataRangeField.getText(), ",");
+            	if (st.countTokens() == 2) {
+            		double min = 0, max = 0;
+            		try {
+            			min = Double.valueOf(st.nextToken());
+            			max = Double.valueOf(st.nextToken());
+            		}
+            		catch (Throwable ex) {
+            		}
+            		if (max > min)
+            			ds.setImageDataRange(min, max);
+            	}
+            	st = new StringTokenizer(fillValueField.getText(), ",");
+            	while (st.hasMoreTokens()) {
+            		double x = 0;
+            		try {
+            			x = Double.valueOf(st.nextToken());
+            			ds.addFilteredImageValue(x);
+            		}
+            		catch (Throwable ex) {
+            		}
+            	}
             }
         }
 
