@@ -617,12 +617,12 @@ public class TestH5Lcreate {
         assertTrue("testH5Lget_val_by_idx_ext Link Value ", link_value[0].compareTo("DT1")==0);
     }
 
-    @Ignore//@Test(expected = HDF5LibraryException.class)
+    @Test(expected = HDF5LibraryException.class)
     public void testH5Ldelete_by_idx_not_exist_name() throws Throwable {
         H5.H5Ldelete_by_idx(H5fid, "None", HDF5Constants.H5_INDEX_NAME, HDF5Constants.H5_ITER_INC, 0, HDF5Constants.H5P_DEFAULT);
     }
 
-    @Ignore//@Test(expected = HDF5LibraryException.class)
+    @Test(expected = HDF5LibraryException.class)
     public void testH5Ldelete_by_idx_not_exist_create() throws Throwable {
         H5.H5Ldelete_by_idx(H5fid, "None", HDF5Constants.H5_INDEX_CRT_ORDER, HDF5Constants.H5_ITER_INC, 0, HDF5Constants.H5P_DEFAULT);
     }
