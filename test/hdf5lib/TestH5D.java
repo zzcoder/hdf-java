@@ -105,14 +105,19 @@ public class TestH5D {
     private final void _createVLDataset(long fid, long dsid, String name, long dapl) {
         try {
             H5dtid = H5.H5Tcopy(HDF5Constants.H5T_C_S1);
-            assertTrue("_createVLDataset", H5.H5Tset_size(H5dtid, HDF5Constants.H5T_VARIABLE) > 0);
-//            H5.H5Tset_size(H5dtid, HDF5Constants.H5T_VARIABLE);
         }
         catch (Throwable err) {
             err.printStackTrace();
             fail("H5.H5Tcopy: " + err);
         }
         assertTrue("TestH5D._createVLDataset: ", H5dtid > 0);
+        try {
+            assertTrue("_createVLDataset", H5.H5Tset_size(H5dtid, HDF5Constants.H5T_VARIABLE) > 0);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Tset_size: " + err);
+        }
         try {
             H5did = H5.H5Dcreate(fid, name, H5dtid, dsid,
                         HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, dapl);
@@ -143,14 +148,27 @@ public class TestH5D {
        try {
            H5fid = H5.H5Fopen(H5_FILE,
                    HDF5Constants.H5F_ACC_RDWR, HDF5Constants.H5P_DEFAULT);
-           H5did = H5.H5Dopen(H5fid, name, dapl);
-           H5dsid = H5.H5Dget_space(H5did);
        }
        catch (Throwable err) {
            err.printStackTrace();
            fail("TestH5D._openH5file: " + err);
        }
        assertTrue("TestH5D._openH5file: H5.H5Fopen: ",H5fid > 0);
+       try {
+           H5did = H5.H5Dopen(H5fid, name, dapl);
+       }
+       catch (Throwable err) {
+           err.printStackTrace();
+           fail("TestH5D._openH5file: " + err);
+       }
+       assertTrue("TestH5D._openH5file: H5.H5Dopen: ",H5did > 0);
+       try {
+           H5dsid = H5.H5Dget_space(H5did);
+       }
+       catch (Throwable err) {
+           err.printStackTrace();
+           fail("TestH5D._openH5file: " + err);
+       }
        assertTrue("TestH5D._openH5file: H5.H5Screate_simple: ",H5dsid > 0);
     }
 

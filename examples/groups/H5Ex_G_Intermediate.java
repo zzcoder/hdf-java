@@ -20,9 +20,9 @@ public class H5Ex_G_Intermediate {
 
     private void CreateGroup() throws Exception {
 
-        int     file_id = -1;
-        int     group_id = -1;
-        int     gcpl_id = -1;
+        long     file_id = -1;
+        long     group_id = -1;
+        long     gcpl_id = -1;
 
         try {
             // Create a new file_id using the default properties.
@@ -85,7 +85,7 @@ public class H5Ex_G_Intermediate {
 
 
     private class H5O_iter_callback implements H5O_iterate_cb {
-        public int callback(int group, String name, H5O_info_t info, H5O_iterate_t op_data) {
+        public int callback(long group, String name, H5O_info_t info, H5O_iterate_t op_data) {
             idata id = new idata(name, info.type);
             ((H5O_iter_data)op_data).iterdata.add(id);
 

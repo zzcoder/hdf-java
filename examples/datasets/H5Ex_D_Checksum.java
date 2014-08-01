@@ -31,7 +31,7 @@ public class H5Ex_D_Checksum {
     enum H5Z_filter {
         H5Z_FILTER_ERROR(-1), H5Z_FILTER_NONE(0), H5Z_FILTER_DEFLATE(1), H5Z_FILTER_SHUFFLE(
                 2), H5Z_FILTER_FLETCHER32(3), H5Z_FILTER_SZIP(4), H5Z_FILTER_NBIT(5), H5Z_FILTER_SCALEOFFSET(
-                6), H5Z_FILTER_RESERVED(256), H5Z_FILTER_MAX(65535);
+                        6), H5Z_FILTER_RESERVED(256), H5Z_FILTER_MAX(65535);
         private static final Map<Integer, H5Z_filter> lookup = new HashMap<Integer, H5Z_filter>();
 
         static {
@@ -71,7 +71,7 @@ public class H5Ex_D_Checksum {
             if (((filter_info & HDF5Constants.H5Z_FILTER_CONFIG_ENCODE_ENABLED) == 0)
                     || ((filter_info & HDF5Constants.H5Z_FILTER_CONFIG_DECODE_ENABLED) == 0)) {
                 System.out
-                        .println("N-Bit filter not available for encoding and decoding.");
+                .println("N-Bit filter not available for encoding and decoding.");
                 return false;
             }
         }
@@ -82,10 +82,10 @@ public class H5Ex_D_Checksum {
     }
 
     private static void writeChecksum() {
-        int file_id = -1;
-        int filespace_id = -1;
-        int dataset_id = -1;
-        int dcpl_id = -1;
+        long file_id = -1;
+        long filespace_id = -1;
+        long dataset_id = -1;
+        long dcpl_id = -1;
         long[] dims = { DIM_X, DIM_Y };
         long[] chunk_dims = { CHUNK_X, CHUNK_Y };
         int[][] dset_data = new int[DIM_X][DIM_Y];
@@ -183,9 +183,9 @@ public class H5Ex_D_Checksum {
     }
 
     private static void readChecksum() {
-        int file_id = -1;
-        int dataset_id = -1;
-        int dcpl_id = -1;
+        long file_id = -1;
+        long dataset_id = -1;
+        long dcpl_id = -1;
         int[][] dset_data = new int[DIM_X][DIM_Y];
 
         // Open an existing file.

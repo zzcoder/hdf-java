@@ -9,11 +9,12 @@ public class H5Ex_T_VLString
     private static String DATASETNAME = "DS1";
 
     private static void createDataset() {
-        int     file_id = -1;
-        int     type_id = -1;
-        int     dataspace_id = -1;
-        int     dataset_id = -1;
-        int     rank = 1;
+        long     file_id = -1;
+        long     type_id = -1;
+        long     dataspace_id = -1;
+        long     dataset_id = -1;
+        int      rank = 1;
+        int      status = -1;
         String[] str_data = { "Parting", "is such", "sweet", "sorrow." };
         long[]  dims = { str_data.length };
 
@@ -28,41 +29,42 @@ public class H5Ex_T_VLString
 
         try {
             type_id = H5.H5Tcopy(HDF5Constants.H5T_C_S1);
-            H5.H5Tset_size(type_id, HDF5Constants.H5T_VARIABLE);
+            status = H5.H5Tset_size(type_id, HDF5Constants.H5T_VARIABLE);
         }
         catch (Exception e) {
             e.printStackTrace();
         }
-        
-        // Create dataspace. Setting maximum size to NULL sets the maximum
-        // size to be the current size.
-        try {
-            dataspace_id = H5.H5Screate_simple(rank, dims, null);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
+        if(status >= 0) {
+            // Create dataspace. Setting maximum size to NULL sets the maximum
+            // size to be the current size.
+            try {
+                dataspace_id = H5.H5Screate_simple(rank, dims, null);
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
 
-        // Create the dataset and write the string data to it.
-        try {
-            if ((file_id >= 0) && (type_id >= 0) && (dataspace_id >= 0)) {
-                dataset_id = H5.H5Dcreate(file_id, DATASETNAME, type_id, dataspace_id, 
-                        HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
-             }
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
+            // Create the dataset and write the string data to it.
+            try {
+                if ((file_id >= 0) && (type_id >= 0) && (dataspace_id >= 0)) {
+                    dataset_id = H5.H5Dcreate(file_id, DATASETNAME, type_id, dataspace_id, 
+                            HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+                }
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
 
-        // Write the data to the dataset.
-        try {
-            if (dataset_id >=0)
-                H5.H5DwriteString(dataset_id, type_id, 
-                        HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL, HDF5Constants.H5P_DEFAULT, 
-                        str_data);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
+            // Write the data to the dataset.
+            try {
+                if (dataset_id >=0)
+                    H5.H5DwriteString(dataset_id, type_id, 
+                            HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL, HDF5Constants.H5P_DEFAULT, 
+                            str_data);
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         try  {
@@ -77,9 +79,9 @@ public class H5Ex_T_VLString
     }
     
     private static void readDataset() {
-        int     file_id = -1;
-        int     type_id = -1;
-        int     dataset_id = -1;
+        long     file_id = -1;
+        long     type_id = -1;
+        long     dataset_id = -1;
         String[] str_data = { "", "", "", "" };
 
         try {

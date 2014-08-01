@@ -31,7 +31,7 @@ public class H5Ex_G_Traverse {
 	private static String FILE = "h5ex_g_traverse.h5";
 	public static H5L_iterate_cb iter_cb = new H5L_iter_callbackT();
 	private static void OpenGroup(){
-		int file_id = -1;
+	    long file_id = -1;
 		H5O_info_t      infobuf;
 		opdata od = new opdata();
 
@@ -75,7 +75,7 @@ public class H5Ex_G_Traverse {
 }
 
 class H5L_iter_callbackT implements H5L_iterate_cb {
-	public int callback(int group, String name, H5L_info_t info, H5L_iterate_t op_data) {
+	public int callback(long group, String name, H5L_info_t info, H5L_iterate_t op_data) {
 
 		H5O_info_t infobuf;
 		int return_val = 0;
