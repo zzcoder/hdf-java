@@ -168,14 +168,18 @@ public class MathConversionDialog extends JDialog implements ActionListener,
         tmpP.add(tmpP0, BorderLayout.CENTER);
 
         centerP.add(tmpP, BorderLayout.EAST);
-
-        centerP.setBorder(new TitledBorder(
-                "Converting Data With A Mathematic Function"));
-        centerP.add(infoArea = new JTextArea(4, 80), BorderLayout.SOUTH);
+        
+        tmpP0 = new JPanel();
+        tmpP0.setLayout(new BorderLayout());
+        tmpP0.add(infoArea = new JTextArea(4, 80), BorderLayout.CENTER);
         infoArea.setEditable(false);
         infoArea.setLineWrap(true);
         infoArea.setBackground(java.awt.Color.lightGray);
         infoArea.setWrapStyleWord(true);
+
+        centerP.setBorder(new TitledBorder(
+                "Converting Data With A Mathematic Function"));
+        centerP.add(tmpP0, BorderLayout.SOUTH);
         aField.setEnabled(false);
         bField.setEnabled(false);
 
