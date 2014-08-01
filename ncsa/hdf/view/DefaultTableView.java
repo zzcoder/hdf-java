@@ -67,6 +67,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
+import javax.swing.border.Border;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.CellEditor;
@@ -230,8 +231,6 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
     /* the value of the current cell value in editing. */
     private Object           currentEditingCellValue = null;
 
-    private TitledBorder     border;
-
     /**
      * Constructs an TableView.
      * <p>
@@ -346,6 +345,11 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
 
         log.trace("dataset isDisplayTypeChar={} isConvertEnum={}", isDisplayTypeChar, ViewProperties.isConvertEnum());
         dataset.setEnumConverted(ViewProperties.isConvertEnum());
+        
+        // set title & border
+        TitledBorder border = BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.lightGray, 1), indexBase + "-based",
+                TitledBorder.RIGHT, TitledBorder.TOP, this.getFont(), Color.black);
+        ((JPanel) getContentPane()).setBorder(border);
 
         // create the table and its columnHeader
         if (dataset instanceof CompoundDS) {
@@ -438,10 +442,6 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
         JPanel contentPane = (JPanel) getContentPane();
         contentPane.add(splitPane);
 
-        // set title & border
-        border = BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.lightGray, 1), indexBase + "-based",
-                TitledBorder.RIGHT, TitledBorder.TOP, this.getFont(), Color.black);
-
         StringBuffer sb = new StringBuffer(hobject.getName());
         sb.append("  at  ");
         sb.append(hobject.getPath());
@@ -451,7 +451,6 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
         sb.append(dataset.getFileFormat().getParent());
         sb.append("]");
         setTitle(sb.toString());
-        contentPane.setBorder(border);
 
         // setup subset information
         log.trace("DefaultTableView setup subset information");
@@ -1594,9 +1593,12 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
 
                 if (bitmaskOP == ViewProperties.BITMASK_OP.AND) opName = "Bitwise AND ";
 
-                String btitle = border.getTitle();
+                JPanel contentpane = (JPanel) getContentPane();
+                Border border = contentpane.getBorder();
+                
+                String btitle = ((TitledBorder) border).getTitle();
                 btitle += ", " + opName + bitmask;
-                border.setTitle(btitle);
+                ((TitledBorder) border).setTitle(btitle);
             }
 
             d.convertFromUnsignedC();
