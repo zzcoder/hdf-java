@@ -50,14 +50,14 @@ public class H5Ex_G_Phase {
     }
 
     private static void CreateGroup() {
-        int            file_id = -1;
-        int            group_id = -1;
-        int            subgroup_id = -1;
-        int            fapl_id = -1;
-        int            gcpl_id = -1;
-        H5G_info_t     ginfo;
-        String         name = "G0";    // Name of subgroup_id
-        int            i;
+        long            file_id = -1;
+        long            group_id = -1;
+        long            subgroup_id = -1;
+        long            fapl_id = -1;
+        long            gcpl_id = -1;
+        H5G_info_t      ginfo;
+        String          name = "G0";    // Name of subgroup_id
+        int             i;
 
         //Set file access property list to allow the latest file format.This will allow the library to create new format groups.
         try {
@@ -127,6 +127,10 @@ public class H5Ex_G_Phase {
                         break;
                     case H5G_STORAGE_TYPE_SYMBOL_TABLE:
                         System.out.println("H5G_STORAGE_TYPE_SYMBOL_TABLE"); //Original format 
+                    case H5G_STORAGE_TYPE_UNKNOWN:
+                        break;
+                    default:
+                        break;
                     }
                 }
             }
@@ -162,6 +166,10 @@ public class H5Ex_G_Phase {
                         break;
                     case H5G_STORAGE_TYPE_SYMBOL_TABLE:
                         System.out.println("H5G_STORAGE_TYPE_SYMBOL_TABLE"); //Original format 
+                    case H5G_STORAGE_TYPE_UNKNOWN:
+                        break;
+                    default:
+                        break;
                     }
                 }
             }

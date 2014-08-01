@@ -25,7 +25,7 @@ import ncsa.hdf.hdf5lib.structs.H5O_info_t;
 public class H5Ex_G_Visit {
 
     private static String FILE = "groups/h5ex_g_visit.h5";
-    
+
     public static void main(String[] args) {
         try {
             (new H5Ex_G_Visit()).VisitGroup();
@@ -37,7 +37,7 @@ public class H5Ex_G_Visit {
 
     private void VisitGroup() throws Exception {
 
-        int file_id = -1;
+        long file_id = -1;
 
         try {
             //Open file
@@ -75,8 +75,8 @@ public class H5Ex_G_Visit {
      ************************************************************/
 
     private class idata {
-        public String link_name = null;
-        public int link_type = -1;
+        public String link_name;
+        public int link_type;
         idata(String name, int type) {
             this.link_name = name;
             this.link_type = type;
@@ -88,7 +88,7 @@ public class H5Ex_G_Visit {
     }
 
     private class H5L_iter_callback implements H5L_iterate_cb {
-        public int callback(int group, String name, H5L_info_t info, H5L_iterate_t op_data) {
+        public int callback(long group, String name, H5L_info_t info, H5L_iterate_t op_data) {
 
             idata id = new idata(name, info.type);
             ((H5L_iter_data)op_data).iterdata.add(id);
@@ -116,7 +116,7 @@ public class H5Ex_G_Visit {
 
 
     private class H5O_iter_callback implements H5O_iterate_cb {
-        public int callback(int group, String name, H5O_info_t info, H5O_iterate_t op_data) {
+        public int callback(long group, String name, H5O_info_t info, H5O_iterate_t op_data) {
             idata id = new idata(name, info.type);
             ((H5O_iter_data)op_data).iterdata.add(id);
 

@@ -35,7 +35,7 @@ else (WIN32)
   set (CMAKE_JAVA_INCLUDE_FLAG_SEP ":")
 endif (WIN32)
 
-set (CMAKE_JAVA_INCLUDE_PATH "${HDFJAVA_HDF5_JARS}")
+set (CMAKE_JAVA_INCLUDE_PATH "${HDFJAVA_HDF5_JARS};${HDFJAVA_LOGGING_JAR};${HDFJAVA_LOGGING_SIMPLE_JAR}")
 
 set (CMAKE_JAVA_CLASSPATH ".")
 foreach (HDFJAVA_JAR ${CMAKE_JAVA_INCLUDE_PATH})
@@ -71,6 +71,7 @@ MACRO (ADD_H5_TEST resultfile resultcode)
           -D "TEST_OUTPUT=datasets/${resultfile}.out"
           -D "TEST_EXPECT=${resultcode}"
           -D "TEST_REFERENCE=datasets/${resultfile}.txt"
+          -D "SKIP_APPEND=TRUE"
           -P "${HDF_RESOURCES_DIR}/runTest.cmake"
   )
   if (NOT "${last_test}" STREQUAL "")

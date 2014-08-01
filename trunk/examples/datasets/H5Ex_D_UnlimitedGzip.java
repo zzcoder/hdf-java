@@ -86,10 +86,10 @@ public class H5Ex_D_UnlimitedGzip {
     }
 
     private static void writeUnlimited() {
-        int file_id = -1;
-        int dcpl_id = -1;
-        int dataspace_id = -1;
-        int dataset_id = -1;
+        long file_id = -1;
+        long dcpl_id = -1;
+        long dataspace_id = -1;
+        long dataset_id = -1;
         long[] dims = { DIM_X, DIM_Y };
         long[] chunk_dims = { CHUNK_X, CHUNK_Y };
         long[] maxdims = { HDF5Constants.H5S_UNLIMITED, HDF5Constants.H5S_UNLIMITED };
@@ -189,9 +189,9 @@ public class H5Ex_D_UnlimitedGzip {
     }
 
     private static void extendUnlimited() {
-        int file_id = -1;
-        int dataspace_id = -1;
-        int dataset_id = -1;
+        long file_id = -1;
+        long dataspace_id = -1;
+        long dataset_id = -1;
         long[] dims = { DIM_X, DIM_Y };
         long[] extdims = { EDIM_X, EDIM_Y };
         long[] start = { 0, 0 };
@@ -342,10 +342,10 @@ public class H5Ex_D_UnlimitedGzip {
     }
 
     private static void readUnlimited() {
-        int file_id = -1;
-        int dataspace_id = -1;
-        int dataset_id = -1;
-        int dcpl_id = -1;
+        long file_id = -1;
+        long dataspace_id = -1;
+        long dataset_id = -1;
+        long dcpl_id = -1;
         long[] dims = { DIM_X, DIM_Y };
         int[][] dset_data;
 

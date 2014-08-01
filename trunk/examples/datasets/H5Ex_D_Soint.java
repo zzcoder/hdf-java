@@ -83,10 +83,10 @@ public class H5Ex_D_Soint {
     }
 
     private static void writeData() {
-        int     file_id = -1;
-        int     filespace_id = -1;
-        int     dataset_id = -1;
-        int     dcpl_id = -1;
+        long     file_id = -1;
+        long     filespace_id = -1;
+        long     dataset_id = -1;
+        long     dcpl_id = -1;
         long[]  dims = { DIM_X, DIM_Y };
         long[]  chunk_dims = { CHUNK_X, CHUNK_Y };
         int[][] dset_data = new int[DIM_X][DIM_Y];
@@ -182,9 +182,9 @@ public class H5Ex_D_Soint {
     }
 
     private static void readData() {
-        int file_id = -1;
-        int dataset_id = -1;
-        int dcpl_id = -1;
+        long file_id = -1;
+        long dataset_id = -1;
+        long dcpl_id = -1;
         int[][] dset_data = new int[DIM_X][DIM_Y];
 
         // Open file using the default properties.
