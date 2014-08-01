@@ -7,9 +7,11 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 
+import java.awt.Dimension;
 import java.awt.Point;
 
 import javax.swing.JFrame;
+import javax.swing.JViewport;
 
 import org.fest.swing.core.BasicRobot;
 import org.fest.swing.core.GenericTypeMatcher;
@@ -189,20 +191,43 @@ public class TestHDFViewImageConversion {
 			mainFrameFixture.robot.waitForIdle();
 
 			// Test a few sample pixel values
-			JScrollPaneFixture imgFix = mainFrameFixture.scrollPane("imagecontent");
+			JScrollPaneFixture imagePane = mainFrameFixture.scrollPane("imagecontent");
+			JViewport view = imagePane.component().getViewport();
 
 			// Sample point 1
-			mainFrameFixture.robot.moveMouse(imgFix.component().getViewport(), 325, 53);
-			mainFrameFixture.textBox("valuefield").requireText("x=325,   y=53,   value=(152, 106, 91)");
-
+			try {
+				mainFrameFixture.robot.moveMouse(view, 325, 53);
+				mainFrameFixture.textBox("valuefield").requireText("x=325,   y=53,   value=(152, 106, 91)");
+			}
+			catch (AssertionError ae) {
+				imagePane.horizontalScrollBar().scrollTo(325);
+				imagePane.verticalScrollBar().scrollTo(53);
+				mainFrameFixture.robot.moveMouse(view, 325, 53);
+				mainFrameFixture.textBox("valuefield").requireText("x=325,   y=53,   value=(152, 106, 91)");
+			}
+				
 			// Sample point 2
-			mainFrameFixture.robot.moveMouse(imgFix.component().getViewport(), 430, 357);
-			mainFrameFixture.textBox("valuefield").requireText("x=430,   y=357,   value=(83, 80, 107)");
-
+			try {
+				mainFrameFixture.robot.moveMouse(view, 430, 357);
+				mainFrameFixture.textBox("valuefield").requireText("x=430,   y=357,   value=(83, 80, 107)");
+			}
+			catch (AssertionError ae) {
+				imagePane.horizontalScrollBar().scrollTo(430);
+				imagePane.verticalScrollBar().scrollTo(357);
+				mainFrameFixture.robot.moveMouse(view, 430, 357);
+				mainFrameFixture.textBox("valuefield").requireText("x=430,   y=357,   value=(83, 80, 107)");
+			}
+				
 			// Sample point 3
-			mainFrameFixture.robot.moveMouse(imgFix.component().getViewport(), 197, 239);
-			mainFrameFixture.textBox("valuefield").requireText("x=197,   y=239,   value=(206, 177, 159)");	
-
+			try {
+				mainFrameFixture.robot.moveMouse(view, 197, 239);
+				mainFrameFixture.textBox("valuefield").requireText("x=197,   y=239,   value=(206, 177, 159)");	
+			}
+			catch (AssertionError ae) {
+				imagePane.horizontalScrollBar().scrollTo(197);
+				imagePane.verticalScrollBar().scrollTo(239);
+			}
+			
 			// Test metadata
 			JMenuItemFixture metadataMenuItem = filetree.showPopupMenuAt(1).menuItemWithPath("Show Properties");
 			mainFrameFixture.robot.waitForIdle();
@@ -293,20 +318,45 @@ public class TestHDFViewImageConversion {
 			mainFrameFixture.robot.waitForIdle();
 
 			// Test a few sample pixel values
-			JScrollPaneFixture imgFix = mainFrameFixture.scrollPane("imagecontent");
+			JScrollPaneFixture imagePane = mainFrameFixture.scrollPane("imagecontent");
+			JViewport view = imagePane.component().getViewport();
 
 			// Sample point 1
-			mainFrameFixture.robot.moveMouse(imgFix.component().getViewport(), 325, 53);
-			mainFrameFixture.textBox("valuefield").requireText("x=325,   y=53,   value=(152, 106, 91)");
-
+			try {
+				mainFrameFixture.robot.moveMouse(view, 325, 53);
+				mainFrameFixture.textBox("valuefield").requireText("x=325,   y=53,   value=(152, 106, 91)");
+			}
+			catch (AssertionError ae) {
+				imagePane.horizontalScrollBar().scrollTo(325);
+				imagePane.verticalScrollBar().scrollTo(53);
+				mainFrameFixture.robot.moveMouse(view, 325, 53);
+				mainFrameFixture.textBox("valuefield").requireText("x=325,   y=53,   value=(152, 106, 91)");
+			}
+				
 			// Sample point 2
-			mainFrameFixture.robot.moveMouse(imgFix.component().getViewport(), 430, 357);
-			mainFrameFixture.textBox("valuefield").requireText("x=430,   y=357,   value=(83, 80, 107)");
-
+			try {
+				mainFrameFixture.robot.moveMouse(view, 430, 357);
+				mainFrameFixture.textBox("valuefield").requireText("x=430,   y=357,   value=(83, 80, 107)");
+			}
+			catch (AssertionError ae) {
+				imagePane.horizontalScrollBar().scrollTo(430);
+				imagePane.verticalScrollBar().scrollTo(357);
+				mainFrameFixture.robot.moveMouse(view, 430, 357);
+				mainFrameFixture.textBox("valuefield").requireText("x=430,   y=357,   value=(83, 80, 107)");
+			}
+				
 			// Sample point 3
-			mainFrameFixture.robot.moveMouse(imgFix.component().getViewport(), 197, 239);
-			mainFrameFixture.textBox("valuefield").requireText("x=197,   y=239,   value=(206, 177, 159)");	
-
+			try {
+				mainFrameFixture.robot.moveMouse(view, 197, 239);
+				mainFrameFixture.textBox("valuefield").requireText("x=197,   y=239,   value=(206, 177, 159)");	
+			}
+			catch (AssertionError ae) {
+				imagePane.horizontalScrollBar().scrollTo(197);
+				imagePane.verticalScrollBar().scrollTo(239);
+				mainFrameFixture.robot.moveMouse(view, 197, 239);
+				mainFrameFixture.textBox("valuefield").requireText("x=197,   y=239,   value=(206, 177, 159)");
+			}
+				
 			// Test metadata
 			JMenuItemFixture metadataMenuItem = filetree.showPopupMenuAt(1).menuItemWithPath("Show Properties");
 			mainFrameFixture.robot.waitForIdle();
@@ -329,7 +379,6 @@ public class TestHDFViewImageConversion {
 
 			dlg.button("Close").click();
 			mainFrameFixture.robot.waitForIdle();
-
 
 			// Done
 			mainFrameFixture.menuItemWithPath("Image", "Close").click();
