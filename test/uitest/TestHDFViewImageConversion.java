@@ -99,6 +99,12 @@ public class TestHDFViewImageConversion {
 		int remainderX;
 		int remainderY;
 		
+		// Make sure Show Values is selected
+		if(!mainFrameFixture.menuItemWithPath("Image", "Show Value").component().isSelected()) {
+			mainFrameFixture.menuItemWithPath("Image", "Show Value").click();
+			mainFrameFixture.robot.waitForIdle();
+		}
+		
 		try {
 			mainFrameFixture.robot.moveMouse(view, x, y);
 			mainFrameFixture.textBox("valuefield").requireText(requiredValue);
@@ -223,10 +229,6 @@ public class TestHDFViewImageConversion {
 			mainFrameFixture.dialog().button("OK").click();
 			mainFrameFixture.robot.waitForIdle();
 
-			// Enable show values
-			mainFrameFixture.menuItemWithPath("Image", "Show Value").click();
-			mainFrameFixture.robot.waitForIdle();
-
 			// Test a few sample pixel values
 			testSamplePixel(325, 53, "x=325,   y=53,   value=(152, 106, 91)");
 			testSamplePixel(430, 357, "x=430,   y=357,   value=(83, 80, 107)");
@@ -315,10 +317,6 @@ public class TestHDFViewImageConversion {
 			mainFrameFixture.robot.waitForIdle();
 
 			mainFrameFixture.dialog().button("OK").click();
-			mainFrameFixture.robot.waitForIdle();
-
-			// Enable show values
-			mainFrameFixture.menuItemWithPath("Image", "Show Value").click();
 			mainFrameFixture.robot.waitForIdle();
 
 			// Test a few sample pixel values
