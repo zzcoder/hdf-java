@@ -337,6 +337,31 @@ public class TestH5A {
     }
     
     @Test
+    public void testH5Aget_name() {
+        String obj_name = ".";
+        String attr_name = "DATASET1";
+        String[] ret_name = null;
+        long attribute_id = -1;
+
+        try {
+            attribute_id = H5.H5Acreate_by_name(H5fid, obj_name, attr_name,
+                    type_id, space_id, HDF5Constants.H5P_DEFAULT,
+                    HDF5Constants.H5P_DEFAULT, lapl_id);
+            assertTrue("testH5Aget_name: H5Acreate_by_name", attribute_id >= 0);
+            long attr_name_size = H5.H5Aget_name(attribute_id, ret_name);
+            assertTrue("testH5Aget_name: testH5Aget_name", attr_name_size >= 0);
+        } 
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("testH5Aget_name " + err);
+        } 
+        finally {
+            if (attribute_id > 0)
+                try {H5.H5Aclose(attribute_id);} catch (Exception ex) {}
+        }
+    }
+    
+    @Test
     public void testH5Aget_name_by_idx() {
         long loc_id = H5fid;
         String obj_name = ".";
@@ -813,8 +838,9 @@ public class TestH5A {
 
         try {
             atype_id = H5.H5Tcopy(HDF5Constants.H5T_C_S1);
-            assertTrue("testH5Awrite_readVL: ", atype_id >= 0);
-            assertTrue("testH5Awrite_readVL", H5.H5Tset_size(atype_id, HDF5Constants.H5T_VARIABLE) > 0);
+            assertTrue("testH5Awrite_readVL.H5Tcopy: ", atype_id >= 0);
+            H5.H5Tset_size(atype_id, HDF5Constants.H5T_VARIABLE);
+            assertTrue("testH5Awrite_readVL.H5Tis_variable_str", H5.H5Tis_variable_str(atype_id));
         }
         catch (Exception err) {
             err.printStackTrace();

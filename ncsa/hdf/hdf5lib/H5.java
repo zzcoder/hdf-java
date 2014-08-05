@@ -586,8 +586,8 @@ throws HDF5LibraryException, NullPointerException
 * H5Acreate2 an attribute, attr_name, which is attached to the object
 * specified by the identifier loc_id.
 * 
-* @see public static int H5Acreate( int loc_id, String attr_name, int
-*      type_id, int space_id, int acpl_id, int aapl_id )
+* @see public static long H5Acreate( long loc_id, String attr_name, long
+*      type_id, long space_id, long acpl_id, long aapl_id )
 **/
 private synchronized static native int _H5Acreate2(long loc_id, String attr_name, long type_id, long space_id, long acpl_id, long aapl_id) 
         throws HDF5LibraryException, NullPointerException;
@@ -3276,10 +3276,21 @@ private synchronized static native int H5Gget_obj_info_max(long loc_id,
  * @exception NullPointerException
  *                - name is null.
  */
-public synchronized static int H5Gn_members(long loc_id, String name)
+public synchronized static long H5Gn_members(long loc_id, String name)
         throws HDF5LibraryException, NullPointerException 
 {
-    return (int) H5Gn_members(loc_id, name);
+    long grp_id = H5Gopen(loc_id, name, HDF5Constants.H5P_DEFAULT);
+    long n = -1;
+
+    try { 
+        H5G_info_t info = H5.H5Gget_info(grp_id);
+        n =  info.nlinks;
+    } 
+    finally {
+        H5Gclose(grp_id); 
+    } 
+    
+    return n;
 }
 
 /**
