@@ -107,6 +107,7 @@ public class TestHDFViewImageConversion {
 		
 		try {
 			mainFrameFixture.robot.moveMouse(view, x, y);
+			mainFrameFixture.robot.waitForIdle();
 			mainFrameFixture.textBox("valuefield").requireText(requiredValue);
 		}
 		catch (AssertionError ae) {
@@ -114,7 +115,10 @@ public class TestHDFViewImageConversion {
 			
 			// Reset View
 			imagePane.horizontalScrollBar().scrollToMinimum();
+			mainFrameFixture.robot.waitForIdle();
+			
 			imagePane.verticalScrollBar().scrollToMinimum();
+			mainFrameFixture.robot.waitForIdle();
 			
 			// Calculate number of units to scroll in order to display this pixel
 			increment = imagePane.component().getHorizontalScrollBar().getUnitIncrement();
@@ -122,13 +126,17 @@ public class TestHDFViewImageConversion {
 			unitsY = y / increment;
 			
 			imagePane.horizontalScrollBar().scrollUnitDown(unitsX);
+			mainFrameFixture.robot.waitForIdle();
+			
 			imagePane.verticalScrollBar().scrollUnitDown(unitsY);
+			mainFrameFixture.robot.waitForIdle();
 			
 			// Calculate extra distance to be moved in each direction to find this pixel
 			remainderX = (x) - (view.getViewPosition().x);
 			remainderY = (y) - (view.getViewPosition().y);
 			
-			mainFrameFixture.robot.moveMouse(view, remainderX, remainderY);	
+			mainFrameFixture.robot.moveMouse(view, remainderX, remainderY);
+			mainFrameFixture.robot.waitForIdle();
 			mainFrameFixture.textBox("valuefield").requireText(requiredValue);
 		}
 	}
