@@ -116,7 +116,7 @@ public class TestH5T {
 
        try {
            filetype_id = H5.H5Tarray_create(HDF5Constants.H5T_STD_I64LE, 2, adims);
-           assertTrue("testH5Tarray_create", filetype_id > 0);
+           assertTrue("testH5Tarray_create", filetype_id >= 0);
        }
        catch (Throwable err) {
            err.printStackTrace();
@@ -141,7 +141,7 @@ public class TestH5T {
            err.printStackTrace();
            fail("testH5Tarray_create.H5Tarray_create " + err);
        }
-       assertTrue("testH5Tget_array_ndims:H5Tarray_create", filetype_id > 0);
+       assertTrue("testH5Tget_array_ndims:H5Tarray_create", filetype_id >= 0);
        try {
            ndims = H5.H5Tget_array_ndims(filetype_id);
            assertTrue("testH5Tget_array_ndims", ndims == 2);
@@ -170,7 +170,7 @@ public class TestH5T {
            err.printStackTrace();
            fail("testH5Tarray_create.H5Tarray_create " + err);
        }
-       assertTrue("testH5Tget_array_dims:H5Tarray_create", filetype_id > 0);
+       assertTrue("testH5Tget_array_dims:H5Tarray_create", filetype_id >= 0);
        try {
            ndims = H5.H5Tget_array_dims(filetype_id, rdims);
            assertTrue("testH5Tget_array_dims", ndims == 2);
@@ -202,7 +202,7 @@ public class TestH5T {
             err.printStackTrace();
             fail("testH5Tenum_functions:H5Tcreate " + err);
         }
-        assertTrue("testH5Tenum_functions:H5Tcreate", filetype_id > 0);
+        assertTrue("testH5Tenum_functions:H5Tcreate", filetype_id >= 0);
         try {
             enum_val[0]=10;
             H5.H5Tenum_insert(filetype_id, "RED", enum_val);
@@ -226,7 +226,7 @@ public class TestH5T {
 
             // Open the dataytpe for query
             filetype_id = H5.H5Topen(H5fid, enum_type, HDF5Constants.H5P_DEFAULT);
-            assertTrue("testH5Tenum_functions:H5Tcreate", filetype_id > 0);
+            assertTrue("testH5Tenum_functions:H5Tcreate", filetype_id >= 0);
 
             // Query member number and member index by member name, for enumeration type
             assertTrue("Can't get member number", H5.H5Tget_nmembers(filetype_id) == 5);
@@ -268,7 +268,7 @@ public class TestH5T {
             err.printStackTrace();
             fail("testH5Tenum_create_functions:H5Tcreate " + err);
         }
-        assertTrue("testH5Tenum_create_functions:H5Tcreate", filetype_id > 0);
+        assertTrue("testH5Tenum_create_functions:H5Tcreate", filetype_id >= 0);
         try {
             enum_val[0]=10;
             H5.H5Tenum_insert(filetype_id, "RED", enum_val);
@@ -308,7 +308,7 @@ public class TestH5T {
             err.printStackTrace();
             fail("testH5Topaque_functions:H5Tcreate " + err);
         }
-        assertTrue("testH5Topaque_functions:H5Tcreate", filetype_id > 0);
+        assertTrue("testH5Topaque_functions:H5Tcreate", filetype_id >= 0);
 
         try {
             H5.H5Tset_tag(filetype_id, "opaque type");
@@ -331,7 +331,7 @@ public class TestH5T {
 
        try {
            filetype_id = H5.H5Tvlen_create(HDF5Constants.H5T_C_S1);
-           assertTrue("testH5Tvlen_create", filetype_id > 0);
+           assertTrue("testH5Tvlen_create", filetype_id >= 0);
        }
        catch (Throwable err) {
            err.printStackTrace();
@@ -349,10 +349,10 @@ public class TestH5T {
 
        try {
            filetype_id = H5.H5Tcopy(HDF5Constants.H5T_C_S1);
-           assertTrue("testH5Tis_variable_str", filetype_id > 0);
+           assertTrue("testH5Tis_variable_str.H5Tcopy: ", filetype_id >= 0);
 
            // Convert to variable-length string
-           assertTrue("testH5Tis_variable_str", H5.H5Tset_size(filetype_id, HDF5Constants.H5T_VARIABLE) > 0);
+           H5.H5Tset_size(filetype_id, HDF5Constants.H5T_VARIABLE);
 
            // Check if datatype is VL string
            int vlclass = H5.H5Tget_class(filetype_id);
@@ -365,7 +365,7 @@ public class TestH5T {
        }
        catch (Throwable err) {
            err.printStackTrace();
-           fail("testH5Tis_variable_str.H5Tis_variable_str " + err);
+           fail("testH5Tis_variable_str " + err);
        }
        finally {
            if (filetype_id >= 0)
@@ -385,7 +385,7 @@ public class TestH5T {
             err.printStackTrace();
             fail("testH5Tcompound_functions:H5Tcreate " + err);
         }
-        assertTrue("testH5Tcompound_functions:H5Tcreate", filetype_id > 0);
+        assertTrue("testH5Tcompound_functions:H5Tcreate", filetype_id >= 0);
         try {
             H5.H5Tinsert(filetype_id, "Lon", 0, HDF5Constants.H5T_NATIVE_DOUBLE);
             H5.H5Tinsert(filetype_id, "Lat", 8, HDF5Constants.H5T_NATIVE_DOUBLE);

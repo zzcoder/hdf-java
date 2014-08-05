@@ -158,7 +158,7 @@ public class TestH5 {
      */
     @Test
     public void testH5check_version() {
-        int majnum = 1, minnum = 9, relnum = 191;
+        int majnum = 1, minnum = 9, relnum = 192;
 
         try {
             H5.H5check_version(majnum, minnum, relnum);
