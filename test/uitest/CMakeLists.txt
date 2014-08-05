@@ -179,7 +179,7 @@ add_test (
         testfile.h5
         apollo17_earth.jpg.hdf
         apollo17_earth.jpg.h5
-#        test_libversion.h5
+        test_libversion.h5
         closefile.hdf
         closeallfile.hdf
         closeallfile.h5
