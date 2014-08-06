@@ -115,7 +115,7 @@ JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Aopen_1name
  * Method:    H5Aopen_idx
  * Signature: (JI)J
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Aopen_1idx
+JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Aopen_1idx
   (JNIEnv *env, jclass clss, jlong loc_id, jint idx)
 {
     hid_t retVal = -1;

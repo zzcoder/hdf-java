@@ -589,7 +589,7 @@ throws HDF5LibraryException, NullPointerException
 * @see public static long H5Acreate( long loc_id, String attr_name, long
 *      type_id, long space_id, long acpl_id, long aapl_id )
 **/
-private synchronized static native int _H5Acreate2(long loc_id, String attr_name, long type_id, long space_id, long acpl_id, long aapl_id) 
+private synchronized static native long _H5Acreate2(long loc_id, String attr_name, long type_id, long space_id, long acpl_id, long aapl_id) 
         throws HDF5LibraryException, NullPointerException;
 
 /**
@@ -618,7 +618,7 @@ public static long H5Acreate_by_name(long loc_id, String obj_name, String attr_n
     return id;
 }
 
-private synchronized static native int _H5Acreate_by_name(long loc_id, String obj_name, String attr_name, long type_id, long space_id, 
+private synchronized static native long _H5Acreate_by_name(long loc_id, String obj_name, String attr_name, long type_id, long space_id, 
         long acpl_id, long aapl_id, long lapl_id)
         throws HDF5LibraryException, NullPointerException;
 
@@ -940,7 +940,7 @@ throws HDF5LibraryException, NullPointerException
     return id;
 }
 
-private synchronized static native int _H5Aopen_by_name(long loc_id, String obj_name, String attr_name,long aapl_id, long lapl_id)
+private synchronized static native long _H5Aopen_by_name(long loc_id, String obj_name, String attr_name,long aapl_id, long lapl_id)
 throws HDF5LibraryException, NullPointerException;
 
 /**
@@ -3331,7 +3331,7 @@ private synchronized static native long _H5Gopen2(long loc_id, String name,
 ////
 //////////////////////////////////////////////////////////////
 
-public synchronized static native int H5Iget_file_id(long obj_id)
+public synchronized static native long H5Iget_file_id(long obj_id)
         throws HDF5LibraryException;
 
 public synchronized static native long H5Iget_name(long obj_id,
@@ -3389,6 +3389,36 @@ public synchronized static native int H5Iget_type_ref(long type_id)
 public synchronized static native int H5Inmembers(long type_id)
         throws HDF5LibraryException;
 
+/**
+ * H5Iis_valid indicates if the identifier type specified in obj_id is valid. 
+ * 
+ * @param obj_id          
+ *           IN: Identifier to be checked
+ * 
+ * @return a boolean, true if the specified identifier id is valid
+ * 
+ * @exception HDF5LibraryException
+ *                - Error from the HDF-5 Library.
+ **/
+public synchronized static native boolean H5Iis_valid(long obj_id)
+        throws HDF5LibraryException;
+//htri_t H5Iis_valid(hid_t id);
+
+/**
+ * H5Itype_exists indicates if the identifier type specified in type exists. 
+ * 
+ * @param type_id          
+ *           IN: the identifier type to be checked
+ * 
+ * @return a boolean, true if the specified identifier type exists
+ * 
+ * @exception HDF5LibraryException
+ *                - Error from the HDF-5 Library.
+ **/
+public synchronized static native boolean H5Itype_exists(int type)
+        throws HDF5LibraryException;
+//htri_t H5Itype_exists(H5I_type_t type);
+
 ///////// unimplemented ////////
 //herr_t H5Iclear_type(H5I_type_t type, hbool_t force);
 
@@ -3397,8 +3427,6 @@ public synchronized static native int H5Inmembers(long type_id)
 //herr_t H5Idestroy_type(H5I_type_t type);
 
 //int H5Iinc_type_ref(H5I_type_t type);
-
-//htri_t H5Iis_valid(hid_t id);
 
 //void *H5Iobject_verify(hid_t id, H5I_type_t id_type);
 
@@ -3409,8 +3437,6 @@ public synchronized static native int H5Inmembers(long type_id)
 //void *H5Iremove_verify(hid_t id, H5I_type_t id_type);
 
 //void *H5Isearch(H5I_type_t type, H5I_search_func_t func, void *key);
-
-//htri_t H5Itype_exists(H5I_type_t type);
 
 
 // //////////////////////////////////////////////////////////////////
@@ -3810,6 +3836,20 @@ public synchronized static native String H5Oget_comment(long obj_id)
         throws HDF5LibraryException;
 
 /**
+*  H5Oset_comment sets the comment for the specified object.
+*
+*  @param obj_id  IN: Identifier of the target object
+*  @param comment IN: The new comment.
+*
+*  @exception HDF5LibraryException - Error from the HDF-5 Library.
+* 
+* @deprecated As of HDF5 1.8 in favor of object attributes. 
+**/
+@Deprecated
+public synchronized static native void H5Oset_comment(long obj_id, String comment)
+        throws HDF5LibraryException;
+
+/**
 *  H5Oget_comment_by_name retrieves the comment for an object.
 *
 *  @param loc_id  IN: Identifier of a file, group, dataset, or named datatype.
@@ -3824,6 +3864,24 @@ public synchronized static native String H5Oget_comment(long obj_id)
 public synchronized static native String H5Oget_comment_by_name(long loc_id, String name, long lapl_id)
         throws HDF5LibraryException, NullPointerException;
 //long H5Oget_comment_by_name(int loc_id, String name, String comment, long bufsize, int lapl_id);
+
+/**
+*  H5Oset_comment_by_name sets the comment for the specified object.
+*
+*  @param loc_id  IN: Identifier of a file, group, dataset, or named datatype.
+*  @param name    IN: Relative name of the object whose comment is to be set or reset.
+*  @param comment IN: The new comment.
+*  @param lapl_id IN: Link access property list identifier. 
+*
+*  @exception HDF5LibraryException - Error from the HDF-5 Library.
+*  @exception NullPointerException - name is null.
+* 
+* @deprecated As of HDF5 1.8 in favor of object attributes. 
+**/
+@Deprecated
+public synchronized static native void H5Oset_comment_by_name(long loc_id, String name,
+        String comment, long lapl_id)
+        throws HDF5LibraryException, NullPointerException;
 
 /**
  *  H5Oget_info retrieves the metadata for an object specified by an identifier. 

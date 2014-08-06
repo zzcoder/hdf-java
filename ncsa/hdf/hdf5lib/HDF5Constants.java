@@ -273,23 +273,31 @@ public class HDF5Constants {
     public static final int H5G_STORAGE_TYPE_DENSE = H5G_STORAGE_TYPE_DENSE();
     public static final int H5G_TYPE = H5G_TYPE();
     public static final int H5G_UNKNOWN = H5G_UNKNOWN();
+    
     public static final int H5I_ATTR = H5I_ATTR();
     public static final int H5I_BADID = H5I_BADID();
     public static final int H5I_DATASET = H5I_DATASET();
     public static final int H5I_DATASPACE = H5I_DATASPACE();
     public static final int H5I_DATATYPE = H5I_DATATYPE();
+    public static final int H5I_ERROR_CLASS = H5I_ERROR_CLASS();
+    public static final int H5I_ERROR_MSG = H5I_ERROR_MSG();
+    public static final int H5I_ERROR_STACK = H5I_ERROR_STACK();
     public static final int H5I_FILE = H5I_FILE();
     public static final int H5I_GENPROP_CLS = H5I_GENPROP_CLS();
     public static final int H5I_GENPROP_LST = H5I_GENPROP_LST();
     public static final int H5I_GROUP = H5I_GROUP();
     public static final int H5I_INVALID_HID = H5I_INVALID_HID();
+    public static final int H5I_NTYPES = H5I_NTYPES();
     public static final int H5I_REFERENCE = H5I_REFERENCE();
+    public static final int H5I_UNINIT = H5I_UNINIT();
     public static final int H5I_VFL = H5I_VFL();
+    
     public static final int H5L_TYPE_ERROR = H5L_TYPE_ERROR();
     public static final int H5L_TYPE_HARD = H5L_TYPE_HARD();
     public static final int H5L_TYPE_SOFT = H5L_TYPE_SOFT();
     public static final int H5L_TYPE_EXTERNAL = H5L_TYPE_EXTERNAL();
     public static final int H5L_TYPE_MAX = H5L_TYPE_MAX(); 
+    
     public static final int H5O_COPY_SHALLOW_HIERARCHY_FLAG = H5O_COPY_SHALLOW_HIERARCHY_FLAG();
     public static final int H5O_COPY_EXPAND_SOFT_LINK_FLAG =  H5O_COPY_EXPAND_SOFT_LINK_FLAG();
     public static final int H5O_COPY_EXPAND_EXT_LINK_FLAG = H5O_COPY_EXPAND_EXT_LINK_FLAG();
@@ -1109,6 +1117,12 @@ public class HDF5Constants {
 
     private static native final int H5I_DATATYPE();
 
+    private static native final int H5I_ERROR_CLASS();
+
+    private static native final int H5I_ERROR_MSG();
+
+    private static native final int H5I_ERROR_STACK();
+
     private static native final int H5I_FILE();
 
     private static native final int H5I_GENPROP_CLS();
@@ -1119,7 +1133,11 @@ public class HDF5Constants {
 
     private static native final int H5I_INVALID_HID();
 
+    private static native final int H5I_NTYPES();
+
     private static native final int H5I_REFERENCE();
+
+    private static native final int H5I_UNINIT();
 
     private static native final int H5I_VFL();
 

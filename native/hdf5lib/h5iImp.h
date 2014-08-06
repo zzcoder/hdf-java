@@ -73,6 +73,22 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Iget_1type_1ref
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Inmembers
   (JNIEnv*, jclass, jint);
 
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Iis_valid
+ * Signature: (J)Z
+ */
+JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Iis_1valid
+  (JNIEnv*, jclass, jlong);
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Itype_exists
+ * Signature: (J)Z
+ */
+JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Itype_1xists
+  (JNIEnv*, jclass, jint);
+
 #ifdef __cplusplus
 }
 #endif
