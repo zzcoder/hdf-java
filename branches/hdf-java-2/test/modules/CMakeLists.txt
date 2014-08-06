@@ -123,6 +123,10 @@ foreach (CMAKE_INCLUDE_PATH ${CMAKE_JAVA_INCLUDE_PATH})
 endforeach (CMAKE_INCLUDE_PATH)
 set (CMAKE_JAVA_CLASSPATH "${CMAKE_JAVA_CLASSPATH}${CMAKE_JAVA_INCLUDE_FLAG_SEP}${${HDFJAVA_TEST_UIMOD_TARGET}_JAR_FILE}")
 
+if (CMAKE_BUILD_TYPE MATCHES Debug)
+  set (CMD_ARGS "-Dncsa.hdf.hdf5lib.H5.loadLibraryName=jhdf5_debug;")
+endif(CMAKE_BUILD_TYPE MATCHES Debug)
+
 add_test (
     NAME JUnit-gui-modules-clear-objects
     COMMAND    ${CMAKE_COMMAND}
@@ -136,7 +140,7 @@ add_test (
     COMMAND "${CMAKE_COMMAND}"
         -D "TEST_TESTER=${CMAKE_Java_RUNTIME};${CMAKE_Java_RUNTIME_FLAGS}"
         -D "TEST_CLASSPATH:STRING=${CMAKE_JAVA_CLASSPATH}"
-        -D "TEST_ARGS:STRING=-ea;org.junit.runner.JUnitCore"
+        -D "TEST_ARGS:STRING=${CMD_ARGS}-ea;org.junit.runner.JUnitCore"
         -D "TEST_PROGRAM=test.modules.TestGermanViewMenu"
         -D "TEST_LIBRARY_DIRECTORY=${CMAKE_TEST_OUTPUT_DIRECTORY}"
         -D "TEST_FOLDER=${PROJECT_BINARY_DIR}"
