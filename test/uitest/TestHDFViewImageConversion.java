@@ -33,6 +33,46 @@ public class TestHDFViewImageConversion {
     private static String HDF4IMAGE = JPGFILE+".hdf";
     private static String HDF5IMAGE = JPGFILE+".h5";
 
+    private File createFile(String name, boolean hdf4_type) {
+        String file_ext;
+        String file_type;
+        if (hdf4_type) {
+            file_ext = new String(".hdf");
+            file_type = new String("HDF4");
+        }
+        else {
+            file_ext = new String(".h5");
+            file_type = new String("HDF5");
+        }
+
+        File hdf_file = new File(name + file_ext);
+        if (hdf_file.exists())
+            hdf_file.delete();
+
+        try {
+            JMenuItemFixture fileMenuItem = mainFrameFixture.menuItemWithPath("File", "New", file_type);
+            mainFrameFixture.robot.waitForIdle();
+            fileMenuItem.requireVisible();
+            fileMenuItem.click();
+            mainFrameFixture.robot.waitForIdle();
+    
+            JFileChooserFixture fileChooser = JFileChooserFinder.findFileChooser().using(mainFrameFixture.robot);
+            fileChooser.fileNameTextBox().setText(name + file_ext);
+            fileChooser.approve();
+            mainFrameFixture.robot.waitForIdle();
+    
+            assertTrue("File-" + file_type + " file created", hdf_file.exists());
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        catch (AssertionError ae) {
+            ae.printStackTrace();
+        }
+
+        return hdf_file;
+    }
+    
     private void closeFile(File hdf_file, boolean delete_file) {
         try {
             JMenuItemFixture fileMenuItem = mainFrameFixture.menuItemWithPath("File", "Close All");
@@ -139,6 +179,11 @@ public class TestHDFViewImageConversion {
         }).withTimeout(10000).using(robot);
         mainFrameFixture.robot.waitForIdle();
         mainFrameFixture.requireVisible();
+        
+        // Create dummy HDF4 file to ensure HDF4 library gets loaded
+        File hdf4file = createFile("dummyfile", true);
+        if(hdf4file.exists())
+        	hdf4file.delete();
     }
 
     @AfterClass
