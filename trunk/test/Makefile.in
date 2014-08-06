@@ -14,7 +14,7 @@
 TOP = ..
 DIR	= test
 #SUBDIRS = hdf5lib object uitest
-SUBDIRS = hdf5lib object
+SUBDIRS = hdf5lib
 
 JAVAC           = @JAVAC@
 JAVADOC         = @JAVADOC@
@@ -34,6 +34,3 @@ include $(TOP)/config/Rules.mk
 
 check:
 	(cd hdf5lib; $(MAKE) check;)
-	(cd object; $(MAKE) check;)
-	(cd object/misc; $(MAKE) check)
-#	(cd uitest; $(MAKE) check;)

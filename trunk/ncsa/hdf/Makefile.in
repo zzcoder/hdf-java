@@ -13,7 +13,7 @@
  
 TOP = ../..
 DIR	= ncsa/hdf
-SUBDIRS = hdf5lib hdflib object view
+SUBDIRS = hdf5lib hdflib
 
 JAVAC           = @JAVAC@
 JAVADOC         = @JAVADOC@
