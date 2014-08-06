@@ -16,9 +16,12 @@ import ncsa.hdf.hdf5lib.structs.H5AC_cache_config_t;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestName;
 
 public class TestH5Pfapl {
+    @Rule public TestName testname = new TestName();
     
     private static final String H5_FILE = "test.h5";
     private static final String H5_LOG_FILE = "test.log";
@@ -247,6 +250,7 @@ public class TestH5Pfapl {
     public void createFileAccess()
             throws NullPointerException, HDF5Exception {
         assertTrue("H5 open ids is 0",H5.getOpenIDCount()==0);
+        System.out.print(testname.getMethodName());
 
         try {
             fapl_id = H5.H5Pcreate(HDF5Constants.H5P_FILE_ACCESS);
@@ -301,6 +305,7 @@ public class TestH5Pfapl {
             try {H5.H5Dclose(H5did);} catch (Exception ex) {}
         if (H5fid > 0) 
             try {H5.H5Fclose(H5fid);} catch (Exception ex) {}
+        System.out.println();
     }
     
     @Test

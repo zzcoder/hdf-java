@@ -15,9 +15,12 @@ import ncsa.hdf.hdf5lib.structs.H5L_info_t;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestName;
 
 public class TestH5Lbasic {
+    @Rule public TestName testname = new TestName();
     private static final String H5_FILE = "test/hdf5lib/h5ex_g_iterate.hdf";
     long H5fid = -1;
 
@@ -25,6 +28,7 @@ public class TestH5Lbasic {
     public void openH5file()
             throws HDF5LibraryException, NullPointerException {
         assertTrue("H5 open ids is 0",H5.getOpenIDCount()==0);
+        System.out.print(testname.getMethodName());
 
         try {
             H5fid = H5.H5Fopen(H5_FILE, HDF5Constants.H5F_ACC_RDONLY,
@@ -41,6 +45,7 @@ public class TestH5Lbasic {
         if (H5fid > 0) {
             try {H5.H5Fclose(H5fid);} catch (Exception ex) {}
         }
+        System.out.println();
     }
 
     @Test

@@ -18,9 +18,12 @@ import ncsa.hdf.hdf5lib.structs.H5L_info_t;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestName;
 
 public class TestH5Lcreate {
+    @Rule public TestName testname = new TestName();
     private static final String H5_EXTFILE = "test/hdf5lib/h5ex_g_iterate.hdf";
     private static final String H5_FILE = "test.h5";
     private static final int DIM_X = 4;
@@ -125,6 +128,7 @@ public class TestH5Lcreate {
     public void createH5file()
             throws NullPointerException, HDF5Exception {
         assertTrue("H5 open ids is 0",H5.getOpenIDCount()==0);
+        System.out.print(testname.getMethodName());
         try {
             H5fcpl = H5.H5Pcreate(HDF5Constants.H5P_FILE_CREATE);
             H5.H5Pset_link_creation_order(H5fcpl, HDF5Constants.H5P_CRT_ORDER_TRACKED+HDF5Constants.H5P_CRT_ORDER_INDEXED);
@@ -164,6 +168,7 @@ public class TestH5Lcreate {
             try {H5.H5Pclose(H5fcpl);} catch (Exception ex) {}
 
         _deleteFile(H5_FILE);
+        System.out.println();
     }
 
     @Test

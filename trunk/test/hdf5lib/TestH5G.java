@@ -14,9 +14,12 @@ import ncsa.hdf.hdf5lib.structs.H5G_info_t;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestName;
 
 public class TestH5G {
+    @Rule public TestName testname = new TestName();
     private static final String H5_FILE = "test.h5";
     private static final String H5_FILE2 = "test2.h5";
     private static final String[] GROUPS = { "/G1", "/G1/G11", "/G1/G12",
@@ -101,6 +104,7 @@ public class TestH5G {
     public void createH5file()
             throws HDF5LibraryException, NullPointerException {
         assertTrue("H5 open ids is 0",H5.getOpenIDCount()==0);
+        System.out.print(testname.getMethodName());
 
         try {
             H5fid = H5.H5Fcreate(H5_FILE, HDF5Constants.H5F_ACC_TRUNC, HDF5Constants.H5P_DEFAULT,
@@ -142,6 +146,7 @@ public class TestH5G {
         }
        _deleteFile(H5_FILE);
        _deleteFile(H5_FILE2);
+       System.out.println();
     }
 
     @Test
