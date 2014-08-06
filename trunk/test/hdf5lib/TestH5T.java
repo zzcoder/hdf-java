@@ -332,6 +332,11 @@ public class TestH5T {
        try {
            filetype_id = H5.H5Tvlen_create(HDF5Constants.H5T_C_S1);
            assertTrue("testH5Tvlen_create", filetype_id >= 0);
+
+           // Check if datatype is VL type
+           int vlclass = H5.H5Tget_class(filetype_id);
+           assertTrue("testH5Tvlen_create:H5Tget_class", vlclass == HDF5Constants.H5T_VLEN);
+           assertFalse("testH5Tis_variable_str:H5Tget_class", vlclass == HDF5Constants.H5T_STRING);
        }
        catch (Throwable err) {
            err.printStackTrace();
@@ -345,7 +350,7 @@ public class TestH5T {
     
     @Test
     public void testH5Tis_variable_str() {
-        long filetype_id = -1;
+       long filetype_id = -1;
 
        try {
            filetype_id = H5.H5Tcopy(HDF5Constants.H5T_C_S1);
@@ -357,6 +362,7 @@ public class TestH5T {
            // Check if datatype is VL string
            int vlclass = H5.H5Tget_class(filetype_id);
            assertTrue("testH5Tis_variable_str:H5Tget_class", vlclass == HDF5Constants.H5T_STRING);
+           assertFalse("testH5Tvlen_create:H5Tget_class", vlclass == HDF5Constants.H5T_VLEN);
            
            assertTrue("testH5Tis_variable_str:H5Tis_variable_str", H5.H5Tis_variable_str(filetype_id));
 
