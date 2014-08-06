@@ -14,9 +14,12 @@ import ncsa.hdf.hdf5lib.exceptions.HDF5LibraryException;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestName;
 
 public class TestH5S {
+    @Rule public TestName testname = new TestName();
     long H5sid = -1;
     int H5rank = 2;
     long H5dims[] = {5, 5};
@@ -26,6 +29,7 @@ public class TestH5S {
     public void createH5file()
             throws NullPointerException, HDF5Exception {
         assertTrue("H5 open ids is 0", H5.getOpenIDCount()==0);
+        System.out.print(testname.getMethodName());
 
         H5sid = H5.H5Screate_simple(H5rank, H5dims, H5maxdims);
         assertTrue("H5.H5Screate_simple_extent", H5sid > 0);
@@ -36,6 +40,7 @@ public class TestH5S {
         if (H5sid > 0) {
             try {H5.H5Sclose(H5sid);} catch (Exception ex) {}
         }
+        System.out.println();
     }
 
     @Test

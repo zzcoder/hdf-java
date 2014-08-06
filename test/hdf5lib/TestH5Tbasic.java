@@ -6,14 +6,23 @@ import static org.junit.Assert.fail;
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 
+import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestName;
 
 public class TestH5Tbasic {
+    @Rule public TestName testname = new TestName();
 
     @Before
     public void checkOpenIDs() {
         assertTrue("H5 open ids is 0",H5.getOpenIDCount()==0);
+        System.out.print(testname.getMethodName());
+    }
+    @After
+    public void nextTestName() {
+        System.out.println();
     }
     
     @Test

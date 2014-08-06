@@ -12,15 +12,19 @@ import ncsa.hdf.hdf5lib.exceptions.HDF5LibraryException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestName;
 
 public class TestH5E {
+    @Rule public TestName testname = new TestName();
     long hdf_java_classid = -1;
     long current_stackid = -1;
 
     @Before
     public void H5Eget_stack_class() {
         assertTrue("H5 open ids is 0",H5.getOpenIDCount()==0);
+        System.out.print(testname.getMethodName());
 
         hdf_java_classid = -1;
         try {
@@ -46,6 +50,7 @@ public class TestH5E {
             err.printStackTrace();
             fail("H5.H5Erestore_stack_class: " + err);
         }
+        System.out.println();
     }
 
     @Test

@@ -7,14 +7,19 @@ import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 import ncsa.hdf.hdf5lib.exceptions.HDF5LibraryException;
 
+import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestName;
 
 public class TestH5Edefault {
+    @Rule public TestName testname = new TestName();
 
     @Before
     public void H5Eset_default_stack() {
         assertTrue("H5 open ids is 0",H5.getOpenIDCount()==0);
+        System.out.print(testname.getMethodName());
 
         try {
             // Clear any active stack messages
@@ -24,6 +29,10 @@ public class TestH5Edefault {
             err.printStackTrace();
             fail("H5Eset_default_stack: " + err);
         }
+    }
+    @After
+    public void nextTestName() {
+        System.out.println();
     }
 
     @Test(expected = IllegalArgumentException.class)

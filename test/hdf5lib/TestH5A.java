@@ -17,9 +17,12 @@ import ncsa.hdf.hdf5lib.structs.H5A_info_t;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestName;
 
 public class TestH5A {
+    @Rule public TestName testname = new TestName();
     private static final String H5_FILE = "test.h5";
     private static final int DIM_X = 4;
     private static final int DIM_Y = 6;
@@ -57,6 +60,7 @@ public class TestH5A {
     @Before
     public void createH5file() throws NullPointerException, HDF5Exception {
         assertTrue("H5 open ids is 0", H5.getOpenIDCount() == 0);
+        System.out.print(testname.getMethodName());
             
         try {
             H5fid = H5.H5Fcreate(H5_FILE, HDF5Constants.H5F_ACC_TRUNC,
@@ -101,6 +105,7 @@ public class TestH5A {
             try {H5.H5Sclose(space_id);} catch (Exception ex) {}
         if (lapl_id > 0)
             try {H5.H5Pclose(lapl_id);} catch (Exception ex) {}
+        System.out.println();
     }
     
     
@@ -868,14 +873,12 @@ public class TestH5A {
             assertTrue("testH5Awrite_readVL.H5Tis_variable_str", H5.H5Tis_variable_str(atype_id));
         }
         catch (Exception err) {
+            if (atype_id > 0)
+                try {H5.H5Tclose(atype_id);} catch (Exception ex) {}
             err.printStackTrace();
             fail("H5.testH5Awrite_readVL: " + err);
         }
-        finally {
-            if (atype_id > 0)
-                try {H5.H5Tclose(atype_id);} catch (Exception ex) {}
-        }
-
+ 
         try {
             aspace_id = H5.H5Screate_simple(1, dims, null);
             assertTrue(aspace_id > 0);

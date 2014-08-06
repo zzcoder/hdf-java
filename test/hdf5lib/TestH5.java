@@ -19,13 +19,27 @@ import java.io.ObjectOutputStream;
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestName;
 
 /**
  * @author xcao
  * 
  */
 public class TestH5 {
+    @Rule public TestName testname = new TestName();
+    @Before
+    public void showTestName() {
+        System.out.print(testname.getMethodName());
+    }
+    @After
+    public void nextTestName() {
+        System.out.println();
+    }
 
     /**
      * Test method for {@link ncsa.hdf.hdf5lib.H5#J2C(int)}.
