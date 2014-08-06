@@ -179,11 +179,6 @@ public class TestHDFViewImageConversion {
         }).withTimeout(10000).using(robot);
         mainFrameFixture.robot.waitForIdle();
         mainFrameFixture.requireVisible();
-        
-        // Create dummy HDF4 file to ensure HDF4 library gets loaded
-        File hdf4file = createFile("dummyfile", true);
-        if(hdf4file.exists())
-        	hdf4file.delete();
     }
 
     @AfterClass
@@ -203,8 +198,9 @@ public class TestHDFViewImageConversion {
 
     @Test
     public void convertImageToHDF4() {
-        File hdf_file = new File(HDF4IMAGE);
-        try {
+        File hdf_file = createFile(JPGFILE, true);
+        closeFile(hdf_file, true);
+        try {            
             JMenuItemFixture fileMenuItem = mainFrameFixture.menuItemWithPath("Tools", "Convert Image To", "HDF4");
             mainFrameFixture.robot.waitForIdle();
 
