@@ -360,13 +360,13 @@ public class TestH5Ocreate {
         assertTrue("H5Ovisit "+((idata)((H5O_iter_data)iter_data).iterdata.get(3)).link_name, ((idata)((H5O_iter_data)iter_data).iterdata.get(3)).link_name.compareToIgnoreCase("G1/DS2")==0);
     }
 
-    @Ignore
+    @Test
     public void testH5Ocomment() {
         long oid = -1;
         String obj_comment = null;
         try {
             oid = H5.H5Oopen(H5fid, "DS1", HDF5Constants.H5P_DEFAULT);
-//            H5.H5Oset_comment(oid, "Test Comment");
+            H5.H5Oset_comment(oid, "Test Comment");
             H5.H5Fflush(H5fid, HDF5Constants.H5F_SCOPE_LOCAL);
         }
         catch (Throwable err) {
@@ -385,13 +385,13 @@ public class TestH5Ocreate {
         assertTrue("H5Oget_comment: ", obj_comment.compareTo("Test Comment")==0);
     }
 
-    @Ignore
+    @Test
     public void testH5Ocomment_clear() {
         long oid = -1;
         String obj_comment = null;
         try {
             oid = H5.H5Oopen(H5fid, "DS1", HDF5Constants.H5P_DEFAULT);
-//            H5.H5Oset_comment(oid, "Test Comment");
+            H5.H5Oset_comment(oid, "Test Comment");
             H5.H5Fflush(H5fid, HDF5Constants.H5F_SCOPE_LOCAL);
         }
         catch (Throwable err) {
@@ -408,7 +408,7 @@ public class TestH5Ocreate {
         assertFalse("H5Oget_comment: ", obj_comment==null);
         assertTrue("H5Oget_comment: ", obj_comment.compareTo("Test Comment")==0);
         try {
-//            H5.H5Oset_comment(oid, null);
+            H5.H5Oset_comment(oid, null);
             H5.H5Fflush(H5fid, HDF5Constants.H5F_SCOPE_LOCAL);
         }
         catch (Throwable err) {
@@ -426,11 +426,11 @@ public class TestH5Ocreate {
         assertTrue("H5Oget_comment: ", obj_comment==null);
     }
 
-    @Ignore
+    @Test
     public void testH5Ocomment_by_name() {
         String obj_comment = null;
         try {
-//            H5.H5Oset_comment_by_name(H5fid, "DS1", "Test Comment", HDF5Constants.H5P_DEFAULT);
+            H5.H5Oset_comment_by_name(H5fid, "DS1", "Test Comment", HDF5Constants.H5P_DEFAULT);
             H5.H5Fflush(H5fid, HDF5Constants.H5F_SCOPE_LOCAL);
         }
         catch (Throwable err) {
@@ -448,11 +448,11 @@ public class TestH5Ocreate {
         assertTrue("H5Oget_comment_by_name: ", obj_comment.compareTo("Test Comment")==0);
     }
 
-    @Ignore
+    @Test
     public void testH5Ocomment_by_name_clear() {
         String obj_comment = null;
         try {
-//            H5.H5Oset_comment_by_name(H5fid, "DS1", "Test Comment", HDF5Constants.H5P_DEFAULT);
+            H5.H5Oset_comment_by_name(H5fid, "DS1", "Test Comment", HDF5Constants.H5P_DEFAULT);
             H5.H5Fflush(H5fid, HDF5Constants.H5F_SCOPE_LOCAL);
         }
         catch (Throwable err) {
@@ -469,7 +469,7 @@ public class TestH5Ocreate {
         assertFalse("H5Oget_comment_by_name: ", obj_comment==null);
         assertTrue("H5Oget_comment_by_name: ", obj_comment.compareTo("Test Comment")==0);
         try {
-//            H5.H5Oset_comment_by_name(H5fid, "DS1", null, HDF5Constants.H5P_DEFAULT);
+            H5.H5Oset_comment_by_name(H5fid, "DS1", null, HDF5Constants.H5P_DEFAULT);
             H5.H5Fflush(H5fid, HDF5Constants.H5F_SCOPE_LOCAL);
         }
         catch (Throwable err) {

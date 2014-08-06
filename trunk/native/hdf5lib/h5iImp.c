@@ -217,6 +217,52 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Inmembers
 
 }
 
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Iis_valid
+ * Signature: (J)Z
+ */
+JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Iis_1valid
+(JNIEnv *env, jclass clss, jlong obj_id)
+{
+    htri_t   bval = 0;
+
+    bval = H5Iis_valid((hid_t)obj_id);
+
+    if (bval > 0) {
+        return JNI_TRUE;
+    }
+    else if (bval == 0) {
+        return JNI_FALSE;
+    }
+    else {
+        h5libraryError(env);
+        return JNI_FALSE;
+    }
+}
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Itype_exists
+ * Signature: (J)Z
+ */
+JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Itype_1xists
+(JNIEnv *env, jclass clss, jint type)
+{
+    htri_t   bval = 0;
+
+    bval = H5Itype_exists((H5I_type_t)type);
+
+    if (bval > 0) {
+        return JNI_TRUE;
+    }
+    else if (bval == 0) {
+        return JNI_FALSE;
+    }
+    else {
+        h5libraryError(env);
+        return JNI_FALSE;
+    }
+}
 
 #ifdef __cplusplus
 }
