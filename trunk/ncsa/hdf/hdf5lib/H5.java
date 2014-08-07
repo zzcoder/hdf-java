@@ -3217,7 +3217,7 @@ public synchronized static int H5Gget_obj_info_idx(long loc_id, String name,
  *                - name is null.
  */
 public synchronized static int H5Gget_obj_info_max(long loc_id,
-        String[] objNames, int[] objTypes, int[] lnkTypes, long[] objRef, int objMax)
+        String[] objNames, int[] objTypes, int[] lnkTypes, long[] objRef, long objMax)
         throws HDF5LibraryException, NullPointerException
 {
     if (objNames == null) {
@@ -3255,7 +3255,7 @@ public synchronized static int H5Gget_obj_info_max(long loc_id,
 }
 
 private synchronized static native int H5Gget_obj_info_max(long loc_id,
-        String[] oname, int[] otype, int[] ltype, long[] ref, int amax, int n)
+        String[] oname, int[] otype, int[] ltype, long[] ref, long amax, int n)
         throws HDF5LibraryException, NullPointerException;
 
 /**

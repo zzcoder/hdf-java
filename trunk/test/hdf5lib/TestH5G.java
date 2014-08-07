@@ -378,11 +378,11 @@ public class TestH5G {
     @Test
     public void testH5Gget_obj_info_max() {
         long gid = _openGroup(H5fid, GROUPS[0]);
-        int groups_max_size = GROUPS.length + 1;
-        String objNames[] = new String[groups_max_size];
-        int objTypes[] = new int[groups_max_size];
-        int lnkTypes[] = new int[groups_max_size];
-        long objRefs[] = new long[groups_max_size];
+        long groups_max_size = GROUPS.length + 1;
+        String objNames[] = new String[(int)groups_max_size];
+        int objTypes[] = new int[(int)groups_max_size];
+        int lnkTypes[] = new int[(int)groups_max_size];
+        long objRefs[] = new long[(int)groups_max_size];
 
         int names_found = 0;
         try {
@@ -409,11 +409,11 @@ public class TestH5G {
     @Test
     public void testH5Gget_obj_info_max_limit() {
         long gid = _openGroup(H5fid, GROUPS[0]);
-        int groups_max_size = GROUPS.length - 3;
-        String objNames[] = new String[groups_max_size];
-        int objTypes[] = new int[groups_max_size];
-        int lnkTypes[] = new int[groups_max_size];
-        long objRefs[] = new long[groups_max_size];
+        long groups_max_size = GROUPS.length - 3;
+        String objNames[] = new String[(int)groups_max_size];
+        int objTypes[] = new int[(int)groups_max_size];
+        int lnkTypes[] = new int[(int)groups_max_size];
+        long objRefs[] = new long[(int)groups_max_size];
 
         int names_found = 0;
         try {

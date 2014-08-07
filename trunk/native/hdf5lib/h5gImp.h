@@ -131,10 +131,10 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gget_1obj_1info_1full
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Gget_obj_info_max
- * Signature: (J[Ljava/lang/String;[I[I[JII)I
+ * Signature: (J[Ljava/lang/String;[I[I[JJI)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gget_1obj_1info_1max
-  (JNIEnv*, jclass, jlong, jobjectArray, jintArray, jintArray, jlongArray, jint, jint);
+  (JNIEnv*, jclass, jlong, jobjectArray, jintArray, jintArray, jlongArray, jlong, jint);
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
