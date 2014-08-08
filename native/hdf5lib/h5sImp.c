@@ -1217,30 +1217,30 @@ JNIEXPORT jbyteArray JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Sencode(JNIEnv *env, jcl
  */
 JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Sdecode(JNIEnv *env, jclass cls, jbyteArray buf)
 {
-        hid_t sid = -1;
-        jbyte *bufP;
-        jboolean isCopy;
+    hid_t sid = -1;
+    jbyte *bufP;
+    jboolean isCopy;
 
-        if (buf == NULL) {
-            h5nullArgument(env, "H5Sdecode:  buf is NULL");
-            return -1;
-        }
-        bufP = ENVPTR->GetByteArrayElements(ENVPAR buf, &isCopy);
-        if (bufP == NULL) {
-            h5JNIFatalError( env, "H5Sdecode:  buf not pinned");
-            return -1;
-        }
-        sid = H5Sdecode(bufP);
-
-        if (sid < 0) {
-            ENVPTR->ReleaseByteArrayElements(ENVPAR buf, bufP, JNI_ABORT);
-            h5libraryError(env);
-            return -1;
-        }
-        ENVPTR->ReleaseByteArrayElements(ENVPAR buf, bufP, JNI_ABORT);
-
-        return (jlong)sid;
+    if (buf == NULL) {
+        h5nullArgument(env, "H5Sdecode:  buf is NULL");
+        return -1;
     }
+    bufP = ENVPTR->GetByteArrayElements(ENVPAR buf, &isCopy);
+    if (bufP == NULL) {
+        h5JNIFatalError( env, "H5Sdecode:  buf not pinned");
+        return -1;
+    }
+    sid = H5Sdecode(bufP);
+
+    if (sid < 0) {
+        ENVPTR->ReleaseByteArrayElements(ENVPAR buf, bufP, JNI_ABORT);
+        h5libraryError(env);
+        return -1;
+    }
+    ENVPTR->ReleaseByteArrayElements(ENVPAR buf, bufP, JNI_ABORT);
+
+    return (jlong)sid;
+}
 
 #ifdef __cplusplus
 }

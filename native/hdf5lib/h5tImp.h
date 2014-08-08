@@ -35,7 +35,7 @@ JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tcommitted
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
- * Method:    H5Tcreate
+ * Method:    _H5Tcreate
  * Signature: (IJ)J
  */
 JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Tcreate
@@ -43,7 +43,7 @@ JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Tcreate
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
- * Method:    H5Tcopy
+ * Method:    _H5Tcopy
  * Signature: (J)J
  */
 JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Tcopy
@@ -483,7 +483,7 @@ JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Tarray_1create
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
- * Method:    H5Tget_array_dims
+ * Method:    H5Tget_array_ndims
  * Signature: (J)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tget_1array_1ndims
@@ -491,7 +491,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tget_1array_1ndims
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
- * Method:    H5Tarray_get_dims
+ * Method:    H5Tget_array_dims
  * Signature: (J[I[I)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tget_1array_1dims
@@ -547,15 +547,15 @@ JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Tarray_1create2
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
- * Method:    H5Tarray_get_dims2
+ * Method:    H5Tget_array_dims2
  * Signature: (J[J)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tget_1array_1dims2
-  (JNIEnv *, jclass, jlong, jlongArray ms);
+  (JNIEnv *, jclass, jlong, jlongArray);
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
- * Method:    H5Tcovert
+ * Method:    H5Tconvert
  * Signature: (JJJ[B[BJ)V
  */
 JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tconvert

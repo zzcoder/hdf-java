@@ -1797,7 +1797,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tget_1array_1dims2
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
- * Method:    H5Tcovert
+ * Method:    H5Tconvert
  * Signature: (JJJ[B[BJ)V
  */
 JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tconvert

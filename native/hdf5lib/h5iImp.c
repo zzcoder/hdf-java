@@ -243,7 +243,7 @@ JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Iis_1valid
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Itype_exists
- * Signature: (J)Z
+ * Signature: (I)Z
  */
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Itype_1xists
 (JNIEnv *env, jclass clss, jint type)
