@@ -562,7 +562,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1alignment
         return -1;
     }
     if (ENVPTR->GetArrayLength(ENVPAR alignment) < 2) {
-        h5badArgument(env, "H5Pget_alignment:  allingment input array < 2");
+        h5badArgument(env, "H5Pget_alignment:  alignment input array < 2");
         return -1;
     }
     theArray = (jlong *)ENVPTR->GetLongArrayElements(ENVPAR alignment, &isCopy);
@@ -2498,7 +2498,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget
     char    *cstr;
     jboolean isCopy;
     jint     val;
-    jint     retVal = -1;
+    herr_t     retVal = -1;
 
     if (name == NULL) {
         h5nullArgument(env, "H5Pget: name is NULL");
@@ -2550,7 +2550,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pcopy_1prop
 {
     char    *cstr;
     jboolean isCopy;
-    jint     retVal = -1;
+    herr_t     retVal = -1;
 
     if (name == NULL) {
         h5nullArgument(env, "H5Pcopy_prop: name is NULL");
@@ -2584,7 +2584,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Premove
 {
     char    *cstr;
     jboolean isCopy;
-    jint     retVal = -1;
+    herr_t     retVal = -1;
 
     if (name == NULL) {
         h5nullArgument(env, "H5Premove: name is NULL");
@@ -2618,7 +2618,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Punregister
 {
     char    *cstr;
     jboolean isCopy;
-    jint     retVal = -1;
+    herr_t     retVal = -1;
 
     if (name == NULL) {
         h5nullArgument(env, "H5Punregister: name is NULL");
@@ -2650,7 +2650,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Punregister
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pclose_1class
   (JNIEnv *env, jclass clss, jint plid)
 {
-    hid_t retVal = -1;
+    herr_t retVal = -1;
 
     retVal = H5Pclose_class((hid_t)plid);
     if (retVal < 0) {

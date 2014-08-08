@@ -90,7 +90,7 @@ extern "C" {
      * Signature: (ILjava/lang/String;)V
      */
     JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Oset_1comment
-      (JNIEnv *env, jclass clss, jint loc_id, jstring comment);
+      (JNIEnv *, jclass, jint, jstring);
 
     /*
      * Class:     ncsa_hdf_hdf5lib_H5
@@ -98,7 +98,7 @@ extern "C" {
      * Signature: (ILjava/lang/String;Ljava/lang/String;I)V
      */
     JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Oset_1comment_1by_1name
-      (JNIEnv *env, jclass clss, jint loc_id, jstring name, jstring comment, jint access_id);
+      (JNIEnv *, jclass, jint, jstring, jstring, jint);
 
     /*
      * Class:     ncsa_hdf_hdf5lib_H5
@@ -106,7 +106,7 @@ extern "C" {
      * Signature: (I)Ljava/lang/String;
      */
     JNIEXPORT jstring JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Oget_1comment
-      (JNIEnv *env, jclass clss, jint loc_id);
+      (JNIEnv *, jclass, jint);
 
     /*
      * Class:     ncsa_hdf_hdf5lib_H5
@@ -114,7 +114,7 @@ extern "C" {
      * Signature: (ILjava/lang/String;I)Ljava/lang/String;
      */
     JNIEXPORT jstring JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Oget_1comment_1by_1name
-      (JNIEnv *env, jclass clss, jint loc_id, jstring name, jint access_id);
+      (JNIEnv *, jclass, jint, jstring, jint);
 
 #ifdef __cplusplus
 }

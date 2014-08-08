@@ -35,8 +35,7 @@ extern "C" {
  * Signature: (I)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Zunregister
-  (JNIEnv *env, jclass clss,
-  jint filter)
+  (JNIEnv *env, jclass clss, jint filter)
 {
     herr_t retValue;
 
@@ -55,8 +54,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Zunregister
  * Signature: (I)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Zfilter_1avail
-  (JNIEnv *env, jclass clss,
-  jint filter)
+  (JNIEnv *env, jclass clss, jint filter)
 {
     herr_t retValue;
 

@@ -39,7 +39,7 @@ extern "C" {
      * Signature: (I)Z
      */
     JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Eauto_1is_1v2
-      (JNIEnv *env, jclass cls, jint stk_id)
+      (JNIEnv *env, jclass cls, jlong stk_id)
     {
         herr_t ret_val = -1;
         unsigned int is_stack = 0;
@@ -48,7 +48,7 @@ extern "C" {
             h5badArgument(env, "H5Eauto_is_v2: invalid argument");
             return 0;
         }
-        ret_val = H5Eauto_is_v2(stk_id, &is_stack);
+        ret_val = H5Eauto_is_v2((hid_t)stk_id, &is_stack);
         if (ret_val < 0) {
             h5libraryError(env);
             return 0;
@@ -64,7 +64,7 @@ extern "C" {
     JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Eregister_1class
       (JNIEnv *env, jclass cls, jstring cls_name, jstring lib_name, jstring version)
     {
-        herr_t ret_val = -1;
+        hid_t ret_val = -1;
         char* the_cls_name;
         char* the_lib_name;
         char* the_version;
@@ -155,7 +155,7 @@ extern "C" {
     JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Ecreate_1msg
       (JNIEnv *env, jclass cls, jint err_id, jint msg_type, jstring err_msg)
     {
-        herr_t ret_val = -1;
+        hid_t ret_val = -1;
         char* the_err_msg;
         jboolean isCopy;
         H5E_type_t error_msg_type = (H5E_type_t)msg_type;
@@ -190,13 +190,13 @@ extern "C" {
     JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Ecreate_1stack
       (JNIEnv *env, jclass cls)
     {
-        jint ret_val = -1;
+        hid_t ret_val = -1;
         ret_val = H5Ecreate_stack();
         if (ret_val < 0) {
             h5libraryError(env);
             return -1;
         }
-        return ret_val;
+        return (jint)ret_val;
     }
 
     /*
@@ -212,7 +212,7 @@ extern "C" {
             h5libraryError(env);
             return -1;
         }
-        return ret_val;
+        return (jint)ret_val;
     }
 
     /*
@@ -283,7 +283,7 @@ extern "C" {
      * Signature: (I)Ljava/lang/String;
      */
     JNIEXPORT jstring JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Eget_1class_1name
-      (JNIEnv *env, jclass cls, jint cls_id)
+      (JNIEnv *env, jclass cls, jlong cls_id)
     {
         char *namePtr;
         jstring str;
@@ -294,7 +294,7 @@ extern "C" {
             return NULL;
         }
         /* get the length of the name */
-        buf_size = H5Eget_class_name(cls_id, NULL, 0);
+        buf_size = H5Eget_class_name((hid_t)cls_id, NULL, 0);
 
         if (buf_size < 0) {
             h5badArgument( env, "H5Eget_class_name:  buf_size < 0");
@@ -339,7 +339,7 @@ extern "C" {
             h5badArgument(env, "H5Eset_current_stack: invalid argument");
             return;
         }
-        ret_val = H5Eset_current_stack(stk_id);
+        ret_val = H5Eset_current_stack((hid_t)stk_id);
         if (ret_val < 0) {
             h5libraryError(env);
             return;
@@ -360,7 +360,7 @@ extern "C" {
             h5badArgument(env, "H5Epop: invalid argument");
             return;
         }
-        ret_val = H5Epop(stk_id, (size_t)count);
+        ret_val = H5Epop((hid_t)stk_id, (size_t)count);
         if (ret_val < 0) {
             h5libraryError(env);
             return;
@@ -381,7 +381,7 @@ extern "C" {
             h5badArgument(env, "H5Eclear2: invalid argument");
             return;
         }
-        ret_val = H5Eclear2(stk_id);
+        ret_val = H5Eclear2((hid_t)stk_id);
         if (ret_val < 0) {
             h5libraryError(env);
             return;
@@ -408,7 +408,7 @@ extern "C" {
             return NULL;
         }
         /* get the length of the name */
-        buf_size = H5Eget_msg(msg_id, NULL, NULL, 0);
+        buf_size = H5Eget_msg((hid_t)msg_id, NULL, NULL, 0);
 
         if (buf_size < 0) {
             h5badArgument( env, "H5Eget_msg:  buf_size < 0");
@@ -466,7 +466,7 @@ extern "C" {
             h5badArgument(env, "H5Eget_num: invalid argument");
             return -1;
         }
-        ret_val = H5Eget_num(stk_id);
+        ret_val = H5Eget_num((hid_t)stk_id);
         if (ret_val < 0) {
             h5libraryError(env);
             return -1;

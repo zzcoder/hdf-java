@@ -303,11 +303,12 @@ extern "C" {
      * Signature: (ILjava/lang/String;IIJI)V
      */
     JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Ldelete_1by_1idx
-    (JNIEnv *env, jclass clss, jint loc_id, jstring name, jint index_field, jint order, jlong link_n, jint access_id)
+    (JNIEnv *env, jclass clss, jlong loc_id, jstring name, jint index_field, jint order, jlong link_n, jlong access_id)
     {
         char      *lName;
         herr_t     status;
         jboolean   isCopy;
+        hsize_t    n = (hsize_t)link_n;
 
         if (name == NULL) {
             h5nullArgument(env, "H5Ldelete_by_idx:  name is NULL");
@@ -320,7 +321,7 @@ extern "C" {
             return;
         }
 
-        status = H5Ldelete_by_idx((hid_t)loc_id, (const char*)lName, (H5_index_t)index_field, (H5_iter_order_t)order, (hsize_t)link_n, (hid_t)access_id);
+        status = H5Ldelete_by_idx((hid_t)loc_id, (const char*)lName, (H5_index_t)index_field, (H5_iter_order_t)order, n, (hid_t)access_id);
 
         ENVPTR->ReleaseStringUTFChars(ENVPAR name, lName);
 
