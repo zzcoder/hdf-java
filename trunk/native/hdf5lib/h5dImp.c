@@ -2011,7 +2011,7 @@ herr_t H5D_iterate_cb(void* elem, hid_t elem_id, unsigned ndim, const hsize_t *p
     }
     CBENVPTR->SetLongArrayRegion(CBENVPAR pointArray, 0, 2, (const jlong *)point);
 
-    status = CBENVPTR->CallIntMethod(CBENVPAR visit_callback, mid, elemArray, elem_id, ndim, pointArray, op_data);
+    status = CBENVPTR->CallIntMethod(CBENVPAR visit_callback, mid, (void*)elemArray, elem_id, ndim, pointArray, op_data);
 
     CBENVPTR->GetByteArrayRegion(CBENVPAR elemArray, 0, size, (jbyte *)elem);
 

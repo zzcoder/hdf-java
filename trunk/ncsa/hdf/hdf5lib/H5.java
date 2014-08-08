@@ -3912,7 +3912,7 @@ public synchronized static native H5O_info_t H5Oget_info(long loc_id)
 *  @exception NullPointerException - name is null.
 **/
 public synchronized static native H5O_info_t H5Oget_info_by_idx(long loc_id, String group_name,
-        long idx_type, int order, long n, long lapl_id)
+        int idx_type, int order, long n, long lapl_id)
         throws HDF5LibraryException, NullPointerException;
 
 /**
@@ -3985,7 +3985,7 @@ private synchronized static native long _H5Oopen(long loc_id, String name,
 *  @exception HDF5LibraryException - Error from the HDF-5 Library.
 *  @exception NullPointerException - name is null.
 **/
-public synchronized static native int H5Ovisit(long obj_id, long idx_type, int order,
+public synchronized static native int H5Ovisit(long obj_id, int idx_type, int order,
       H5O_iterate_cb op, H5O_iterate_t op_data)
       throws HDF5LibraryException, NullPointerException;
 
@@ -4007,7 +4007,7 @@ public synchronized static native int H5Ovisit(long obj_id, long idx_type, int o
 *  @exception NullPointerException - name is null.
 **/
 public synchronized static native int H5Ovisit_by_name(long loc_id, String obj_name,
-        long idx_type, int order, H5O_iterate_cb op,
+        int idx_type, int order, H5O_iterate_cb op,
       H5O_iterate_t op_data, long lapl_id)
       throws HDF5LibraryException, NullPointerException;
 
@@ -6249,7 +6249,7 @@ public static long H5Rdereference(long dataset, long access_list, int ref_type, 
 }
 
 private synchronized static native long _H5Rdereference(long dataset,
-        long access_list, long ref_type, byte[] ref)
+        long access_list, int ref_type, byte[] ref)
         throws HDF5LibraryException, NullPointerException,
         IllegalArgumentException;
 
@@ -6269,7 +6269,7 @@ private synchronized static native long _H5Rdereference(long dataset,
 * @exception IllegalArgumentException - Argument is illegal.
 *  
 **/
-public synchronized static native long H5Rget_name( long loc_id, long ref_type, byte[] ref, String[] name, long size)
+public synchronized static native long H5Rget_name(long loc_id, int ref_type, byte[] ref, String[] name, long size)
         throws HDF5LibraryException, NullPointerException, IllegalArgumentException;
 
 /**
@@ -8327,13 +8327,13 @@ private synchronized static native long _H5Tvlen_create(long base_id)
 ////
 //////////////////////////////////////////////////////////////
 
-public synchronized static native int H5Zfilter_avail(long filter)
+public synchronized static native int H5Zfilter_avail(int filter)
         throws HDF5LibraryException, NullPointerException;
 
-public synchronized static native int H5Zget_filter_info(long filter)
+public synchronized static native int H5Zget_filter_info(int filter)
         throws HDF5LibraryException;
 
-public synchronized static native int H5Zunregister(long filter)
+public synchronized static native int H5Zunregister(int filter)
         throws HDF5LibraryException, NullPointerException;
 
 }

@@ -18,7 +18,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Rcreate
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
- * Method:    H5Rdereference
+ * Method:    _H5Rdereference
  * Signature: (JJI[B)J
  */
 JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Rdereference
