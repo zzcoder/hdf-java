@@ -6404,7 +6404,7 @@ private synchronized static native long _H5Scopy(long space_id)
 *
 *  @exception HDF5LibraryException - Error from the HDF-5 Library.
 **/
-public static long H5Screate(long type) throws HDF5LibraryException
+public static long H5Screate(int type) throws HDF5LibraryException
 {
     long id = _H5Screate(type);
     if (id > 0)
@@ -6412,7 +6412,7 @@ public static long H5Screate(long type) throws HDF5LibraryException
     return id;
 }
 
-private synchronized static native long _H5Screate(long type)
+private synchronized static native long _H5Screate(int type)
      throws HDF5LibraryException;
 
 /**

@@ -15,5 +15,5 @@ package ncsa.hdf.hdf5lib.callbacks;
 
 //Information class for link callback(for H5Diterate)
 public interface H5D_iterate_cb extends Callbacks {
-    int callback(byte[] elem, int elem_type, int ndim, long[] point, H5D_iterate_t op_data);
+    int callback(byte[] elem, long elem_type, int ndim, long[] point, H5D_iterate_t op_data);
 }
