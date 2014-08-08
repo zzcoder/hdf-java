@@ -96,19 +96,6 @@ public class TestHDFViewCutPaste {
 		}
 	}
 
-	private static void removeFile(File remove_file) {
-		try {
-			assertTrue("File remove_file deleted", remove_file.delete());
-			assertFalse("File remove_file gone", remove_file.exists());
-		}
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
-		catch (AssertionError ae) {
-			ae.printStackTrace();
-		}
-	}
-
 	private void testSamplePixel(int x, int y, String requiredValue) {
 		JScrollPaneFixture imagePane = mainFrameFixture.scrollPane("imagecontent");
 		JViewport view = imagePane.component().getViewport();
