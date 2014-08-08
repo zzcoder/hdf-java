@@ -693,6 +693,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
             bar.add(button);
             button.setToolTipText("First");
             button.setMargin(margin);
+            button.setName("firstbutton");
             button.addActionListener(this);
             button.setActionCommand("First page");
 
@@ -701,6 +702,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
             bar.add(button);
             button.setToolTipText("Previous");
             button.setMargin(margin);
+            button.setName("prevbutton");
             button.addActionListener(this);
             button.setActionCommand("Previous page");
 
@@ -708,6 +710,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
             frameField.setMaximumSize(new Dimension(50, 30));
             bar.add(frameField);
             frameField.setMargin(margin);
+            frameField.setName("framenumber");
             frameField.addActionListener(this);
             frameField.setActionCommand("Go to frame");
 
@@ -720,6 +723,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
             bar.add(button);
             button.setToolTipText("Next");
             button.setMargin(margin);
+            button.setName("nextbutton");
             button.addActionListener(this);
             button.setActionCommand("Next page");
 
@@ -728,6 +732,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
             bar.add(button);
             button.setToolTipText("Last");
             button.setMargin(margin);
+            button.setName("lastbutton");
             button.addActionListener(this);
             button.setActionCommand("Last page");
         }
