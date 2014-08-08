@@ -52,12 +52,12 @@ typedef struct H5E_minor_mesg_t {
 
 /* major and minor error numbers */
 typedef struct H5E_num_t {
-    int maj_num;
-    int min_num;
+    hid_t maj_num;
+    hid_t min_num;
 } H5E_num_t;
 
-int getMajorErrorNumber();
-int getMinorErrorNumber();
+hid_t getMajorErrorNumber();
+hid_t getMinorErrorNumber();
 int getErrorNumbers(hid_t stk_id, H5E_num_t*);
 
 /* get the major and minor error numbers on the top of the error stack */
@@ -74,7 +74,7 @@ herr_t walk_error_callback(unsigned n, const H5E_error2_t *err_desc, void *_err_
     return 0;
 }
 
-char *defineHDF5LibraryException(int maj_num);
+char *defineHDF5LibraryException(hid_t maj_num);
 
 /*
  * Class:     ncsa_hdf_hdf5lib_exceptions_HDF5Library
@@ -136,7 +136,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_exceptions_HDF5LibraryException_get
     return (int) err_nums.maj_num;
 }
 
-int getMajorErrorNumber()
+hid_t getMajorErrorNumber()
 {
     H5E_num_t err_nums;
     err_nums.maj_num = 0;
@@ -144,7 +144,7 @@ int getMajorErrorNumber()
 
     H5Ewalk2(H5E_DEFAULT, H5E_WALK_DOWNWARD, walk_error_callback, &err_nums);
 
-    return (int) err_nums.maj_num;
+    return err_nums.maj_num;
 }
 
 /*
@@ -164,7 +164,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_exceptions_HDF5LibraryException_get
     return (jint) getMinorErrorNumber();
 }
 
-int getMinorErrorNumber()
+hid_t getMinorErrorNumber()
 {
     H5E_num_t err_nums;
     err_nums.maj_num = 0;
@@ -172,7 +172,7 @@ int getMinorErrorNumber()
 
     H5Ewalk2(H5E_DEFAULT, H5E_WALK_DOWNWARD, walk_error_callback, &err_nums);
 
-    return (int) err_nums.min_num;
+    return err_nums.min_num;
 }
 
 int getErrorNumbers(hid_t stk_id, H5E_num_t *err_nums)
@@ -530,7 +530,7 @@ jboolean buildException( JNIEnv *env, char *exception, jint HDFerr)
  *  defineHDF5LibraryException()  returns the name of the sub-class
  *  which goes with an HDF-5 error code.
  */
-char *defineHDF5LibraryException(int maj_num)
+char *defineHDF5LibraryException(hid_t maj_num)
 {
     H5E_major_t err_num = (H5E_major_t) maj_num;
 

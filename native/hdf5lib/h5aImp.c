@@ -655,7 +655,7 @@ herr_t H5AreadVL_str (JNIEnv *env, hid_t aid, hid_t tid, jobjectArray buf)
  * Copies the content of one dataset to another dataset
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Acopy
- * Signature: (I)I
+ * Signature: (II)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Acopy
   (JNIEnv *env, jclass clss, jint src_id, jint dst_id)
@@ -719,43 +719,6 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Acopy
     return (jint)retVal;
 }
 
-/*
- * Class:     ncsa_hdf_hdf5lib_H5
- * Method:    H5Acreate2
- * Signature: (ILjava/lang/String;IIII)I
- */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Acreate2
-  (JNIEnv *env, jclass clss, jint loc_id, jstring name, jint type_id,
-  jint space_id, jint create_plist, jint access_plist)
-{
-    hid_t status;
-    char* aName;
-    jboolean isCopy;
-
-    if (name == NULL) {
-        h5nullArgument( env, "H5Acreate2:  name is NULL");
-        return -1;
-    }
-
-    aName = (char *)ENVPTR->GetStringUTFChars(ENVPAR name, &isCopy);
-
-    if (aName == NULL) {
-        h5JNIFatalError( env, "H5Acreate2: aName is not pinned");
-        return -1;
-    }
-
-  status = H5Acreate2((hid_t)loc_id, aName, (hid_t)type_id,
-        (hid_t)space_id, (hid_t)create_plist, (hid_t)access_plist );
-
-    ENVPTR->ReleaseStringUTFChars(ENVPAR name,aName);
-
-    if (status < 0) {
-        h5libraryError(env);
-    }
-    return (jint)status;
-}
-
-
 /**********************************************************************
  *                                                                    *
  *          New functions release 1.8.0                               *
@@ -787,7 +750,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Acreate2
         return -1;
     }
 
-  status = H5Acreate2((hid_t)loc_id, aName, (hid_t)type_id,
+    status = H5Acreate2((hid_t)loc_id, aName, (hid_t)type_id,
         (hid_t)space_id, (hid_t)create_plist, (hid_t)access_plist );
 
     ENVPTR->ReleaseStringUTFChars(ENVPAR name,aName);
@@ -824,9 +787,9 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Aopen
         return -1;
     }
 
-  retVal = H5Aopen((hid_t)obj_id, aName, (hid_t)access_plist);
+    retVal = H5Aopen((hid_t)obj_id, aName, (hid_t)access_plist);
 
-  ENVPTR->ReleaseStringUTFChars(ENVPAR name,aName);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR name,aName);
 
     if (retVal< 0) {
         h5libraryError(env);
@@ -1240,8 +1203,8 @@ JNIEXPORT jobject JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Aget_1info_1by_1idx
 JNIEXPORT jobject JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Aget_1info_1by_1name
   (JNIEnv *env, jclass clss, jint loc_id, jstring obj_name, jstring attr_name, jint lapl_id)
 {
-  char      *aName;
-  char    *attrName;
+    char      *aName;
+    char    *attrName;
     herr_t     status;
     H5A_info_t ainfo;
     jboolean   isCopy;
@@ -1254,7 +1217,7 @@ JNIEXPORT jobject JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Aget_1info_1by_1name
         h5nullArgument( env, "H5Aget_info_by_name: obj_name is NULL");
         return NULL;
     }
-  if (attr_name == NULL) {
+    if (attr_name == NULL) {
         h5nullArgument( env, "H5Aget_info_by_name: attr_name is NULL");
         return NULL;
     }
@@ -1269,11 +1232,11 @@ JNIEXPORT jobject JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Aget_1info_1by_1name
         h5JNIFatalError( env, "H5Aget_info_by_name: Attribute name not pinned");
         return NULL;
     }
-  status = H5Aget_info_by_name((hid_t)loc_id, (const char*)aName, (const char*)attrName,
-    (H5A_info_t*)&ainfo,(hid_t)lapl_id);
+    status = H5Aget_info_by_name((hid_t)loc_id, (const char*)aName, (const char*)attrName,
+                  (H5A_info_t*)&ainfo,(hid_t)lapl_id);
 
     ENVPTR->ReleaseStringUTFChars(ENVPAR obj_name, aName);
-  ENVPTR->ReleaseStringUTFChars(ENVPAR attr_name, attrName);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR attr_name, attrName);
 
     if (status < 0) {
        h5libraryError(env);
@@ -1283,7 +1246,7 @@ JNIEXPORT jobject JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Aget_1info_1by_1name
     // get a reference to your class if you don't have it already
     cls = ENVPTR->FindClass(ENVPAR "ncsa/hdf/hdf5lib/structs/H5A_info_t");
     // get a reference to the constructor; the name is <init>
-  constructor = ENVPTR->GetMethodID(ENVPAR cls, "<init>", "(ZJIJ)V");
+    constructor = ENVPTR->GetMethodID(ENVPAR cls, "<init>", "(ZJIJ)V");
     args[0].z = ainfo.corder_valid;
     args[1].j = ainfo.corder;
     args[2].i = ainfo.cset;
@@ -1304,14 +1267,14 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Adelete_1by_1name
    char *aName, *attrName;
    jboolean isCopy;
 
-  if (obj_name == NULL) {
+   if (obj_name == NULL) {
         h5nullArgument( env, "H5Adelete_by_name:  object name is NULL");
         return -1;
-  }
-  if (attr_name == NULL) {
+   }
+   if (attr_name == NULL) {
         h5nullArgument( env, "H5Adelete_by_name:  attribute name is NULL");
         return -1;
-  }
+   }
     aName = (char *)ENVPTR->GetStringUTFChars(ENVPAR obj_name, &isCopy);
     if (aName == NULL) {
         h5JNIFatalError( env, "H5Adelete_by_name: aName is not pinned");
@@ -1325,10 +1288,10 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Adelete_1by_1name
     }
     retVal = H5Adelete_by_name((hid_t)loc_id, (const char*)aName, (const char*)attrName, (hid_t)lapl_id);
 
-  ENVPTR->ReleaseStringUTFChars(ENVPAR obj_name,aName);
-  ENVPTR->ReleaseStringUTFChars(ENVPAR attr_name,attrName);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR obj_name,aName);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR attr_name,attrName);
 
-  if (retVal< 0) {
+    if (retVal< 0) {
         h5libraryError(env);
     }
     return (jint)retVal;
@@ -1342,34 +1305,33 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Adelete_1by_1name
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Aexists
   (JNIEnv *env, jclass clss, jint obj_id, jstring attr_name)
 {
-  char    *aName;
-  jboolean isCopy;
-  htri_t   bval = 0;
+    char    *aName;
+    jboolean isCopy;
+    htri_t   bval = 0;
 
-  if (attr_name == NULL) {
-    h5nullArgument( env, "H5Aexists: attr_name is NULL");
-    return JNI_FALSE;
-  }
-  aName = (char*)ENVPTR->GetStringUTFChars(ENVPAR attr_name, &isCopy);
-  if (aName == NULL) {
-    h5JNIFatalError( env, "H5Aexists: attr_name not pinned");
-    return JNI_FALSE;
-  }
+    if (attr_name == NULL) {
+        h5nullArgument( env, "H5Aexists: attr_name is NULL");
+        return JNI_FALSE;
+    }
+    aName = (char*)ENVPTR->GetStringUTFChars(ENVPAR attr_name, &isCopy);
+    if (aName == NULL) {
+        h5JNIFatalError( env, "H5Aexists: attr_name not pinned");
+        return JNI_FALSE;
+    }
 
-  bval = H5Aexists((hid_t)obj_id, (const char*)aName);
-  ENVPTR->ReleaseStringUTFChars(ENVPAR attr_name, aName);
+    bval = H5Aexists((hid_t)obj_id, (const char*)aName);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR attr_name, aName);
 
-  if (bval > 0) {
-    return JNI_TRUE;
-  }
-  else if (bval == 0) {
-    return JNI_FALSE;
-  }
-  else {
-    h5libraryError(env);
-    return JNI_FALSE;
-  }
-
+    if (bval > 0) {
+        return JNI_TRUE;
+    }
+    else if (bval == 0) {
+        return JNI_FALSE;
+    }
+    else {
+        h5libraryError(env);
+        return JNI_FALSE;
+    }
 }
 
 /*
@@ -1422,12 +1384,12 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Aopen_1by_1name
         h5nullArgument( env,"_H5Aopen_by_name:  obj_name is NULL");
         return -1;
     }
-  if (attr_name == NULL) {
+    if (attr_name == NULL) {
         h5nullArgument( env,"_H5Aopen_by_name:  attr_name is NULL");
         return -1;
     }
 
-  oName = (char *)ENVPTR->GetStringUTFChars(ENVPAR obj_name,&isCopy);
+    oName = (char *)ENVPTR->GetStringUTFChars(ENVPAR obj_name,&isCopy);
     if (oName == NULL) {
         h5JNIFatalError( env,"_H5Aopen_by_name: obj_name is not pinned");
         return -1;
@@ -1442,7 +1404,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Aopen_1by_1name
     status = H5Aopen_by_name((hid_t)loc_id, oName, aName, (hid_t)aapl_id, (hid_t)lapl_id);
 
     ENVPTR->ReleaseStringUTFChars(ENVPAR obj_name,oName);
-   ENVPTR->ReleaseStringUTFChars(ENVPAR attr_name,aName);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR attr_name,aName);
 
     if (status < 0) {
         h5libraryError(env);

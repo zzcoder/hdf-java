@@ -145,7 +145,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Dget_1space_1status
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Dread_short
- * Signature: (IIIII[S[Z)I
+ * Signature: (IIIII[SZ)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dread_1short
   (JNIEnv*, jclass, jint, jint, jint, jint, jint, jshortArray, jboolean);
@@ -153,7 +153,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dread_1short
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Dread_int
- * Signature: (IIIII[I[Z)I
+ * Signature: (IIIII[IZ)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dread_1int
   (JNIEnv*, jclass, jint, jint, jint, jint, jint, jintArray, jboolean);
@@ -161,7 +161,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dread_1int
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Dread_long
- * Signature: (IIIII[J[Z)I
+ * Signature: (IIIII[JZ)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dread_1long
   (JNIEnv*, jclass, jint, jint, jint, jint, jint, jlongArray, jboolean);
@@ -169,7 +169,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dread_1long
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Dread_float
- * Signature: (IIIII[F[Z)I
+ * Signature: (IIIII[FZ)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dread_1float
   (JNIEnv*, jclass, jint, jint, jint, jint, jint, jfloatArray, jboolean);
@@ -177,7 +177,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dread_1float
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Dread_double
- * Signature: (IIIII[D[Z)I
+ * Signature: (IIIII[DZ)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dread_1double
   (JNIEnv*, jclass, jint, jint, jint, jint, jint, jdoubleArray, jboolean);
@@ -193,7 +193,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dread_1string
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Dwrite_short
- * Signature: (IIIII[S[Z)I
+ * Signature: (IIIII[SZ)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dwrite_1short
   (JNIEnv*, jclass, jint, jint, jint, jint, jint, jshortArray, jboolean);
@@ -201,7 +201,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dwrite_1short
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Dwrite_int
- * Signature: (IIIII[I[Z)I
+ * Signature: (IIIII[IZ)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dwrite_1int
   (JNIEnv*, jclass, jint, jint, jint, jint, jint, jintArray, jboolean);
@@ -209,7 +209,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dwrite_1int
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Dwrite_long
- * Signature: (IIIII[J[Z)I
+ * Signature: (IIIII[JZ)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dwrite_1long
   (JNIEnv*, jclass, jint, jint, jint, jint, jint, jlongArray, jboolean);
@@ -217,7 +217,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dwrite_1long
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Dwrite_float
- * Signature: (IIIII[F[Z)I
+ * Signature: (IIIII[FZ)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dwrite_1float
   (JNIEnv*, jclass, jint, jint, jint, jint, jint, jfloatArray, jboolean);
@@ -225,7 +225,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dwrite_1float
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Dwrite_double
- * Signature: (IIIII[D[Z)I
+ * Signature: (IIIII[DZ)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dwrite_1double
   (JNIEnv*, jclass, jint, jint, jint, jint, jint, jdoubleArray, jboolean);
@@ -237,6 +237,14 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dwrite_1double
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5DwriteString
   (JNIEnv *, jclass, jint, jint, jint, jint, jint, jobjectArray);
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5DwriteNotString
+ * Signature: (IIIII[BZ)I
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5DwriteNotString
+  (JNIEnv *, jclass, jint, jint, jint, jint, jint, jbyteArray, jboolean);
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
