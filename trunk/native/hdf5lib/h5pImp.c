@@ -2427,7 +2427,7 @@ JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1nprops
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Pget_class_name
- * Signature: (H)Ljava/lang/String;
+ * Signature: (J)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1class_1name
   (JNIEnv *env, jclass clss, jlong plid)

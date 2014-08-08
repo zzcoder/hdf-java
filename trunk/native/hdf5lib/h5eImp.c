@@ -179,7 +179,7 @@ extern "C" {
             h5libraryError(env);
             return ret_val;
         }
-        return ret_val;
+        return (jlong)ret_val;
     }
 
     /*
@@ -196,7 +196,7 @@ extern "C" {
             h5libraryError(env);
             return -1;
         }
-        return ret_val;
+        return (jlong)ret_val;
     }
 
     /*
@@ -212,7 +212,7 @@ extern "C" {
             h5libraryError(env);
             return -1;
         }
-        return ret_val;
+        return (jlong)ret_val;
     }
 
     /*

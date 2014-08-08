@@ -14,7 +14,7 @@ extern "C" {
  * Signature: ([BJLjava/lang/String;IJ)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Rcreate
-  (JNIEnv *env, jclass clss, jbyteArray ref, jlong loc_id, jstring name, jint ref_type, jlong space_id);
+  (JNIEnv *, jclass, jbyteArray, jlong, jstring, jint, jlong);
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
@@ -22,7 +22,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Rcreate
  * Signature: (JJI[B)J
  */
 JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Rdereference
-  (JNIEnv *env, jclass clss, jlong dataset, jlong access_list, jint ref_type, jbyteArray ref );
+  (JNIEnv *, jclass, jlong, jlong, jint, jbyteArray);
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
@@ -30,8 +30,7 @@ JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Rdereference
  * Signature: (JI[B)J
  */
 JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Rget_1region
-  (JNIEnv *env, jclass clss, jlong dataset, jint ref_type,
-  jbyteArray ref );
+  (JNIEnv *, jclass, jlong, jint, jbyteArray);
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
@@ -39,7 +38,7 @@ JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Rget_1region
  * Signature: (JI[B)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Rget_1obj_1type
-  (JNIEnv *env, jclass clss, jlong loc_id, jint ref_type, jbyteArray ref);
+  (JNIEnv *, jclass, jlong, jint, jbyteArray);
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
@@ -47,7 +46,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Rget_1obj_1type
  * Signature: (JI[B[I)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Rget_1obj_1type2
-  (JNIEnv *env, jclass clss, jlong loc_id, jint ref_type, jbyteArray ref, jintArray ref_obj);
+  (JNIEnv *, jclass, jlong, jint, jbyteArray, jintArray);
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
@@ -55,7 +54,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Rget_1obj_1type2
  * Signature: (JI[B[Ljava/lang/String;J)J
  */
 JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Rget_1name
-  (JNIEnv *env, jclass clss, jlong loc_id, jint ref_type, jbyteArray ref, jobjectArray name, jlong size);
+  (JNIEnv *, jclass, jlong, jint, jbyteArray, jobjectArray, jlong);
 
 #ifdef __cplusplus
 }

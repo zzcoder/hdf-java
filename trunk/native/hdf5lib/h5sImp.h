@@ -8,7 +8,6 @@
 extern "C" {
 #endif
 
-
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Screate
@@ -20,7 +19,7 @@ JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Screate(
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Screate_simple
- * Signature: (I[J[J)G
+ * Signature: (I[J[J)J
  */
 JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Screate_1simple(
         JNIEnv *, jclass, jint, jlongArray, jlongArray);
