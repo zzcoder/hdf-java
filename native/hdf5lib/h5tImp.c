@@ -38,26 +38,27 @@ extern "C" {
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
- * Method:    _H5Topen
- * Signature: (JLjava/lang/String;)J
+ * Method:    _H5Topen2
+ * Signature: (JLjava/lang/String;J)J
  */
-JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Topen
-  (JNIEnv *env, jclass clss, jlong loc_id, jstring name)
+JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Topen2
+  (JNIEnv *env, jclass clss, jlong loc_id, jstring name, jlong access_plist)
 {
     hid_t status;
     char* tname;
     jboolean isCopy;
 
     if (name == NULL) {
-        h5nullArgument( env, "H5Topen:  name is NULL");
+        h5nullArgument( env, "H5Topen2:  name is NULL");
         return -1;
     }
     tname = (char *)ENVPTR->GetStringUTFChars(ENVPAR name,&isCopy);
     if (tname == NULL) {
-        h5JNIFatalError(env,  "H5Topen:  name not pinned");
+        h5JNIFatalError(env,  "H5Topen2:  name not pinned");
         return -1;
     }
-    status = H5Topen2((hid_t)loc_id, tname, (hid_t)H5P_DEFAULT);
+
+    status = H5Topen2((hid_t)loc_id, tname, (hid_t)access_plist);
 
     ENVPTR->ReleaseStringUTFChars(ENVPAR name,tname);
     if (status < 0) {
@@ -1627,37 +1628,6 @@ JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tdetect_1class
         h5libraryError(env);
         return JNI_FALSE;
     }
-}
-
-/*
- * Class:     ncsa_hdf_hdf5lib_H5
- * Method:    _H5Topen2
- * Signature: (JLjava/lang/String;I)J
- */
-JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Topen2
-  (JNIEnv *env, jclass clss, jlong loc_id, jstring name, jint access_plist)
-{
-    hid_t status;
-    char* tname;
-    jboolean isCopy;
-
-    if (name == NULL) {
-        h5nullArgument( env, "H5Topen2:  name is NULL");
-        return -1;
-    }
-    tname = (char *)ENVPTR->GetStringUTFChars(ENVPAR name,&isCopy);
-    if (tname == NULL) {
-        h5JNIFatalError(env,  "H5Topen2:  name not pinned");
-        return -1;
-    }
-
-    status = H5Topen2((hid_t)loc_id, tname, (hid_t)access_plist);
-
-    ENVPTR->ReleaseStringUTFChars(ENVPAR name,tname);
-    if (status < 0) {
-        h5libraryError(env);
-    }
-    return (jlong)status;
 }
 
 /*

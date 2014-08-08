@@ -35,7 +35,7 @@ extern "C" {
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
- * Method:    H5Screate
+ * Method:    _H5Screate
  * Signature: (I)J
  */
 JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Screate(JNIEnv *env, jclass clss, jint type)
@@ -52,7 +52,7 @@ JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Screate(JNIEnv *env, jclass
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
- * Method:    H5Screate_simple
+ * Method:    _H5Screate_simple
  * Signature: (I[J[J)G
  */
 JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Screate_1simple(JNIEnv *env, jclass clss, jint rank,
@@ -156,7 +156,7 @@ JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Screate_1simple(JNIEnv *env
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
- * Method:    H5Scopy
+ * Method:    _H5Scopy
  * Signature: (J)J
  */
 JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Scopy(JNIEnv *env, jclass clss, jlong space_id)

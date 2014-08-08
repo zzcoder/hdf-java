@@ -11,11 +11,11 @@ extern "C" {
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
- * Method:    _H5Topen
- * Signature: (JLjava/lang/String;)J
+ * Method:    _H5Topen2
+ * Signature: (JLjava/lang/String;J)J
  */
-JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Topen
-  (JNIEnv *, jclass, jlong, jstring);
+JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Topen2
+  (JNIEnv *, jclass, jlong, jstring, jlong);
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
@@ -520,14 +520,6 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Tget_1native_1type
  */
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tdetect_1class
   (JNIEnv *, jclass, jlong, jint);
-
-/*
- * Class:     ncsa_hdf_hdf5lib_H5
- * Method:    _H5Topen2
- * Signature: (JLjava/lang/String;I)J
- */
-JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Topen2
-  (JNIEnv *, jclass, jlong, jstring, jint);
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5

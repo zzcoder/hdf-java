@@ -1981,7 +1981,7 @@ herr_t H5D_iterate_cb(void* elem, hid_t elem_id, unsigned ndim, const hsize_t *p
        JVMPTR->DetachCurrentThread(JVMPAR);
        return -1;
     }
-    mid = CBENVPTR->GetMethodID(CBENVPAR cls, "callback", "([BII[JLncsa/hdf/hdf5lib/callbacks/H5D_iterate_t;)I");
+    mid = CBENVPTR->GetMethodID(CBENVPAR cls, "callback", "([BJI[JLncsa/hdf/hdf5lib/callbacks/H5D_iterate_t;)I");
     if (mid == 0) {
         JVMPTR->DetachCurrentThread(JVMPAR);
         return -1;
