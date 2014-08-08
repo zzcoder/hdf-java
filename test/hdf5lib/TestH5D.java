@@ -625,7 +625,7 @@ public class TestH5D {
         H5D_iterate_t iter_data = new H5D_iter_data();
 
         class H5D_iter_callback implements H5D_iterate_cb {
-            public int callback(byte[] elem_buf, int elem_id, int ndim, long[] point, H5D_iterate_t op_data) {
+            public int callback(byte[] elem_buf, long elem_id, int ndim, long[] point, H5D_iterate_t op_data) {
                 //Check value in current buffer location
                 int element = HDFNativeData.byteToInt(elem_buf, 0);
                 if(element != ((H5D_iter_data)op_data).fill_value)
@@ -704,7 +704,7 @@ public class TestH5D {
         H5D_iterate_t iter_data = new H5D_iter_data();
 
         class H5D_iter_callback implements H5D_iterate_cb {
-            public int callback(byte[] elem_buf, int elem_id, int ndim, long[] point, H5D_iterate_t op_data) {
+            public int callback(byte[] elem_buf, long elem_id, int ndim, long[] point, H5D_iterate_t op_data) {
                 //Check value in current buffer location
                 int element = HDFNativeData.byteToInt(elem_buf, 0);
                 if(element != ((H5D_iter_data)op_data).fill_value)

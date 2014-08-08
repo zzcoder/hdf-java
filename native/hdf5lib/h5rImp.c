@@ -95,7 +95,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Rcreate
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
- * Method:    H5Rdereference
+ * Method:    _H5Rdereference
  * Signature: (JJI[B)J
  */
 JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Rdereference
@@ -279,7 +279,7 @@ JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Rget_1name
     jstring str;
     size_t bs;
 
-    bs = (long)size;
+    bs = (size_t)size;
     if (bs <= 0) {
         h5badArgument( env, "H5Rget_name:  size <= 0");
         return -1;
