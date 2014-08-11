@@ -1018,7 +1018,7 @@ JNIEXPORT jstring JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tget_1tag
  * Signature: (I)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Tget_1super
-  (JNIEnv *env, jclass clss, jint type)
+  (JNIEnv *env, jclass clss, jint type_id)
 {
     hid_t status;
 
@@ -1698,7 +1698,7 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tcommit
  * Signature: (II[J)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Tarray_1create2
-  (JNIEnv *env, jclass clss, jint base, jint rank, jlongArray dims)
+  (JNIEnv *env, jclass clss, jint base_id, jint rank, jlongArray dims)
 {
     hid_t status;
     jlong *dimsP;
