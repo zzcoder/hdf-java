@@ -39,7 +39,7 @@ extern "C" {
      * Signature: (I)Z
      */
     JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Eauto_1is_1v2
-      (JNIEnv *env, jclass cls, jlong stk_id)
+      (JNIEnv *env, jclass cls, jint stk_id)
     {
         herr_t ret_val = -1;
         unsigned int is_stack = 0;
@@ -283,7 +283,7 @@ extern "C" {
      * Signature: (I)Ljava/lang/String;
      */
     JNIEXPORT jstring JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Eget_1class_1name
-      (JNIEnv *env, jclass cls, jlong cls_id)
+      (JNIEnv *env, jclass cls, jint cls_id)
     {
         char *namePtr;
         jstring str;

@@ -303,7 +303,7 @@ extern "C" {
      * Signature: (ILjava/lang/String;IIJI)V
      */
     JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Ldelete_1by_1idx
-    (JNIEnv *env, jclass clss, jlong loc_id, jstring name, jint index_field, jint order, jlong link_n, jlong access_id)
+    (JNIEnv *env, jclass clss, jint loc_id, jstring name, jint index_field, jint order, jlong link_n, jint access_id)
     {
         char      *lName;
         herr_t     status;
