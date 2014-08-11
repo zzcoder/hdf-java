@@ -559,7 +559,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tget_1array_1dims2
  * Signature: (IIJ[B[BI)V
  */
 JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tconvert
-  (JNIEnv *, jclass, jint, jint, jlong, jbyteArray, jbyteArray, jint)
+  (JNIEnv *, jclass, jint, jint, jlong, jbyteArray, jbyteArray, jint);
 
 #ifdef __cplusplus
 }
