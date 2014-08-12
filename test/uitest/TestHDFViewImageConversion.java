@@ -130,11 +130,15 @@ public class TestHDFViewImageConversion {
             unitsX = x / increment;
             unitsY = y / increment;
 
-            imagePane.horizontalScrollBar().scrollUnitDown(unitsX);
-            mainFrameFixture.robot.waitForIdle();
+			if(unitsX > 0) {
+				imagePane.horizontalScrollBar().scrollUnitDown(unitsX);
+				mainFrameFixture.robot.waitForIdle();
+			}
 
-            imagePane.verticalScrollBar().scrollUnitDown(unitsY);
-            mainFrameFixture.robot.waitForIdle();
+			if(unitsY > 0) {
+				imagePane.verticalScrollBar().scrollUnitDown(unitsY);
+				mainFrameFixture.robot.waitForIdle();
+			}
 
             // Calculate extra distance to be moved in each direction to find this pixel
             remainderX = (x) - (view.getViewPosition().x);
