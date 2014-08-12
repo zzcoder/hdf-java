@@ -520,8 +520,21 @@ public class NewAttributeDialog extends JDialog implements ActionListener, ItemL
             value = ref;
             torder = Datatype.NATIVE;
         }
-        else if (idx == 0) {
-            tsize = Datatype.NATIVE;
+        else if (tclass == Datatype.CLASS_INTEGER) {
+            switch(idx) {
+            	case 0:
+            		tsize = 1;
+            		break;
+            	case 1:
+            		tsize = 2;
+            		break;
+            	case 2:
+            		tsize = 4;
+            		break;
+            	case 3:
+            		tsize = 8;
+            		break;
+            }
         }
         else if (tclass == Datatype.CLASS_FLOAT) {
             tsize = (idx + 1) * 4;
