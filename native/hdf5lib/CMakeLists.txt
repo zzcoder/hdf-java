@@ -41,6 +41,13 @@ set (HDFJAVA_JNI_HDF5_CHDRS
 
 INCLUDE_DIRECTORIES( ${HDFJAVA_JNI_HDF5LIB_SOURCE_DIR} )
 
+#-----------------------------------------------------------------------------
+# Run all the CMake configuration tests for our build environment
+#-----------------------------------------------------------------------------
+include (${HDF_RESOURCES_DIR}/ConfigureChecks.cmake)
+
+set (CMAKE_INCLUDE_CURRENT_DIR_IN_INTERFACE ON)
+
 ########### JNI libraries always must be built shared  ###############
 add_library (${HDFJAVA_JNI_HDF5_LIB_TARGET} SHARED ${HDFJAVA_JNI_HDF5_CSRCS} ${HDFJAVA_JNI_HDF5_CHDRS})
 TARGET_C_PROPERTIES (${HDFJAVA_JNI_HDF5_LIB_TARGET} " " " ")
