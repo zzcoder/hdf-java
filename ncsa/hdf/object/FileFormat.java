@@ -217,6 +217,7 @@ public abstract class FileFormat extends File {
                 FileFormat fileformat = (FileFormat) fileclass.newInstance();
                 if (fileformat != null) {
                     FileFormat.addFileFormat(FILE_TYPE_HDF4, fileformat);
+                    log.debug("FILE_TYPE_HDF4 file format added");
                 }
             }
             catch (Throwable err) {
@@ -231,6 +232,7 @@ public abstract class FileFormat extends File {
                 FileFormat fileformat = (FileFormat) fileclass.newInstance();
                 if (fileformat != null) {
                     FileFormat.addFileFormat(FILE_TYPE_HDF5, fileformat);
+                    log.debug("FILE_TYPE_HDF5 file format added");
                 }
             }
             catch (Throwable err) {
@@ -245,6 +247,7 @@ public abstract class FileFormat extends File {
                 FileFormat fileformat = (FileFormat) fileclass.newInstance();
                 if (fileformat != null) {
                     FileFormat.addFileFormat("NetCDF", fileformat);
+                    log.debug("NetCDF file format added");
                 }
             }
             catch (Throwable err) {
@@ -259,6 +262,7 @@ public abstract class FileFormat extends File {
                 FileFormat fileformat = (FileFormat) fileclass.newInstance();
                 if (fileformat != null) {
                     FileFormat.addFileFormat("Fits", fileformat);
+                    log.debug("Fits file format added");
                 }
             }
             catch (Throwable err) {
