@@ -182,7 +182,7 @@ set (HDFJAVA_PACKAGE_TARNAME "hdf-java")
 set (HDFJAVA_PACKAGE_URL "http://www.hdfgroup.org/hdfjava")
 set (HDFJAVA_PACKAGE_BUGREPORT "help@hdfgroup.org")
 
-set (CMAKE_MODULE_PATH "${HDF_RESOURCES_DIR};${HDF_RESOURCES_EXT_DIR};${CMAKE_ROOT}/Modules")
+set (CMAKE_MODULE_PATH "${HDF_RESOURCES_DIR};${HDF_RESOURCES_EXT_DIR}")
 find_package (Java)
 #-----------------------------------------------------------------------------
 # Include some macros for reusable code
