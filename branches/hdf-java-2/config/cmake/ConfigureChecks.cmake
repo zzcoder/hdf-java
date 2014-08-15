@@ -1,6 +1,7 @@
 #-----------------------------------------------------------------------------
 # Include all the necessary files for macros
 #-----------------------------------------------------------------------------
+set (HDF_PREFIX "HJAVA")
 include (${CMAKE_ROOT}/Modules/CheckFunctionExists.cmake)
 include (${CMAKE_ROOT}/Modules/CheckIncludeFile.cmake)
 include (${CMAKE_ROOT}/Modules/CheckIncludeFiles.cmake)
