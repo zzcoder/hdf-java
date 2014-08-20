@@ -21,6 +21,7 @@ import java.util.Vector;
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 import ncsa.hdf.hdf5lib.HDFNativeData;
+import ncsa.hdf.hdf5lib.exceptions.HDF5DataFiltersException;
 import ncsa.hdf.hdf5lib.exceptions.HDF5Exception;
 import ncsa.hdf.hdf5lib.exceptions.HDF5LibraryException;
 import ncsa.hdf.hdf5lib.structs.H5O_info_t;
@@ -846,7 +847,7 @@ public class H5ScalarDS extends ScalarDS {
      * @see ncsa.hdf.object.Dataset#read()
      */
     @Override
-    public Object read() throws HDF5Exception {
+    public Object read() throws Exception {
         Object theData = null;
         int did = -1, tid = -1;
         int spaceIDs[] = { -1, -1 }; // spaceIDs[0]=mspace, spaceIDs[1]=fspace
@@ -955,6 +956,10 @@ public class H5ScalarDS extends ScalarDS {
                         }
                     }
                 } // if (theData != null)
+            }
+            catch (HDF5DataFiltersException exfltr) {
+                log.debug("H5ScalarDS read: read failure:", exfltr);
+                throw new Exception("Filter not available exception: " + exfltr.getMessage(), exfltr);
             }
             catch (HDF5Exception h5ex) {
                 log.debug("H5ScalarDS read: read failure", h5ex);
