@@ -14,6 +14,9 @@
 
 package ncsa.hdf.object.h5;
 
+import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.lang.reflect.Array;
 import java.util.List;
 import java.util.Vector;
@@ -21,6 +24,7 @@ import java.util.Vector;
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 import ncsa.hdf.hdf5lib.HDFNativeData;
+import ncsa.hdf.hdf5lib.exceptions.HDF5DataFiltersException;
 import ncsa.hdf.hdf5lib.exceptions.HDF5Exception;
 import ncsa.hdf.hdf5lib.structs.H5O_info_t;
 import ncsa.hdf.object.Attribute;
@@ -288,7 +292,7 @@ public class H5CompoundDS extends CompoundDS {
      * @see ncsa.hdf.object.Dataset#read()
      */
     @Override
-    public Object read() throws HDF5Exception {
+    public Object read() throws Exception {
         List<Object> list = null;
 
         Object member_data = null;
@@ -393,6 +397,10 @@ public class H5CompoundDS extends CompoundDS {
                         else {
                             H5.H5Dread(did, comp_tid, spaceIDs[0], spaceIDs[1], HDF5Constants.H5P_DEFAULT, member_data);
                         }
+                    }
+                    catch (HDF5DataFiltersException exfltr) {
+                        log.debug("read: {} Member[{}] createCompoundFieldType and read failure:", member_name, i, exfltr);
+                        throw new Exception("Filter not available exception: " + exfltr.getMessage(), exfltr);
                     }
                     catch (HDF5Exception ex2) {
                         String[] nullValues = new String[(int) lsize[0]];
