@@ -52,6 +52,7 @@ import javax.swing.table.TableCellEditor;
 
 import ncsa.hdf.object.CompoundDS;
 import ncsa.hdf.object.DataFormat;
+import ncsa.hdf.object.Dataset;
 import ncsa.hdf.object.Datatype;
 import ncsa.hdf.object.FileFormat;
 import ncsa.hdf.object.Group;
@@ -86,7 +87,7 @@ public class NewTableDataDialog extends JDialog implements ActionListener, ItemL
 
     private FileFormat            fileformat;
 
-    private JComboBox             parentChoice, nFieldBox, templateChoice;
+    private JComboBox<Object>             parentChoice, nFieldBox, templateChoice;
 
     /** a list of current groups */
     private Vector<Object>        groupList, compoundDSList;
@@ -106,7 +107,7 @@ public class NewTableDataDialog extends JDialog implements ActionListener, ItemL
     private DefaultCellEditor     cellEditor;
 
     private JTextField            nameField, currentSizeField, maxSizeField, chunkSizeField;
-    private JComboBox             compressionLevel, rankChoice, memberTypeChoice;
+    private JComboBox<Object>     compressionLevel, rankChoice, memberTypeChoice;
     private JCheckBox             checkCompression;
     private JRadioButton          checkContinguous, checkChunked;
 
@@ -128,7 +129,7 @@ public class NewTableDataDialog extends JDialog implements ActionListener, ItemL
         numberOfMembers = 2;
         fileformat = pGroup.getFileFormat();
 
-        memberTypeChoice = new JComboBox(DATATYPE_NAMES);
+        memberTypeChoice = new JComboBox<Object>(DATATYPE_NAMES);
         cellEditor = new DefaultCellEditor(memberTypeChoice);
         rowEditorModel = new RowEditorModel(numberOfMembers, cellEditor);
         String[] colNames = { "Name", "Datatype", "Array size / String length / Enum names" };
@@ -158,13 +159,13 @@ public class NewTableDataDialog extends JDialog implements ActionListener, ItemL
 
         toolkit = Toolkit.getDefaultToolkit();
 
-        parentChoice = new JComboBox();
+        parentChoice = new JComboBox<Object>();
         String[] memberSizes = new String[100];
         for (int i = 0; i < 100; i++) {
             memberSizes[i] = String.valueOf(i + 1);
         }
 
-        nFieldBox = new JComboBox(memberSizes);
+        nFieldBox = new JComboBox<Object>(memberSizes);
         nFieldBox.setName("numbermembers");
         nFieldBox.setEditable(true);
         nFieldBox.addActionListener(this);
@@ -194,7 +195,7 @@ public class NewTableDataDialog extends JDialog implements ActionListener, ItemL
             }
         }
 
-        templateChoice = new JComboBox(compoundDSList);
+        templateChoice = new JComboBox<Object>(compoundDSList);
         templateChoice.setName("templateChoice");
         templateChoice.setSelectedIndex(-1);
         templateChoice.addItemListener(this);
@@ -249,7 +250,7 @@ public class NewTableDataDialog extends JDialog implements ActionListener, ItemL
         border.setTitleColor(Color.blue);
         spacePanel.setBorder(border);
 
-        rankChoice = new JComboBox();
+        rankChoice = new JComboBox<Object>();
         for (int i = 1; i < 33; i++) {
             rankChoice.addItem(String.valueOf(i));
         }
@@ -281,7 +282,7 @@ public class NewTableDataDialog extends JDialog implements ActionListener, ItemL
         chunkSizeField.setEnabled(false);
         checkCompression = new JCheckBox("gzip");
 
-        compressionLevel = new JComboBox();
+        compressionLevel = new JComboBox<Object>();
         for (int i = 0; i < 10; i++) {
             compressionLevel.addItem(String.valueOf(i));
         }
@@ -554,15 +555,17 @@ public class NewTableDataDialog extends JDialog implements ActionListener, ItemL
 
             String compression = dset.getCompression();
             if (compression != null) {
-                int idx = compression.indexOf("GZIP: level = ");
                 int clevel = -1;
-                try {
-                    clevel = Integer.parseInt(compression.substring(idx + 14, idx + 15));
+                int comp_pos = Dataset.compression_gzip_txt.length();
+                int idx = compression.indexOf(Dataset.compression_gzip_txt);
+                if (idx >= 0) {
+                    try {
+                        clevel = Integer.parseInt(compression.substring(idx + comp_pos, idx + comp_pos +1));
+                    }
+                    catch (NumberFormatException ex) {
+                        clevel = -1;
+                    }
                 }
-                catch (NumberFormatException ex) {
-                    clevel = -1;
-                }
-
                 if (clevel > 0) {
                     checkCompression.setSelected(true);
                     compressionLevel.setSelectedIndex(clevel);

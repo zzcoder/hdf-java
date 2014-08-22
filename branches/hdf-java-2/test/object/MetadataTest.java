@@ -21,8 +21,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
- * @author Rishi R. Sinha This has to be removed because both the methods tested
- *         here are actually abstract methods and should be tested elsewhere.
+ * @author Rishi R. Sinha This has to be removed because both the methods tested here are actually abstract methods and
+ *         should be tested elsewhere.
  * 
  */
 public class MetadataTest {
@@ -36,32 +36,31 @@ public class MetadataTest {
 
     @BeforeClass
     public static void createFile() throws Exception {
-		try {
-			H5TestFile.createTestFile(null);
-		}
-		catch (final Exception ex) {
-			System.out.println("*** Unable to create HDF5 test file. " + ex);
-			System.exit(-1);
-		}
+        try {
+            H5TestFile.createTestFile(null);
+        }
+        catch (final Exception ex) {
+            System.out.println("*** Unable to create HDF5 test file. " + ex);
+            System.exit(-1);
+        }
     }
-    
+
     @AfterClass
     public static void checkIDs() throws Exception {
-		try {
-			int openID = H5.getOpenIDCount();
-			if(openID>0)
-				System.out.println("Number of IDs still open: "+ openID);
-		} 
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
+        try {
+            int openID = H5.getOpenIDCount();
+            if (openID > 0)
+                System.out.println("Number of IDs still open: " + openID);
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
 
     }
-    
+
     @Before
     public void openFiles() throws Exception {
-        testFile = (H5File) H5FILE.open(H5TestFile.NAME_FILE_H5,
-                FileFormat.WRITE);
+        testFile = (H5File) H5FILE.open(H5TestFile.NAME_FILE_H5, FileFormat.WRITE);
         assertNotNull(testFile);
         testGroup = (H5Group) testFile.get(H5TestFile.NAME_GROUP_ATTR);
         assertNotNull(testGroup);
@@ -74,7 +73,7 @@ public class MetadataTest {
     }
 
     @After
-	public void removeFiles() throws Exception {
+    public void removeFiles() throws Exception {
         // make sure all objects are closed
         final int fid = testFile.getFID();
         if (fid > 0) {
@@ -103,7 +102,7 @@ public class MetadataTest {
      */
     @Test
     public void testGetValue() {
-    	log.debug("testGetValue");
+        log.debug("testGetValue");
         String[] value = (String[]) strAttr.getValue();
         if (!value[0].equals("String attribute.")) {
             fail("getValue() fails.");
@@ -119,12 +118,11 @@ public class MetadataTest {
     }
 
     /**
-     * Test method for
-     * {@link ncsa.hdf.object.Metadata#setValue(java.lang.Object)}.
+     * Test method for {@link ncsa.hdf.object.Metadata#setValue(java.lang.Object)}.
      */
     @Test
     public void testSetValue() {
-    	log.debug("testSetValue");
+        log.debug("testSetValue");
         String[] tempValue = { "Temp String Value" };
         String[] prevValue = (String[]) strAttr.getValue();
         strAttr.setValue(tempValue);

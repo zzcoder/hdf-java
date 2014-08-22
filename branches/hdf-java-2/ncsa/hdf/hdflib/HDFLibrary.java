@@ -237,7 +237,6 @@ public class HDFLibrary implements java.io.Serializable
     {
         if (isLibraryLoaded) // load only once
             return;
-        
         // first try loading library via full path
         String filename = System.getProperty(HDFPATH_PROPERTY_KEY, null);
         if ((filename != null) && (filename.length() > 0)) {

@@ -74,7 +74,7 @@ foreach (CMAKE_INCLUDE_PATH ${CMAKE_JAVA_INCLUDE_PATH})
   set (CMAKE_JAVA_CLASSPATH "${CMAKE_JAVA_CLASSPATH}${CMAKE_JAVA_INCLUDE_FLAG_SEP}${CMAKE_INCLUDE_PATH}")
 endforeach (CMAKE_INCLUDE_PATH)
 set (CMAKE_JAVA_CLASSPATH "${CMAKE_JAVA_CLASSPATH}${CMAKE_JAVA_INCLUDE_FLAG_SEP}${${HDFJAVA_TEST_OBJECT_LIB_TARGET}_JAR_FILE}")
-set (testfilter "OK (153 tests)")
+set (testfilter "OK (151 tests)")
 
 if (CMAKE_BUILD_TYPE MATCHES Debug)
   set (CMD_ARGS "-Dncsa.hdf.hdf5lib.H5.loadLibraryName=jhdf5_debug;")
@@ -91,6 +91,7 @@ add_test (
         -D "TEST_FOLDER=${HDFJAVA_BINARY_DIR}"
         -D "TEST_OUTPUT=test/object/JUnit-object-interface.out"
         -D "TEST_EXPECT=0"
+        #-D "TEST_LOG_LEVEL=debug"
         -D "TEST_FILTER:STRING=${testfilter}"
         -D "TEST_REFERENCE=test/object/JUnit-object-interface.txt"
         -D "TEST_MASK_ERROR=TRUE"

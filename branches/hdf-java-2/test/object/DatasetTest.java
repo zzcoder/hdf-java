@@ -32,56 +32,54 @@ public class DatasetTest {
     private static final H5File H5FILE = new H5File();
 
     private H5File testFile = null;
-    String[] dsetNames = { H5TestFile.NAME_DATASET_INT,
-            H5TestFile.NAME_DATASET_FLOAT, H5TestFile.NAME_DATASET_CHAR,
-            H5TestFile.NAME_DATASET_STR, H5TestFile.NAME_DATASET_ENUM,
-            H5TestFile.NAME_DATASET_IMAGE, H5TestFile.NAME_DATASET_COMPOUND };
+    String[] dsetNames = { H5TestFile.NAME_DATASET_INT, H5TestFile.NAME_DATASET_FLOAT, H5TestFile.NAME_DATASET_CHAR,
+            H5TestFile.NAME_DATASET_STR, H5TestFile.NAME_DATASET_ENUM, H5TestFile.NAME_DATASET_IMAGE,
+            H5TestFile.NAME_DATASET_COMPOUND };
     private Dataset[] dSets = new Dataset[dsetNames.length];
 
     @BeforeClass
     public static void createFile() throws Exception {
-		try {
-			int openID = H5.getOpenIDCount();
-			if(openID > 0)
-				System.out.println("DatasetTest BeforeClass: Number of IDs still open: "+ openID);
-		} 
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
-		try {
-			H5TestFile.createTestFile(null);
-		}
-		catch (final Exception ex) {
-			System.out.println("*** Unable to create HDF5 test file. " + ex);
-			System.exit(-1);
-		}
+        try {
+            int openID = H5.getOpenIDCount();
+            if (openID > 0)
+                System.out.println("DatasetTest BeforeClass: Number of IDs still open: " + openID);
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        try {
+            H5TestFile.createTestFile(null);
+        }
+        catch (final Exception ex) {
+            System.out.println("*** Unable to create HDF5 test file. " + ex);
+            System.exit(-1);
+        }
     }
-    
+
     @AfterClass
     public static void checkIDs() throws Exception {
-		try {
-			int openID = H5.getOpenIDCount();
-			if(openID>0)
-				System.out.println("DatasetTest AfterClass: Number of IDs still open: "+ openID);
-		} 
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
+        try {
+            int openID = H5.getOpenIDCount();
+            if (openID > 0)
+                System.out.println("DatasetTest AfterClass: Number of IDs still open: " + openID);
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
 
     }
-    
+
     @Before
     public void openFiles() throws Exception {
-		try {
-			int openID = H5.getOpenIDCount();
-			if(openID > 0)
-				log.debug("Before: Number of IDs still open: "+ openID);
-		} 
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
-        testFile = (H5File) H5FILE.open(H5TestFile.NAME_FILE_H5,
-                FileFormat.READ);
+        try {
+            int openID = H5.getOpenIDCount();
+            if (openID > 0)
+                log.debug("Before: Number of IDs still open: " + openID);
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        testFile = (H5File) H5FILE.open(H5TestFile.NAME_FILE_H5, FileFormat.READ);
         assertNotNull(testFile);
         testFile.open();
         for (int i = 0; i < dSets.length; i++) {
@@ -92,7 +90,7 @@ public class DatasetTest {
     }
 
     @After
-	public void removeFiles() throws Exception {
+    public void removeFiles() throws Exception {
         if (testFile != null) {
             try {
                 testFile.close();
@@ -101,14 +99,14 @@ public class DatasetTest {
             }
             testFile = null;
         }
-		try {
-			int openID = H5.getOpenIDCount();
-			if(openID > 0)
-				log.debug("After: Number of IDs still open: "+ openID);
-		} 
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
+        try {
+            int openID = H5.getOpenIDCount();
+            if (openID > 0)
+                log.debug("After: Number of IDs still open: " + openID);
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     /**
@@ -129,7 +127,7 @@ public class DatasetTest {
      */
     @Test
     public void testMetadataAssociatedWithDataset() {
-    	log.debug("testMetadataAssociatedWithDataset");
+        log.debug("testMetadataAssociatedWithDataset");
         for (int i = 0; i < dsetNames.length; i++) {
             assertNull(dSets[i].getChunkSize());
             assertTrue(dSets[i].getCompression().equals("NONE"));
@@ -182,8 +180,7 @@ public class DatasetTest {
         }
         int nObjs = 0;
         try {
-            nObjs = H5.H5Fget_obj_count(testFile.getFID(),
-                    HDF5Constants.H5F_OBJ_ALL);
+            nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL);
         }
         catch (final Exception ex) {
             fail("H5.H5Fget_obj_count() failed. " + ex);
@@ -207,7 +204,7 @@ public class DatasetTest {
      */
     @Test
     public void testConvertFromUnsignedC() {
-    	log.debug("testConvertFromUnsignedC");
+        log.debug("testConvertFromUnsignedC");
         byte[] int8 = { -1, -128, 127, 0 };
         short[] int16 = { -1, -32768, 32767, 0 };
         int[] int32 = { -1, -2147483648, 2147483647, 0 };
@@ -226,8 +223,7 @@ public class DatasetTest {
         assertTrue(Arrays.equals(expected32, uint32));
         int nObjs = 0;
         try {
-            nObjs = H5.H5Fget_obj_count(testFile.getFID(),
-                    HDF5Constants.H5F_OBJ_ALL);
+            nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL);
         }
         catch (final Exception ex) {
             fail("H5.H5Fget_obj_count() failed. " + ex);

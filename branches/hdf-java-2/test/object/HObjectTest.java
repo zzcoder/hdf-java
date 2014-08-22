@@ -33,46 +33,46 @@ public class HObjectTest {
 
     @BeforeClass
     public static void createFile() throws Exception {
-		try {
-			int openID = H5.getOpenIDCount();
-			if(openID > 0)
-				System.out.println("HObjectTest BeforeClass: Number of IDs still open: "+ openID);
-		} 
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
-		try {
-			H5TestFile.createTestFile(null);
-		}
-		catch (final Exception ex) {
-			System.out.println("*** Unable to create HDF5 test file. " + ex);
-			System.exit(-1);
-		}
+        try {
+            int openID = H5.getOpenIDCount();
+            if (openID > 0)
+                System.out.println("HObjectTest BeforeClass: Number of IDs still open: " + openID);
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        try {
+            H5TestFile.createTestFile(null);
+        }
+        catch (final Exception ex) {
+            System.out.println("*** Unable to create HDF5 test file. " + ex);
+            System.exit(-1);
+        }
     }
-    
+
     @AfterClass
     public static void checkIDs() throws Exception {
-		try {
-			int openID = H5.getOpenIDCount();
-			if(openID>0)
-				System.out.println("HObjectTest AfterClass: Number of IDs still open: "+ openID);
-		} 
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
+        try {
+            int openID = H5.getOpenIDCount();
+            if (openID > 0)
+                System.out.println("HObjectTest AfterClass: Number of IDs still open: " + openID);
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
 
     }
-    
+
     @Before
     public void openFiles() throws Exception {
-		try {
-			int openID = H5.getOpenIDCount();
-			if(openID > 0)
-				log.debug("Before: Number of IDs still open: "+ openID);
-		} 
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
+        try {
+            int openID = H5.getOpenIDCount();
+            if (openID > 0)
+                log.debug("Before: Number of IDs still open: " + openID);
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
         testFile = new H5File(H5TestFile.NAME_FILE_H5, FileFormat.WRITE);
         assertNotNull(testFile);
         testObj = testFile.get(GNAME);
@@ -81,7 +81,7 @@ public class HObjectTest {
     }
 
     @After
-	public void removeFiles() throws Exception {
+    public void removeFiles() throws Exception {
         if (testFile != null) {
             try {
                 testFile.close();
@@ -90,14 +90,14 @@ public class HObjectTest {
             }
             testFile = null;
         }
-		try {
-			int openID = H5.getOpenIDCount();
-			if(openID > 0)
-				log.debug("After: Number of IDs still open: "+ openID);
-		} 
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
+        try {
+            int openID = H5.getOpenIDCount();
+            if (openID > 0)
+                log.debug("After: Number of IDs still open: " + openID);
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     /**
@@ -110,15 +110,14 @@ public class HObjectTest {
      */
     @Test
     public void testGetFile() {
-    	log.debug("testGetFile");
+        log.debug("testGetFile");
         String fullFileName = testObj.getFile();
         if (!fullFileName.endsWith(H5TestFile.NAME_FILE_H5)) {
             fail("Wrong File");
         }
         int nObjs = 0;
         try {
-            nObjs = H5.H5Fget_obj_count(testFile.getFID(),
-                    HDF5Constants.H5F_OBJ_ALL);
+            nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL);
         }
         catch (final Exception ex) {
             fail("H5.H5Fget_obj_count() failed. " + ex);
@@ -131,20 +130,18 @@ public class HObjectTest {
      * <p>
      * What to test:
      * <ul>
-     * <li>For the base group, find the name of the group and test it against
-     * the standard.
+     * <li>For the base group, find the name of the group and test it against the standard.
      * </ul>
      */
     @Test
     public void testGetName() {
-    	log.debug("testGetName");
+        log.debug("testGetName");
         if (!testObj.getName().equals(GNAME.substring(1))) {
             fail("GetName returns wrong name");
         }
         int nObjs = 0;
         try {
-            nObjs = H5.H5Fget_obj_count(testFile.getFID(),
-                    HDF5Constants.H5F_OBJ_ALL);
+            nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL);
         }
         catch (final Exception ex) {
             fail("H5.H5Fget_obj_count() failed. " + ex);
@@ -157,20 +154,18 @@ public class HObjectTest {
      * <p>
      * What to test:
      * <ul>
-     * <li>For the base group, find the full name of the group and test it
-     * against the standard.
+     * <li>For the base group, find the full name of the group and test it against the standard.
      * </ul>
      */
     @Test
     public void testGetFullName() {
-    	log.debug("testGetFullName");
+        log.debug("testGetFullName");
         if (!testObj.getFullName().equals(GNAME)) {
             fail("GetFullName returns wrong name");
         }
         int nObjs = 0;
         try {
-            nObjs = H5.H5Fget_obj_count(testFile.getFID(),
-                    HDF5Constants.H5F_OBJ_ALL);
+            nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL);
         }
         catch (final Exception ex) {
             fail("H5.H5Fget_obj_count() failed. " + ex);
@@ -183,20 +178,18 @@ public class HObjectTest {
      * <p>
      * What to test:
      * <ul>
-     * <li>For the base group, find the path of the group and test it against
-     * the standard.
+     * <li>For the base group, find the path of the group and test it against the standard.
      * </ul>
      */
     @Test
     public void testGetPath() {
-    	log.debug("testGetPath");
+        log.debug("testGetPath");
         if (!testObj.getPath().equals("/")) {
             fail("GetPath returns wrong path");
         }
         int nObjs = 0;
         try {
-            nObjs = H5.H5Fget_obj_count(testFile.getFID(),
-                    HDF5Constants.H5F_OBJ_ALL);
+            nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL);
         }
         catch (final Exception ex) {
             fail("H5.H5Fget_obj_count() failed. " + ex);
@@ -205,8 +198,7 @@ public class HObjectTest {
     }
 
     /**
-     * Test method for {@link ncsa.hdf.object.HObject#setName(java.lang.String)}
-     * .
+     * Test method for {@link ncsa.hdf.object.HObject#setName(java.lang.String)} .
      * <p>
      * What to test:
      * <ul>
@@ -217,7 +209,7 @@ public class HObjectTest {
      */
     @Test
     public void testSetName() {
-    	log.debug("testSetName");
+        log.debug("testSetName");
         final String newName = "tmpName";
 
         // test set name to null
@@ -261,8 +253,7 @@ public class HObjectTest {
         catch (final Exception ex) {
             fail("testFile.get(GNAME) failed. " + ex);
         }
-        assertNull("The dataset should be null because it has been renamed",
-                tmpObj);
+        assertNull("The dataset should be null because it has been renamed", tmpObj);
 
         // set back the original name
         try {
@@ -282,8 +273,7 @@ public class HObjectTest {
         assertNotNull(testObj);
         int nObjs = 0;
         try {
-            nObjs = H5.H5Fget_obj_count(testFile.getFID(),
-                    HDF5Constants.H5F_OBJ_ALL);
+            nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL);
         }
         catch (final Exception ex) {
             fail("H5.H5Fget_obj_count() failed. " + ex);
@@ -292,8 +282,7 @@ public class HObjectTest {
     }
 
     /**
-     * Test method for {@link ncsa.hdf.object.HObject#setPath(java.lang.String)}
-     * .
+     * Test method for {@link ncsa.hdf.object.HObject#setPath(java.lang.String)} .
      * <p>
      * What to test:
      * <ul>
@@ -304,7 +293,7 @@ public class HObjectTest {
      */
     @Test
     public void testSetPath() {
-    	log.debug("testSetPath");
+        log.debug("testSetPath");
         String path = testObj.getPath();
         try {
             testObj.setPath(null);
@@ -334,8 +323,7 @@ public class HObjectTest {
         }
         int nObjs = 0;
         try {
-            nObjs = H5.H5Fget_obj_count(testFile.getFID(),
-                    HDF5Constants.H5F_OBJ_ALL);
+            nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL);
         }
         catch (final Exception ex) {
             fail("H5.H5Fget_obj_count() failed. " + ex);
@@ -353,7 +341,7 @@ public class HObjectTest {
      */
     @Test
     public void testOpen() {
-    	log.debug("testOpen");
+        log.debug("testOpen");
         int gid = -1;
 
         for (int loop = 0; loop < 15; loop++) {
@@ -369,8 +357,7 @@ public class HObjectTest {
         }
         int nObjs = 0;
         try {
-            nObjs = H5.H5Fget_obj_count(testFile.getFID(),
-                    HDF5Constants.H5F_OBJ_ALL);
+            nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL);
         }
         catch (final Exception ex) {
             fail("H5.H5Fget_obj_count() failed. " + ex);
@@ -388,12 +375,11 @@ public class HObjectTest {
      */
     @Test
     public void testClose() {
-    	log.debug("testClose");
+        log.debug("testClose");
         testOpen();
         int nObjs = 0;
         try {
-            nObjs = H5.H5Fget_obj_count(testFile.getFID(),
-                    HDF5Constants.H5F_OBJ_ALL);
+            nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL);
         }
         catch (final Exception ex) {
             fail("H5.H5Fget_obj_count() failed. " + ex);
@@ -406,18 +392,16 @@ public class HObjectTest {
      * <p>
      * What to test:
      * <ul>
-     * <li>get the FID for the group and make sure that it is the same as the
-     * FID for the file.
+     * <li>get the FID for the group and make sure that it is the same as the FID for the file.
      * </ul>
      */
     @Test
     public void testGetFID() {
-    	log.debug("testGetFID");
+        log.debug("testGetFID");
         assertEquals(testObj.getFID(), testFile.getFID());
         int nObjs = 0;
         try {
-            nObjs = H5.H5Fget_obj_count(testFile.getFID(),
-                    HDF5Constants.H5F_OBJ_ALL);
+            nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL);
         }
         catch (final Exception ex) {
             fail("H5.H5Fget_obj_count() failed. " + ex);
@@ -436,13 +420,12 @@ public class HObjectTest {
      */
     @Test
     public void testEqualsOID() {
-    	log.debug("testEqualsOID");
+        log.debug("testEqualsOID");
         assertNotNull(testObj);
         assertTrue(testObj.equalsOID(new long[] { testOID }));
         int nObjs = 0;
         try {
-            nObjs = H5.H5Fget_obj_count(testFile.getFID(),
-                    HDF5Constants.H5F_OBJ_ALL);
+            nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL);
         }
         catch (final Exception ex) {
             fail("H5.H5Fget_obj_count() failed. " + ex);
@@ -461,13 +444,12 @@ public class HObjectTest {
      */
     @Test
     public void testGetFileFormat() {
-    	log.debug("testGetFileFormat");
+        log.debug("testGetFileFormat");
         assertNotNull(testObj.getFileFormat());
         assertEquals(testObj.getFileFormat(), testFile);
         int nObjs = 0;
         try {
-            nObjs = H5.H5Fget_obj_count(testFile.getFID(),
-                    HDF5Constants.H5F_OBJ_ALL);
+            nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL);
         }
         catch (final Exception ex) {
             fail("H5.H5Fget_obj_count() failed. " + ex);
@@ -486,13 +468,12 @@ public class HObjectTest {
      */
     @Test
     public void testGetOID() {
-    	log.debug("testGetOID");
+        log.debug("testGetOID");
         assertNotNull(testObj.getOID());
         assertEquals(testObj.getOID()[0], testOID);
         int nObjs = 0;
         try {
-            nObjs = H5.H5Fget_obj_count(testFile.getFID(),
-                    HDF5Constants.H5F_OBJ_ALL);
+            nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL);
         }
         catch (final Exception ex) {
             fail("H5.H5Fget_obj_count() failed. " + ex);
@@ -511,10 +492,9 @@ public class HObjectTest {
      */
     @Test
     public void testHasAttribute() {
-    	log.debug("testHasAttribute");
+        log.debug("testHasAttribute");
         try {
-            assertTrue(testFile.get(H5TestFile.NAME_DATASET_IMAGE)
-                    .hasAttribute());
+            assertTrue(testFile.get(H5TestFile.NAME_DATASET_IMAGE).hasAttribute());
         }
         catch (Exception e) {
             fail("get() fails.");
@@ -522,8 +502,7 @@ public class HObjectTest {
         assertFalse(testObj.hasAttribute());
         int nObjs = 0;
         try {
-            nObjs = H5.H5Fget_obj_count(testFile.getFID(),
-                    HDF5Constants.H5F_OBJ_ALL);
+            nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL);
         }
         catch (final Exception ex) {
             fail("H5.H5Fget_obj_count() failed. " + ex);
@@ -541,12 +520,11 @@ public class HObjectTest {
      */
     @Test
     public void testToString() {
-    	log.debug("testToString");
+        log.debug("testToString");
         assertEquals(testObj.toString(), GNAME.substring(1));
         int nObjs = 0;
         try {
-            nObjs = H5.H5Fget_obj_count(testFile.getFID(),
-                    HDF5Constants.H5F_OBJ_ALL);
+            nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL);
         }
         catch (final Exception ex) {
             fail("H5.H5Fget_obj_count() failed. " + ex);
