@@ -130,10 +130,15 @@ public abstract class Dataset extends HObject {
      */
     protected long[]          chunkSize;
 
-    /**
-     * The GZIP compression level.
-     */
+    /** The compression information. */
     protected String          compression;
+    public final static String          compression_gzip_txt = "GZIP: level = ";
+
+    /** The filters information. */
+    protected String          filters;
+
+    /** The storage information. */
+    protected String          storage;
 
     /** The datatype object of the dataset. */
     protected Datatype        datatype;
@@ -206,6 +211,8 @@ public abstract class Dataset extends HObject {
         selectedStride = null;
         chunkSize = null;
         compression = "NONE";
+        filters = "NONE";
+        storage = "NONE";
         dimNames = null;
 
         selectedIndex = new int[3];
@@ -878,6 +885,28 @@ public abstract class Dataset extends HObject {
         if (rank < 0) init();
 
         return compression;
+    }
+
+    /**
+     * Returns the string representation of filter information.
+     * 
+     * @return the string representation of filter information.
+     */
+    public final String getFilters() {
+        if (rank < 0) init();
+
+        return filters;
+    }
+
+    /**
+     * Returns the string representation of storage information.
+     * 
+     * @return the string representation of storage information.
+     */
+    public final String getStorage() {
+        if (rank < 0) init();
+
+        return storage;
     }
 
     /**

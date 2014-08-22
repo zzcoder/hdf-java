@@ -43,7 +43,7 @@ public class H5Object_CreateAttribute {
         // Create the dataset.
         try {
             final H5Group rootGrp = (H5Group)file.get("/");
-            dset = H5ScalarDS.create("/" + DATASETNAME, rootGrp, typeInt,
+            dset = (H5ScalarDS) H5ScalarDS.create("/" + DATASETNAME, rootGrp, typeInt,
                     dims1, null, null, 0,
                     dset_data);
         }

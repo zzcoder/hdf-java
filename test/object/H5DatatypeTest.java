@@ -95,57 +95,52 @@ public class H5DatatypeTest {
 
     @BeforeClass
     public static void createFile() throws Exception {
-		try {
-			int openID = H5.getOpenIDCount();
-			if(openID > 0)
-				System.out.println("H5DatatypeTest BeforeClass: Number of IDs still open: "+ openID);
-		} 
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
-		try {
-			H5TestFile.createTestFile(null);
-		}
-		catch (final Exception ex) {
-			System.out.println("*** Unable to create HDF5 test file. " + ex);
-			System.exit(-1);
-		}
+        try {
+            int openID = H5.getOpenIDCount();
+            if (openID > 0)
+                System.out.println("H5DatatypeTest BeforeClass: Number of IDs still open: " + openID);
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        try {
+            H5TestFile.createTestFile(null);
+        }
+        catch (final Exception ex) {
+            System.out.println("*** Unable to create HDF5 test file. " + ex);
+            System.exit(-1);
+        }
     }
-    
+
     @AfterClass
     public static void checkIDs() throws Exception {
-		try {
-			int openID = H5.getOpenIDCount();
-			if(openID>0)
-				System.out.println("H5DatatypeTest AfterClass: Number of IDs still open: "+ openID);
-		} 
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
+        try {
+            int openID = H5.getOpenIDCount();
+            if (openID > 0)
+                System.out.println("H5DatatypeTest AfterClass: Number of IDs still open: " + openID);
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
 
     }
-    
+
     @Before
     public void openFiles() throws Exception {
-		try {
-			int openID = H5.getOpenIDCount();
-			if(openID > 0)
-				log.debug("Before: Number of IDs still open: "+ openID);
-		} 
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
-        typeInt = new H5Datatype(Datatype.CLASS_INTEGER,
-                H5TestFile.DATATYPE_SIZE, -1, -1);
-        typeUInt = new H5Datatype(Datatype.CLASS_INTEGER,
-                H5TestFile.DATATYPE_SIZE, -1, Datatype.SIGN_NONE);
-        typeFloat = new H5Datatype(Datatype.CLASS_FLOAT,
-                H5TestFile.DATATYPE_SIZE, -1, -1);
-        typeStr = new H5Datatype(Datatype.CLASS_STRING, H5TestFile.STR_LEN, -1,
-                -1);
+        try {
+            int openID = H5.getOpenIDCount();
+            if (openID > 0)
+                log.debug("Before: Number of IDs still open: " + openID);
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        typeInt = new H5Datatype(Datatype.CLASS_INTEGER, H5TestFile.DATATYPE_SIZE, -1, -1);
+        typeUInt = new H5Datatype(Datatype.CLASS_INTEGER, H5TestFile.DATATYPE_SIZE, -1, Datatype.SIGN_NONE);
+        typeFloat = new H5Datatype(Datatype.CLASS_FLOAT, H5TestFile.DATATYPE_SIZE, -1, -1);
+        typeStr = new H5Datatype(Datatype.CLASS_STRING, H5TestFile.STR_LEN, -1, -1);
 
-        testFile = (H5File) H5FILE.open(H5TestFile.NAME_FILE_H5,
-                FileFormat.WRITE);
+        testFile = (H5File) H5FILE.open(H5TestFile.NAME_FILE_H5, FileFormat.WRITE);
         assertNotNull(testFile);
 
         testFile.open();
@@ -164,14 +159,14 @@ public class H5DatatypeTest {
             }
             testFile = null;
         }
-		try {
-			int openID = H5.getOpenIDCount();
-			if(openID > 0)
-				log.debug("After: Number of IDs still open: "+ openID);
-		} 
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
+        try {
+            int openID = H5.getOpenIDCount();
+            if (openID > 0)
+                log.debug("After: Number of IDs still open: " + openID);
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     /**
@@ -187,7 +182,7 @@ public class H5DatatypeTest {
      */
     @Test
     public void testOpen() {
-    	log.debug("testOpen");
+        log.debug("testOpen");
         int tid = -1, tclass = -1, tsize = -1;
 
         for (int loop = 0; loop < NLOOPS; loop++) {
@@ -220,8 +215,7 @@ public class H5DatatypeTest {
         }
         int nObjs = 0;
         try {
-            nObjs = H5.H5Fget_obj_count(testFile.getFID(),
-                    HDF5Constants.H5F_OBJ_ALL);
+            nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL);
         }
         catch (final Exception ex) {
             fail("H5.H5Fget_obj_count() failed. " + ex);
@@ -243,7 +237,7 @@ public class H5DatatypeTest {
      */
     @Test
     public void testClose() {
-    	log.debug("testClose");
+        log.debug("testClose");
         int tid = -1, tclass = -1, tsize = -1;
 
         for (int loop = 0; loop < NLOOPS; loop++) {
@@ -283,8 +277,7 @@ public class H5DatatypeTest {
         }
         int nObjs = 0;
         try {
-            nObjs = H5.H5Fget_obj_count(testFile.getFID(),
-                    HDF5Constants.H5F_OBJ_ALL);
+            nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL);
         }
         catch (final Exception ex) {
             fail("H5.H5Fget_obj_count() failed. " + ex);
@@ -304,7 +297,7 @@ public class H5DatatypeTest {
      */
     @Test
     public void testToNative() {
-    	log.debug("testToNative");
+        log.debug("testToNative");
         int tid = -1, tclass = -1, tsize = -1;
 
         // test integer datatype
@@ -375,8 +368,7 @@ public class H5DatatypeTest {
         }
         int nObjs = 0;
         try {
-            nObjs = H5.H5Fget_obj_count(testFile.getFID(),
-                    HDF5Constants.H5F_OBJ_ALL);
+            nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL);
         }
         catch (final Exception ex) {
             fail("H5.H5Fget_obj_count() failed. " + ex);
@@ -398,7 +390,7 @@ public class H5DatatypeTest {
      */
     @Test
     public void testFromNative() {
-    	log.debug("testFromNative");
+        log.debug("testFromNative");
         int tid = -1;
         H5Datatype type = new H5Datatype(-1);
 
@@ -425,23 +417,22 @@ public class H5DatatypeTest {
         }
         int nObjs = 0;
         try {
-            nObjs = H5.H5Fget_obj_count(testFile.getFID(),
-                    HDF5Constants.H5F_OBJ_ALL);
+            nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL);
         }
         catch (final Exception ex) {
             fail("H5.H5Fget_obj_count() failed. " + ex);
         }
         assertEquals(1, nObjs); // file id should be the only one left open
-        
-        int tids[] = {HDF5Constants.H5T_STD_I32LE, HDF5Constants.H5T_STD_U16LE, HDF5Constants.H5T_STD_I32BE};
-        int sizes[] = {4, 2, 4};
-        int signs[] = {Datatype.SIGN_2, Datatype.SIGN_NONE, Datatype.SIGN_2};
-        int orders[] = {Datatype.ORDER_LE, Datatype.ORDER_LE, Datatype.ORDER_BE};
-        for (int i=0; i<tids.length; i++) {
+
+        int tids[] = { HDF5Constants.H5T_STD_I32LE, HDF5Constants.H5T_STD_U16LE, HDF5Constants.H5T_STD_I32BE };
+        int sizes[] = { 4, 2, 4 };
+        int signs[] = { Datatype.SIGN_2, Datatype.SIGN_NONE, Datatype.SIGN_2 };
+        int orders[] = { Datatype.ORDER_LE, Datatype.ORDER_LE, Datatype.ORDER_BE };
+        for (int i = 0; i < tids.length; i++) {
             type = new H5Datatype(tids[i]);
-            assertEquals("sizes#"+i,sizes[i], type.getDatatypeSize());
-            assertEquals("signs#"+i,signs[i], type.getDatatypeSign());
-            assertEquals("orders#"+i, orders[i], type.getDatatypeOrder());
+            assertEquals("sizes#" + i, sizes[i], type.getDatatypeSize());
+            assertEquals("signs#" + i, signs[i], type.getDatatypeSign());
+            assertEquals("orders#" + i, orders[i], type.getDatatypeOrder());
         }
     }
 
@@ -457,7 +448,7 @@ public class H5DatatypeTest {
      */
     @Test
     public void testIsUnsigned() {
-    	log.debug("testIsUnsigned");
+        log.debug("testIsUnsigned");
         assertFalse(typeInt.isUnsigned());
         assertFalse(typeFloat.isUnsigned());
         assertFalse(typeStr.isUnsigned());
@@ -475,7 +466,7 @@ public class H5DatatypeTest {
      */
     @Test
     public void testGetMetadata() {
-    	log.debug("testGetMetadata");
+        log.debug("testGetMetadata");
         Vector attrs = null;
 
         try {
@@ -492,16 +483,12 @@ public class H5DatatypeTest {
             final Attribute attr = (Attribute) attrs.get(i);
             final H5Datatype dtype = (H5Datatype) attr.getType();
             if (dtype.getDatatypeClass() == Datatype.CLASS_STRING) {
-                assertTrue(H5TestFile.ATTRIBUTE_STR.getName().equals(
-                        attr.getName()));
-                assertTrue(((String[]) H5TestFile.ATTRIBUTE_STR.getValue())[0]
-                        .equals(((String[]) attr.getValue())[0]));
+                assertTrue(H5TestFile.ATTRIBUTE_STR.getName().equals(attr.getName()));
+                assertTrue(((String[]) H5TestFile.ATTRIBUTE_STR.getValue())[0].equals(((String[]) attr.getValue())[0]));
             }
             else if (dtype.getDatatypeClass() == Datatype.CLASS_INTEGER) {
-                assertTrue(H5TestFile.ATTRIBUTE_INT_ARRAY.getName().equals(
-                        attr.getName()));
-                final int[] expected = (int[]) H5TestFile.ATTRIBUTE_INT_ARRAY
-                        .getValue();
+                assertTrue(H5TestFile.ATTRIBUTE_INT_ARRAY.getName().equals(attr.getName()));
+                final int[] expected = (int[]) H5TestFile.ATTRIBUTE_INT_ARRAY.getValue();
                 assertNotNull(expected);
                 final int[] ints = (int[]) attr.getValue();
                 assertNotNull(ints);
@@ -512,8 +499,7 @@ public class H5DatatypeTest {
         } // for (int i=0; i<n; i++) {
         int nObjs = 0;
         try {
-            nObjs = H5.H5Fget_obj_count(testFile.getFID(),
-                    HDF5Constants.H5F_OBJ_ALL);
+            nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL);
         }
         catch (final Exception ex) {
             fail("H5.H5Fget_obj_count() failed. " + ex);
@@ -522,8 +508,7 @@ public class H5DatatypeTest {
     }
 
     /**
-     * Test method for
-     * {@link ncsa.hdf.object.h5.H5Datatype#writeMetadata(java.lang.Object)}.
+     * Test method for {@link ncsa.hdf.object.h5.H5Datatype#writeMetadata(java.lang.Object)}.
      * <p>
      * What to test:
      * <ul>
@@ -535,7 +520,7 @@ public class H5DatatypeTest {
      */
     @Test
     public void testWriteMetadata() {
-    	log.debug("testWriteMetadata");
+        log.debug("testWriteMetadata");
         Vector attrs = null;
         Attribute attr = null;
 
@@ -573,8 +558,7 @@ public class H5DatatypeTest {
         } // for (int i=0; i<n; i++) {
 
         // attache a new attribute
-        attr = new Attribute("float attribute", typeFloat, new long[] { 1 },
-                new float[] { TEST_VALUE_FLOAT });
+        attr = new Attribute("float attribute", typeFloat, new long[] { 1 }, new float[] { TEST_VALUE_FLOAT });
         try {
             testDatatype.writeMetadata(attr);
         }
@@ -608,14 +592,11 @@ public class H5DatatypeTest {
             attr = (Attribute) attrs.get(i);
             final H5Datatype dtype = (H5Datatype) attr.getType();
             if (dtype.getDatatypeClass() == Datatype.CLASS_STRING) {
-                assertTrue(H5TestFile.ATTRIBUTE_STR.getName().equals(
-                        attr.getName()));
-                assertTrue(TEST_VALUE_STR
-                        .equals(((String[]) attr.getValue())[0]));
+                assertTrue(H5TestFile.ATTRIBUTE_STR.getName().equals(attr.getName()));
+                assertTrue(TEST_VALUE_STR.equals(((String[]) attr.getValue())[0]));
             }
             else if (dtype.getDatatypeClass() == Datatype.CLASS_INTEGER) {
-                assertTrue(H5TestFile.ATTRIBUTE_INT_ARRAY.getName().equals(
-                        attr.getName()));
+                assertTrue(H5TestFile.ATTRIBUTE_INT_ARRAY.getName().equals(attr.getName()));
                 final int[] ints = (int[]) attr.getValue();
                 assertNotNull(ints);
                 for (int j = 0; j < ints.length; j++) {
@@ -650,8 +631,7 @@ public class H5DatatypeTest {
                 final int[] ints = (int[]) attr.getValue();
                 assertNotNull(ints);
                 for (int j = 0; j < ints.length; j++) {
-                    final int[] expected = (int[]) H5TestFile.ATTRIBUTE_INT_ARRAY
-                            .getValue();
+                    final int[] expected = (int[]) H5TestFile.ATTRIBUTE_INT_ARRAY.getValue();
                     ints[j] = expected[j];
                 }
             }
@@ -664,8 +644,7 @@ public class H5DatatypeTest {
         } // for (int i=0; i<n; i++) {
         int nObjs = 0;
         try {
-            nObjs = H5.H5Fget_obj_count(testFile.getFID(),
-                    HDF5Constants.H5F_OBJ_ALL);
+            nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL);
         }
         catch (final Exception ex) {
             fail("H5.H5Fget_obj_count() failed. " + ex);
@@ -674,8 +653,7 @@ public class H5DatatypeTest {
     }
 
     /**
-     * Test method for
-     * {@link ncsa.hdf.object.h5.H5Datatype#removeMetadata(java.lang.Object)}.
+     * Test method for {@link ncsa.hdf.object.h5.H5Datatype#removeMetadata(java.lang.Object)}.
      * <p>
      * What to test:
      * <ul>
@@ -686,7 +664,7 @@ public class H5DatatypeTest {
      */
     @Test
     public void testRemoveMetadata() {
-    	log.debug("testRemoveMetadata");
+        log.debug("testRemoveMetadata");
         Vector attrs = null;
         try {
             attrs = (Vector) testDatatype.getMetadata();
@@ -739,21 +717,20 @@ public class H5DatatypeTest {
         }
         int nObjs = 0;
         try {
-            nObjs = H5.H5Fget_obj_count(testFile.getFID(),
-                    HDF5Constants.H5F_OBJ_ALL);
+            nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL);
         }
         catch (final Exception ex) {
             fail("H5.H5Fget_obj_count() failed. " + ex);
         }
         assertEquals(1, nObjs); // file id should be the only one left open
     }
-    
+
     /**
      * Test method for {@link ncsa.hdf.object.h5.H5Datatype} IsSerializable.
      */
     @Test
     public void testIsSerializable() {
-    	log.debug("testIsSerializable");
+        log.debug("testIsSerializable");
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         ObjectOutputStream oos;
         try {
@@ -767,7 +744,7 @@ public class H5DatatypeTest {
         }
         assertTrue(out.toByteArray().length > 0);
     }
-    
+
     /**
      * Test method for {@link ncsa.hdf.object.h5.H5Datatype} SerializeToDisk.
      * <p>
@@ -781,9 +758,8 @@ public class H5DatatypeTest {
      * </ul>
      */
     @Test
-    public void testSerializeToDisk()
-    {
-    	log.debug("testSerializeToDisk");
+    public void testSerializeToDisk() {
+        log.debug("testSerializeToDisk");
         try {
             FileOutputStream fos = new FileOutputStream("temph5dtype.ser");
             ObjectOutputStream oos = new ObjectOutputStream(fos);
@@ -793,21 +769,21 @@ public class H5DatatypeTest {
         catch (Exception ex) {
             fail("Exception thrown during test: " + ex.toString());
         }
-        
+
         H5Datatype test = null;
         try {
             FileInputStream fis = new FileInputStream("temph5dtype.ser");
             ObjectInputStream ois = new ObjectInputStream(fis);
             test = (ncsa.hdf.object.h5.H5Datatype) ois.readObject();
             ois.close();
-            
+
             // Clean up the file
             new File("temph5dtype.ser").delete();
         }
         catch (Exception ex) {
             fail("Exception thrown during test: " + ex.toString());
         }
-        
+
         int tid = -1, tclass = -1, tsize = -1;
 
         for (int loop = 0; loop < NLOOPS; loop++) {
@@ -840,8 +816,7 @@ public class H5DatatypeTest {
         }
         int nObjs = 0;
         try {
-            nObjs = H5.H5Fget_obj_count(testFile.getFID(),
-                    HDF5Constants.H5F_OBJ_ALL);
+            nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL);
         }
         catch (final Exception ex) {
             fail("H5.H5Fget_obj_count() failed. " + ex);

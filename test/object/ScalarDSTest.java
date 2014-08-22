@@ -39,48 +39,47 @@ public class ScalarDSTest {
 
     @BeforeClass
     public static void createFile() throws Exception {
-		try {
-			int openID = H5.getOpenIDCount();
-			if(openID > 0)
-				System.out.println("ScalarDSTest BeforeClass: Number of IDs still open: "+ openID);
-		} 
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
-		try {
-			H5TestFile.createTestFile(null);
-		}
-		catch (final Exception ex) {
-			System.out.println("*** Unable to create HDF5 test file. " + ex);
-			System.exit(-1);
-		}
+        try {
+            int openID = H5.getOpenIDCount();
+            if (openID > 0)
+                System.out.println("ScalarDSTest BeforeClass: Number of IDs still open: " + openID);
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        try {
+            H5TestFile.createTestFile(null);
+        }
+        catch (final Exception ex) {
+            System.out.println("*** Unable to create HDF5 test file. " + ex);
+            System.exit(-1);
+        }
     }
-    
+
     @AfterClass
     public static void checkIDs() throws Exception {
-		try {
-			int openID = H5.getOpenIDCount();
-			if(openID>0)
-				System.out.println("ScalarDSTest AfterClass: Number of IDs still open: "+ openID);
-		} 
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
+        try {
+            int openID = H5.getOpenIDCount();
+            if (openID > 0)
+                System.out.println("ScalarDSTest AfterClass: Number of IDs still open: " + openID);
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
 
     }
-   
+
     @Before
     public void openFiles() throws Exception {
-		try {
-			int openID = H5.getOpenIDCount();
-			if(openID > 0)
-				log.debug("Before: Number of IDs still open: "+ openID);
-		} 
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
-        testFile = (H5File) H5FILE.open(H5TestFile.NAME_FILE_H5,
-                FileFormat.READ);
+        try {
+            int openID = H5.getOpenIDCount();
+            if (openID > 0)
+                log.debug("Before: Number of IDs still open: " + openID);
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        testFile = (H5File) H5FILE.open(H5TestFile.NAME_FILE_H5, FileFormat.READ);
         assertNotNull(testFile);
         testGroup = (H5Group) testFile.get(H5TestFile.NAME_GROUP_ATTR);
         assertNotNull(testGroup);
@@ -106,14 +105,13 @@ public class ScalarDSTest {
         ORDset = (ScalarDS) testFile.get(H5TestFile.NAME_DATASET_OBJ_REF);
         assertNotNull(ORDset);
         ORDset.init();
-        imagePalete = (ScalarDS) testFile
-                .get(H5TestFile.NAME_DATASET_IMAGE_PALETTE);
+        imagePalete = (ScalarDS) testFile.get(H5TestFile.NAME_DATASET_IMAGE_PALETTE);
         assertNotNull(imagePalete);
         imagePalete.init();
     }
 
     @After
-	public void removeFiles() throws Exception {
+    public void removeFiles() throws Exception {
         if (testFile != null) {
             try {
                 testFile.close();
@@ -122,14 +120,14 @@ public class ScalarDSTest {
             }
             testFile = null;
         }
-		try {
-			int openID = H5.getOpenIDCount();
-			if(openID > 0)
-				log.debug("After: Number of IDs still open: "+ openID);
-		} 
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
+        try {
+            int openID = H5.getOpenIDCount();
+            if (openID > 0)
+                log.debug("After: Number of IDs still open: " + openID);
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     /**
@@ -138,10 +136,8 @@ public class ScalarDSTest {
      * <ul>
      * <li>Test for general functionality
      * <ul>
-     * <li>Check for all datasets whether it is an image or not (only image
-     * should return true).
-     * <li>Check for all datasets whether imageDisplay is set (only image should
-     * return true).
+     * <li>Check for all datasets whether it is an image or not (only image should return true).
+     * <li>Check for all datasets whether imageDisplay is set (only image should return true).
      * <li>Get Image Data Range from image dataset and check if it is valid.
      * <li>Check the interlace value for the image dataset.
      * <li>Check if the image is unsigned byte.
@@ -152,7 +148,7 @@ public class ScalarDSTest {
      */
     @Test
     public void testImageFunctionality() {
-    	log.debug("testImageFunctionality");
+        log.debug("testImageFunctionality");
         assertTrue(imageDset.hasAttribute());
         assertTrue(imageDset.isImage());
         assertTrue(imageDset.isImageDisplay());
@@ -181,8 +177,7 @@ public class ScalarDSTest {
         assertFalse(intDset.isImageDisplay());
         int nObjs = 0;
         try {
-            nObjs = H5.H5Fget_obj_count(testFile.getFID(),
-                    HDF5Constants.H5F_OBJ_ALL);
+            nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL);
         }
         catch (final Exception ex) {
             fail("H5.H5Fget_obj_count() failed. " + ex);
@@ -195,14 +190,13 @@ public class ScalarDSTest {
      * <ul>
      * <li>Test for general functionality
      * <ul>
-     * <li>For all datasets in the file check if it is text. Only string dataset
-     * should return true.
+     * <li>For all datasets in the file check if it is text. Only string dataset should return true.
      * </ul>
      * </ul>
      */
     @Test
     public void testIsText() {
-    	log.debug("testIsText");
+        log.debug("testIsText");
         assertTrue(strDset.isText());
         assertFalse(imageDset.isText());
         assertFalse(intDset.isText());
@@ -213,8 +207,7 @@ public class ScalarDSTest {
         assertFalse(imagePalete.isText());
         int nObjs = 0;
         try {
-            nObjs = H5.H5Fget_obj_count(testFile.getFID(),
-                    HDF5Constants.H5F_OBJ_ALL);
+            nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL);
         }
         catch (final Exception ex) {
             fail("H5.H5Fget_obj_count() failed. " + ex);

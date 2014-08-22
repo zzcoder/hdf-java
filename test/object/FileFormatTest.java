@@ -34,53 +34,53 @@ public class FileFormatTest {
 
     @BeforeClass
     public static void createFile() throws Exception {
-		try {
-			int openID = H5.getOpenIDCount();
-			if(openID > 0)
-				System.out.println("FileFormatTest BeforeClass: Number of IDs still open: "+ openID);
-		} 
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
-		try {
-			H5TestFile.createTestFile(null);
-		}
-		catch (final Exception ex) {
-			System.out.println("*** Unable to create HDF5 test file. " + ex);
-			System.exit(-1);
-		}
+        try {
+            int openID = H5.getOpenIDCount();
+            if (openID > 0)
+                System.out.println("FileFormatTest BeforeClass: Number of IDs still open: " + openID);
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        try {
+            H5TestFile.createTestFile(null);
+        }
+        catch (final Exception ex) {
+            System.out.println("*** Unable to create HDF5 test file. " + ex);
+            System.exit(-1);
+        }
     }
-    
+
     @AfterClass
     public static void checkIDs() throws Exception {
-		try {
-			int openID = H5.getOpenIDCount();
-			if(openID>0)
-				System.out.println("FileFormatTest AfterClass: Number of IDs still open: "+ openID);
-		} 
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
+        try {
+            int openID = H5.getOpenIDCount();
+            if (openID > 0)
+                System.out.println("FileFormatTest AfterClass: Number of IDs still open: " + openID);
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
 
     }
-    
+
     @Before
     public void openFiles() throws Exception {
-		try {
-			int openID = H5.getOpenIDCount();
-			if(openID > 0)
-				log.debug("Before: Number of IDs still open: "+ openID);
-		} 
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
+        try {
+            int openID = H5.getOpenIDCount();
+            if (openID > 0)
+                log.debug("Before: Number of IDs still open: " + openID);
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
         testFile = H5FILE.open(H5TestFile.NAME_FILE_H5, FileFormat.WRITE);
         assertNotNull(testFile);
         testFile.open();
     }
 
     @After
-	public void removeFiles() throws Exception {
+    public void removeFiles() throws Exception {
         if (testFile != null) {
             try {
                 testFile.close();
@@ -89,46 +89,39 @@ public class FileFormatTest {
             }
             testFile = null;
         }
-		try {
-			int openID = H5.getOpenIDCount();
-			if(openID > 0)
-				log.debug("After: Number of IDs still open: "+ openID);
-		} 
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
+        try {
+            int openID = H5.getOpenIDCount();
+            if (openID > 0)
+                log.debug("After: Number of IDs still open: " + openID);
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     /**
-     * Test method for
-     * {@link ncsa.hdf.object.FileFormat#create(java.lang.String, int)}.
+     * Test method for {@link ncsa.hdf.object.FileFormat#create(java.lang.String, int)}.
      * <p>
      * What to test:
      * <ul>
      * <li>Create a file that is already created with option FILE_CREATE_OPEN.
-     * <li>Create a file that is already created and opened with option
-     * FILE_CREATE_DELETE.
-     * <li>Create a file that is already created and not opened with
-     * FILE_CREATE_DELETE.
+     * <li>Create a file that is already created and opened with option FILE_CREATE_DELETE.
+     * <li>Create a file that is already created and not opened with FILE_CREATE_DELETE.
      * <li>Create a file that is new with FILE_CREATE_DELETE.
      * <li>Create a file that is new with FILE_CREATE_OPEN.
      * </ul>
      * 
      */
     /*
-     * RUTH - come back and update this with new method, createInstance public
-     * final void testCreateStringInt() { FileFormat f =
-     * FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
+     * RUTH - come back and update this with new method, createInstance public final void testCreateStringInt() {
+     * FileFormat f = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
      * 
-     * try { f.create(H5TestFile.NAME_FILE_H5, FileFormat.FILE_CREATE_OPEN); }
-     * catch (Exception ex) { fail("Create Failed " + ex.getMessage()); } try {
-     * f.create(H5TestFile.NAME_FILE_H5, FileFormat.FILE_CREATE_DELETE); } catch
-     * (Exception ex) { ; //Expected to fail. } try { f.create("simpleFile",
-     * FileFormat.FILE_CREATE_DELETE); } catch (Exception ex) {
-     * fail("Create failed " + ex.getMessage()); } try { f.create("testFile",
-     * FileFormat.FILE_CREATE_DELETE); } catch (Exception ex) {
-     * fail("Create failed " + ex.getMessage()); } try { f.create("testFile",
-     * FileFormat.FILE_CREATE_OPEN); } catch (Exception ex) {
+     * try { f.create(H5TestFile.NAME_FILE_H5, FileFormat.FILE_CREATE_OPEN); } catch (Exception ex) {
+     * fail("Create Failed " + ex.getMessage()); } try { f.create(H5TestFile.NAME_FILE_H5,
+     * FileFormat.FILE_CREATE_DELETE); } catch (Exception ex) { ; //Expected to fail. } try { f.create("simpleFile",
+     * FileFormat.FILE_CREATE_DELETE); } catch (Exception ex) { fail("Create failed " + ex.getMessage()); } try {
+     * f.create("testFile", FileFormat.FILE_CREATE_DELETE); } catch (Exception ex) { fail("Create failed " +
+     * ex.getMessage()); } try { f.create("testFile", FileFormat.FILE_CREATE_OPEN); } catch (Exception ex) {
      * fail("Create failed " + ex.getMessage()); } }
      */
     /**
@@ -140,12 +133,11 @@ public class FileFormatTest {
      */
     @Test
     public void testGetNumberOfMembers() {
-    	log.debug("testGetNumberOfMembers");
+        log.debug("testGetNumberOfMembers");
         assertEquals(testFile.getNumberOfMembers(), 21);
         int nObjs = 0;
         try {
-            nObjs = H5.H5Fget_obj_count(testFile.getFID(),
-                    HDF5Constants.H5F_OBJ_ALL);
+            nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL);
         }
         catch (final Exception ex) {
             fail("H5.H5Fget_obj_count() failed. " + ex);
@@ -154,8 +146,7 @@ public class FileFormatTest {
     }
 
     /**
-     * Test method for
-     * {@link ncsa.hdf.object.FileFormat#getFileFormat(java.lang.String)}.
+     * Test method for {@link ncsa.hdf.object.FileFormat#getFileFormat(java.lang.String)}.
      * <p>
      * <ul>
      * <li>Test for HDF5.
@@ -163,13 +154,12 @@ public class FileFormatTest {
      */
     @Test
     public void testGetFileFormat() {
-    	log.debug("testGetFileFormat");
+        log.debug("testGetFileFormat");
         FileFormat f = FileFormat.getFileFormat("HDF5");
         assertNotNull(f);
         int nObjs = 0;
         try {
-            nObjs = H5.H5Fget_obj_count(testFile.getFID(),
-                    HDF5Constants.H5F_OBJ_ALL);
+            nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL);
         }
         catch (final Exception ex) {
             fail("H5.H5Fget_obj_count() failed. " + ex);
@@ -186,17 +176,16 @@ public class FileFormatTest {
      */
     @Test
     public void testGetFileFormatKeys() {
-    	log.debug("testGetFileFormatKeys");
-     	
-    	Enumeration<String> e = FileFormat.getFileFormatKeys();
+        log.debug("testGetFileFormatKeys");
+
+        Enumeration<String> e = FileFormat.getFileFormatKeys();
 
         while (e.hasMoreElements())
-        	assertNotNull(FileFormat.getFileFormat((String)e.nextElement()));
-        
+            assertNotNull(FileFormat.getFileFormat((String) e.nextElement()));
+
         int nObjs = 0;
         try {
-            nObjs = H5.H5Fget_obj_count(testFile.getFID(),
-                    HDF5Constants.H5F_OBJ_ALL);
+            nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL);
         }
         catch (final Exception ex) {
             fail("H5.H5Fget_obj_count() failed. " + ex);
@@ -213,12 +202,11 @@ public class FileFormatTest {
      */
     @Test
     public void testGetFID() {
-    	log.debug("testGetFID");
+        log.debug("testGetFID");
         assertTrue((testFile.getFID() != -1));
         int nObjs = 0;
         try {
-            nObjs = H5.H5Fget_obj_count(testFile.getFID(),
-                    HDF5Constants.H5F_OBJ_ALL);
+            nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL);
         }
         catch (final Exception ex) {
             fail("H5.H5Fget_obj_count() failed. " + ex);
@@ -227,8 +215,7 @@ public class FileFormatTest {
     }
 
     /**
-     * Test method for
-     * {@link ncsa.hdf.object.FileFormat#getInstance(java.lang.String)}.
+     * Test method for {@link ncsa.hdf.object.FileFormat#getInstance(java.lang.String)}.
      * <p>
      * <ul>
      * <li>Open an non existing file.
@@ -237,7 +224,7 @@ public class FileFormatTest {
      */
     @Test
     public void testGetInstance() {
-    	log.debug("testGetInstance");
+        log.debug("testGetInstance");
         H5File f = null;
         try {
             f = (H5File) FileFormat.getInstance("test_hdf5.h5");
@@ -256,8 +243,7 @@ public class FileFormatTest {
         assertNotNull(f);
         int nObjs = 0;
         try {
-            nObjs = H5.H5Fget_obj_count(testFile.getFID(),
-                    HDF5Constants.H5F_OBJ_ALL);
+            nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL);
         }
         catch (final Exception ex) {
             fail("H5.H5Fget_obj_count() failed. " + ex);
@@ -274,15 +260,14 @@ public class FileFormatTest {
      */
     @Test
     public void testGetFileFormats() {
-    	log.debug("testGetFileFormats");
+        log.debug("testGetFileFormats");
         FileFormat f = FileFormat.getFileFormat("HDF5");
         assertNotNull(f);
         FileFormat f1 = FileFormat.getFileFormat("ALL");
         assertNull(f1);
         int nObjs = 0;
         try {
-            nObjs = H5.H5Fget_obj_count(testFile.getFID(),
-                    HDF5Constants.H5F_OBJ_ALL);
+            nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL);
         }
         catch (final Exception ex) {
             fail("H5.H5Fget_obj_count() failed. " + ex);

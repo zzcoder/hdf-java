@@ -49,14 +49,13 @@ import org.junit.Test;
  * 
  * </pre>
  * 
- *@author Peter Cao, The HDF Group
+ * @author Peter Cao, The HDF Group
  */
 public class H5BugFixTest {
     private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H5BugFixTest.class);
     private static final int NLOOPS = 10;
     private static final H5File H5FILE = new H5File();
     private H5File testFile = null;
-
 
     private static void collectGarbage() {
         try {
@@ -72,53 +71,52 @@ public class H5BugFixTest {
 
     @BeforeClass
     public static void createFile() throws Exception {
-		try {
-			int openID = H5.getOpenIDCount();
-			if(openID > 0)
-				System.out.println("H5BugFixTest BeforeClass: Number of IDs still open: "+ openID);
-		} 
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
-		try {
-			H5TestFile.createTestFile(null);
-		}
-		catch (final Exception ex) {
-			System.out.println("*** Unable to create HDF5 test file. " + ex);
-			System.exit(-1);
-		}
+        try {
+            int openID = H5.getOpenIDCount();
+            if (openID > 0)
+                System.out.println("H5BugFixTest BeforeClass: Number of IDs still open: " + openID);
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        try {
+            H5TestFile.createTestFile(null);
+        }
+        catch (final Exception ex) {
+            System.out.println("*** Unable to create HDF5 test file. " + ex);
+            System.exit(-1);
+        }
     }
-    
+
     @AfterClass
     public static void checkIDs() throws Exception {
-		try {
-			int openID = H5.getOpenIDCount();
-			if(openID>0)
-				System.out.println("H5BugFixTest BeforeClass: Number of IDs still open: "+ openID);
-		} 
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
+        try {
+            int openID = H5.getOpenIDCount();
+            if (openID > 0)
+                System.out.println("H5BugFixTest BeforeClass: Number of IDs still open: " + openID);
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
 
     }
-   
+
     @Before
     public void openFiles() throws Exception {
-		try {
-			int openID = H5.getOpenIDCount();
-			if(openID > 0)
-				log.debug("Before: Number of IDs still open: "+ openID);
-		} 
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
-        testFile = (H5File) H5FILE.open(H5TestFile.NAME_FILE_H5,
-                FileFormat.WRITE);
+        try {
+            int openID = H5.getOpenIDCount();
+            if (openID > 0)
+                log.debug("Before: Number of IDs still open: " + openID);
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        testFile = (H5File) H5FILE.open(H5TestFile.NAME_FILE_H5, FileFormat.WRITE);
         assertNotNull(testFile);
     }
 
     @After
-	public void removeFiles() throws Exception {
+    public void removeFiles() throws Exception {
         if (testFile != null) {
             try {
                 testFile.close();
@@ -127,22 +125,20 @@ public class H5BugFixTest {
             }
             testFile = null;
         }
-		try {
-			int openID = H5.getOpenIDCount();
-			if(openID > 0)
-				log.debug("After: Number of IDs still open: "+ openID);
-		} 
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
+        try {
+            int openID = H5.getOpenIDCount();
+            if (openID > 0)
+                log.debug("After: Number of IDs still open: " + openID);
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     /**
-     * The following program fails because dataset.init() does not reset the
-     * selection of dataspace.
+     * The following program fails because dataset.init() does not reset the selection of dataspace.
      * <p>
-     * The bug appears on hdf-java 2.4 beta04 or earlier version. It is fixed at
-     * later version.
+     * The bug appears on hdf-java 2.4 beta04 or earlier version. It is fixed at later version.
      * 
      * <pre>
      * 1)  read the table cell (using dataset selection to select only that row of the table)
@@ -163,11 +159,10 @@ public class H5BugFixTest {
      */
     @Test
     public void testBug847() throws Exception {
-    	log.debug("testBug847");
+        log.debug("testBug847");
         Vector data = null;
 
-        final H5CompoundDS dset = (H5CompoundDS) testFile
-                .get(H5TestFile.NAME_DATASET_COMPOUND);
+        final H5CompoundDS dset = (H5CompoundDS) testFile.get(H5TestFile.NAME_DATASET_COMPOUND);
         assertNotNull(dset);
 
         for (int loop = 0; loop < NLOOPS; loop++) {
@@ -192,8 +187,7 @@ public class H5BugFixTest {
             assertNotNull(strs);
             for (int i = 0; i < H5TestFile.DIM_SIZE; i++) {
                 assertEquals(H5TestFile.DATA_INT[i], ints[i]);
-                assertEquals(H5TestFile.DATA_FLOAT[i], floats[i],
-                        Float.MIN_VALUE);
+                assertEquals(H5TestFile.DATA_FLOAT[i], floats[i], Float.MIN_VALUE);
                 assertTrue(H5TestFile.DATA_STR[i].equals(strs[i]));
             }
 
@@ -235,8 +229,7 @@ public class H5BugFixTest {
                 assertNotNull(floats);
                 assertNotNull(strs);
                 assertEquals(H5TestFile.DATA_INT[i], ints[0]);
-                assertEquals(H5TestFile.DATA_FLOAT[i], floats[0],
-                        Float.MIN_VALUE);
+                assertEquals(H5TestFile.DATA_FLOAT[i], floats[0], Float.MIN_VALUE);
                 assertTrue(H5TestFile.DATA_STR[i].equals(strs[0]));
             } // for (int i=0; i<nrows; i++) {
 
@@ -270,8 +263,7 @@ public class H5BugFixTest {
                     floats = (float[]) data.get(0);
                     assertNotNull(floats);
                     for (int j = 0; j < H5TestFile.DIM_SIZE; j++) {
-                        assertEquals(H5TestFile.DATA_FLOAT[j], floats[j],
-                                Float.MIN_VALUE);
+                        assertEquals(H5TestFile.DATA_FLOAT[j], floats[j], Float.MIN_VALUE);
                     }
                     break;
                 case 2:
@@ -287,16 +279,14 @@ public class H5BugFixTest {
     }
 
     /**
-     * The following operation causes memory leak because a group is left open
-     * at file.get().
+     * The following operation causes memory leak because a group is left open at file.get().
      * <p>
-     * The bug appears on hdf-java 2.4 beta05 or earlier version. It is fixed at
-     * later version.
+     * The bug appears on hdf-java 2.4 beta05 or earlier version. It is fixed at later version.
      * 
      * <pre>
      * while (true) {
      *     H5File file = new H5File(H5TestFile.NAME_FILE_H5, H5File.READ);
-     *     //file.open();
+     *     // file.open();
      *     file.get(&quot;/Table0&quot;);
      *     file.get(&quot;/Group0&quot;);
      * 
@@ -310,23 +300,19 @@ public class H5BugFixTest {
      */
     @Test
     public void testBug863() throws Exception {
-    	log.debug("testBug863");
+        log.debug("testBug863");
         int nObjs = 0; // number of object left open
         Dataset dset = null;
-        final String dnames[] = { H5TestFile.NAME_DATASET_CHAR,
-                H5TestFile.NAME_DATASET_COMPOUND,
-                H5TestFile.NAME_DATASET_COMPOUND_SUB,
-                H5TestFile.NAME_DATASET_ENUM, H5TestFile.NAME_DATASET_FLOAT,
-                H5TestFile.NAME_DATASET_IMAGE, H5TestFile.NAME_DATASET_INT,
-                H5TestFile.NAME_DATASET_STR, H5TestFile.NAME_DATASET_INT_SUB,
-                H5TestFile.NAME_DATASET_FLOAT_SUB_SUB };
+        final String dnames[] = { H5TestFile.NAME_DATASET_CHAR, H5TestFile.NAME_DATASET_COMPOUND,
+                H5TestFile.NAME_DATASET_COMPOUND_SUB, H5TestFile.NAME_DATASET_ENUM, H5TestFile.NAME_DATASET_FLOAT,
+                H5TestFile.NAME_DATASET_IMAGE, H5TestFile.NAME_DATASET_INT, H5TestFile.NAME_DATASET_STR,
+                H5TestFile.NAME_DATASET_INT_SUB, H5TestFile.NAME_DATASET_FLOAT_SUB_SUB };
 
         // test two open options: open full tree or open individual object only
         for (int openOption = 0; openOption < 2; openOption++) {
             for (int i = 0; i < NLOOPS; i++) {
                 nObjs = 0;
-                final H5File file = new H5File(H5TestFile.NAME_FILE_H5,
-                        FileFormat.WRITE);
+                final H5File file = new H5File(H5TestFile.NAME_FILE_H5, FileFormat.WRITE);
 
                 if (openOption == 0) {
                     try {
@@ -363,8 +349,7 @@ public class H5BugFixTest {
                 }
 
                 try {
-                    nObjs = H5.H5Fget_obj_count(file.getFID(),
-                            HDF5Constants.H5F_OBJ_ALL);
+                    nObjs = H5.H5Fget_obj_count(file.getFID(), HDF5Constants.H5F_OBJ_ALL);
                 }
                 catch (final Exception ex) {
                     fail("H5.H5Fget_obj_count() failed. " + ex);

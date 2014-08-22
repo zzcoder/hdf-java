@@ -37,56 +37,55 @@ public class GroupTest {
 
     @BeforeClass
     public static void createFile() throws Exception {
-		try {
-			int openID = H5.getOpenIDCount();
-			if(openID > 0)
-				System.out.println("GroupTest BeforeClass: Number of IDs still open: "+ openID);
-		} 
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
-		try {
-			H5TestFile.createTestFile(null);
-		}
-		catch (final Exception ex) {
-			System.out.println("*** Unable to create HDF5 test file. " + ex);
-			System.exit(-1);
-		}
+        try {
+            int openID = H5.getOpenIDCount();
+            if (openID > 0)
+                System.out.println("GroupTest BeforeClass: Number of IDs still open: " + openID);
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        try {
+            H5TestFile.createTestFile(null);
+        }
+        catch (final Exception ex) {
+            System.out.println("*** Unable to create HDF5 test file. " + ex);
+            System.exit(-1);
+        }
     }
-    
+
     @AfterClass
     public static void checkIDs() throws Exception {
-		try {
-			int openID = H5.getOpenIDCount();
-			if(openID>0)
-				System.out.println("GroupTest AfterClass: Number of IDs still open: "+ openID);
-		} 
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
+        try {
+            int openID = H5.getOpenIDCount();
+            if (openID > 0)
+                System.out.println("GroupTest AfterClass: Number of IDs still open: " + openID);
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
 
     }
-   
+
     @Before
     public void openFiles() throws Exception {
-		try {
-			int openID = H5.getOpenIDCount();
-			if(openID > 0)
-				log.debug("Before: Number of IDs still open: "+ openID);
-		} 
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
+        try {
+            int openID = H5.getOpenIDCount();
+            if (openID > 0)
+                log.debug("Before: Number of IDs still open: " + openID);
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
         H5File H5FILE = new H5File();
-        testFile = (H5File) H5FILE.open(H5TestFile.NAME_FILE_H5,
-                FileFormat.WRITE);
+        testFile = (H5File) H5FILE.open(H5TestFile.NAME_FILE_H5, FileFormat.WRITE);
         assertNotNull(testFile);
         testGroup = (Group) testFile.get(H5TestFile.NAME_GROUP);
         assertNotNull(testGroup);
     }
 
     @After
-	public void removeFiles() throws Exception {
+    public void removeFiles() throws Exception {
         if (testFile != null) {
             try {
                 testFile.close();
@@ -95,14 +94,14 @@ public class GroupTest {
             }
             testFile = null;
         }
-		try {
-			int openID = H5.getOpenIDCount();
-			if(openID > 0)
-				log.debug("After: Number of IDs still open: "+ openID);
-		} 
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
+        try {
+            int openID = H5.getOpenIDCount();
+            if (openID > 0)
+                log.debug("After: Number of IDs still open: " + openID);
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     /**
@@ -116,13 +115,12 @@ public class GroupTest {
      */
     @Test
     public void testClear() {
-    	log.debug("testClear");
+        log.debug("testClear");
         testGroup.clear();
         assertEquals(testGroup.getMemberList().size(), 0);
         int nObjs = 0;
         try {
-            nObjs = H5.H5Fget_obj_count(testFile.getFID(),
-                    HDF5Constants.H5F_OBJ_ALL);
+            nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL);
         }
         catch (final Exception ex) {
             fail("H5.H5Fget_obj_count() failed. " + ex);
@@ -131,8 +129,7 @@ public class GroupTest {
     }
 
     /**
-     * Test method for
-     * {@link ncsa.hdf.object.Group#addToMemberList(ncsa.hdf.object.HObject)}.
+     * Test method for {@link ncsa.hdf.object.Group#addToMemberList(ncsa.hdf.object.HObject)}.
      * <p>
      * What to test:
      * <ul>
@@ -152,7 +149,7 @@ public class GroupTest {
      */
     @Test
     public void testAddToMemberList() {
-    	log.debug("testAddToMemberList");
+        log.debug("testAddToMemberList");
         int previous_size = testGroup.getMemberList().size();
         testGroup.addToMemberList(null);
         assertEquals(testGroup.getMemberList().size(), previous_size);
@@ -173,8 +170,7 @@ public class GroupTest {
         }
         int nObjs = 0;
         try {
-            nObjs = H5.H5Fget_obj_count(testFile.getFID(),
-                    HDF5Constants.H5F_OBJ_ALL);
+            nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL);
         }
         catch (final Exception ex) {
             fail("H5.H5Fget_obj_count() failed. " + ex);
@@ -183,9 +179,7 @@ public class GroupTest {
     }
 
     /**
-     * Test method for
-     * {@link ncsa.hdf.object.Group#removeFromMemberList(ncsa.hdf.object.HObject)}
-     * .
+     * Test method for {@link ncsa.hdf.object.Group#removeFromMemberList(ncsa.hdf.object.HObject)} .
      * <p>
      * What to test:
      * <ul>
@@ -205,7 +199,7 @@ public class GroupTest {
      */
     @Test
     public void testRemoveFromMemberList() {
-    	log.debug("testRemoveFromMemberList");
+        log.debug("testRemoveFromMemberList");
         int previous_size = testGroup.getMemberList().size();
         List memberList = testGroup.getMemberList();
 
@@ -225,13 +219,11 @@ public class GroupTest {
         testGroup.removeFromMemberList(obj);
 
         if (memberList.size() != previous_size - 1) {
-            fail("The Number of members in list should be "
-                    + (previous_size - 1));
+            fail("The Number of members in list should be " + (previous_size - 1));
         }
         int nObjs = 0;
         try {
-            nObjs = H5.H5Fget_obj_count(testFile.getFID(),
-                    HDF5Constants.H5F_OBJ_ALL);
+            nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL);
         }
         catch (final Exception ex) {
             fail("H5.H5Fget_obj_count() failed. " + ex);
@@ -248,9 +240,9 @@ public class GroupTest {
      */
     @Test
     public void testGetMemberList() {
-    	log.debug("testGetMemberList");
-        String objs[] = { "a_link_to_the_image", "dataset_comp", "dataset_int",
-                "datatype_float", "datatype_int", "datatype_str", "datatype_uint", "g00" };
+        log.debug("testGetMemberList");
+        String objs[] = { "a_link_to_the_image", "dataset_comp", "dataset_int", "datatype_float", "datatype_int",
+                "datatype_str", "datatype_uint", "g00" };
         List memberList = testGroup.getMemberList();
         Iterator it = memberList.iterator();
         int position = 0;
@@ -260,8 +252,7 @@ public class GroupTest {
         }
         int nObjs = 0;
         try {
-            nObjs = H5.H5Fget_obj_count(testFile.getFID(),
-                    HDF5Constants.H5F_OBJ_ALL);
+            nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL);
         }
         catch (final Exception ex) {
             fail("H5.H5Fget_obj_count() failed. " + ex);
@@ -278,12 +269,11 @@ public class GroupTest {
      */
     @Test
     public void testGetParent() {
-    	log.debug("testGetParent");
+        log.debug("testGetParent");
         assertEquals(testGroup.getParent().getName(), "/");
         int nObjs = 0;
         try {
-            nObjs = H5.H5Fget_obj_count(testFile.getFID(),
-                    HDF5Constants.H5F_OBJ_ALL);
+            nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL);
         }
         catch (final Exception ex) {
             fail("H5.H5Fget_obj_count() failed. " + ex);
@@ -300,12 +290,11 @@ public class GroupTest {
      */
     @Test
     public void testIsRoot() {
-    	log.debug("testIsRoot");
+        log.debug("testIsRoot");
         assertFalse(testGroup.isRoot());
         int nObjs = 0;
         try {
-            nObjs = H5.H5Fget_obj_count(testFile.getFID(),
-                    HDF5Constants.H5F_OBJ_ALL);
+            nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL);
         }
         catch (final Exception ex) {
             fail("H5.H5Fget_obj_count() failed. " + ex);
@@ -322,12 +311,11 @@ public class GroupTest {
      */
     @Test
     public void testGetNumberOfMembersInFile() {
-    	log.debug("testGetNumberOfMembersInFile");
+        log.debug("testGetNumberOfMembersInFile");
         assertEquals(testGroup.getNumberOfMembersInFile(), 8);
         int nObjs = 0;
         try {
-            nObjs = H5.H5Fget_obj_count(testFile.getFID(),
-                    HDF5Constants.H5F_OBJ_ALL);
+            nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL);
         }
         catch (final Exception ex) {
             fail("H5.H5Fget_obj_count() failed. " + ex);

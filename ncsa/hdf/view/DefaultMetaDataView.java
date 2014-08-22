@@ -805,7 +805,7 @@ public class DefaultMetaDataView extends JDialog implements ActionListener, Meta
             } // if (n > 0)
         } // if (d instanceof Compound)
 
-        // add compression and data layout information
+        // // add compression and data layout information
         // try { d.getMetadata(); } catch (Exception ex) {}
         String chunkInfo = "";
         long[] chunks = d.getChunkSize();
@@ -824,9 +824,11 @@ public class DefaultMetaDataView extends JDialog implements ActionListener, Meta
         bPanel.setBorder(new TitledBorder(""));
         bPanel.setLayout(new BorderLayout());
         lp = new JPanel();
-        lp.setLayout(new GridLayout(3, 1));
+        lp.setLayout(new GridLayout(5, 1));
         lp.add(new JLabel("Chunking: "));
         lp.add(new JLabel("Compression: "));
+        lp.add(new JLabel("Filters: "));
+        lp.add(new JLabel("Storage: "));
         lp.add(new JLabel("Fill value: "));
         bPanel.add(lp, BorderLayout.WEST);
 
@@ -847,9 +849,11 @@ public class DefaultMetaDataView extends JDialog implements ActionListener, Meta
         }
 
         rp = new JPanel();
-        rp.setLayout(new GridLayout(3, 1));
+        rp.setLayout(new GridLayout(5, 1));
         rp.add(new JLabel(chunkInfo));
         rp.add(new JLabel(d.getCompression()));
+        rp.add(new JLabel(d.getFilters()));
+        rp.add(new JLabel(d.getStorage()));
         rp.add(new JLabel(fillValueInfo));
         bPanel.add(rp, BorderLayout.CENTER);
 

@@ -1399,7 +1399,7 @@ public class H5File extends FileFormat {
             pgroup = (Group) get("/");
         }
 
-        H5ScalarDS dataset = H5ScalarDS.create(name, pgroup, type, dims, maxdims, chunks, gzip, data);
+        H5ScalarDS dataset = (H5ScalarDS)H5ScalarDS.create(name, pgroup, type, dims, maxdims, chunks, gzip, data);
 
         try {
             H5File.createImageAttributes(dataset, interlace);

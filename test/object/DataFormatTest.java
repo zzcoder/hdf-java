@@ -37,54 +37,52 @@ public class DataFormatTest {
 
     @BeforeClass
     public static void createFile() throws Exception {
-		try {
-			int openID = H5.getOpenIDCount();
-			if(openID > 0)
-				System.out.println("DataFormatTest BeforeClass: Number of IDs still open: "+ openID);
-		} 
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
-		try {
-			H5TestFile.createTestFile(null);
-		}
-		catch (final Exception ex) {
-			System.out.println("*** Unable to create HDF5 test file. " + ex);
-			System.exit(-1);
-		}
+        try {
+            int openID = H5.getOpenIDCount();
+            if (openID > 0)
+                System.out.println("DataFormatTest BeforeClass: Number of IDs still open: " + openID);
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        try {
+            H5TestFile.createTestFile(null);
+        }
+        catch (final Exception ex) {
+            System.out.println("*** Unable to create HDF5 test file. " + ex);
+            System.exit(-1);
+        }
     }
-    
+
     @AfterClass
     public static void checkIDs() throws Exception {
-		try {
-			int openID = H5.getOpenIDCount();
-			if(openID>0)
-				System.out.println("DataFormatTest AfterClass: Number of IDs still open: "+ openID);
-		} 
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
+        try {
+            int openID = H5.getOpenIDCount();
+            if (openID > 0)
+                System.out.println("DataFormatTest AfterClass: Number of IDs still open: " + openID);
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
 
     }
-    
+
     @Before
     public void openFiles() throws Exception {
-		try {
-			int openID = H5.getOpenIDCount();
-			if(openID > 0)
-				log.debug("Before: Number of IDs still open: "+ openID);
-		} 
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
-        testFile = (H5File) H5FILE.open(H5TestFile.NAME_FILE_H5,
-                FileFormat.WRITE);
+        try {
+            int openID = H5.getOpenIDCount();
+            if (openID > 0)
+                log.debug("Before: Number of IDs still open: " + openID);
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        testFile = (H5File) H5FILE.open(H5TestFile.NAME_FILE_H5, FileFormat.WRITE);
         assertNotNull(testFile);
         testGroup = testFile.get(H5TestFile.NAME_GROUP_ATTR);
         assertNotNull(testGroup);
     }
 
-	
     @After
     public void removeFiles() throws Exception {
         if (testFile != null) {
@@ -95,14 +93,14 @@ public class DataFormatTest {
             }
             testFile = null;
         }
-		try {
-			int openID = H5.getOpenIDCount();
-			if(openID > 0)
-				log.debug("After: Number of IDs still open: "+ openID);
-		} 
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
+        try {
+            int openID = H5.getOpenIDCount();
+            if (openID > 0)
+                log.debug("After: Number of IDs still open: " + openID);
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     /**
@@ -113,14 +111,13 @@ public class DataFormatTest {
      */
     @Test
     public void testGetFile() {
-    	log.debug("testGetFile");
+        log.debug("testGetFile");
         if (!testGroup.getFile().equals(H5TestFile.NAME_FILE_H5)) {
             fail("getFile() fails.");
         }
         int nObjs = 0;
         try {
-            nObjs = H5.H5Fget_obj_count(testFile.getFID(),
-                    HDF5Constants.H5F_OBJ_ALL);
+            nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL);
         }
         catch (final Exception ex) {
             fail("H5.H5Fget_obj_count() failed. " + ex);
@@ -137,7 +134,7 @@ public class DataFormatTest {
      */
     @Test
     public void testGetMetadata() {
-    	log.debug("testGetMetadata");
+        log.debug("testGetMetadata");
         Attribute strAttr = null;
         Attribute arrayIntAttr = null;
         List mdataList = null;
@@ -164,8 +161,7 @@ public class DataFormatTest {
         }
         int nObjs = 0;
         try {
-            nObjs = H5.H5Fget_obj_count(testFile.getFID(),
-                    HDF5Constants.H5F_OBJ_ALL);
+            nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL);
         }
         catch (final Exception ex) {
             fail("H5.H5Fget_obj_count() failed. " + ex);
@@ -174,8 +170,7 @@ public class DataFormatTest {
     }
 
     /**
-     * Test method for
-     * {@link ncsa.hdf.object.DataFormat#writeMetadata(java.lang.Object)}.
+     * Test method for {@link ncsa.hdf.object.DataFormat#writeMetadata(java.lang.Object)}.
      * <ul>
      * <li>Writing new attributes
      * <li>Checking that the new attributes are written in file
@@ -183,12 +178,11 @@ public class DataFormatTest {
      */
     @Test
     public void testWriteMetadata() {
-    	log.debug("testWriteMetadata");
+        log.debug("testWriteMetadata");
         long[] attrDims = { 1 };
         String attrName = "CLASS";
         String[] classValue = { "IMAGE" };
-        Datatype attrType = new H5Datatype(Datatype.CLASS_STRING, classValue[0]
-                .length() + 1, -1, -1);
+        Datatype attrType = new H5Datatype(Datatype.CLASS_STRING, classValue[0].length() + 1, -1, -1);
         Attribute attr = new Attribute(attrName, attrType, attrDims);
         assertNotNull(testGroup);
         assertNotNull(attr);
@@ -236,8 +230,7 @@ public class DataFormatTest {
         }
         int nObjs = 0;
         try {
-            nObjs = H5.H5Fget_obj_count(testFile.getFID(),
-                    HDF5Constants.H5F_OBJ_ALL);
+            nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL);
         }
         catch (final Exception ex) {
             fail("H5.H5Fget_obj_count() failed. " + ex);
@@ -246,15 +239,14 @@ public class DataFormatTest {
     }
 
     /**
-     * Test method for
-     * {@link ncsa.hdf.object.DataFormat#removeMetadata(java.lang.Object)}.
+     * Test method for {@link ncsa.hdf.object.DataFormat#removeMetadata(java.lang.Object)}.
      * <ul>
      * <li>Remove an attribute
      * </ul>
      */
     @Test
     public void testRemoveMetadata() {
-    	log.debug("testRemoveMetadata");
+        log.debug("testRemoveMetadata");
         List mdataList = null;
         try {
             mdataList = testGroup.getMetadata();
@@ -273,8 +265,7 @@ public class DataFormatTest {
         assertEquals(2, mdataList.size());
         int nObjs = 0;
         try {
-            nObjs = H5.H5Fget_obj_count(testFile.getFID(),
-                    HDF5Constants.H5F_OBJ_ALL);
+            nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL);
         }
         catch (final Exception ex) {
             fail("H5.H5Fget_obj_count() failed. " + ex);

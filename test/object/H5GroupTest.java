@@ -57,56 +57,52 @@ public class H5GroupTest {
 
     @BeforeClass
     public static void createFile() throws Exception {
-		try {
-			int openID = H5.getOpenIDCount();
-			if(openID > 0)
-				System.out.println("H5GroupTest BeforeClass: Number of IDs still open: "+ openID);
-		} 
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
-		try {
-			H5TestFile.createTestFile(null);
-		}
-		catch (final Exception ex) {
-			System.out.println("*** Unable to create HDF5 test file. " + ex);
-			System.exit(-1);
-		}
+        try {
+            int openID = H5.getOpenIDCount();
+            if (openID > 0)
+                System.out.println("H5GroupTest BeforeClass: Number of IDs still open: " + openID);
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        try {
+            H5TestFile.createTestFile(null);
+        }
+        catch (final Exception ex) {
+            System.out.println("*** Unable to create HDF5 test file. " + ex);
+            System.exit(-1);
+        }
     }
-    
+
     @AfterClass
     public static void checkIDs() throws Exception {
-		try {
-			int openID = H5.getOpenIDCount();
-			if(openID>0)
-				System.out.println("H5GroupTest AfterClass: Number of IDs still open: "+ openID);
-		} 
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
+        try {
+            int openID = H5.getOpenIDCount();
+            if (openID > 0)
+                System.out.println("H5GroupTest AfterClass: Number of IDs still open: " + openID);
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
 
     }
-    
+
     @Before
     public void openFiles() throws Exception {
-		try {
-			int openID = H5.getOpenIDCount();
-			if(openID > 0)
-				log.debug("Before: Number of IDs still open: "+ openID);
-		} 
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
-        testFile = (H5File) H5FILE.open(H5TestFile.NAME_FILE_H5,
-                FileFormat.WRITE);
+        try {
+            int openID = H5.getOpenIDCount();
+            if (openID > 0)
+                log.debug("Before: Number of IDs still open: " + openID);
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        testFile = (H5File) H5FILE.open(H5TestFile.NAME_FILE_H5, FileFormat.WRITE);
         assertNotNull(testFile);
 
-        typeInt = new H5Datatype(Datatype.CLASS_INTEGER,
-                H5TestFile.DATATYPE_SIZE, -1, -1);
-        typeFloat = new H5Datatype(Datatype.CLASS_FLOAT,
-                H5TestFile.DATATYPE_SIZE, -1, -1);
-        typeStr = new H5Datatype(Datatype.CLASS_STRING, H5TestFile.STR_LEN, -1,
-                -1);
+        typeInt = new H5Datatype(Datatype.CLASS_INTEGER, H5TestFile.DATATYPE_SIZE, -1, -1);
+        typeFloat = new H5Datatype(Datatype.CLASS_FLOAT, H5TestFile.DATATYPE_SIZE, -1, -1);
+        typeStr = new H5Datatype(Datatype.CLASS_STRING, H5TestFile.STR_LEN, -1, -1);
 
         testGroup = (H5Group) testFile.get(GNAME);
         assertNotNull(testGroup);
@@ -122,19 +118,18 @@ public class H5GroupTest {
             }
             testFile = null;
         }
-		try {
-			int openID = H5.getOpenIDCount();
-			if(openID > 0)
-				log.debug("After: Number of IDs still open: "+ openID);
-		} 
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
+        try {
+            int openID = H5.getOpenIDCount();
+            if (openID > 0)
+                log.debug("After: Number of IDs still open: " + openID);
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     /**
-     * Test method for
-     * {@link ncsa.hdf.object.h5.H5Group#setName(java.lang.String)}.
+     * Test method for {@link ncsa.hdf.object.h5.H5Group#setName(java.lang.String)}.
      * <p>
      * What to test:
      * <ul>
@@ -158,7 +153,7 @@ public class H5GroupTest {
      */
     @Test
     public void testSetName() {
-    	log.debug("testSetName");
+        log.debug("testSetName");
         final String newName = "tmpName";
 
         // test set name to null
@@ -202,8 +197,7 @@ public class H5GroupTest {
         catch (final Exception ex) {
             fail("setName() get(oldname) failed. " + ex);
         }
-        assertNull("The dataset should be null because it has been renamed",
-                tmpDset);
+        assertNull("The dataset should be null because it has been renamed", tmpDset);
 
         // set back the original name
         try {
@@ -223,8 +217,7 @@ public class H5GroupTest {
         assertNotNull(testGroup);
         int nObjs = 0;
         try {
-            nObjs = H5.H5Fget_obj_count(testFile.getFID(),
-                    HDF5Constants.H5F_OBJ_ALL);
+            nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL);
         }
         catch (final Exception ex) {
             fail("H5.H5Fget_obj_count() failed. " + ex);
@@ -233,12 +226,11 @@ public class H5GroupTest {
     }
 
     /**
-     * Test method for
-     * {@link ncsa.hdf.object.h5.H5Group#setPath(java.lang.String)}.
+     * Test method for {@link ncsa.hdf.object.h5.H5Group#setPath(java.lang.String)}.
      */
     @Test
     public void testSetPath() {
-    	log.debug("testSetPath");
+        log.debug("testSetPath");
         final String newPath = "tmpName";
 
         try {
@@ -249,8 +241,7 @@ public class H5GroupTest {
         }
         int nObjs = 0;
         try {
-            nObjs = H5.H5Fget_obj_count(testFile.getFID(),
-                    HDF5Constants.H5F_OBJ_ALL);
+            nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL);
         }
         catch (final Exception ex) {
             fail("H5.H5Fget_obj_count() failed. " + ex);
@@ -271,7 +262,7 @@ public class H5GroupTest {
      */
     @Test
     public void testOpen() {
-    	log.debug("testOpen");
+        log.debug("testOpen");
         int gid = -1;
 
         for (int loop = 0; loop < NLOOPS; loop++) {
@@ -289,8 +280,7 @@ public class H5GroupTest {
         }
         int nObjs = 0;
         try {
-            nObjs = H5.H5Fget_obj_count(testFile.getFID(),
-                    HDF5Constants.H5F_OBJ_ALL);
+            nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL);
         }
         catch (final Exception ex) {
             fail("H5.H5Fget_obj_count() failed. " + ex);
@@ -311,12 +301,11 @@ public class H5GroupTest {
      */
     @Test
     public void testClose() {
-    	log.debug("testClose");
+        log.debug("testClose");
         testOpen();
         int nObjs = 0;
         try {
-            nObjs = H5.H5Fget_obj_count(testFile.getFID(),
-                    HDF5Constants.H5F_OBJ_ALL);
+            nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL);
         }
         catch (final Exception ex) {
             fail("H5.H5Fget_obj_count() failed. " + ex);
@@ -336,7 +325,7 @@ public class H5GroupTest {
      */
     @Test
     public void testClear() {
-    	log.debug("testClear");
+        log.debug("testClear");
         Vector attrs = null;
         try {
             attrs = (Vector) testGroup.getMetadata();
@@ -359,8 +348,7 @@ public class H5GroupTest {
         assertTrue(attrs.size() <= 0);
         int nObjs = 0;
         try {
-            nObjs = H5.H5Fget_obj_count(testFile.getFID(),
-                    HDF5Constants.H5F_OBJ_ALL);
+            nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL);
         }
         catch (final Exception ex) {
             fail("H5.H5Fget_obj_count() failed. " + ex);
@@ -386,7 +374,7 @@ public class H5GroupTest {
      */
     @Test
     public void testH5GroupFileFormatStringStringGroup() {
-    	log.debug("testH5GroupFileFormatStringStringGroup");
+        log.debug("testH5GroupFileFormatStringStringGroup");
         Group pgroup = null;
         final String[] names = { null, GNAME_SUB, GNAME_SUB.substring(4) };
         final String[] paths = { GNAME_SUB, null, H5TestFile.NAME_GROUP };
@@ -403,21 +391,18 @@ public class H5GroupTest {
         assertNotNull(pgroup);
 
         for (int idx = 0; idx < names.length; idx++) {
-            final H5Group grp = new H5Group(file, names[idx], paths[idx],
-                    pgroup);
+            final H5Group grp = new H5Group(file, names[idx], paths[idx], pgroup);
             final int gid = grp.open();
             assertTrue(gid > 0);
             grp.close(gid);
         }
 
-        final H5Group grp = new H5Group(file, "NO_SUCH_DATASET",
-                "NO_SUCH_PATH", pgroup);
+        final H5Group grp = new H5Group(file, "NO_SUCH_DATASET", "NO_SUCH_PATH", pgroup);
         final int gid = grp.open();
         assertTrue(gid <= 0);
         int nObjs = 0;
         try {
-            nObjs = H5.H5Fget_obj_count(testFile.getFID(),
-                    HDF5Constants.H5F_OBJ_ALL);
+            nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL);
         }
         catch (final Exception ex) {
             fail("H5.H5Fget_obj_count() failed. " + ex);
@@ -444,7 +429,7 @@ public class H5GroupTest {
     @Test
     public void testH5GroupFileFormatStringStringGroupLongArray() {
         // RISHI SINHA Why are we testing a deprecated API.
-    	log.debug("testH5GroupFileFormatStringStringGroupLongArray");
+        log.debug("testH5GroupFileFormatStringStringGroupLongArray");
         Group pgroup = null;
         final String[] names = { null, GNAME_SUB, GNAME_SUB.substring(4) };
         final String[] paths = { GNAME_SUB, null, H5TestFile.NAME_GROUP };
@@ -471,8 +456,7 @@ public class H5GroupTest {
         for (int idx = 0; idx < names.length; idx++) {
 
             try {
-                final byte[] ref_buf = H5.H5Rcreate(file.getFID(), GNAME_SUB,
-                        HDF5Constants.H5R_OBJECT, -1);
+                final byte[] ref_buf = H5.H5Rcreate(file.getFID(), GNAME_SUB, HDF5Constants.H5R_OBJECT, -1);
                 final long l = HDFNativeData.byteToLong(ref_buf, 0);
                 oid = new long[1];
                 oid[0] = l; // save the object ID
@@ -483,22 +467,19 @@ public class H5GroupTest {
 
             assertNotNull(oid);
 
-            final H5Group grp = new H5Group(file, names[idx], paths[idx],
-                    pgroup, oid);
+            final H5Group grp = new H5Group(file, names[idx], paths[idx], pgroup, oid);
             final int gid = grp.open();
             assertTrue(gid > 0);
             grp.close(gid);
         }
 
         // test a non-existing dataset
-        final H5Group grp = new H5Group(file, "NO_SUCH_DATASET",
-                "NO_SUCH_PATH", pgroup, null);
+        final H5Group grp = new H5Group(file, "NO_SUCH_DATASET", "NO_SUCH_PATH", pgroup, null);
         final int gid = grp.open();
         assertTrue(gid <= 0);
         int nObjs = 0;
         try {
-            nObjs = H5.H5Fget_obj_count(testFile.getFID(),
-                    HDF5Constants.H5F_OBJ_ALL);
+            nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL);
         }
         catch (final Exception ex) {
             fail("H5.H5Fget_obj_count() failed. " + ex);
@@ -517,7 +498,7 @@ public class H5GroupTest {
      */
     @Test
     public void testGetMetadata() {
-    	log.debug("testGetMetadata");
+        log.debug("testGetMetadata");
         Vector attrs = null;
 
         try {
@@ -534,16 +515,12 @@ public class H5GroupTest {
             final Attribute attr = (Attribute) attrs.get(i);
             final H5Datatype dtype = (H5Datatype) attr.getType();
             if (dtype.getDatatypeClass() == Datatype.CLASS_STRING) {
-                assertTrue(H5TestFile.ATTRIBUTE_STR.getName().equals(
-                        attr.getName()));
-                assertTrue(((String[]) H5TestFile.ATTRIBUTE_STR.getValue())[0]
-                        .equals(((String[]) attr.getValue())[0]));
+                assertTrue(H5TestFile.ATTRIBUTE_STR.getName().equals(attr.getName()));
+                assertTrue(((String[]) H5TestFile.ATTRIBUTE_STR.getValue())[0].equals(((String[]) attr.getValue())[0]));
             }
             else if (dtype.getDatatypeClass() == Datatype.CLASS_INTEGER) {
-                assertTrue(H5TestFile.ATTRIBUTE_INT_ARRAY.getName().equals(
-                        attr.getName()));
-                final int[] expected = (int[]) H5TestFile.ATTRIBUTE_INT_ARRAY
-                        .getValue();
+                assertTrue(H5TestFile.ATTRIBUTE_INT_ARRAY.getName().equals(attr.getName()));
+                final int[] expected = (int[]) H5TestFile.ATTRIBUTE_INT_ARRAY.getValue();
                 assertNotNull(expected);
                 final int[] ints = (int[]) attr.getValue();
                 assertNotNull(ints);
@@ -554,8 +531,7 @@ public class H5GroupTest {
         } // for (int i=0; i<n; i++) {
         int nObjs = 0;
         try {
-            nObjs = H5.H5Fget_obj_count(testFile.getFID(),
-                    HDF5Constants.H5F_OBJ_ALL);
+            nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL);
         }
         catch (final Exception ex) {
             fail("H5.H5Fget_obj_count() failed. " + ex);
@@ -564,8 +540,7 @@ public class H5GroupTest {
     }
 
     /**
-     * Test method for
-     * {@link ncsa.hdf.object.h5.H5Group#writeMetadata(java.lang.Object)}.
+     * Test method for {@link ncsa.hdf.object.h5.H5Group#writeMetadata(java.lang.Object)}.
      * <p>
      * What to test:
      * <ul>
@@ -577,7 +552,7 @@ public class H5GroupTest {
      */
     @Test
     public void testWriteMetadata() {
-    	log.debug("testWriteMetadata");
+        log.debug("testWriteMetadata");
         Vector attrs = null;
         Attribute attr = null;
 
@@ -615,8 +590,7 @@ public class H5GroupTest {
         } // for (int i=0; i<n; i++) {
 
         // attache a new attribute
-        attr = new Attribute("float attribute", typeFloat, new long[] { 1 },
-                new float[] { TEST_VALUE_FLOAT });
+        attr = new Attribute("float attribute", typeFloat, new long[] { 1 }, new float[] { TEST_VALUE_FLOAT });
         try {
             testGroup.writeMetadata(attr);
         }
@@ -651,14 +625,11 @@ public class H5GroupTest {
             attr = (Attribute) attrs.get(i);
             final H5Datatype dtype = (H5Datatype) attr.getType();
             if (dtype.getDatatypeClass() == Datatype.CLASS_STRING) {
-                assertTrue(H5TestFile.ATTRIBUTE_STR.getName().equals(
-                        attr.getName()));
-                assertTrue(TEST_VALUE_STR
-                        .equals(((String[]) attr.getValue())[0]));
+                assertTrue(H5TestFile.ATTRIBUTE_STR.getName().equals(attr.getName()));
+                assertTrue(TEST_VALUE_STR.equals(((String[]) attr.getValue())[0]));
             }
             else if (dtype.getDatatypeClass() == Datatype.CLASS_INTEGER) {
-                assertTrue(H5TestFile.ATTRIBUTE_INT_ARRAY.getName().equals(
-                        attr.getName()));
+                assertTrue(H5TestFile.ATTRIBUTE_INT_ARRAY.getName().equals(attr.getName()));
                 final int[] ints = (int[]) attr.getValue();
                 assertNotNull(ints);
                 for (int j = 0; j < ints.length; j++) {
@@ -693,8 +664,7 @@ public class H5GroupTest {
                 final int[] ints = (int[]) attr.getValue();
                 assertNotNull(ints);
                 for (int j = 0; j < ints.length; j++) {
-                    final int[] expected = (int[]) H5TestFile.ATTRIBUTE_INT_ARRAY
-                            .getValue();
+                    final int[] expected = (int[]) H5TestFile.ATTRIBUTE_INT_ARRAY.getValue();
                     ints[j] = expected[j];
                 }
             }
@@ -707,8 +677,7 @@ public class H5GroupTest {
         } // for (int i=0; i<n; i++) {
         int nObjs = 0;
         try {
-            nObjs = H5.H5Fget_obj_count(testFile.getFID(),
-                    HDF5Constants.H5F_OBJ_ALL);
+            nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL);
         }
         catch (final Exception ex) {
             fail("H5.H5Fget_obj_count() failed. " + ex);
@@ -717,8 +686,7 @@ public class H5GroupTest {
     }
 
     /**
-     * Test method for
-     * {@link ncsa.hdf.object.h5.H5Group#removeMetadata(java.lang.Object)}.
+     * Test method for {@link ncsa.hdf.object.h5.H5Group#removeMetadata(java.lang.Object)}.
      * <p>
      * What to test:
      * <ul>
@@ -729,7 +697,7 @@ public class H5GroupTest {
      */
     @Test
     public void testRemoveMetadata() {
-    	log.debug("testRemoveMetadata");
+        log.debug("testRemoveMetadata");
         Vector attrs = null;
         try {
             attrs = (Vector) testGroup.getMetadata();
@@ -783,8 +751,7 @@ public class H5GroupTest {
         }
         int nObjs = 0;
         try {
-            nObjs = H5.H5Fget_obj_count(testFile.getFID(),
-                    HDF5Constants.H5F_OBJ_ALL);
+            nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL);
         }
         catch (final Exception ex) {
             fail("H5.H5Fget_obj_count() failed. " + ex);
@@ -793,9 +760,7 @@ public class H5GroupTest {
     }
 
     /**
-     * Test method for
-     * {@link ncsa.hdf.object.h5.H5Group#create(java.lang.String, ncsa.hdf.object.Group)}
-     * .
+     * Test method for {@link ncsa.hdf.object.h5.H5Group#create(java.lang.String, ncsa.hdf.object.Group)} .
      * <p>
      * What to test:
      * <ul>
@@ -807,7 +772,7 @@ public class H5GroupTest {
      */
     @Test
     public void testCreate() {
-    	log.debug("testCreate");
+        log.debug("testCreate");
         Group grp = null;
         final String nameNew = "/tmpH5Group";
         try {
@@ -860,8 +825,7 @@ public class H5GroupTest {
         assertNull(grp);
         int nObjs = 0;
         try {
-            nObjs = H5.H5Fget_obj_count(testFile.getFID(),
-                    HDF5Constants.H5F_OBJ_ALL);
+            nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL);
         }
         catch (final Exception ex) {
             fail("H5.H5Fget_obj_count() failed. " + ex);
@@ -870,9 +834,7 @@ public class H5GroupTest {
     }
 
     /**
-     * Test method for
-     * {@link ncsa.hdf.object.h5.H5Group#create(java.lang.String, ncsa.hdf.object.Group, int)}
-     * .
+     * Test method for {@link ncsa.hdf.object.h5.H5Group#create(java.lang.String, ncsa.hdf.object.Group, int)} .
      * <p>
      * What to test:
      * <ul>
@@ -889,7 +851,7 @@ public class H5GroupTest {
      */
     @Test
     public void testCreateWithGroupplist() {
-    	log.debug("testCreateWithGroupplist");
+        log.debug("testCreateWithGroupplist");
         Group grp = null;
         final String nameNew = "/Group1";
         int gcpl = -1;
@@ -900,27 +862,29 @@ public class H5GroupTest {
         try {
             gcpl = H5.H5Pcreate(HDF5Constants.H5P_GROUP_CREATE);
             if (gcpl >= 0) {
-                H5.H5Pset_link_creation_order(gcpl,
-                        HDF5Constants.H5P_CRT_ORDER_TRACKED
+                H5.H5Pset_link_creation_order(gcpl, HDF5Constants.H5P_CRT_ORDER_TRACKED
                         + HDF5Constants.H5P_CRT_ORDER_INDEXED); // Set link creation order.
                 H5.H5Pset_link_phase_change(gcpl, 3, 2); // Set link storage.
             }
-        } catch (final Exception ex) {
+        }
+        catch (final Exception ex) {
             fail("H5.H5Pcreate() failed. " + ex);
         }
 
         try {
             final Group rootGrp = (Group) testFile.get("/");
             grp = H5Group.create(nameNew, rootGrp, gcpl);
-        } catch (final Exception ex) {
-            ; //Expected -intentional as the order of gplist is invalid.
+        }
+        catch (final Exception ex) {
+            ; // Expected -intentional as the order of gplist is invalid.
         }
         assertNull(grp);
-        
+
         try {
             final Group rootGrp = (Group) testFile.get("/");
             grp = H5Group.create(nameNew, rootGrp, HDF5Constants.H5P_DEFAULT, gcpl);
-        } catch (final Exception ex) {
+        }
+        catch (final Exception ex) {
             ex.printStackTrace();
             fail("H5Group.create failed. " + ex);
         }
@@ -929,7 +893,8 @@ public class H5GroupTest {
         try {
             grp2 = H5Group.create("G5", grp); // create subgroups
             grp3 = H5Group.create("G3", grp);
-        } catch (final Exception ex) {
+        }
+        catch (final Exception ex) {
             fail("H5Group.create failed. " + ex);
         }
         assertNotNull(grp2);
@@ -937,39 +902,42 @@ public class H5GroupTest {
 
         try {
             H5.H5Pclose(gcpl);
-        } catch (final Exception ex) {
+        }
+        catch (final Exception ex) {
         }
 
         try {
             testFile.close(); // Close and reopen file.
             testFile.open();
-        } catch (final Exception ex) {
+        }
+        catch (final Exception ex) {
             fail("testFile.close() failed. " + ex);
         }
         grp = null;
         try {
             grp = (Group) testFile.get(nameNew);
-        } catch (final Exception ex) {
+        }
+        catch (final Exception ex) {
             fail("testFile.get() failed. " + ex);
         }
         assertNotNull(grp);
 
         try {
             gid = grp.open();
-        } catch (final Exception ex) {
+        }
+        catch (final Exception ex) {
             fail("grp.open() failed. " + ex);
         }
         assertTrue(gid > 0);
 
         try {
             ginfo = H5.H5Gget_info(gid); // Get group info.
-            String name = H5.H5Lget_name_by_idx(gid, ".",
-                    HDF5Constants.H5_INDEX_CRT_ORDER,
-                    HDF5Constants.H5_ITER_INC, 1, HDF5Constants.H5P_DEFAULT); // Get name of ith link.            
+            String name = H5.H5Lget_name_by_idx(gid, ".", HDF5Constants.H5_INDEX_CRT_ORDER, HDF5Constants.H5_ITER_INC,
+                    1, HDF5Constants.H5P_DEFAULT); // Get name of ith link.
             assertEquals("G3", name);
-            assertEquals(HDF5Constants.H5G_STORAGE_TYPE_COMPACT,
-                    ginfo.storage_type);
-        } catch (final Exception ex) {
+            assertEquals(HDF5Constants.H5G_STORAGE_TYPE_COMPACT, ginfo.storage_type);
+        }
+        catch (final Exception ex) {
             fail("H5.H5Lget_name_by_idx() failed. " + ex);
         }
 
@@ -977,41 +945,44 @@ public class H5GroupTest {
 
         try {
             testFile.delete(grp); // delete the new group
-        } catch (final Exception ex) {
+        }
+        catch (final Exception ex) {
             fail("testFile.delete() failed. " + ex);
         }
 
         try {
             testFile.close(); // Close and reopen file.
             testFile.open();
-        } catch (final Exception ex) {
+        }
+        catch (final Exception ex) {
             fail("testFile.get() failed. " + ex);
         }
 
         grp = null;
         try {
             grp = (Group) testFile.get(nameNew);
-        } catch (final Exception ex) {
+        }
+        catch (final Exception ex) {
             fail("testFile.get(deleted_newgroup) failed. " + ex);
         }
         assertNull(grp);
 
         int nObjs = 0;
         try {
-            nObjs = H5.H5Fget_obj_count(testFile.getFID(),
-                    HDF5Constants.H5F_OBJ_ALL);
-        } catch (final Exception ex) {
+            nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL);
+        }
+        catch (final Exception ex) {
             fail("H5.H5Fget_obj_count() failed. " + ex);
         }
         assertEquals(1, nObjs); // file id should be the only one left open
     }
-    
+
     /**
      * Test method for {@link ncsa.hdf.object.h5.H5Group} IsSerializable.
      */
     @Test
     public void testIsSerializable() {
-    	log.debug("testIsSerializable");
+        log.debug("testIsSerializable");
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         ObjectOutputStream oos;
         try {
@@ -1025,7 +996,7 @@ public class H5GroupTest {
         }
         assertTrue(out.toByteArray().length > 0);
     }
-    
+
     /**
      * Test method for {@link ncsa.hdf.object.h5.H5ScalarDS} SerializeToDisk.
      * <p>
@@ -1039,9 +1010,8 @@ public class H5GroupTest {
      * </ul>
      */
     @Test
-    public void testSerializeToDisk()
-    {
-    	log.debug("testSerializeToDisk");
+    public void testSerializeToDisk() {
+        log.debug("testSerializeToDisk");
         try {
             FileOutputStream fos = new FileOutputStream("temph5grp.ser");
             ObjectOutputStream oos = new ObjectOutputStream(fos);
@@ -1051,21 +1021,21 @@ public class H5GroupTest {
         catch (Exception ex) {
             fail("Exception thrown during test: " + ex.toString());
         }
-        
+
         H5Group test = null;
         try {
             FileInputStream fis = new FileInputStream("temph5grp.ser");
             ObjectInputStream ois = new ObjectInputStream(fis);
             test = (ncsa.hdf.object.h5.H5Group) ois.readObject();
             ois.close();
-            
+
             // Clean up the file
             new File("temph5grp.ser").delete();
         }
         catch (Exception ex) {
             fail("Exception thrown during test: " + ex.toString());
         }
-        
+
         int gid = -1;
 
         for (int loop = 0; loop < NLOOPS; loop++) {
@@ -1083,8 +1053,7 @@ public class H5GroupTest {
         }
         int nObjs = 0;
         try {
-            nObjs = H5.H5Fget_obj_count(testFile.getFID(),
-                    HDF5Constants.H5F_OBJ_ALL);
+            nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL);
         }
         catch (final Exception ex) {
             fail("H5.H5Fget_obj_count() failed. " + ex);
