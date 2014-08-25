@@ -2111,7 +2111,6 @@ public class H5FileTest {
      * </ul>
      */
     @Ignore
-    @Test
     public void testSerializeToDisk() {
         log.debug("testSerializeToDisk");
         try {
