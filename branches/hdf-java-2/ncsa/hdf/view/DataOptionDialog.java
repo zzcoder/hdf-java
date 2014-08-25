@@ -143,7 +143,8 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
 
     private JTextField             startFields[], endFields[], strideFields[], dataRangeField, fillValueField;
 
-    private JList<?>                  fieldList;
+    @SuppressWarnings("rawtypes")
+    private JList                  fieldList;
 
     private final Toolkit          toolkit;
 

@@ -4122,7 +4122,8 @@ public class GermanTableView extends JInternalFrame implements TableView, Action
     } // private class RowHeaderRenderer extends JLabel implements
       // TableCellRenderer
 
-    private class MultiLineHeaderRenderer extends JList<Object> implements TableCellRenderer {
+    @SuppressWarnings("rawtypes")
+    private class MultiLineHeaderRenderer extends JList implements TableCellRenderer {
         private static final long    serialVersionUID = -3697496960833719169L;
         private final CompoundBorder subBorder        = new CompoundBorder(new MatteBorder(1, 0, 1, 0, java.awt.Color.darkGray),
                                                               new MatteBorder(1, 0, 1, 0, java.awt.Color.white));
