@@ -87,7 +87,8 @@ public class NewTableDataDialog extends JDialog implements ActionListener, ItemL
 
     private FileFormat            fileformat;
 
-    private JComboBox<Object>             parentChoice, nFieldBox, templateChoice;
+    @SuppressWarnings("rawtypes")
+    private JComboBox             parentChoice, nFieldBox, templateChoice;
 
     /** a list of current groups */
     private Vector<Object>        groupList, compoundDSList;
@@ -107,7 +108,8 @@ public class NewTableDataDialog extends JDialog implements ActionListener, ItemL
     private DefaultCellEditor     cellEditor;
 
     private JTextField            nameField, currentSizeField, maxSizeField, chunkSizeField;
-    private JComboBox<Object>     compressionLevel, rankChoice, memberTypeChoice;
+    @SuppressWarnings("rawtypes")
+    private JComboBox             compressionLevel, rankChoice, memberTypeChoice;
     private JCheckBox             checkCompression;
     private JRadioButton          checkContinguous, checkChunked;
 
@@ -122,6 +124,7 @@ public class NewTableDataDialog extends JDialog implements ActionListener, ItemL
      * @param objs
      *            the list of all objects.
      */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public NewTableDataDialog(JFrame owner, Group pGroup, List<?> objs) {
         super(owner, "New Compound Dataset...", true);
 
@@ -129,7 +132,7 @@ public class NewTableDataDialog extends JDialog implements ActionListener, ItemL
         numberOfMembers = 2;
         fileformat = pGroup.getFileFormat();
 
-        memberTypeChoice = new JComboBox<Object>(DATATYPE_NAMES);
+        memberTypeChoice = new JComboBox(DATATYPE_NAMES);
         cellEditor = new DefaultCellEditor(memberTypeChoice);
         rowEditorModel = new RowEditorModel(numberOfMembers, cellEditor);
         String[] colNames = { "Name", "Datatype", "Array size / String length / Enum names" };
@@ -159,13 +162,13 @@ public class NewTableDataDialog extends JDialog implements ActionListener, ItemL
 
         toolkit = Toolkit.getDefaultToolkit();
 
-        parentChoice = new JComboBox<Object>();
+        parentChoice = new JComboBox();
         String[] memberSizes = new String[100];
         for (int i = 0; i < 100; i++) {
             memberSizes[i] = String.valueOf(i + 1);
         }
 
-        nFieldBox = new JComboBox<Object>(memberSizes);
+        nFieldBox = new JComboBox(memberSizes);
         nFieldBox.setName("numbermembers");
         nFieldBox.setEditable(true);
         nFieldBox.addActionListener(this);
@@ -195,7 +198,7 @@ public class NewTableDataDialog extends JDialog implements ActionListener, ItemL
             }
         }
 
-        templateChoice = new JComboBox<Object>(compoundDSList);
+        templateChoice = new JComboBox(compoundDSList);
         templateChoice.setName("templateChoice");
         templateChoice.setSelectedIndex(-1);
         templateChoice.addItemListener(this);
@@ -250,7 +253,7 @@ public class NewTableDataDialog extends JDialog implements ActionListener, ItemL
         border.setTitleColor(Color.blue);
         spacePanel.setBorder(border);
 
-        rankChoice = new JComboBox<Object>();
+        rankChoice = new JComboBox();
         for (int i = 1; i < 33; i++) {
             rankChoice.addItem(String.valueOf(i));
         }
@@ -282,7 +285,7 @@ public class NewTableDataDialog extends JDialog implements ActionListener, ItemL
         chunkSizeField.setEnabled(false);
         checkCompression = new JCheckBox("gzip");
 
-        compressionLevel = new JComboBox<Object>();
+        compressionLevel = new JComboBox();
         for (int i = 0; i < 10; i++) {
             compressionLevel.addItem(String.valueOf(i));
         }

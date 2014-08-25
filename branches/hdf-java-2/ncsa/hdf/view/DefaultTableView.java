@@ -3731,14 +3731,16 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
 
         private int               idx_xaxis        = -1, plotType = -1;
         private JRadioButton      rowButton, colButton;
-        private JComboBox<String>         rowBox, colBox;
+        @SuppressWarnings("rawtypes")
+        private JComboBox         rowBox, colBox;
 
+        @SuppressWarnings({ "rawtypes", "unchecked" })
         public LineplotOption(JFrame owner, String title, int nrow, int ncol) {
             super(owner, title, true);
 
-            rowBox = new JComboBox<String>();
+            rowBox = new JComboBox();
             rowBox.setEditable(false);
-            colBox = new JComboBox<String>();
+            colBox = new JComboBox();
             colBox.setEditable(false);
 
             JPanel contentPane = (JPanel) this.getContentPane();
@@ -4340,6 +4342,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
      *            the array of strings that contain the reg. ref information.
      * 
      */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     private void showRegRefData (String reg) {
         boolean isPointSelection = false;
 
@@ -4373,6 +4376,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
         Constructor<? extends ScalarDS> constructor = null;
         Object[] paramObj = null;
         try {
+            @SuppressWarnings("rawtypes")
             Class[] paramClass = { FileFormat.class, String.class, String.class };
             constructor = dset.getClass().getConstructor(paramClass);
             paramObj = new Object[] { dset.getFileFormat(), dset.getName(), dset.getPath() };

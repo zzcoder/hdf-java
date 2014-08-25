@@ -89,7 +89,8 @@ public class DefaultPaletteView extends JDialog implements PaletteView,
     private ScalarDS dataset;
     private ImageView imageView;
     private int[][] paletteData;
-    private JComboBox<String> choicePalette;
+    @SuppressWarnings("rawtypes")
+    private JComboBox choicePalette;
     private PaletteValueTable paletteValueTable;
     private int  numberOfPalettes;
     private boolean startEditing = false;
@@ -98,6 +99,7 @@ public class DefaultPaletteView extends JDialog implements PaletteView,
         this(null, theImageView);
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public DefaultPaletteView(ViewManager theViewer, ImageView theImageView) {
         super((JFrame) theViewer, true);
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -105,7 +107,7 @@ public class DefaultPaletteView extends JDialog implements PaletteView,
         dataset = (ScalarDS) imageView.getDataObject();
         
         numberOfPalettes = 1;
-        choicePalette = new JComboBox<String>();
+        choicePalette = new JComboBox();
         choicePalette.addItemListener(this);
 
         boolean isH5 = dataset.getFileFormat().isThisType(

@@ -118,12 +118,18 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
 
     private JButton                bitmaskHelp;
 
-    private JComboBox<?>           choiceTextView;
-    private JComboBox<?>           choiceTableView;
-    private JComboBox<?>           choiceImageView;
-    private JComboBox<String>      choicePalette;
-    private JComboBox<String>      choices[];
-    private JComboBox<String>      transposeChoice;
+    @SuppressWarnings("rawtypes")
+    private JComboBox              choiceTextView;
+    @SuppressWarnings("rawtypes")
+    private JComboBox              choiceTableView;
+    @SuppressWarnings("rawtypes")
+    private JComboBox              choiceImageView;
+    @SuppressWarnings("rawtypes")
+    private JComboBox              choicePalette;
+    @SuppressWarnings("rawtypes")
+    private JComboBox              choices[];
+    @SuppressWarnings("rawtypes")
+    private JComboBox              transposeChoice;
 
     private boolean                isSelectionCancelled;
 
@@ -157,6 +163,7 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
     /**
      * Constructs a DataOptionDialog with the given HDFView.
      */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public DataOptionDialog(ViewManager theview, Dataset theDataset) {
         super((JFrame) theview, true);
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -205,7 +212,7 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
             w = (int) dims[selectedIndex[1]];
         }
 
-        transposeChoice = new JComboBox<String>();
+        transposeChoice = new JComboBox();
         transposeChoice.addItem("Reshape");
         transposeChoice.addItem("Transpose");
 
@@ -214,7 +221,7 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
 
         currentIndex = new int[Math.min(3, rank)];
 
-        choicePalette = new JComboBox<String>();
+        choicePalette = new JComboBox();
         choicePalette.setName("modulepalette");
         choiceTextView = new JComboBox((Vector<?>) HDFView.getListOfTextView());
         choiceTextView.setName("moduletext");
@@ -553,7 +560,7 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
 
         String[] dimNames = dataset.getDimNames();
         for (int i = 0; i < 3; i++) {
-            choices[i] = new JComboBox<String>();
+            choices[i] = new JComboBox();
             choices[i].addItemListener(this);
             for (int j = 0; j < rank; j++) {
                 if (dimNames == null) {
@@ -780,7 +787,8 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
                 return; // don't care about the deselect
             }
 
-            JComboBox<?> theChoice = (JComboBox<?>) source;
+            @SuppressWarnings("rawtypes")
+            JComboBox theChoice = (JComboBox) source;
 
             int theSelectedChoice = -1;
 
@@ -1041,7 +1049,8 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
      * actionPerformed(). This is not what we want. We want the setSelectedItem() or
      * setSelectedIndex() behavior like java.awt.Choice. This flag is used to serve this purpose.
      */
-    private void setJComboBoxSelectedIndex (JComboBox<?> box, int idx) {
+    @SuppressWarnings("rawtypes")
+    private void setJComboBoxSelectedIndex (JComboBox box, int idx) {
         performJComboBoxEvent = false;
         box.setSelectedIndex(idx);
         performJComboBoxEvent = true;
