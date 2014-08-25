@@ -131,7 +131,6 @@ import ncsa.hdf.view.TreeView;
 import ncsa.hdf.view.ViewManager;
 import ncsa.hdf.view.ViewProperties;
 import ncsa.hdf.view.ViewProperties.BITMASK_OP;
-import ncsa.hdf.view.ViewProperties.DATA_VIEW_KEY;
 
 /**
  * TableView displays an HDF dataset as a two-dimensional table in German.
@@ -264,6 +263,7 @@ public class GermanTableView extends JInternalFrame implements TableView, Action
      *            data as character, applying bitmask, and etc. Predefined keys are listed at
      *            ViewProperties.DATA_VIEW_KEY.
      */
+    @SuppressWarnings("rawtypes")
     public GermanTableView(ViewManager theView, HashMap map) {
         super();
 
@@ -3732,14 +3732,16 @@ public class GermanTableView extends JInternalFrame implements TableView, Action
 
         private int               idx_xaxis        = -1, plotType = -1;
         private JRadioButton      rowButton, colButton;
-        private JComboBox<String>         rowBox, colBox;
+        @SuppressWarnings("rawtypes")
+        private JComboBox         rowBox, colBox;
 
+        @SuppressWarnings({ "rawtypes", "unchecked" })
         public LineplotOption(JFrame owner, String title, int nrow, int ncol) {
             super(owner, title, true);
 
-            rowBox = new JComboBox<String>();
+            rowBox = new JComboBox();
             rowBox.setEditable(false);
-            colBox = new JComboBox<String>();
+            colBox = new JComboBox();
             colBox.setEditable(false);
 
             JPanel contentPane = (JPanel) this.getContentPane();
@@ -4274,6 +4276,7 @@ public class GermanTableView extends JInternalFrame implements TableView, Action
      *            the array of strings that contain the object reference information.
      * 
      */
+    @SuppressWarnings("unchecked")
     private void showObjRefData (long ref) {
         long[] oid = { ref };
         log.trace("GermanTableView showObjRefData: ref={}", ref);
@@ -4290,6 +4293,7 @@ public class GermanTableView extends JInternalFrame implements TableView, Action
         Object data = null;
 
         try {
+            @SuppressWarnings("rawtypes")
             Class[] paramClass = { FileFormat.class, String.class, String.class };
             constructor = dset.getClass().getConstructor(paramClass);
             paramObj = new Object[] { dset.getFileFormat(), dset.getName(), dset.getPath() };
@@ -4304,6 +4308,7 @@ public class GermanTableView extends JInternalFrame implements TableView, Action
         if (data == null) return;
 
         JInternalFrame dataView = null;
+        @SuppressWarnings("rawtypes")
         HashMap map = new HashMap(1);
         map.put(ViewProperties.DATA_VIEW_KEY.OBJECT, dset_copy);
         switch (viewType) {
@@ -4341,6 +4346,7 @@ public class GermanTableView extends JInternalFrame implements TableView, Action
      *            the array of strings that contain the reg. ref information.
      * 
      */
+    @SuppressWarnings("unchecked")
     private void showRegRefData (String reg) {
         boolean isPointSelection = false;
 
@@ -4374,6 +4380,7 @@ public class GermanTableView extends JInternalFrame implements TableView, Action
         Constructor<? extends ScalarDS> constructor = null;
         Object[] paramObj = null;
         try {
+            @SuppressWarnings("rawtypes")
             Class[] paramClass = { FileFormat.class, String.class, String.class };
             constructor = dset.getClass().getConstructor(paramClass);
             paramObj = new Object[] { dset.getFileFormat(), dset.getName(), dset.getPath() };
@@ -4461,6 +4468,7 @@ public class GermanTableView extends JInternalFrame implements TableView, Action
             }
 
             JInternalFrame dataView = null;
+            @SuppressWarnings("rawtypes")
             HashMap map = new HashMap(1);
             map.put(ViewProperties.DATA_VIEW_KEY.OBJECT, dset_copy);
             switch (viewType) {

@@ -181,6 +181,7 @@ public class DefaultMetaDataView extends JDialog implements ActionListener, Meta
         setVisible(true);
     }
 
+    @SuppressWarnings("rawtypes")
     public void actionPerformed(ActionEvent e) {
         Object source = e.getSource();
         String cmd = e.getActionCommand();
@@ -201,7 +202,7 @@ public class DefaultMetaDataView extends JDialog implements ActionListener, Meta
         }
         else if (cmd.equals("Display user block as")) {
             int type = 0;
-            String typeName = (String) ((JComboBox<?>) source).getSelectedItem();
+            String typeName = (String) ((JComboBox) source).getSelectedItem();
             jamButton.setEnabled(false);
             userBlockArea.setEditable(false);
 
@@ -1045,6 +1046,7 @@ public class DefaultMetaDataView extends JDialog implements ActionListener, Meta
     /**
      * Creates a panel used to display HDF5 user block.
      */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     private JPanel createUserBlockPanel() {
         JPanel panel = new JPanel();
 
@@ -1059,7 +1061,7 @@ public class DefaultMetaDataView extends JDialog implements ActionListener, Meta
         userBlockArea.setMargin(m);
 
         String[] displayChoices = { "Text", "Binary", "Octal", "Hexadecimal", "Decimal" };
-        JComboBox<?> userBlockDisplayChoice = new JComboBox<Object>(displayChoices);
+        JComboBox userBlockDisplayChoice = new JComboBox(displayChoices);
         userBlockDisplayChoice.setSelectedIndex(0);
         userBlockDisplayChoice.addActionListener(this);
         userBlockDisplayChoice.setEditable(false);

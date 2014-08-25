@@ -62,7 +62,8 @@ public class NewImageDialog extends JDialog implements ActionListener,
 
     private JTextField nameField, widthField, heightField;
 
-    private JComboBox<String> parentChoice;
+    @SuppressWarnings("rawtypes")
+    private JComboBox parentChoice;
 
     private JRadioButton checkIndex, checkTrueColor, checkInterlacePixel,
             checkInterlacePlane;
@@ -88,6 +89,7 @@ public class NewImageDialog extends JDialog implements ActionListener,
      * @param objs
      *            the list of all objects.
      */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public NewImageDialog(Frame owner, Group pGroup, List<?> objs) {
         super(owner, "New HDF Image...", true);
 
@@ -98,7 +100,7 @@ public class NewImageDialog extends JDialog implements ActionListener,
         fileFormat = pGroup.getFileFormat();
         toolkit = Toolkit.getDefaultToolkit();
 
-        parentChoice = new JComboBox<String>();
+        parentChoice = new JComboBox();
         groupList = new Vector<Object>();
         Object obj = null;
         Iterator<?> iterator = objs.iterator();

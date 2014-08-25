@@ -180,7 +180,7 @@ public class HDFView extends JFrame implements ViewManager, ActionListener, Chan
     private final Toolkit         toolkit;
 
     /** The list of GUI components related to editing */
-    private final List<?>            editGUIs;
+    private final List<?>         editGUIs;
 
     /** The list of GUI components related to HDF5 */
     private final List<JMenuItem> h5GUIs;
@@ -189,11 +189,12 @@ public class HDFView extends JFrame implements ViewManager, ActionListener, Chan
     private final List<JMenuItem> h4GUIs;
 
     /** to add and display url */
-    private JComboBox<String>             urlBar;
+    @SuppressWarnings("rawtypes")
+    private JComboBox             urlBar;
 
     private UserOptionsDialog     userOptionDialog;
 
-    private Constructor<?>           ctrSrbFileDialog = null;
+    private Constructor<?>        ctrSrbFileDialog = null;
 
     private JDialog               srbFileDialog    = null;
 
@@ -207,6 +208,7 @@ public class HDFView extends JFrame implements ViewManager, ActionListener, Chan
      * @param flist
      *            a list of files to open.
      */
+    @SuppressWarnings("unchecked")
     public HDFView(String root, List<File> flist, int width, int height, int x, int y) {
         super("HDFView " + ViewProperties.VERSION);
         this.setName("hdfview");
@@ -421,6 +423,7 @@ public class HDFView extends JFrame implements ViewManager, ActionListener, Chan
      * ||========================================||
      * </pre>
      */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     private void createMainWindow(int width, int height, int x, int y) {
         // create splitpane to separate treeview and the contentpane
         JScrollPane treeScroller = new JScrollPane((Component) treeView);
@@ -480,7 +483,7 @@ public class HDFView extends JFrame implements ViewManager, ActionListener, Chan
         JToolBar toolBar = createToolBar();
 
         /** create URL address bar */
-        urlBar = new JComboBox<String>(ViewProperties.getMRF());
+        urlBar = new JComboBox(ViewProperties.getMRF());
         urlBar.setMaximumRowCount(ViewProperties.MAX_RECENT_FILES);
         urlBar.setEditable(true);
         urlBar.addActionListener(this);
@@ -921,6 +924,7 @@ public class HDFView extends JFrame implements ViewManager, ActionListener, Chan
     }
 
     // To do: Implementing java.io.ActionListener
+    @SuppressWarnings("unchecked")
     public void actionPerformed(ActionEvent e) {
         String cmd = e.getActionCommand();
 
@@ -1445,6 +1449,7 @@ public class HDFView extends JFrame implements ViewManager, ActionListener, Chan
     public void dragEnter(DropTargetDragEvent evt) {
     }
 
+    @SuppressWarnings("unchecked")
     public void drop(DropTargetDropEvent evt) {
         try {
             final Transferable tr = evt.getTransferable();

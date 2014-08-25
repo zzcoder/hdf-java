@@ -60,7 +60,8 @@ implements ActionListener, ItemListener {
 
     private JTextField        nameField, stringLengthField;
 
-    private JComboBox<String>         parentChoice, classChoice, sizeChoice, endianChoice;
+    @SuppressWarnings("rawtypes")
+    private JComboBox         parentChoice, classChoice, sizeChoice, endianChoice;
 
     private JCheckBox         checkUnsigned;
 
@@ -86,6 +87,7 @@ implements ActionListener, ItemListener {
      * @param objs
      *            the list of all objects.
      */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public NewDatatypeDialog(JFrame owner, Group pGroup, List<?> objs) {
         super(owner, "New Datatype...", true);
 
@@ -95,7 +97,7 @@ implements ActionListener, ItemListener {
         toolkit = Toolkit.getDefaultToolkit();
         isH5 = pGroup.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5));
 
-        parentChoice = new JComboBox<String>();
+        parentChoice = new JComboBox();
         groupList = new Vector<Object>(objs.size());
         Object obj = null;
         Iterator<?> iterator = objs.iterator();
@@ -173,11 +175,11 @@ implements ActionListener, ItemListener {
         stringLengthField.setName("dtstringlen");
         stringLengthField.setEnabled(false);
 
-        endianChoice = new JComboBox<String>();
+        endianChoice = new JComboBox();
         endianChoice.setName("dtendian");
-        classChoice = new JComboBox<String>();
+        classChoice = new JComboBox();
         classChoice.setName("dtclass");
-        sizeChoice = new JComboBox<String>();
+        sizeChoice = new JComboBox();
         sizeChoice.setName("dtsize");
         endianChoice.setEnabled(isH5);
 
@@ -249,6 +251,7 @@ implements ActionListener, ItemListener {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public void itemStateChanged(ItemEvent e) {
         Object source = e.getSource();
 

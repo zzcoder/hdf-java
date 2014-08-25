@@ -78,7 +78,8 @@ public class NewAttributeDialog extends JDialog implements ActionListener, ItemL
     private JTextField        nameField;
 
     /** The Choice of the datatypes */
-    private JComboBox<String>         classChoice, sizeChoice;
+    @SuppressWarnings("rawtypes")
+    private JComboBox         classChoice, sizeChoice;
 
     private JCheckBox         checkUnsigned;
 
@@ -86,7 +87,8 @@ public class NewAttributeDialog extends JDialog implements ActionListener, ItemL
     private JTextField        valueField;
 
     /** The Choice of the object list */
-    private JComboBox<String>         objChoice;
+    @SuppressWarnings("rawtypes")
+    private JComboBox         objChoice;
 
     private FileFormat        fileFormat;
 
@@ -110,6 +112,7 @@ public class NewAttributeDialog extends JDialog implements ActionListener, ItemL
      * @param obj
      *            the object which the attribute to be attached to.
      */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public NewAttributeDialog(Dialog owner, HObject obj, Enumeration<?> objList) {
         super(owner, "New Attribute...", true);
 
@@ -124,9 +127,9 @@ public class NewAttributeDialog extends JDialog implements ActionListener, ItemL
         JPanel typePanel = new JPanel();
         typePanel.setLayout(new GridLayout(1, 4, 15, 3));
 
-        classChoice = new JComboBox<String>();
+        classChoice = new JComboBox();
         classChoice.setName("attrclass");
-        sizeChoice = new JComboBox<String>();
+        sizeChoice = new JComboBox();
         sizeChoice.setName("attrsize");
 
         classChoice.addItem("INTEGER");
@@ -223,7 +226,7 @@ public class NewAttributeDialog extends JDialog implements ActionListener, ItemL
         valueField = new JTextField("0");
         valueField.setName("attrvalue");
         p2.add(valueField);
-        objChoice = new JComboBox<String>();
+        objChoice = new JComboBox();
         objChoice.setName("attrobjn");
         p2.add(objChoice);
         p.add("Center", p2);
@@ -290,6 +293,7 @@ public class NewAttributeDialog extends JDialog implements ActionListener, ItemL
         }
     }
 
+    @SuppressWarnings("unchecked")
     public void itemStateChanged(ItemEvent e) {
         Object source = e.getSource();
 
@@ -381,6 +385,7 @@ public class NewAttributeDialog extends JDialog implements ActionListener, ItemL
         }
     }
 
+    @SuppressWarnings("unchecked")
     private boolean createAttribute() {
         int string_length = 0;
         int tclass = -1, tsize = -1, torder = -1, tsign = -1;

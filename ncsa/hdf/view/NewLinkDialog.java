@@ -69,7 +69,8 @@ public class NewLinkDialog extends JDialog implements ActionListener,DocumentLis
 
     private JTextField nameField;
 
-    private JComboBox<String> parentChoice, targetObject;
+    @SuppressWarnings("rawtypes")
+    private JComboBox parentChoice, targetObject;
     
     private String currentDir;
     
@@ -108,6 +109,7 @@ public class NewLinkDialog extends JDialog implements ActionListener,DocumentLis
      * @param objs
      *            the list of all objects.
      */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public NewLinkDialog(JFrame owner, Group pGroup, List<?> objs) {
         super(owner, "New Link...", true);
 
@@ -121,8 +123,8 @@ public class NewLinkDialog extends JDialog implements ActionListener,DocumentLis
         
         currentDir = ViewProperties.getWorkDir();
         
-        parentChoice = new JComboBox<String>();
-        targetObject = new JComboBox<String>();
+        parentChoice = new JComboBox();
+        targetObject = new JComboBox();
         targetObject.setEditable(false);
        
         groupList = new Vector<HObject>(objs.size());
