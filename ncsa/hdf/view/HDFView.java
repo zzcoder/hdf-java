@@ -17,7 +17,6 @@ package ncsa.hdf.view;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Event;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Insets;
@@ -112,7 +111,7 @@ public class HDFView extends JFrame implements ViewManager, ActionListener, Chan
     private static List<?>           tableViews;
 
     /** a list of Text view implementation. */
-    private static List<?>           textViews;
+    private static List<String>           textViews;
 
     /** a list of metadata view implementation. */
     private static List<?>           metaDataViews;
@@ -190,7 +189,7 @@ public class HDFView extends JFrame implements ViewManager, ActionListener, Chan
     private final List<JMenuItem> h4GUIs;
 
     /** to add and display url */
-    private JComboBox             urlBar;
+    private JComboBox<String>             urlBar;
 
     private UserOptionsDialog     userOptionDialog;
 
@@ -307,6 +306,7 @@ public class HDFView extends JFrame implements ViewManager, ActionListener, Chan
 
         if (theClass != null) {
             try {
+                @SuppressWarnings("rawtypes")
                 Class[] paramClass = { Class.forName("ncsa.hdf.view.ViewManager") };
                 Constructor<?> constructor = theClass.getConstructor(paramClass);
                 Object[] paramObj = { this };
@@ -480,7 +480,7 @@ public class HDFView extends JFrame implements ViewManager, ActionListener, Chan
         JToolBar toolBar = createToolBar();
 
         /** create URL address bar */
-        urlBar = new JComboBox(ViewProperties.getMRF());
+        urlBar = new JComboBox<String>(ViewProperties.getMRF());
         urlBar.setMaximumRowCount(ViewProperties.MAX_RECENT_FILES);
         urlBar.setEditable(true);
         urlBar.addActionListener(this);
@@ -2075,6 +2075,7 @@ public class HDFView extends JFrame implements ViewManager, ActionListener, Chan
             }
 
             try {
+                @SuppressWarnings("rawtypes")
                 Class[] paramClass = { Class.forName("java.awt.Frame") };
                 ctrSrbFileDialog = theClass.getConstructor(paramClass);
             }
@@ -2098,46 +2099,6 @@ public class HDFView extends JFrame implements ViewManager, ActionListener, Chan
         }
 
         currentFile = srbFileDialog.getName();
-    }
-
-    // For test only. Delete it from production.
-    // Add plugin modules.
-    private static final void loadExtModules() throws Exception {
-        ClassLoader extClassLoader = ViewProperties.loadExtClass();
-        Vector<String> moduleListTreeView = ViewProperties.getTreeViewList();
-        Vector<String> moduleListImageView = ViewProperties.getImageViewList();
-
-        if (extClassLoader == null || moduleListTreeView == null || moduleListImageView == null) return;
-
-        String[] extTreeViews = { "ext.erdc.TreeViewERDC", "ext.npoess.TreeViewNPOESS" };
-
-        String[] extImageViews = { "ext.erdc.ImageViewERDC" };
-
-        for (int i = 0; i < extTreeViews.length; i++) {
-            if (!moduleListTreeView.contains(extTreeViews[i])) {
-                try {
-                    extClassLoader.loadClass(extTreeViews[i]); // make sure the
-                    // class exists
-                    moduleListTreeView.add(extTreeViews[i]);
-                }
-                catch (Exception ex) {
-                    continue;
-                }
-            }
-        }
-
-        for (int i = 0; i < extImageViews.length; i++) {
-            if (!moduleListImageView.contains(extImageViews[i])) {
-                try {
-                    extClassLoader.loadClass(extImageViews[i]); // make sure the
-                    // class exists
-                    moduleListImageView.add(extImageViews[i]);
-                }
-                catch (Exception ex) {
-                    continue;
-                }
-            }
-        }
     }
 
     /**
@@ -2246,7 +2207,5 @@ public class HDFView extends JFrame implements ViewManager, ActionListener, Chan
                 frame.setVisible(true);
             }
         });
-
-        // try { loadExtModules(); } catch (Exception ex) {}
     }
 }

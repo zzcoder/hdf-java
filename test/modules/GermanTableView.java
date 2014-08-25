@@ -131,6 +131,7 @@ import ncsa.hdf.view.TreeView;
 import ncsa.hdf.view.ViewManager;
 import ncsa.hdf.view.ViewProperties;
 import ncsa.hdf.view.ViewProperties.BITMASK_OP;
+import ncsa.hdf.view.ViewProperties.DATA_VIEW_KEY;
 
 /**
  * TableView displays an HDF dataset as a two-dimensional table in German.
@@ -823,9 +824,9 @@ public class GermanTableView extends JInternalFrame implements TableView, Action
                     return;
                 }
 
-                Vector list = new Vector(dataset.getFileFormat().getNumberOfMembers() + 5);
+                Vector<Object> list = new Vector<Object>(dataset.getFileFormat().getNumberOfMembers() + 5);
                 DefaultMutableTreeNode theNode = null;
-                Enumeration local_enum = ((DefaultMutableTreeNode) root).depthFirstEnumeration();
+                Enumeration<?> local_enum = ((DefaultMutableTreeNode) root).depthFirstEnumeration();
                 while (local_enum.hasMoreElements()) {
                     theNode = (DefaultMutableTreeNode) local_enum.nextElement();
                     list.add(theNode.getUserObject());
@@ -1507,7 +1508,7 @@ public class GermanTableView extends JInternalFrame implements TableView, Action
 
         Object colData = null;
         try {
-            colData = ((List) dataset.getData()).get(table.getSelectedColumn());
+            colData = ((List<?>) dataset.getData()).get(table.getSelectedColumn());
         }
         catch (Exception ex) {
             log.debug("colData:", ex);
@@ -2251,7 +2252,7 @@ public class GermanTableView extends JInternalFrame implements TableView, Action
             int                       orders[]         = compound.getSelectedMemberOrders();
             Datatype                  types[]          = compound.getSelectedMemberTypes();
             StringBuffer              stringBuffer     = new StringBuffer();
-            int                       nFields          = ((List) dataValue).size();
+            int                       nFields          = ((List<?>) dataValue).size();
             int                       nRows            = getRowCount();
             int                       nSubColumns      = (nFields > 0) ? getColumnCount() / nFields : 0;
 
@@ -2289,7 +2290,7 @@ public class GermanTableView extends JInternalFrame implements TableView, Action
                     rowIdx = row * orders[fieldIdx];
                 }
 
-                Object colValue = ((List) dataValue).get(fieldIdx);
+                Object colValue = ((List<?>) dataValue).get(fieldIdx);
                 if (colValue == null) {
                     return "Null";
                 }
@@ -2417,7 +2418,7 @@ public class GermanTableView extends JInternalFrame implements TableView, Action
         if (columns > 1) {
             // multi-dimension compound dataset
             MultiLineHeaderRenderer renderer = new MultiLineHeaderRenderer(columns, columnNames.length);
-            Enumeration local_enum = theTable.getColumnModel().getColumns();
+            Enumeration<?> local_enum = theTable.getColumnModel().getColumns();
             while (local_enum.hasMoreElements()) {
                 ((TableColumn) local_enum.nextElement()).setHeaderRenderer(renderer);
             }
@@ -3023,10 +3024,10 @@ public class GermanTableView extends JInternalFrame implements TableView, Action
         log.trace("GermanTableView saveAsText: file={}", fname);
 
         // check if the file is in use
-        List fileList = viewer.getTreeView().getCurrentFiles();
+        List<?> fileList = viewer.getTreeView().getCurrentFiles();
         if (fileList != null) {
             FileFormat theFile = null;
-            Iterator iterator = fileList.iterator();
+            Iterator<?> iterator = fileList.iterator();
             while (iterator.hasNext()) {
                 theFile = (FileFormat) iterator.next();
                 if (theFile.getFilePath().equals(fname)) {
@@ -3112,10 +3113,10 @@ public class GermanTableView extends JInternalFrame implements TableView, Action
         log.trace("GermanTableView saveAsBinary: file={}", fname);
 
         // check if the file is in use
-        List fileList = viewer.getTreeView().getCurrentFiles();
+        List<?> fileList = viewer.getTreeView().getCurrentFiles();
         if (fileList != null) {
             FileFormat theFile = null;
-            Iterator iterator = fileList.iterator();
+            Iterator<?> iterator = fileList.iterator();
             while (iterator.hasNext()) {
                 theFile = (FileFormat) iterator.next();
                 if (theFile.getFilePath().equals(fname)) {
@@ -3412,7 +3413,7 @@ public class GermanTableView extends JInternalFrame implements TableView, Action
             if (dataset instanceof CompoundDS) {
                 Object colData = null;
                 try {
-                    colData = ((List) dataset.getData()).get(table.getSelectedColumn());
+                    colData = ((List<?>) dataset.getData()).get(table.getSelectedColumn());
                 }
                 catch (Exception ex) {
                     log.debug("colData:", ex);
@@ -3602,7 +3603,7 @@ public class GermanTableView extends JInternalFrame implements TableView, Action
         log.trace("GermanTableView updateCompoundData");
 
         CompoundDS compDS = (CompoundDS) dataset;
-        List cdata = (List) compDS.getData();
+        List<?> cdata = (List<?>) compDS.getData();
         int orders[] = compDS.getSelectedMemberOrders();
         Datatype types[] = compDS.getSelectedMemberTypes();
         int nFields = cdata.size();
@@ -3731,14 +3732,14 @@ public class GermanTableView extends JInternalFrame implements TableView, Action
 
         private int               idx_xaxis        = -1, plotType = -1;
         private JRadioButton      rowButton, colButton;
-        private JComboBox         rowBox, colBox;
+        private JComboBox<String>         rowBox, colBox;
 
         public LineplotOption(JFrame owner, String title, int nrow, int ncol) {
             super(owner, title, true);
 
-            rowBox = new JComboBox();
+            rowBox = new JComboBox<String>();
             rowBox.setEditable(false);
-            colBox = new JComboBox();
+            colBox = new JComboBox<String>();
             colBox.setEditable(false);
 
             JPanel contentPane = (JPanel) this.getContentPane();
@@ -4119,13 +4120,13 @@ public class GermanTableView extends JInternalFrame implements TableView, Action
     } // private class RowHeaderRenderer extends JLabel implements
       // TableCellRenderer
 
-    private class MultiLineHeaderRenderer extends JList implements TableCellRenderer {
+    private class MultiLineHeaderRenderer extends JList<Object> implements TableCellRenderer {
         private static final long    serialVersionUID = -3697496960833719169L;
         private final CompoundBorder subBorder        = new CompoundBorder(new MatteBorder(1, 0, 1, 0, java.awt.Color.darkGray),
                                                               new MatteBorder(1, 0, 1, 0, java.awt.Color.white));
         private final CompoundBorder majorBorder      = new CompoundBorder(new MatteBorder(1, 1, 1, 0, java.awt.Color.darkGray),
                                                               new MatteBorder(1, 2, 1, 0, java.awt.Color.white));
-        Vector                       lines            = new Vector();
+        Vector<String>                       lines            = new Vector<String>();
         int                          nSubcolumns      = 1;
 
         public MultiLineHeaderRenderer(int majorColumns, int subColumns) {
@@ -4284,7 +4285,7 @@ public class GermanTableView extends JInternalFrame implements TableView, Action
         ScalarDS dset_copy = null;
 
         // create an instance of the dataset constructor
-        Constructor constructor = null;
+        Constructor<? extends ScalarDS> constructor = null;
         Object[] paramObj = null;
         Object data = null;
 
@@ -4370,7 +4371,7 @@ public class GermanTableView extends JInternalFrame implements TableView, Action
         ScalarDS dset_copy = null;
 
         // create an instance of the dataset constructor
-        Constructor constructor = null;
+        Constructor<? extends ScalarDS> constructor = null;
         Object[] paramObj = null;
         try {
             Class[] paramClass = { FileFormat.class, String.class, String.class };

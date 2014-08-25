@@ -36,6 +36,7 @@ import java.util.BitSet;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Vector;
+
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -57,6 +58,7 @@ import javax.swing.WindowConstants;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
+
 import ncsa.hdf.object.CompoundDS;
 import ncsa.hdf.object.Dataset;
 import ncsa.hdf.object.Datatype;
@@ -116,9 +118,12 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
 
     private JButton                bitmaskHelp;
 
-    private JComboBox              choiceTextView, choiceTableView, choiceImageView,
-                                   choicePalette, choices[];
-    private JComboBox              transposeChoice;
+    private JComboBox<?>           choiceTextView;
+    private JComboBox<?>           choiceTableView;
+    private JComboBox<?>           choiceImageView;
+    private JComboBox<String>      choicePalette;
+    private JComboBox<String>      choices[];
+    private JComboBox<String>      transposeChoice;
 
     private boolean                isSelectionCancelled;
 
@@ -132,7 +137,7 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
 
     private JTextField             startFields[], endFields[], strideFields[], dataRangeField, fillValueField;
 
-    private JList                  fieldList;
+    private JList<?>                  fieldList;
 
     private final Toolkit          toolkit;
 
@@ -200,7 +205,7 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
             w = (int) dims[selectedIndex[1]];
         }
 
-        transposeChoice = new JComboBox();
+        transposeChoice = new JComboBox<String>();
         transposeChoice.addItem("Reshape");
         transposeChoice.addItem("Transpose");
 
@@ -209,7 +214,7 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
 
         currentIndex = new int[Math.min(3, rank)];
 
-        choicePalette = new JComboBox();
+        choicePalette = new JComboBox<String>();
         choicePalette.setName("modulepalette");
         choiceTextView = new JComboBox((Vector<?>) HDFView.getListOfTextView());
         choiceTextView.setName("moduletext");
@@ -548,7 +553,7 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
 
         String[] dimNames = dataset.getDimNames();
         for (int i = 0; i < 3; i++) {
-            choices[i] = new JComboBox();
+            choices[i] = new JComboBox<String>();
             choices[i].addItemListener(this);
             for (int j = 0; j < rank; j++) {
                 if (dimNames == null) {
@@ -620,6 +625,7 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
         pack();
     }
 
+    @Override
     public void actionPerformed (ActionEvent e) {
         String cmd = e.getActionCommand();
 
@@ -737,6 +743,7 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
         }
     }
 
+    @Override
     public void itemStateChanged (ItemEvent e) {
         Object source = e.getSource();
 
@@ -773,7 +780,7 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
                 return; // don't care about the deselect
             }
 
-            JComboBox theChoice = (JComboBox) source;
+            JComboBox<?> theChoice = (JComboBox<?>) source;
 
             int theSelectedChoice = -1;
 
@@ -1034,7 +1041,7 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
      * actionPerformed(). This is not what we want. We want the setSelectedItem() or
      * setSelectedIndex() behavior like java.awt.Choice. This flag is used to serve this purpose.
      */
-    private void setJComboBoxSelectedIndex (JComboBox box, int idx) {
+    private void setJComboBoxSelectedIndex (JComboBox<?> box, int idx) {
         performJComboBoxEvent = false;
         box.setSelectedIndex(idx);
         performJComboBoxEvent = true;
@@ -1413,17 +1420,20 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
             }
         }
 
+        @Override
         public void mousePressed (MouseEvent e) {
             startPosition = e.getPoint();
             selectedArea.setBounds(startPosition.x, startPosition.y, 0, 0);
         }
 
+        @Override
         public void mouseClicked (MouseEvent e) {
             startPosition = e.getPoint();
             selectedArea.setBounds(startPosition.x, startPosition.y, 0, 0);
             repaint();
         }
 
+        @Override
         public void mouseDragged (MouseEvent e) {
             Point p0 = startPosition;
             Point p1 = e.getPoint();
@@ -1484,15 +1494,19 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
             selLabel.setText(selStr);
         }
 
+        @Override
         public void mouseReleased (MouseEvent e) {
         }
 
+        @Override
         public void mouseEntered (MouseEvent e) {
         }
 
+        @Override
         public void mouseExited (MouseEvent e) {
         }
 
+        @Override
         public void mouseMoved (MouseEvent e) {
         }
 

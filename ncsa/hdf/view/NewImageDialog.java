@@ -62,13 +62,13 @@ public class NewImageDialog extends JDialog implements ActionListener,
 
     private JTextField nameField, widthField, heightField;
 
-    private JComboBox parentChoice;
+    private JComboBox<String> parentChoice;
 
     private JRadioButton checkIndex, checkTrueColor, checkInterlacePixel,
             checkInterlacePlane;
 
     /** a list of current groups */
-    private List groupList;
+    private List<Object> groupList;
 
     private boolean isH5;
 
@@ -88,7 +88,7 @@ public class NewImageDialog extends JDialog implements ActionListener,
      * @param objs
      *            the list of all objects.
      */
-    public NewImageDialog(Frame owner, Group pGroup, List objs) {
+    public NewImageDialog(Frame owner, Group pGroup, List<?> objs) {
         super(owner, "New HDF Image...", true);
 
         newObject = null;
@@ -98,10 +98,10 @@ public class NewImageDialog extends JDialog implements ActionListener,
         fileFormat = pGroup.getFileFormat();
         toolkit = Toolkit.getDefaultToolkit();
 
-        parentChoice = new JComboBox();
-        groupList = new Vector();
+        parentChoice = new JComboBox<String>();
+        groupList = new Vector<Object>();
         Object obj = null;
-        Iterator iterator = objs.iterator();
+        Iterator<?> iterator = objs.iterator();
         while (iterator.hasNext()) {
             obj = iterator.next();
             if (obj instanceof Group) {
@@ -221,7 +221,7 @@ public class NewImageDialog extends JDialog implements ActionListener,
         if (cmd.equals("Cancel")) {
             newObject = null;
             dispose();
-            ((Vector) groupList).setSize(0);
+            ((Vector<Object>) groupList).setSize(0);
         }
     }
 

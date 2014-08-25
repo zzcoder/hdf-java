@@ -19,6 +19,7 @@ import org.fest.swing.finder.JFileChooserFinder;
 import org.fest.swing.fixture.DialogFixture;
 import org.fest.swing.fixture.FrameFixture;
 import org.fest.swing.fixture.JFileChooserFixture;
+import org.fest.swing.fixture.JLabelFixture;
 import org.fest.swing.fixture.JMenuItemFixture;
 import org.fest.swing.fixture.JTabbedPaneFixture;
 import org.fest.swing.fixture.JTableCellFixture;
@@ -188,6 +189,90 @@ public class TestTreeViewFilters {
             cell15 = dataset15table.cell(row(19).column(1));
             cell15.requireValue("191");
             mainFrameFixture.menuItemWithPath("Table", "Close").click();
+            mainFrameFixture.robot.waitForIdle();
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        catch (AssertionError ae) {
+            ae.printStackTrace();
+        }
+        finally {
+            try {
+                closeHDFFile(hdf_file, false);
+            }
+            catch (Exception ex) {}
+        }
+    }
+
+    @Test 
+    public void checkHDF5Filters() {
+        File hdf_file = openHDF5File("tfilters", 17);
+
+        try {
+            JTreeFixture filetree = mainFrameFixture.tree().focus();
+            filetree.requireVisible();
+            assertTrue("openHDF5Filters filetree shows:"+filetree.target.getRowCount(), filetree.target.getRowCount()==17);
+            assertTrue("openHDF5Filters filetree has file", (filetree.valueAt(0)).compareTo("tfilters.h5")==0);
+            assertTrue("openHDF5Filters filetree has dataset", (filetree.valueAt(10)).compareTo("fletcher32")==0);
+
+            JMenuItemFixture dataset11MenuItem = filetree.showPopupMenuAt(11).menuItemWithPath("Show Properties");
+            mainFrameFixture.robot.waitForIdle();
+            
+            dataset11MenuItem.requireVisible();
+            dataset11MenuItem.click();
+            mainFrameFixture.robot.waitForIdle();
+            
+            DialogFixture dataset11props = mainFrameFixture.dialog();
+            dataset11props.requireVisible();
+            
+            JTabbedPaneFixture tabPane = dataset11props.tabbedPane();
+            tabPane.requireVisible();
+            tabPane.requireTabTitles("General","Attributes");
+            tabPane.selectTab("General");
+            mainFrameFixture.robot.waitForIdle();
+
+            JLabelFixture labelChunk = dataset11props.label("chunkdata");
+            labelChunk.requireText("10 X 5");
+            JLabelFixture labelComp = dataset11props.label("compressiondata");
+            labelComp.requireText("1.000:1");
+            JLabelFixture labelFilt = dataset11props.label("filterdata");
+            labelFilt.requireText("USERDEFINED myfilter(405): 5, 6");
+            JLabelFixture labelStore = dataset11props.label("storagedata");
+            labelStore.requireText("800, allocation time: Incremental");
+            JLabelFixture labelFill = dataset11props.label("fillvaluedata");
+            labelFill.requireText("NONE");
+            
+            dataset11props.button("Close").click();
+            mainFrameFixture.robot.waitForIdle();
+
+            JMenuItemFixture dataset15MenuItem = filetree.showPopupMenuAt(15).menuItemWithPath("Show Properties");
+            mainFrameFixture.robot.waitForIdle();
+            
+            dataset15MenuItem.requireVisible();
+            dataset15MenuItem.click();
+            mainFrameFixture.robot.waitForIdle();
+            DialogFixture dataset15props = mainFrameFixture.dialog();
+            dataset15props.requireVisible();
+            
+            tabPane = dataset15props.tabbedPane();
+            tabPane.requireVisible();
+            tabPane.requireTabTitles("General","Attributes");
+            tabPane.selectTab("General");
+            mainFrameFixture.robot.waitForIdle();
+
+            labelChunk = dataset15props.label("chunkdata");
+            labelChunk.requireText("10 X 5");
+            labelComp = dataset15props.label("compressiondata");
+            labelComp.requireText("1.000:1");
+            labelFilt = dataset15props.label("filterdata");
+            labelFilt.requireText("SHUFFLE: Nbytes = 4");
+            labelStore = dataset15props.label("storagedata");
+            labelStore.requireText("800, allocation time: Incremental");
+            labelFill = dataset15props.label("fillvaluedata");
+            labelFill.requireText("NONE");
+
+            dataset15props.button("Close").click();
             mainFrameFixture.robot.waitForIdle();
         }
         catch (Exception ex) {

@@ -89,7 +89,7 @@ public class DefaultPaletteView extends JDialog implements PaletteView,
     private ScalarDS dataset;
     private ImageView imageView;
     private int[][] paletteData;
-    private JComboBox choicePalette;
+    private JComboBox<String> choicePalette;
     private PaletteValueTable paletteValueTable;
     private int  numberOfPalettes;
     private boolean startEditing = false;
@@ -105,7 +105,7 @@ public class DefaultPaletteView extends JDialog implements PaletteView,
         dataset = (ScalarDS) imageView.getDataObject();
         
         numberOfPalettes = 1;
-        choicePalette = new JComboBox();
+        choicePalette = new JComboBox<String>();
         choicePalette.addItemListener(this);
 
         boolean isH5 = dataset.getFileFormat().isThisType(
@@ -135,10 +135,10 @@ public class DefaultPaletteView extends JDialog implements PaletteView,
         choicePalette.addItem(PALETTE_RAINBOW);
         choicePalette.addItem(PALETTE_NATURE);
         choicePalette.addItem(PALETTE_WAVE);
-        Vector plist = ViewProperties.getPaletteList();
+        Vector<?> plist = ViewProperties.getPaletteList();
         int n = plist.size();
         for (int i = 0; i < n; i++)
-            choicePalette.addItem(plist.get(i));
+            choicePalette.addItem((String) plist.get(i));
 
         chartP = new ChartPanel();
         chartP.setBackground(Color.white);

@@ -1410,10 +1410,10 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
         String fname = choosedFile.getAbsolutePath();
 
         // check if the file is in use
-        List fileList = viewer.getTreeView().getCurrentFiles();
+        List<?> fileList = viewer.getTreeView().getCurrentFiles();
         if (fileList != null) {
             FileFormat theFile = null;
-            Iterator iterator = fileList.iterator();
+            Iterator<?> iterator = fileList.iterator();
             while (iterator.hasNext()) {
                 theFile = (FileFormat) iterator.next();
                 if (theFile.getFilePath().equals(fname)) {
@@ -1498,9 +1498,9 @@ public class DefaultTreeView extends JPanel implements TreeView, ActionListener 
     private void setLibVersionBounds() {
         Object[] lowValues = { "Earliest", "Latest" };
         Object[] highValues = { "Latest" };
-        JComboBox lowComboBox = new JComboBox(lowValues);
+        JComboBox<?> lowComboBox = new JComboBox<Object>(lowValues);
         lowComboBox.setName("earliestversion");
-        JComboBox highComboBox = new JComboBox(highValues);
+        JComboBox<?> highComboBox = new JComboBox<Object>(highValues);
         highComboBox.setName("latestversion");
 
         Object[] msg = { "Earliest Version:", lowComboBox, "Latest Version:", highComboBox };

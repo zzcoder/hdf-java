@@ -66,13 +66,13 @@ public class NewGroupDialog extends JDialog implements ActionListener, ItemListe
 
 	private JTextField indexedField;
 
-	private JComboBox parentChoice;
+	private JComboBox<String> parentChoice;
 
 	private JCheckBox useCreationOrder;
 
 	private JCheckBox setLinkStorage;
 
-	private JComboBox orderFlags;
+	private JComboBox<String> orderFlags;
 
 	/** a list of current groups */
 	private List<Group> groupList;
@@ -123,7 +123,7 @@ public class NewGroupDialog extends JDialog implements ActionListener, ItemListe
 		isH5 = pGroup.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5));
 		toolkit = Toolkit.getDefaultToolkit();
 
-		parentChoice = new JComboBox();
+		parentChoice = new JComboBox<String>();
 		groupList = new Vector<Group>();
 		Object obj = null;
 		Iterator<?> iterator = objs.iterator();
@@ -150,7 +150,7 @@ public class NewGroupDialog extends JDialog implements ActionListener, ItemListe
 					+ HObject.separator);
 		}
 
-		orderFlags = new JComboBox();
+		orderFlags = new JComboBox<String>();
 		orderFlags.addItem("Tracked");
 		orderFlags.addItem("Tracked+Indexed");
 

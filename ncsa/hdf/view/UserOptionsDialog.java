@@ -65,8 +65,8 @@ public class UserOptionsDialog extends JDialog implements ActionListener, ItemLi
 
     private String                H4toH5Path;
     private JTextField            H4toH5Field, UGField, workField, fileExtField, maxMemberField, startMemberField;
-    private JComboBox             fontSizeChoice, fontTypeChoice, delimiterChoice, imageOriginChoice, indexBaseChoice;
-    private JComboBox             choiceTreeView, choiceMetaDataView, choiceTextView, choiceTableView, choiceImageView,
+    private JComboBox<?>             fontSizeChoice, fontTypeChoice, delimiterChoice, imageOriginChoice, indexBaseChoice;
+    private JComboBox<String>             choiceTreeView, choiceMetaDataView, choiceTextView, choiceTableView, choiceImageView,
     choicePaletteView;
     private String                rootDir, workDir;
     private JCheckBox             checkCurrentUserDir, checkAutoContrast, checkConvertEnum, checkShowValues, checkShowRegRefValues;
@@ -199,12 +199,12 @@ public class UserOptionsDialog extends JDialog implements ActionListener, ItemLi
 
     private JPanel createGeneralOptionPanel() {
         String[] fontSizeChoices = { "12", "14", "16", "18", "20", "22", "24", "26", "28", "30", "32", "34", "36", "48" };
-        fontSizeChoice = new JComboBox(fontSizeChoices);
+        fontSizeChoice = new JComboBox<Object>(fontSizeChoices);
         fontSizeChoice.setSelectedItem(String.valueOf(ViewProperties.getFontSize()));
 
         String[] fontNames = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
         String fname = ViewProperties.getFontType();
-        fontTypeChoice = new JComboBox(fontNames);
+        fontTypeChoice = new JComboBox<Object>(fontNames);
 
         boolean isFontValid = false;
         if (fontNames != null) {
@@ -222,12 +222,12 @@ public class UserOptionsDialog extends JDialog implements ActionListener, ItemLi
 
         String[] delimiterChoices = { ViewProperties.DELIMITER_TAB, ViewProperties.DELIMITER_COMMA,
                 ViewProperties.DELIMITER_SPACE, ViewProperties.DELIMITER_COLON, ViewProperties.DELIMITER_SEMI_COLON };
-        delimiterChoice = new JComboBox(delimiterChoices);
+        delimiterChoice = new JComboBox<Object>(delimiterChoices);
         delimiterChoice.setSelectedItem(ViewProperties.getDataDelimiter());
 
         String[] imageOriginChoices = { ViewProperties.ORIGIN_UL, ViewProperties.ORIGIN_LL, ViewProperties.ORIGIN_UR,
                 ViewProperties.ORIGIN_LR };
-        imageOriginChoice = new JComboBox(imageOriginChoices);
+        imageOriginChoice = new JComboBox<Object>(imageOriginChoices);
         imageOriginChoice.setSelectedItem(ViewProperties.getImageOrigin());
 
         JPanel centerP = new JPanel();
@@ -389,7 +389,7 @@ public class UserOptionsDialog extends JDialog implements ActionListener, ItemLi
         p00.setLayout(new BorderLayout());
 
         String[] indexBaseChoices = { "0-based", "1-based" };
-        indexBaseChoice = new JComboBox(indexBaseChoices);
+        indexBaseChoice = new JComboBox<Object>(indexBaseChoices);
         if (ViewProperties.isIndexBase1())
             indexBaseChoice.setSelectedIndex(1);
         else
@@ -494,12 +494,12 @@ public class UserOptionsDialog extends JDialog implements ActionListener, ItemLi
     }
 
     private JPanel createModuleOptionPanel() {
-        choiceTreeView = new JComboBox(treeViews);
-        choiceTableView = new JComboBox(tableViews);
-        choiceTextView = new JComboBox(textViews);
-        choiceImageView = new JComboBox(imageViews);
-        choiceMetaDataView = new JComboBox(metaDataViews);
-        choicePaletteView = new JComboBox(paletteViews);
+        choiceTreeView = new JComboBox<String>(treeViews);
+        choiceTableView = new JComboBox<String>(tableViews);
+        choiceTextView = new JComboBox<String>(textViews);
+        choiceImageView = new JComboBox<String>(imageViews);
+        choiceMetaDataView = new JComboBox<String>(metaDataViews);
+        choicePaletteView = new JComboBox<String>(paletteViews);
 
         JPanel moduleP = new JPanel();
         moduleP.setLayout(new GridLayout(6, 1, 10, 10));
@@ -745,7 +745,7 @@ public class UserOptionsDialog extends JDialog implements ActionListener, ItemLi
             }
         }
         else if (cmd.startsWith("Delete Module")) {
-            JComboBox theChoice = (JComboBox) source;
+            JComboBox<?> theChoice = (JComboBox<?>) source;
 
             if (theChoice.getItemCount() == 1) {
                 JOptionPane.showMessageDialog(this, "Cannot delete the last module.", cmd, JOptionPane.ERROR_MESSAGE);
