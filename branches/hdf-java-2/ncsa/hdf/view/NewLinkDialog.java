@@ -69,7 +69,7 @@ public class NewLinkDialog extends JDialog implements ActionListener,DocumentLis
 
     private JTextField nameField;
 
-    private JComboBox parentChoice, targetObject;
+    private JComboBox<String> parentChoice, targetObject;
     
     private String currentDir;
     
@@ -82,10 +82,10 @@ public class NewLinkDialog extends JDialog implements ActionListener,DocumentLis
     private JCheckBox checkUnsigned;
 
     /** a list of current groups */
-    private List groupList;
+    private List<HObject> groupList;
 
     /** a list of current objects */
-    private List objList;
+    private List<?> objList;
     
     private HObject newObject;
 
@@ -95,7 +95,7 @@ public class NewLinkDialog extends JDialog implements ActionListener,DocumentLis
     
     private ViewManager viewer;
     
-    private final List fileList;
+    private final List<?> fileList;
       
 
     /**
@@ -108,7 +108,7 @@ public class NewLinkDialog extends JDialog implements ActionListener,DocumentLis
      * @param objs
      *            the list of all objects.
      */
-    public NewLinkDialog(JFrame owner, Group pGroup, List objs) {
+    public NewLinkDialog(JFrame owner, Group pGroup, List<?> objs) {
         super(owner, "New Link...", true);
 
         viewer = (ViewManager)owner;
@@ -121,13 +121,13 @@ public class NewLinkDialog extends JDialog implements ActionListener,DocumentLis
         
         currentDir = ViewProperties.getWorkDir();
         
-        parentChoice = new JComboBox();
-        targetObject = new JComboBox();
+        parentChoice = new JComboBox<String>();
+        targetObject = new JComboBox<String>();
         targetObject.setEditable(false);
        
-        groupList = new Vector(objs.size());
+        groupList = new Vector<HObject>(objs.size());
         HObject obj = null;
-        Iterator iterator = objs.iterator();
+        Iterator<?> iterator = objs.iterator();
         String full_name = null;
         int idx_root = -1, idx = -1;
         while (iterator.hasNext()) {
@@ -304,7 +304,7 @@ public class NewLinkDialog extends JDialog implements ActionListener,DocumentLis
         if (cmd.equals("Cancel")) {
             newObject = null;
             dispose();
-            ((Vector) groupList).setSize(0);
+            ((Vector<HObject>) groupList).setSize(0);
         }
     }
 
@@ -334,15 +334,15 @@ public class NewLinkDialog extends JDialog implements ActionListener,DocumentLis
     	return choosedFile.getAbsolutePath();
     }
    
-    private final List breadthFirstUserObjects(TreeNode node)
+    private final List<Object> breadthFirstUserObjects(TreeNode node)
     {
         if (node == null) {
             return null;
         }
 
-        Vector list = new Vector();
+        Vector<Object> list = new Vector<Object>();
         DefaultMutableTreeNode theNode = null;
-        Enumeration local_enum = ((DefaultMutableTreeNode)node).breadthFirstEnumeration();
+        Enumeration<?> local_enum = ((DefaultMutableTreeNode)node).breadthFirstEnumeration();
         while(local_enum.hasMoreElements()) {
             theNode = (DefaultMutableTreeNode)local_enum.nextElement();
             list.add(theNode.getUserObject());
@@ -618,7 +618,7 @@ public class NewLinkDialog extends JDialog implements ActionListener,DocumentLis
     	boolean isOpen = false;
     	FileFormat theFile = null;
 
-    	Iterator iterator = fileList.iterator();
+    	Iterator<?> iterator = fileList.iterator();
     	while(iterator.hasNext()) {
     		theFile = (FileFormat)iterator.next();
     		if (theFile.getFilePath().equals(filename)) {
@@ -666,11 +666,11 @@ public class NewLinkDialog extends JDialog implements ActionListener,DocumentLis
     
     //getting the list of objects from the file:-
     private void retriveObjects(FileFormat file) {        
-        List objsFile =  breadthFirstUserObjects(file.getRootNode());
-        List groupListFile = new Vector(objsFile.size());
+        List<Object> objsFile =  breadthFirstUserObjects(file.getRootNode());
+        List<HObject> groupListFile = new Vector<HObject>(objsFile.size());
         HObject obj = null;
-        Iterator iterator = objsFile.iterator();
-        List objListFile = objsFile;
+        Iterator<Object> iterator = objsFile.iterator();
+        List<Object> objListFile = objsFile;
         String full_name = null;
         int idx_root = -1, idx = -1;
         targetObject.removeAllItems();

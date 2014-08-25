@@ -78,7 +78,7 @@ public class NewAttributeDialog extends JDialog implements ActionListener, ItemL
     private JTextField        nameField;
 
     /** The Choice of the datatypes */
-    private JComboBox         classChoice, sizeChoice;
+    private JComboBox<String>         classChoice, sizeChoice;
 
     private JCheckBox         checkUnsigned;
 
@@ -86,7 +86,7 @@ public class NewAttributeDialog extends JDialog implements ActionListener, ItemL
     private JTextField        valueField;
 
     /** The Choice of the object list */
-    private JComboBox         objChoice;
+    private JComboBox<String>         objChoice;
 
     private FileFormat        fileFormat;
 
@@ -124,9 +124,9 @@ public class NewAttributeDialog extends JDialog implements ActionListener, ItemL
         JPanel typePanel = new JPanel();
         typePanel.setLayout(new GridLayout(1, 4, 15, 3));
 
-        classChoice = new JComboBox();
+        classChoice = new JComboBox<String>();
         classChoice.setName("attrclass");
-        sizeChoice = new JComboBox();
+        sizeChoice = new JComboBox<String>();
         sizeChoice.setName("attrsize");
 
         classChoice.addItem("INTEGER");
@@ -223,7 +223,7 @@ public class NewAttributeDialog extends JDialog implements ActionListener, ItemL
         valueField = new JTextField("0");
         valueField.setName("attrvalue");
         p2.add(valueField);
-        objChoice = new JComboBox();
+        objChoice = new JComboBox<String>();
         objChoice.setName("attrobjn");
         p2.add(objChoice);
         p.add("Center", p2);

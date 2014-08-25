@@ -60,14 +60,14 @@ implements ActionListener, ItemListener {
 
     private JTextField        nameField, stringLengthField;
 
-    private JComboBox         parentChoice, classChoice, sizeChoice, endianChoice;
+    private JComboBox<String>         parentChoice, classChoice, sizeChoice, endianChoice;
 
     private JCheckBox         checkUnsigned;
 
     private boolean           isH5;
 
     /** a list of current groups */
-    private List              groupList;
+    private List<Object>              groupList;
 
     private HObject           newObject;
 
@@ -86,7 +86,7 @@ implements ActionListener, ItemListener {
      * @param objs
      *            the list of all objects.
      */
-    public NewDatatypeDialog(JFrame owner, Group pGroup, List objs) {
+    public NewDatatypeDialog(JFrame owner, Group pGroup, List<?> objs) {
         super(owner, "New Datatype...", true);
 
         newObject = null;
@@ -95,10 +95,10 @@ implements ActionListener, ItemListener {
         toolkit = Toolkit.getDefaultToolkit();
         isH5 = pGroup.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5));
 
-        parentChoice = new JComboBox();
-        groupList = new Vector(objs.size());
+        parentChoice = new JComboBox<String>();
+        groupList = new Vector<Object>(objs.size());
         Object obj = null;
-        Iterator iterator = objs.iterator();
+        Iterator<?> iterator = objs.iterator();
         while (iterator.hasNext()) {
             obj = iterator.next();
             if (obj instanceof Group) {
@@ -173,11 +173,11 @@ implements ActionListener, ItemListener {
         stringLengthField.setName("dtstringlen");
         stringLengthField.setEnabled(false);
 
-        endianChoice = new JComboBox();
+        endianChoice = new JComboBox<String>();
         endianChoice.setName("dtendian");
-        classChoice = new JComboBox();
+        classChoice = new JComboBox<String>();
         classChoice.setName("dtclass");
-        sizeChoice = new JComboBox();
+        sizeChoice = new JComboBox<String>();
         sizeChoice.setName("dtsize");
         endianChoice.setEnabled(isH5);
 

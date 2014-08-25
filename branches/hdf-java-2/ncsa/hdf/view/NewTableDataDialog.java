@@ -415,7 +415,7 @@ public class NewTableDataDialog extends JDialog implements ActionListener, ItemL
         Object source = e.getSource();
 
         if (source.equals(rankChoice)) {
-            int rank = rankChoice.getSelectedIndex() + 1;
+            int rank = (int)rankChoice.getSelectedIndex() + 1;
             String currentSizeStr = "1";
             String maxSizeStr = "0";
 
@@ -454,7 +454,7 @@ public class NewTableDataDialog extends JDialog implements ActionListener, ItemL
             int idx = currentStr.lastIndexOf("x");
             String chunkStr = "1";
 
-            int rank = rankChoice.getSelectedIndex() + 1;
+            int rank = (int)rankChoice.getSelectedIndex() + 1;
             if (rank <= 1) {
                 chunkStr = currentStr;
             }
@@ -478,7 +478,7 @@ public class NewTableDataDialog extends JDialog implements ActionListener, ItemL
                     int idx = currentStr.lastIndexOf("x");
                     String chunkStr = "1";
 
-                    int rank = rankChoice.getSelectedIndex() + 1;
+                    int rank = (int)rankChoice.getSelectedIndex() + 1;
                     if (rank <= 1) {
                         chunkStr = currentStr;
                     }
@@ -773,7 +773,7 @@ public class NewTableDataDialog extends JDialog implements ActionListener, ItemL
             mDatatypes[i] = type;
         } // for (int i=0; i<n; i++)
 
-        rank = rankChoice.getSelectedIndex() + 1;
+        rank = (int)rankChoice.getSelectedIndex() + 1;
         StringTokenizer st = new StringTokenizer(currentSizeField.getText(), "x");
         if (st.countTokens() < rank) {
             toolkit.beep();

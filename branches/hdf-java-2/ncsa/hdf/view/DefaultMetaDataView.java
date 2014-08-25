@@ -201,7 +201,7 @@ public class DefaultMetaDataView extends JDialog implements ActionListener, Meta
         }
         else if (cmd.equals("Display user block as")) {
             int type = 0;
-            String typeName = (String) ((JComboBox) source).getSelectedItem();
+            String typeName = (String) ((JComboBox<?>) source).getSelectedItem();
             jamButton.setEnabled(false);
             userBlockArea.setEditable(false);
 
@@ -363,7 +363,7 @@ public class DefaultMetaDataView extends JDialog implements ActionListener, Meta
     }
 
     /**
-     * Creates a panel used to dispaly general information of HDF object.
+     * Creates a panel used to display general information of HDF object.
      */
     private JPanel createGeneralPropertyPanel() {
         JPanel panel = new JPanel();
@@ -824,6 +824,7 @@ public class DefaultMetaDataView extends JDialog implements ActionListener, Meta
         bPanel.setBorder(new TitledBorder(""));
         bPanel.setLayout(new BorderLayout());
         lp = new JPanel();
+        lp.setName("genmetainfo");
         lp.setLayout(new GridLayout(5, 1));
         lp.add(new JLabel("Chunking: "));
         lp.add(new JLabel("Compression: "));
@@ -849,12 +850,23 @@ public class DefaultMetaDataView extends JDialog implements ActionListener, Meta
         }
 
         rp = new JPanel();
+        rp.setName("genmetadata");
         rp.setLayout(new GridLayout(5, 1));
-        rp.add(new JLabel(chunkInfo));
-        rp.add(new JLabel(d.getCompression()));
-        rp.add(new JLabel(d.getFilters()));
-        rp.add(new JLabel(d.getStorage()));
-        rp.add(new JLabel(fillValueInfo));
+        JLabel rpchunk = new JLabel(chunkInfo);
+        rpchunk.setName("chunkdata");
+        rp.add(rpchunk);
+        JLabel rpcomp = new JLabel(d.getCompression());
+        rpcomp.setName("compressiondata");
+        rp.add(rpcomp);
+        JLabel rpfilt = new JLabel(d.getFilters());
+        rpfilt.setName("filterdata");
+        rp.add(rpfilt);
+        JLabel rpstore = new JLabel(d.getStorage());
+        rpstore.setName("storagedata");
+        rp.add(rpstore);
+        JLabel rpfillval = new JLabel(fillValueInfo);
+        rpfillval.setName("fillvaluedata");
+        rp.add(rpfillval);
         bPanel.add(rp, BorderLayout.CENTER);
 
         panel.add(bPanel, BorderLayout.SOUTH);
@@ -1047,7 +1059,7 @@ public class DefaultMetaDataView extends JDialog implements ActionListener, Meta
         userBlockArea.setMargin(m);
 
         String[] displayChoices = { "Text", "Binary", "Octal", "Hexadecimal", "Decimal" };
-        JComboBox userBlockDisplayChoice = new JComboBox(displayChoices);
+        JComboBox<?> userBlockDisplayChoice = new JComboBox<Object>(displayChoices);
         userBlockDisplayChoice.setSelectedIndex(0);
         userBlockDisplayChoice.addActionListener(this);
         userBlockDisplayChoice.setEditable(false);

@@ -75,7 +75,7 @@ public class NewDatasetDialog extends JDialog implements ActionListener, ItemLis
     private JTextField        nameField, currentSizeField, maxSizeField, chunkSizeField, stringLengthField,
     fillValueField;
 
-    private JComboBox         parentChoice, classChoice, sizeChoice, endianChoice, rankChoice, compressionLevel;
+    private JComboBox<String>         parentChoice, classChoice, sizeChoice, endianChoice, rankChoice, compressionLevel;
 
     private JCheckBox         checkUnsigned, checkCompression, checkFillValue;
 
@@ -118,7 +118,7 @@ public class NewDatasetDialog extends JDialog implements ActionListener, ItemLis
         toolkit = Toolkit.getDefaultToolkit();
         isH5 = pGroup.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5));
 
-        parentChoice = new JComboBox();
+        parentChoice = new JComboBox<String>();
         groupList = new Vector<Object>();
         Object obj = null;
         Iterator<?> iterator = objs.iterator();
@@ -202,11 +202,11 @@ public class NewDatasetDialog extends JDialog implements ActionListener, ItemLis
         stringLengthField.setName("datasetstringlen");
         stringLengthField.setEnabled(false);
 
-        endianChoice = new JComboBox();
+        endianChoice = new JComboBox<String>();
         endianChoice.setName("datasetendian");
-        classChoice = new JComboBox();
+        classChoice = new JComboBox<String>();
         classChoice.setName("datasetclass");
-        sizeChoice = new JComboBox();
+        sizeChoice = new JComboBox<String>();
         sizeChoice.setName("datasetsize");
         endianChoice.setEnabled(isH5);
 
@@ -254,7 +254,7 @@ public class NewDatasetDialog extends JDialog implements ActionListener, ItemLis
         border.setTitleColor(Color.gray);
         spacePanel.setBorder(border);
 
-        rankChoice = new JComboBox();
+        rankChoice = new JComboBox<String>();
         rankChoice.setName("datasetrank");
         for (int i = 1; i < 33; i++) {
             rankChoice.addItem(String.valueOf(i));
@@ -296,7 +296,7 @@ public class NewDatasetDialog extends JDialog implements ActionListener, ItemLis
         checkCompression = new JCheckBox("gzip (level) ");
         checkCompression.setName("datasetgzip");
 
-        compressionLevel = new JComboBox();
+        compressionLevel = new JComboBox<String>();
         compressionLevel.setName("datasetlevel");
         for (int i = 0; i < 10; i++) {
             compressionLevel.addItem(String.valueOf(i));
@@ -402,7 +402,7 @@ public class NewDatasetDialog extends JDialog implements ActionListener, ItemLis
         toolkit = Toolkit.getDefaultToolkit();
         isH5 = pGroup.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5));
 
-        parentChoice = new JComboBox();
+        parentChoice = new JComboBox<String>();
         groupList = new Vector<Object>();
         Object obj = null;
         Iterator<?> iterator = objs.iterator();
