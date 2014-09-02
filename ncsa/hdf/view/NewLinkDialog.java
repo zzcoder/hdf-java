@@ -124,6 +124,7 @@ public class NewLinkDialog extends JDialog implements ActionListener,DocumentLis
         currentDir = ViewProperties.getWorkDir();
         
         parentChoice = new JComboBox();
+        parentChoice.setName("linkparent");
         targetObject = new JComboBox();
         targetObject.setEditable(false);
        
@@ -176,6 +177,7 @@ public class NewLinkDialog extends JDialog implements ActionListener,DocumentLis
 
         JButton okButton = new JButton("   Ok   ");
         okButton.setActionCommand("Ok");
+        okButton.setName("makelink");
         okButton.setMnemonic(KeyEvent.VK_O);
         okButton.addActionListener(this);
 
@@ -214,8 +216,10 @@ public class NewLinkDialog extends JDialog implements ActionListener,DocumentLis
         
         tmpP = new JPanel();
         tmpP.setLayout(new GridLayout(5, 1,5,5));
-        tmpP.add(nameField = new JTextField());
-        tmpP.add(parentChoice);    
+        nameField = new JTextField();
+        nameField.setName("linkname");
+        tmpP.add(nameField);
+        tmpP.add(parentChoice);
               
         JPanel tmpP0 = new JPanel();
         tmpP0.setLayout(new GridLayout(1, 3));
@@ -229,8 +233,11 @@ public class NewLinkDialog extends JDialog implements ActionListener,DocumentLis
         bgroup.add(softLink);
         bgroup.add(externalLink);
         hardLink.addItemListener(this);
+        hardLink.setName("hardlink");
         softLink.addItemListener(this);
+        softLink.setName("softlink");
         externalLink.addItemListener(this);
+        externalLink.setName("externallink");
         
         JPanel p0 = new JPanel();
         p0.setLayout(new BorderLayout());
@@ -241,6 +248,7 @@ public class NewLinkDialog extends JDialog implements ActionListener,DocumentLis
         JButton b = new JButton("Browse...");
         targetFileButton = b;
         b.setActionCommand("Browse File");
+        b.setName("targetfilebutton");
         b.addActionListener(this);
         p0.add(b, BorderLayout.EAST);
         tmpP.add(p0);
@@ -248,6 +256,7 @@ public class NewLinkDialog extends JDialog implements ActionListener,DocumentLis
         targetFileButton.setEnabled(false);
         
         tmpP.add(targetObject);
+        targetObject.setName("linktarget");
         namePanel.add(tmpP, BorderLayout.CENTER);
         contentPane.add(namePanel, BorderLayout.CENTER);
 

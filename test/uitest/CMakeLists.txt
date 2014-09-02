@@ -33,8 +33,11 @@ set (HDFJAVA_TEST_UITEST_SRCS
     TestHDFViewCutPaste.java
     TestHDFViewDatasetFrameSelection.java
     TestHDFViewImageFrameSelection.java
+    TestHDFViewDataObjectOperations.java
     TestHDFViewImageConversion.java
     TestHDFViewLibBounds.java
+    TestHDFViewLinks.java
+    TestHDFViewOpenAsDataset.java
     TestHDFViewTAttr2.java
     TestAll.java
 )
@@ -58,6 +61,7 @@ set (HDF_JAVA_TEST_FILES
       hdf5_test.h5
       tattrintsize.h5
       tframeselection.h5
+	  test_dataobject_operations.h5
       tintsattrs.h5
       tintsize.h5
       tcmpdattrintsize.h5
@@ -104,8 +108,14 @@ set (HDF_JAVA_TEST_REFERENCE
       JUnit-gui-test-imageframeselection.err
       JUnit-gui-image-conversion.txt
       JUnit-gui-image-conversion.err
+      JUnit-gui-test-dataobject-operations.txt
+      JUnit-gui-test-dataobject-operations.err
       JUnit-gui-test-libversion.txt
       JUnit-gui-test-libversion.err
+      JUnit-gui-test-links.txt
+      JUnit-gui-test-links.err
+      JUnit-gui-test-openas-dataset.txt
+      JUnit-gui-test-openas-dataset.err
       DU64BITS.xbin
 )
 
@@ -170,6 +180,9 @@ add_test (
     COMMAND    ${CMAKE_COMMAND}
         -E remove 
         closebutton.hdf
+        dataset_saveto_test.h5
+        image_saveto_test.h5
+        group_saveto_test.h5
         testopenbutton.hdf
         testopenfile.hdf
         testopenrofile.h5
@@ -184,8 +197,20 @@ add_test (
         testsavefile.h5
         testsaveasfile.h5
         testsaveasfile2.h5
+        test_tab_import.h5
+        test_comma_import.h5
+        test_space_import.h5
+        test_colon_import.h5
+        test_semicolon_import.h5
+        test_large_dataset.h5
+        testlinks.h5
         testgrp.h5
         testds.h5
+        DS16BITS.txt
+        float3D.txt
+        DU32BITS.txt
+        chunked.txt
+        CompoundInts.txt
         DS64BITS.txt
         DU64BITS.bin
         JUnit-gui-menu.out
@@ -218,10 +243,16 @@ add_test (
         JUnit-gui-test-datasetframeselection.out.err
         JUnit-gui-test-imageframeselection.out
         JUnit-gui-test-imageframeselection.out.err
-        JUnit-gui-image-conversion.out
-        JUnit-gui-image-conversion.out.err
-        JUnit-gui-test-libversion.out
-        JUnit-gui-test-libversion.out.err
+		JUnit-gui-image-conversion.out
+		JUnit-gui-image-conversion.out.err
+		JUnit-gui-test-dataobject-operations.out
+		JUnit-gui-test-dataobject-operations.out.err
+		JUnit-gui-test-libversion.out
+		JUnit-gui-test-libversion.out.err
+		JUnit-gui-test-links.out
+		JUnit-gui-test-links.out.err
+		JUnit-gui-test-openas-dataset.out
+        JUnit-gui-test-openas-dataset.out.err
 )
 
 add_test (
@@ -545,7 +576,7 @@ add_test (
 )
 
 set_tests_properties (JUnit-gui-test-datasetframeselection PROPERTIES
-    DEPENDS "JUnit-gui-test-libversion"
+    DEPENDS JUnit-gui-test-libversion
 )
 
 add_test (
@@ -566,7 +597,7 @@ add_test (
 )
 
 set_tests_properties (JUnit-gui-test-imageframeselection PROPERTIES
-    DEPENDS "JUnit-gui-test-datasetframeselection"
+    DEPENDS JUnit-gui-test-datasetframeselection
 )
 
 add_test (
@@ -587,7 +618,7 @@ add_test (
 )
 
 set_tests_properties (JUnit-gui-test-copypaste PROPERTIES
-    DEPENDS "JUnit-gui-test-imageframeselection"
+    DEPENDS JUnit-gui-test-imageframeselection
 )
 
 add_test (
@@ -608,7 +639,70 @@ add_test (
 )
 
 set_tests_properties (JUnit-gui-test-cutpaste PROPERTIES
-    DEPENDS "JUnit-gui-test-copypaste"
+    DEPENDS JUnit-gui-test-copypaste
+)
+
+add_test (
+    NAME JUnit-gui-test-links
+    COMMAND "${CMAKE_COMMAND}"
+        -D "TEST_TESTER=${CMAKE_Java_RUNTIME};${CMAKE_Java_RUNTIME_FLAGS}"
+        -D "TEST_CLASSPATH:STRING=${CMAKE_JAVA_CLASSPATH}"
+        -D "TEST_ARGS:STRING=${CMD_ARGS}-ea;org.junit.runner.JUnitCore"
+        -D "TEST_PROGRAM=test.uitest.TestHDFViewLinks"
+        -D "TEST_LIBRARY_DIRECTORY=${CMAKE_TEST_OUTPUT_DIRECTORY}"
+        -D "TEST_FOLDER=${PROJECT_BINARY_DIR}"
+        -D "TEST_OUTPUT=JUnit-gui-test-links.out"
+        -D "TEST_EXPECT=0"
+        -D "TEST_MASK_FILE=TRUE"
+        -D "TEST_ERRREF=JUnit-gui-test-links.err"
+        -D "TEST_REFERENCE=JUnit-gui-test-links.txt"
+        -P "${HDF_RESOURCES_DIR}/runTest.cmake"
+)
+
+set_tests_properties (JUnit-gui-test-links PROPERTIES
+    DEPENDS JUnit-gui-test-cutpaste
+)
+
+add_test (
+    NAME JUnit-gui-test-dataobject-operations
+    COMMAND "${CMAKE_COMMAND}"
+        -D "TEST_TESTER=${CMAKE_Java_RUNTIME};${CMAKE_Java_RUNTIME_FLAGS}"
+        -D "TEST_CLASSPATH:STRING=${CMAKE_JAVA_CLASSPATH}"
+        -D "TEST_ARGS:STRING=${CMD_ARGS}-ea;org.junit.runner.JUnitCore"
+        -D "TEST_PROGRAM=test.uitest.TestHDFViewDataObjectOperations"
+        -D "TEST_LIBRARY_DIRECTORY=${CMAKE_TEST_OUTPUT_DIRECTORY}"
+        -D "TEST_FOLDER=${PROJECT_BINARY_DIR}"
+        -D "TEST_OUTPUT=JUnit-gui-test-dataobject-operations.out"
+        -D "TEST_EXPECT=0"
+        -D "TEST_MASK_FILE=TRUE"
+        -D "TEST_ERRREF=JUnit-gui-test-dataobject-operations.err"
+        -D "TEST_REFERENCE=JUnit-gui-test-dataobject-operations.txt"
+        -P "${HDF_RESOURCES_DIR}/runTest.cmake"
+)
+
+set_tests_properties (JUnit-gui-test-dataobject-operations PROPERTIES
+    DEPENDS JUnit-gui-test-links
+)
+
+add_test (
+    NAME JUnit-gui-test-openas-dataset
+    COMMAND "${CMAKE_COMMAND}"
+        -D "TEST_TESTER=${CMAKE_Java_RUNTIME};${CMAKE_Java_RUNTIME_FLAGS}"
+        -D "TEST_CLASSPATH:STRING=${CMAKE_JAVA_CLASSPATH}"
+        -D "TEST_ARGS:STRING=${CMD_ARGS}-ea;org.junit.runner.JUnitCore"
+        -D "TEST_PROGRAM=test.uitest.TestHDFViewOpenAsDataset"
+        -D "TEST_LIBRARY_DIRECTORY=${CMAKE_TEST_OUTPUT_DIRECTORY}"
+        -D "TEST_FOLDER=${PROJECT_BINARY_DIR}"
+        -D "TEST_OUTPUT=JUnit-gui-test-openas-dataset.out"
+        -D "TEST_EXPECT=0"
+        -D "TEST_MASK_FILE=TRUE"
+        -D "TEST_ERRREF=JUnit-gui-test-openas-dataset.err"
+        -D "TEST_REFERENCE=JUnit-gui-test-openas-dataset.txt"
+        -P "${HDF_RESOURCES_DIR}/runTest.cmake"
+)
+
+set_tests_properties (JUnit-gui-test-openas-dataset PROPERTIES
+    DEPENDS JUnit-gui-test-dataobject-operations
 )
    
 #add_test (

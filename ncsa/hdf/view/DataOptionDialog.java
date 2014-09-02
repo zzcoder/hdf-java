@@ -271,6 +271,7 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
         applyBitmaskButton.setMnemonic(KeyEvent.VK_A);
         applyBitmaskButton.setEnabled(false);
         applyBitmaskButton.addItemListener(this);
+        applyBitmaskButton.setName("applybitmask");
 
         bitmaskHelp = new JButton(ViewProperties.getHelpIcon());
         bitmaskHelp.setEnabled(false);
@@ -298,6 +299,7 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
         navigatorP.add(navigator, BorderLayout.CENTER);
         navigatorP.add(selLabel, BorderLayout.SOUTH);
         navigatorP.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
+        navigatorP.setName("navigator");
         performJComboBoxEvent = true;
 
         // create and initialize these buttons here so the isIndexBase1 method
@@ -477,6 +479,7 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
                     bitmaskButtons[i] = new JRadioButton(String.valueOf(i));
                     bitmaskButtons[i].setEnabled(false);
                     bitmaskButtons[i].addItemListener(this);
+                    bitmaskButtons[i].setName("bitmaskButton"+i);
                 }
 
                 JPanel sheetP2 = new JPanel();
@@ -589,6 +592,12 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
             endFields[i].setEnabled(false);
             strideFields[i].setEnabled(false);
             maxLabels[i].setEnabled(false);
+            
+            // Provide fields with names for access
+            startFields[i].setName("startField"+i);
+            endFields[i].setName("endField"+i);
+            strideFields[i].setName("strideField"+i);
+            choices[i].setName("dimensionBox"+i);
         }
 
         // add button dimension selection when dimension size >= 4
@@ -602,6 +611,7 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
         selectionP.add(new JLabel(" "));
         selectionP.add(new JLabel(" "));
         button = new JButton("Reset");
+        button.setName("Reset");
         button.setActionCommand("Reset data range");
         button.addActionListener(this);
         selectionP.add(button);
