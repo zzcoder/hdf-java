@@ -167,6 +167,7 @@ public class UserOptionsDialog extends JDialog implements ActionListener, ItemLi
         JButton b = new JButton("   Ok   ");
         b.setActionCommand("Set options");
         b.addActionListener(this);
+        b.setName("Ok");
         buttonP.add(b);
         b = new JButton("Cancel");
         b.setActionCommand("Cancel");
@@ -343,6 +344,7 @@ public class UserOptionsDialog extends JDialog implements ActionListener, ItemLi
         p00.setLayout(new BorderLayout());
         checkAutoContrast = new JCheckBox("Autogain Image Contrast");
         checkAutoContrast.setSelected(ViewProperties.isAutoContrast());
+        checkAutoContrast.setName("autogain");
         p00.add(checkAutoContrast, BorderLayout.CENTER);
         JButton button = new JButton(ViewProperties.getHelpIcon());
         button.setToolTipText("Help on Auto Contrast");
