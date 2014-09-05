@@ -61,7 +61,7 @@ set (HDF_JAVA_TEST_FILES
       hdf5_test.h5
       tattrintsize.h5
       tframeselection.h5
-	  test_dataobject_operations.h5
+#	  test_dataobject_operations.h5
       tintsattrs.h5
       tintsize.h5
       tcmpdattrintsize.h5
