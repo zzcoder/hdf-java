@@ -252,6 +252,13 @@ public class HDF5Constants {
     public static final int H5FD_MEM_OHDR = H5FD_MEM_OHDR();
     public static final int H5FD_MEM_NTYPES = H5FD_MEM_NTYPES();
     public static final long H5FD_DEFAULT_HADDR_SIZE = H5FD_DEFAULT_HADDR_SIZE();
+    public static final long H5FD_MEM_DEFAULT_SIZE = H5FD_MEM_DEFAULT_SIZE();
+    public static final long H5FD_MEM_DEFAULT_SUPER_SIZE = H5FD_MEM_DEFAULT_SUPER_SIZE();
+    public static final long H5FD_MEM_DEFAULT_BTREE_SIZE = H5FD_MEM_DEFAULT_BTREE_SIZE();
+    public static final long H5FD_MEM_DEFAULT_DRAW_SIZE = H5FD_MEM_DEFAULT_DRAW_SIZE();
+    public static final long H5FD_MEM_DEFAULT_GHEAP_SIZE = H5FD_MEM_DEFAULT_GHEAP_SIZE();
+    public static final long H5FD_MEM_DEFAULT_LHEAP_SIZE = H5FD_MEM_DEFAULT_LHEAP_SIZE();
+    public static final long H5FD_MEM_DEFAULT_OHDR_SIZE = H5FD_MEM_DEFAULT_OHDR_SIZE();
 
     public static final int H5G_DATASET = H5G_DATASET();
     public static final int H5G_GROUP = H5G_GROUP();
@@ -1066,6 +1073,20 @@ public class HDF5Constants {
     private static native final int H5FD_MEM_NTYPES();
     
     private static native final long H5FD_DEFAULT_HADDR_SIZE();
+    
+    private static native final long H5FD_MEM_DEFAULT_SIZE();
+    
+    private static native final long H5FD_MEM_DEFAULT_SUPER_SIZE();
+    
+    private static native final long H5FD_MEM_DEFAULT_BTREE_SIZE();
+    
+    private static native final long H5FD_MEM_DEFAULT_DRAW_SIZE();
+    
+    private static native final long H5FD_MEM_DEFAULT_GHEAP_SIZE();
+    
+    private static native final long H5FD_MEM_DEFAULT_LHEAP_SIZE();
+    
+    private static native final long H5FD_MEM_DEFAULT_OHDR_SIZE();
 
     private static native final int H5G_DATASET();
 
