@@ -279,7 +279,14 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5FD_1MEM_1GHEAP(JNIE
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5FD_1MEM_1LHEAP(JNIEnv *env, jclass cls) { return H5FD_MEM_LHEAP; }
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5FD_1MEM_1OHDR(JNIEnv *env, jclass cls) { return H5FD_MEM_OHDR; }
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5FD_1MEM_1NTYPES(JNIEnv *env, jclass cls) { return H5FD_MEM_NTYPES; }
-JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5FD_1DEFAULT_1HADDR_1SIZE(JNIEnv *env, jclass cls) { return (hsize_t)HADDR_MAX/H5FD_MEM_NTYPES; }
+JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5FD_1DEFAULT_1HADDR_1SIZE(JNIEnv *env, jclass cls) { return (hsize_t)(HADDR_MAX/H5FD_MEM_NTYPES); }
+JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5FD_1MEM_1DEFAULT_1SIZE(JNIEnv *env, jclass cls) { return (hsize_t)0; }
+JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5FD_1MEM_1DEFAULT_1SUPER_1SIZE(JNIEnv *env, jclass cls) { return (hsize_t)0; }
+JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5FD_1MEM_1DEFAULT_1BTREE_1SIZE(JNIEnv *env, jclass cls) { return (hsize_t)(1 * (HADDR_MAX / H5FD_MEM_NTYPES)); }
+JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5FD_1MEM_1DEFAULT_1DRAW_1SIZE(JNIEnv *env, jclass cls) { return (hsize_t)(2 * (HADDR_MAX / H5FD_MEM_NTYPES)); }
+JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5FD_1MEM_1DEFAULT_1GHEAP_1SIZE(JNIEnv *env, jclass cls) { return (hsize_t)(3 * (HADDR_MAX / H5FD_MEM_NTYPES)); }
+JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5FD_1MEM_1DEFAULT_1LHEAP_1SIZE(JNIEnv *env, jclass cls) { return (hsize_t)(4 * (HADDR_MAX / H5FD_MEM_NTYPES)); }
+JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5FD_1MEM_1DEFAULT_1OHDR_1SIZE(JNIEnv *env, jclass cls) { return (hsize_t)(5 * (HADDR_MAX / H5FD_MEM_NTYPES)); }
 
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5G_1DATASET(JNIEnv *env, jclass cls) { return H5G_DATASET; }
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5G_1GROUP(JNIEnv *env, jclass cls) { return H5G_GROUP; }
