@@ -1465,6 +1465,7 @@ public class H5Datatype extends Datatype {
         if (!(info instanceof Attribute)) {
             return;
         }
+        log.trace("writeMetadata start");
 
         boolean attrExisted = false;
         Attribute attr = (Attribute) info;
@@ -1484,6 +1485,7 @@ public class H5Datatype extends Datatype {
             attributeList.add(attr);
             nAttributes = attributeList.size();
         }
+        log.trace("writeMetadata finish");
     }
 
     /*

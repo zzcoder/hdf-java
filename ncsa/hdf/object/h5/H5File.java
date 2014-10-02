@@ -1755,6 +1755,7 @@ public class H5File extends FileFormat {
                 if (attrValue != null) {
                     boolean isVlen = (H5.H5Tget_class(tid) == HDF5Constants.H5T_VLEN || H5.H5Tis_variable_str(tid));
                     if (isVlen) {
+                        log.trace("{} writeAttribute isvlen", name);
                         try {
                             /*
                              * must use native type to write attribute data to file (see bug 1069)
@@ -1767,7 +1768,13 @@ public class H5File extends FileFormat {
                             catch (Exception ex) {
                                 log.debug("{} writeAttribute H5Tclose failure: ", name, ex);
                             }
-                            H5.H5AwriteVL(aid, tid, (String[])attrValue);
+                            log.trace("{} writeAttribute H5.H5AwriteVL", name);
+                            if(attrValue instanceof String) {
+                                H5.H5AwriteVL(aid, tid, (String[]) attrValue);
+                            }
+                            else {
+                                log.info("Datatype is not a string, unable to write {} data", name);
+                            }
                         }
                         catch (Exception ex) {
                             log.debug("{} writeAttribute native type failure: ", name, ex);
@@ -1777,6 +1784,7 @@ public class H5File extends FileFormat {
                         if (attr.getType().getDatatypeClass() == Datatype.CLASS_REFERENCE && attrValue instanceof String) {
                             // reference is a path+name to the object
                             attrValue = H5.H5Rcreate(getFID(), (String) attrValue, HDF5Constants.H5R_OBJECT, -1);
+                            log.trace("{} writeAttribute CLASS_REFERENCE", name);
                         }
                         else if (Array.get(attrValue, 0) instanceof String) {
                             int size = H5.H5Tget_size(tid);
@@ -1786,6 +1794,7 @@ public class H5File extends FileFormat {
                                 bval[bval.length - 1] = 0;
                                 attrValue = bval;
                             }
+                            log.trace("{} writeAttribute Array", name);
                         }
 
                         try {
@@ -1800,6 +1809,7 @@ public class H5File extends FileFormat {
                             catch (Exception ex) {
                                 log.debug("{} writeAttribute H5Tclose failure: ", name, ex);
                             }
+                            log.trace("{} writeAttribute H5.H5Awrite", name);
                             H5.H5Awrite(aid, tid, attrValue);
                         }
                         catch (Exception ex) {
