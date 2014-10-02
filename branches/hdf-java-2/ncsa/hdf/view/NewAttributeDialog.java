@@ -390,6 +390,7 @@ public class NewAttributeDialog extends JDialog implements ActionListener, ItemL
         int string_length = 0;
         int tclass = -1, tsize = -1, torder = -1, tsign = -1;
         boolean isVLen = false;
+        log.trace("createAttribute start");
 
         Object value = null;
         String strValue = valueField.getText();
@@ -405,6 +406,7 @@ public class NewAttributeDialog extends JDialog implements ActionListener, ItemL
         }
 
         String lengthStr = lengthField.getText();
+        log.trace("Name is {} : Length={} and Value={}", attrName, lengthStr, strValue);
 
         int arraySize = 0;
         if ((lengthStr == null) || (lengthStr.length() <= 0)) {
@@ -427,6 +429,7 @@ public class NewAttributeDialog extends JDialog implements ActionListener, ItemL
         StringTokenizer st = new StringTokenizer(strValue, ",");
         int count = Math.min(arraySize, st.countTokens());
         String theToken;
+        log.trace("Count of Values is {}", count);
 
         // set datatype class
         int idx = classChoice.getSelectedIndex();
@@ -461,16 +464,19 @@ public class NewAttributeDialog extends JDialog implements ActionListener, ItemL
                 tsign = Datatype.SIGN_NONE;
             }
             torder = Datatype.NATIVE;
+            JOptionPane.showMessageDialog(this, "Variable Length Integer Attributes will be created without data", getTitle(), JOptionPane.ERROR_MESSAGE);
         }
         else if (idx == 6) {;
             isVLen = true;
             tclass = Datatype.CLASS_FLOAT;
             torder = Datatype.NATIVE;
+            JOptionPane.showMessageDialog(this, "Variable Length Float Attributes will be created without data", getTitle(), JOptionPane.ERROR_MESSAGE);
         }
         else if (idx == 7) {
             isVLen = true;
             tclass = Datatype.CLASS_STRING;
         }
+        log.trace("Attribute: isVLen={} and tclass={} and torder={} and tsign={}", isVLen, tclass, torder, tsign);
 
         // set datatype size/order
         idx = sizeChoice.getSelectedIndex();
@@ -506,6 +512,7 @@ public class NewAttributeDialog extends JDialog implements ActionListener, ItemL
                     arraySize = stringLength; // array of characters
                 }
             }        
+            log.trace("Attribute CLASS_STRING: isVLen={} and tsize={} and arraySize={}", isVLen, tsize, arraySize);
         }
         else if (tclass == Datatype.CLASS_REFERENCE) {
             tsize = 1;
@@ -524,6 +531,7 @@ public class NewAttributeDialog extends JDialog implements ActionListener, ItemL
 
             value = ref;
             torder = Datatype.NATIVE;
+            log.trace("Attribute CLASS_REFERENCE: tsize={} and arraySize={}", tsize, arraySize);
         }
         else if (tclass == Datatype.CLASS_INTEGER) {
             switch(idx) {
@@ -540,12 +548,15 @@ public class NewAttributeDialog extends JDialog implements ActionListener, ItemL
             		tsize = 8;
             		break;
             }
+            log.trace("Attribute CLASS_INTEGER: tsize={}", tsize);
         }
         else if (tclass == Datatype.CLASS_FLOAT) {
             tsize = (idx + 1) * 4;
+            log.trace("Attribute CLASS_FLOAT: tsize={}", tsize);
         }
         else {
             tsize = 1 << (idx);
+            log.trace("Attribute other: tsize={}", tsize);
         }
 
         if ((tsize == 8) && !isH5 && (tclass == Datatype.CLASS_INTEGER)) {
@@ -746,6 +757,7 @@ public class NewAttributeDialog extends JDialog implements ActionListener, ItemL
             if (isVLen) {
                 basedatatype = fileFormat.createDatatype(tclass, tsize, torder, tsign);
                 tclass = Datatype.CLASS_VLEN;
+                log.trace("Attribute CLASS_VLEN");
             }
             datatype = fileFormat.createDatatype(tclass, tsize, torder, tsign, basedatatype);
         }
@@ -769,6 +781,7 @@ public class NewAttributeDialog extends JDialog implements ActionListener, ItemL
                 }
             }
             else {
+                log.trace("writeMetadata()");
                 hObject.writeMetadata(attr);
             }
         }
@@ -779,6 +792,7 @@ public class NewAttributeDialog extends JDialog implements ActionListener, ItemL
 
         newAttribute = attr;
 
+        log.trace("createAttribute finish");
         return true;
     }
 
