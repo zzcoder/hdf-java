@@ -35,6 +35,7 @@ import org.fest.swing.fixture.JTableCellFixture;
 import org.fest.swing.fixture.JTableFixture;
 import org.fest.swing.fixture.JTreeFixture;
 import org.fest.swing.fixture.JScrollPaneFixture;
+import org.fest.swing.fixture.JScrollBarFixture;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
@@ -155,25 +156,30 @@ public class TestHDFViewOpenAsDataset {
 		}
 		catch (AssertionError ae) {
 			// Sample pixel isn't in the currently visible portion of the image
+			
 
 			// Reset View
-			imagePane.horizontalScrollBar().scrollToMinimum();
-			mainFrameFixture.robot.waitForIdle();
+			if(imagePane.component().getHorizontalScrollBar().isVisible()) {
+				imagePane.horizontalScrollBar().scrollToMinimum();
+				mainFrameFixture.robot.waitForIdle();
+			}
 
-			imagePane.verticalScrollBar().scrollToMinimum();
-			mainFrameFixture.robot.waitForIdle();
+			if(imagePane.component().getVerticalScrollBar().isVisible()) {
+				imagePane.verticalScrollBar().scrollToMinimum();
+				mainFrameFixture.robot.waitForIdle();
+			}
 
 			// Calculate number of units to scroll in order to display this pixel
 			increment = imagePane.component().getHorizontalScrollBar().getUnitIncrement();
 			unitsX = x / increment;
 			unitsY = y / increment;
 
-			if(unitsX > 0) {
+			if(unitsX > 0 && imagePane.component().getHorizontalScrollBar().isVisible()) {
 				imagePane.horizontalScrollBar().scrollUnitDown(unitsX);
 				mainFrameFixture.robot.waitForIdle();
 			}
 
-			if(unitsY > 0) {
+			if(unitsY > 0 && imagePane.component().getVerticalScrollBar().isVisible()) {
 				imagePane.verticalScrollBar().scrollUnitDown(unitsY);
 				mainFrameFixture.robot.waitForIdle();
 			}
