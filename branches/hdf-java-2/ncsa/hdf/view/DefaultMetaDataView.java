@@ -1146,7 +1146,7 @@ public class DefaultMetaDataView extends JDialog implements ActionListener, Meta
         // if (col != 1) {
         // return; // can only change attribute value
         // }
-		log.trace("updateAttributeValue:start value={}[{},{}]", newValue, row, col);
+        log.trace("updateAttributeValue:start value={}[{},{}]", newValue, row, col);
 
         String attrName = (String) attrTable.getValueAt(row, 0);
         List<?> attrList = null;
