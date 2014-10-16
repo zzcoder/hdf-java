@@ -169,6 +169,7 @@ public class Attribute implements Metadata {
         value = null;
         properties = new HashMap();
         rank = 0;
+        log.trace("Attribute: {}, attrValue={}", attrName, attrValue);
 
         if (dims != null) {
             rank = dims.length;
@@ -183,6 +184,7 @@ public class Attribute implements Metadata {
         }
 
         isUnsigned = (type.getDatatypeSign() == Datatype.SIGN_NONE);
+        log.trace("Attribute: finish");
     }
 
     /**

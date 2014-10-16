@@ -1732,6 +1732,7 @@ public class H5File extends FileFormat {
         String obj_name = obj.getFullName();
         String name = attr.getName();
         int tid = -1, sid = -1, aid = -1;
+        log.trace("{} writeAttribute start", name);
 
         int objID = obj.open();
         if (objID < 0) {
@@ -1739,6 +1740,7 @@ public class H5File extends FileFormat {
         }
 
         if ((tid = attr.getType().toNative()) >= 0) {
+            log.trace("{} writeAttribute tid from native", name);
             try {
                 sid = H5.H5Screate_simple(attr.getRank(), attr.getDataDims(), null);
 
@@ -1749,9 +1751,11 @@ public class H5File extends FileFormat {
                 else {
                     aid = H5.H5Acreate(objID, name, tid, sid, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
                 }
+                log.trace("{} writeAttribute aid opened/created", name);
 
                 // update value of the attribute
                 Object attrValue = attr.getValue();
+                log.trace("{} writeAttribute getvalue", name);
                 if (attrValue != null) {
                     boolean isVlen = (H5.H5Tget_class(tid) == HDF5Constants.H5T_VLEN || H5.H5Tis_variable_str(tid));
                     if (isVlen) {
@@ -1844,6 +1848,7 @@ public class H5File extends FileFormat {
         }
 
         obj.close(objID);
+        log.trace("{} writeAttribute finish", name);
     }
 
     /***************************************************************************
