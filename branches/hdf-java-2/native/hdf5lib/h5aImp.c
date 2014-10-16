@@ -192,10 +192,572 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5AwriteVL
 
 herr_t H5AwriteVL_num (JNIEnv *env, hid_t aid, hid_t tid, jobjectArray buf)
 {
-    herr_t      status;
+    herr_t  status = -1;
+    int     n;
+    hvl_t  *wdata = NULL;
+    jint    i,j;
+    unsigned char   tmp_uchar = 0;
+    char            tmp_char = 0;
+    unsigned short  tmp_ushort = 0;
+    short           tmp_short = 0;
+    unsigned int    tmp_uint = 0;
+    int             tmp_int = 0;
+    unsigned long   tmp_ulong = 0;
+    long            tmp_long = 0;
+    unsigned long long tmp_ullong = 0;
+    long long       tmp_llong = 0;
+    float           tmp_float = 0.0;
+    double          tmp_double = 0.0;
+    long double     tmp_ldouble = 0.0;
+    H5T_class_t     tclass = H5Tget_class(tid);
+    size_t          size = H5Tget_size(tid);
+    H5T_sign_t      nsign = H5Tget_sign(tid);
+    hid_t           sid = H5Aget_space(tid);
+    hid_t           basetid = -1;
+    hid_t           basesid = -1;
+    H5T_class_t     basetclass = -1;
+    char           *temp;
+    char           *token;
 
-    h5unimplemented(env, "H5AwriteVL_num:  not implemented");
-    status = -1;
+    if(tclass == H5T_VLEN) {
+        basetid = H5Tget_super(tid);
+        size = H5Tget_size(basetid);
+        basetclass = H5Tget_class(basetid);
+        basesid = H5Aget_space(basetid);
+    }
+    n = ENVPTR->GetArrayLength(ENVPAR (jarray)buf);
+//printf("H5AwriteVL_num: n=%d of len %d\n", n, sizeof(buf));
+
+    wdata = (hvl_t *)calloc(n+1, sizeof(hvl_t));
+    if (!wdata) {
+        h5JNIFatalError(env, "H5AwriteVL_str:  cannot allocate buffer");
+        return -1;
+    }
+    for (i = 0; i < n; i++) {
+        int j;
+
+        jstring obj = (jstring) ENVPTR->GetObjectArrayElement(ENVPAR (jobjectArray) buf, i);
+        if (obj != 0) {
+            jsize length = ENVPTR->GetStringUTFLength(ENVPAR obj);
+            const char *utf8 = ENVPTR->GetStringUTFChars(ENVPAR obj, 0);
+//printf("utf8=%s\n", utf8);
+            temp = malloc(length+1);
+            strncpy(temp, utf8, length);
+            temp[length] = '\0';
+//printf("temp=%s\n", temp);
+            token = strtok(temp, ",");
+//printf("token[0]:%s\n", token);
+            j = 1;
+            while (1) {
+                token = strtok (NULL, ",");
+//printf("token[%d]:%s\n", j, token);
+                if (token == NULL)
+                    break;
+                j++;
+            }
+//printf("H5AwriteVL_num: count=%d obj_len=%d of utf8_len %d\n", j, length, sizeof(utf8));
+            wdata[i].p = malloc(j * size);
+            wdata[i].len = j + 1;
+
+            strncpy(temp, utf8, length);
+            temp[length] = '\0';
+            switch (tclass) {
+                case H5T_FLOAT:
+                    if (sizeof(float) == size) {
+//printf("float:%s\n", utf8);
+                        j = 0;
+                        tmp_float = strtof(strtok(temp, ","), NULL);
+                        ((float *)wdata[i].p)[j++] = tmp_float;
+
+                        while (1) {
+                            token = strtok (NULL, ",");
+                            if (token == NULL)
+                                break;
+                            if (token[0] == ' ')
+                                token++;
+                            tmp_float = strtof(token, NULL);
+                            ((float *)wdata[i].p)[j++] = tmp_float;
+                        }
+                    }
+                    else if (sizeof(double) == size) {
+//printf("double:%s\n", utf8);
+                        j = 0;
+                        tmp_double = strtod(strtok(temp, ","), NULL);
+                        ((double *)wdata[i].p)[j++] = tmp_double;
+
+                        while (1) {
+                            token = strtok (NULL, ",");
+                            if (token == NULL)
+                                break;
+                            if (token[0] == ' ')
+                                token++;
+                            tmp_double = strtod(token, NULL);
+                            ((double *)wdata[i].p)[j++] = tmp_double;
+                        }
+                    }
+#if H5_SIZEOF_LONG_DOUBLE !=0
+                    else if (sizeof(long double) == size) {
+//printf("longdouble:%s\n", utf8);
+                        j = 0;
+                        tmp_ldouble = strtold(strtok(temp, ","), NULL);
+                        ((long double *)wdata[i].p)[j++] = tmp_ldouble;
+
+                        while (1) {
+                            token = strtok (NULL, ",");
+                            if (token == NULL)
+                                break;
+                            if (token[0] == ' ')
+                                token++;
+                            tmp_ldouble = strtold(token, NULL);
+                            ((long double *)wdata[i].p)[j++] = tmp_ldouble;
+                        }
+                   }
+#endif
+                    break;
+                case H5T_INTEGER:
+                    if (sizeof(char) == size) {
+                        if(H5T_SGN_NONE == nsign) {
+//printf("uchar:%s\n", utf8);
+                            j = 0;
+                            tmp_uchar = (unsigned char)strtoul(strtok(temp, ","), NULL, 10);
+                            ((unsigned char *)wdata[i].p)[j++] = tmp_uchar;
+
+                            while (1) {
+                                token = strtok (NULL, ",");
+                                if (token == NULL)
+                                    break;
+                                if (token[0] == ' ')
+                                    token++;
+                                tmp_uchar = (unsigned char)strtoul(token, NULL, 10);
+                                ((unsigned char *)wdata[i].p)[j++] = tmp_uchar;
+                            }
+                        }
+                        else {
+//printf("char:%s\n", utf8);
+                            j = 0;
+                            tmp_char = (char)strtoul(strtok(temp, ","), NULL, 10);
+                            ((char *)wdata[i].p)[j++] = tmp_char;
+
+                            while (1) {
+                                token = strtok (NULL, ",");
+                                if (token == NULL)
+                                    break;
+                                if (token[0] == ' ')
+                                    token++;
+                                tmp_char = (char)strtoul(token, NULL, 10);
+                                ((char *)wdata[i].p)[j++] = tmp_char;
+                            }
+                        }
+                    }
+                    else if (sizeof(int) == size) {
+                        if(H5T_SGN_NONE == nsign) {
+//printf("uint:%s\n", utf8);
+                            j = 0;
+                            tmp_uint = (unsigned int)strtoul(strtok(temp, ","), NULL, 10);
+                            ((unsigned int *)wdata[i].p)[j++] = tmp_uint;
+
+                            while (1) {
+                                token = strtok (NULL, ",");
+                                if (token == NULL)
+                                    break;
+                                if (token[0] == ' ')
+                                    token++;
+                                tmp_uint = (unsigned int)strtoul(token, NULL, 10);
+                                ((unsigned int *)wdata[i].p)[j++] = tmp_uint;
+                            }
+                        }
+                        else {
+//printf("int:%s\n", utf8);
+                            j = 0;
+                            tmp_int = (int)strtoul(strtok(temp, ","), NULL, 10);
+                            ((int *)wdata[i].p)[j++] = tmp_int;
+
+                            while (1) {
+                                token = strtok (NULL, ",");
+                                if (token == NULL)
+                                    break;
+                                if (token[0] == ' ')
+                                    token++;
+                                tmp_int = (int)strtoul(token, NULL, 10);
+                                ((int *)wdata[i].p)[j++] = tmp_int;
+                            }
+                        }
+                    }
+                    else if (sizeof(short) == size) {
+                        if(H5T_SGN_NONE == nsign) {
+//printf("ushort:%s\n", utf8);
+                            j = 0;
+                            tmp_ushort = (unsigned short)strtoul(strtok(temp, ","), NULL, 10);
+                            ((unsigned short *)wdata[i].p)[j++] = tmp_ushort;
+
+                            while (1) {
+                                token = strtok (NULL, ",");
+                                if (token == NULL)
+                                    break;
+                                if (token[0] == ' ')
+                                    token++;
+                                tmp_ushort = (unsigned short)strtoul(token, NULL, 10);
+                                ((unsigned short *)wdata[i].p)[j++] = tmp_ushort;
+                            }
+                        }
+                        else {
+//printf("short:%s\n", utf8);
+                            j = 0;
+                            tmp_short = (short)strtoul(strtok(temp, ","), NULL, 10);
+                            ((short *)wdata[i].p)[j++] = tmp_short;
+
+                            while (1) {
+                                token = strtok (NULL, ",");
+                                if (token == NULL)
+                                    break;
+                                if (token[0] == ' ')
+                                    token++;
+                                tmp_short = (short)strtoul(token, NULL, 10);
+                                ((short *)wdata[i].p)[j++] = tmp_short;
+                            }
+                        }
+                    }
+                    else if (sizeof(long) == size) {
+                        if(H5T_SGN_NONE == nsign) {
+//printf("ulong:%s\n", utf8);
+                            j = 0;
+                            tmp_ulong = strtoul(strtok(temp, ","), NULL, 10);
+                            ((unsigned long *)wdata[i].p)[j++] = tmp_ulong;
+
+                            while (1) {
+                                token = strtok (NULL, ",");
+                                if (token == NULL)
+                                    break;
+                                if (token[0] == ' ')
+                                    token++;
+                                tmp_ulong = strtoul(token, NULL, 10);
+                                ((unsigned long *)wdata[i].p)[j++] = tmp_ulong;
+                            }
+                        }
+                        else {
+//printf("long:%s\n", utf8);
+                            j = 0;
+                            tmp_long = strtol(strtok(temp, ","), NULL, 10);
+                            ((long *)wdata[i].p)[j++] = tmp_long;
+
+                            while (1) {
+                                token = strtok (NULL, ",");
+                                if (token == NULL)
+                                    break;
+                                if (token[0] == ' ')
+                                    token++;
+                                tmp_long = strtol(token, NULL, 10);
+                                ((long *)wdata[i].p)[j++] = tmp_long;
+                            }
+                        }
+                    }
+                    else if (sizeof(long long) == size) {
+                        if(H5T_SGN_NONE == nsign) {
+//printf("ulonglong:%s\n", utf8);
+                            j = 0;
+                            tmp_ullong = strtoull(strtok(temp, ","), NULL, 10);
+                            ((unsigned long long *)wdata[i].p)[j++] = tmp_ullong;
+
+                            while (1) {
+                                token = strtok (NULL, ",");
+                                if (token == NULL)
+                                    break;
+                                if (token[0] == ' ')
+                                    token++;
+                                tmp_ullong = strtoull(token, NULL, 10);
+                                ((unsigned long long *)wdata[i].p)[j++] = tmp_ullong;
+                            }
+                        }
+                        else {
+//printf("longlong:%s\n", utf8);
+                            j = 0;
+                            tmp_llong = strtoll(strtok(temp, ","), NULL, 10);
+                            ((long long *)wdata[i].p)[j++] = tmp_llong;
+
+                            while (1) {
+                                token = strtok (NULL, ",");
+                                if (token == NULL)
+                                    break;
+                                if (token[0] == ' ')
+                                    token++;
+                                tmp_llong = strtoll(token, NULL, 10);
+                                ((long long *)wdata[i].p)[j++] = tmp_llong;
+                            }
+                       }
+                    }
+                    break;
+                case H5T_STRING:
+                    {
+//printf("string:%s\n", utf8);
+                    }
+                    break;
+                case H5T_COMPOUND:
+                    {
+//printf("compound:%s\n", utf8);
+                    }
+                    break;
+                case H5T_ENUM:
+                    {
+//printf("enum:%s\n", utf8);
+                    }
+                    break;
+                case H5T_REFERENCE:
+//printf("reference:%s\n", utf8);
+                    break;
+                case H5T_ARRAY:
+                    {
+//printf("array:%s\n", utf8);
+                    }
+                    break;
+                case H5T_VLEN:
+                    {
+//printf("vlen:type size=%d, %s\n", size, utf8);
+                        switch (basetclass) {
+                        case H5T_FLOAT:
+                            if (sizeof(float) == size) {
+//printf("vlfloat:%s\n", utf8);
+                                j = 0;
+                                tmp_float = strtof(strtok(temp, ","), NULL);
+                                ((float *)wdata[i].p)[j++] = tmp_float;
+
+                                while (1) {
+                                    token = strtok (NULL, ",");
+                                    if (token == NULL)
+                                        break;
+                                    if (token[0] == ' ')
+                                        token++;
+                                    tmp_float = strtof(token, NULL);
+                                    ((float *)wdata[i].p)[j++] = tmp_float;
+                                }
+                            }
+                            else if (sizeof(double) == size) {
+//printf("vldouble:%s\n", utf8);
+                                j = 0;
+                                tmp_double = strtod(strtok(temp, ","), NULL);
+                                ((double *)wdata[i].p)[j++] = tmp_double;
+
+                                while (1) {
+                                    token = strtok (NULL, ",");
+                                    if (token == NULL)
+                                        break;
+                                    if (token[0] == ' ')
+                                        token++;
+                                    tmp_double = strtod(token, NULL);
+                                    ((double *)wdata[i].p)[j++] = tmp_double;
+                                }
+                            }
+        #if H5_SIZEOF_LONG_DOUBLE !=0
+                            else if (sizeof(long double) == size) {
+//printf("vllongdouble:%s\n", utf8);
+                                j = 0;
+                                tmp_ldouble = strtold(strtok(temp, ","), NULL);
+                                ((long double *)wdata[i].p)[j++] = tmp_ldouble;
+
+                                while (1) {
+                                    token = strtok (NULL, ",");
+                                    if (token == NULL)
+                                        break;
+                                    if (token[0] == ' ')
+                                        token++;
+                                    tmp_ldouble = strtold(token, NULL);
+                                    ((long double *)wdata[i].p)[j++] = tmp_ldouble;
+                                }
+                           }
+        #endif
+                            break;
+                        case H5T_INTEGER:
+                            if (sizeof(char) == size) {
+                                if(H5T_SGN_NONE == nsign) {
+//printf("vluchar:%s\n", utf8);
+                                    j = 0;
+                                    tmp_uchar = (unsigned char)strtoul(strtok(temp, ","), NULL, 10);
+                                    ((unsigned char *)wdata[i].p)[j++] = tmp_uchar;
+
+                                    while (1) {
+                                        token = strtok (NULL, ",");
+                                        if (token == NULL)
+                                            break;
+                                        if (token[0] == ' ')
+                                            token++;
+                                        tmp_uchar = (unsigned char)strtoul(token, NULL, 10);
+                                        ((unsigned char *)wdata[i].p)[j++] = tmp_uchar;
+                                    }
+                                }
+                                else {
+//printf("vlchar:%s\n", utf8);
+                                    j = 0;
+                                    tmp_char = (char)strtoul(strtok(temp, ","), NULL, 10);
+                                    ((char *)wdata[i].p)[j++] = tmp_char;
+
+                                    while (1) {
+                                        token = strtok (NULL, ",");
+                                        if (token == NULL)
+                                            break;
+                                        if (token[0] == ' ')
+                                            token++;
+                                        tmp_char = (char)strtoul(token, NULL, 10);
+                                        ((char *)wdata[i].p)[j++] = tmp_char;
+                                    }
+                                }
+                            }
+                            else if (sizeof(int) == size) {
+                                if(H5T_SGN_NONE == nsign) {
+//printf("vluint:%s\n", utf8);
+                                    j = 0;
+                                    tmp_uint = (unsigned int)strtoul(strtok(temp, ","), NULL, 10);
+                                    ((unsigned int *)wdata[i].p)[j++] = tmp_uint;
+
+                                    while (1) {
+                                        token = strtok (NULL, ",");
+//printf("token[%d]:%s\n", j, token);
+                                        if (token == NULL)
+                                            break;
+                                        if (token[0] == ' ')
+                                            token++;
+                                        tmp_uint = (unsigned int)strtoul(token, NULL, 10);
+                                        ((unsigned int *)wdata[i].p)[j++] = tmp_uint;
+                                    }
+                                }
+                                else {
+//printf("vlint:%s\n", utf8);
+                                    j = 0;
+                                    tmp_int = (int)strtoul(strtok(temp, ","), NULL, 10);
+                                    ((int *)wdata[i].p)[j++] = tmp_int;
+
+                                    while (1) {
+                                        token = strtok (NULL, ",");
+                                        if (token == NULL)
+                                            break;
+                                        if (token[0] == ' ')
+                                            token++;
+                                        tmp_int = (int)strtoul(token, NULL, 10);
+                                        ((int *)wdata[i].p)[j++] = tmp_int;
+                                    }
+                                }
+                            }
+                            else if (sizeof(short) == size) {
+                                if(H5T_SGN_NONE == nsign) {
+//printf("vlushort:%s\n", utf8);
+                                    j = 0;
+                                    tmp_ushort = (unsigned short)strtoul(strtok(temp, ","), NULL, 10);
+                                    ((unsigned short *)wdata[i].p)[j++] = tmp_ushort;
+
+                                    while (1) {
+                                        token = strtok (NULL, ",");
+                                        if (token == NULL)
+                                            break;
+                                        tmp_ushort = (unsigned short)strtoul(token, NULL, 10);
+                                        ((unsigned short *)wdata[i].p)[j++] = tmp_ushort;
+                                    }
+                                }
+                                else {
+//printf("vlshort:%s\n", utf8);
+                                    j = 0;
+                                    tmp_short = (short)strtoul(strtok(temp, ","), NULL, 10);
+                                    ((short *)wdata[i].p)[j++] = tmp_short;
+
+                                    while (1) {
+                                        token = strtok (NULL, ",");
+                                        if (token == NULL)
+                                            break;
+                                        tmp_short = (short)strtoul(token, NULL, 10);
+                                        ((short *)wdata[i].p)[j++] = tmp_short;
+                                    }
+                                }
+                            }
+                            else if (sizeof(long) == size) {
+                                if(H5T_SGN_NONE == nsign) {
+//printf("vlulong:%s\n", utf8);
+                                    j = 0;
+                                    tmp_ulong = strtoul(strtok(temp, ","), NULL, 10);
+                                    ((unsigned long *)wdata[i].p)[j++] = tmp_ulong;
+
+                                    while (1) {
+                                        token = strtok (NULL, ",");
+                                        if (token == NULL)
+                                            break;
+                                        if (token[0] == ' ')
+                                            token++;
+                                        tmp_ulong = strtoul(token, NULL, 10);
+                                        ((unsigned long *)wdata[i].p)[j++] = tmp_ulong;
+                                    }
+                                }
+                                else {
+//printf("vllong:%s\n", utf8);
+                                    j = 0;
+                                    tmp_long = strtol(strtok(temp, ","), NULL, 10);
+                                    ((long *)wdata[i].p)[j++] = tmp_long;
+
+                                    while (1) {
+                                        token = strtok (NULL, ",");
+                                        if (token == NULL)
+                                            break;
+                                        if (token[0] == ' ')
+                                            token++;
+                                        tmp_long = strtol(token, NULL, 10);
+                                        ((long *)wdata[i].p)[j++] = tmp_long;
+                                    }
+                                }
+                            }
+                            else if (sizeof(long long) == size) {
+                                if(H5T_SGN_NONE == nsign) {
+//printf("vlulonglong:%s\n", utf8);
+                                    j = 0;
+                                    tmp_ullong = strtoull(strtok(temp, ","), NULL, 10);
+                                    ((unsigned long long *)wdata[i].p)[j++] = tmp_ullong;
+
+                                    while (1) {
+                                        token = strtok (NULL, ",");
+                                        if (token == NULL)
+                                            break;
+                                        if (token[0] == ' ')
+                                            token++;
+                                        tmp_ullong = strtoull(token, NULL, 10);
+                                        ((unsigned long long *)wdata[i].p)[j++] = tmp_ullong;
+                                    }
+                                }
+                                else {
+//printf("vllonglong:%s\n", utf8);
+                                    j = 0;
+                                    tmp_llong = strtoll(strtok(temp, ","), NULL, 10);
+                                    ((long long *)wdata[i].p)[j++] = tmp_llong;
+
+                                    while (1) {
+                                        token = strtok (NULL, ",");
+                                        if (token == NULL)
+                                            break;
+                                        if (token[0] == ' ')
+                                            token++;
+                                        tmp_llong = strtoll(token, NULL, 10);
+                                        ((long long *)wdata[i].p)[j++] = tmp_llong;
+                                    }
+                               }
+                            }
+                            break;
+                        }
+                    }
+                    break;
+            } /* end switch */
+
+        }
+    }
+
+
+    status = H5Awrite((hid_t)aid, (hid_t)tid, wdata);
+
+    // now free memory
+    for (i = 0; i < n; i++) {
+       if(wdata[i].p) {
+           free(wdata[i].p);
+       }
+    }
+    H5Dvlen_reclaim(tid, sid, H5P_DEFAULT, wdata);
+    free(wdata);
+    H5Sclose(sid);
+
+    if (status < 0) {
+        h5libraryError(env);
+    }
 
     return status;
 }
