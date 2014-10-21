@@ -96,59 +96,63 @@ public class TestHDFViewImageConversion {
     }
 
     private void testSamplePixel(int x, int y, String requiredValue) {
-        JScrollPaneFixture imagePane = mainFrameFixture.scrollPane("imagecontent");
-        JViewport view = imagePane.component().getViewport();
-        int increment;
-        int unitsX;
-        int unitsY;
-        int remainderX;
-        int remainderY;
+		JScrollPaneFixture imagePane = mainFrameFixture.scrollPane("imagecontent");
+		JViewport view = imagePane.component().getViewport();
+		int increment;
+		int unitsX;
+		int unitsY;
+		int remainderX;
+		int remainderY;
 
-        // Make sure Show Values is selected
-        if (!mainFrameFixture.menuItemWithPath("Image", "Show Value").component().isSelected()) {
-            mainFrameFixture.menuItemWithPath("Image", "Show Value").click();
-            mainFrameFixture.robot.waitForIdle();
-        }
+		// Make sure Show Values is selected
+		if(!mainFrameFixture.menuItemWithPath("Image", "Show Value").component().isSelected()) {
+			mainFrameFixture.menuItemWithPath("Image", "Show Value").click();
+			mainFrameFixture.robot.waitForIdle();
+		}
 
-        try {
-            mainFrameFixture.robot.moveMouse(view, x, y);
-            mainFrameFixture.robot.waitForIdle();
-            mainFrameFixture.textBox("valuefield").requireText(requiredValue);
-        }
-        catch (AssertionError ae) {
-            // Sample pixel isn't in the currently visible portion of the image
+		try {
+			mainFrameFixture.robot.moveMouse(view, x, y);
+			mainFrameFixture.robot.waitForIdle();
+			mainFrameFixture.textBox("valuefield").requireText(requiredValue);
+		}
+		catch (AssertionError ae) {
+			// Sample pixel isn't in the currently visible portion of the image
 
-            // Reset View
-            imagePane.horizontalScrollBar().scrollToMinimum();
-            mainFrameFixture.robot.waitForIdle();
+			// Reset View
+			if(imagePane.component().getHorizontalScrollBar().isVisible()) {
+				imagePane.horizontalScrollBar().scrollToMinimum();
+				mainFrameFixture.robot.waitForIdle();
+			}
 
-            imagePane.verticalScrollBar().scrollToMinimum();
-            mainFrameFixture.robot.waitForIdle();
+			if(imagePane.component().getVerticalScrollBar().isVisible()) {
+				imagePane.verticalScrollBar().scrollToMinimum();
+				mainFrameFixture.robot.waitForIdle();
+			}
 
-            // Calculate number of units to scroll in order to display this pixel
-            increment = imagePane.component().getHorizontalScrollBar().getUnitIncrement();
-            unitsX = x / increment;
-            unitsY = y / increment;
+			// Calculate number of units to scroll in order to display this pixel
+			increment = imagePane.component().getHorizontalScrollBar().getUnitIncrement();
+			unitsX = x / increment;
+			unitsY = y / increment;
 
-			if(unitsX > 0) {
+			if(unitsX > 0 && imagePane.component().getHorizontalScrollBar().isVisible()) {
 				imagePane.horizontalScrollBar().scrollUnitDown(unitsX);
 				mainFrameFixture.robot.waitForIdle();
 			}
 
-			if(unitsY > 0) {
+			if(unitsY > 0 && imagePane.component().getVerticalScrollBar().isVisible()) {
 				imagePane.verticalScrollBar().scrollUnitDown(unitsY);
 				mainFrameFixture.robot.waitForIdle();
 			}
 
-            // Calculate extra distance to be moved in each direction to find this pixel
-            remainderX = (x) - (view.getViewPosition().x);
-            remainderY = (y) - (view.getViewPosition().y);
+			// Calculate extra distance to be moved in each direction to find this pixel
+			remainderX = (x) - (view.getViewPosition().x);
+			remainderY = (y) - (view.getViewPosition().y);
 
-            mainFrameFixture.robot.moveMouse(view, remainderX, remainderY);
-            mainFrameFixture.robot.waitForIdle();
-            mainFrameFixture.textBox("valuefield").requireText(requiredValue);
-        }
-    }
+			mainFrameFixture.robot.moveMouse(view, remainderX, remainderY);	
+			mainFrameFixture.robot.waitForIdle();
+			mainFrameFixture.textBox("valuefield").requireText(requiredValue);
+		}
+	}
 
     private static void clearRemovePropertyFile() {
         // the local property file name
