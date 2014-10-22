@@ -843,8 +843,7 @@ public class H5CompoundDS extends CompoundDS {
                                 }
                                 log.trace("H5CompoundDS write: {} Member[{}] convertToUnsignedC", member_name, i);
                             }
-                            else if (!isVL && (member_class == HDF5Constants.H5T_STRING)
-                                    && (Array.get(member_data, 0) instanceof String)) {
+                            else if ((member_class == HDF5Constants.H5T_STRING) && (Array.get(member_data, 0) instanceof String)) {
                                 tmpData = stringToByte((String[]) member_data, member_size);
                                 log.trace("H5CompoundDS write: {} Member[{}] stringToByte", member_name, i);
                             }

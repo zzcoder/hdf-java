@@ -1773,7 +1773,7 @@ public class H5File extends FileFormat {
                                 log.debug("{} writeAttribute H5Tclose failure: ", name, ex);
                             }
                             log.trace("{} writeAttribute H5.H5AwriteVL", name);
-                            if(attrValue instanceof String) {
+                            if ((attrValue instanceof String) || (attr.getDataDims().length == 1)) {
                                 H5.H5AwriteVL(aid, tid, (String[]) attrValue);
                             }
                             else {

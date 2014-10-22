@@ -731,6 +731,7 @@ public class H5ScalarDS extends ScalarDS {
         }
 
         if (isVLEN && !isText) {
+            log.trace("H5ScalarDS write: VL data={}", buf);
             throw (new HDF5Exception("Writing non-string variable-length data is not supported"));
         }
         else if (isRegRef) {
