@@ -464,13 +464,13 @@ public class NewAttributeDialog extends JDialog implements ActionListener, ItemL
                 tsign = Datatype.SIGN_NONE;
             }
             torder = Datatype.NATIVE;
-            JOptionPane.showMessageDialog(this, "Variable Length Integer Attributes will be created without data", getTitle(), JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Multi-dimensional Variable Length Integer Attributes will be created without data", getTitle(), JOptionPane.WARNING_MESSAGE);
         }
         else if (idx == 6) {;
             isVLen = true;
             tclass = Datatype.CLASS_FLOAT;
             torder = Datatype.NATIVE;
-            JOptionPane.showMessageDialog(this, "Variable Length Float Attributes will be created without data", getTitle(), JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Multi-dimensional Variable Length Float Attributes will be created without data", getTitle(), JOptionPane.WARNING_MESSAGE);
         }
         else if (idx == 7) {
             isVLen = true;
@@ -480,11 +480,35 @@ public class NewAttributeDialog extends JDialog implements ActionListener, ItemL
 
         // set datatype size/order
         idx = sizeChoice.getSelectedIndex();
-        if (tclass == Datatype.CLASS_STRING) {
-            if (isVLen) {
-                tsize = -1;
+        if (isVLen) {
+            tsize = -1;
+            log.trace("Attribute isVLen={} and tsize={}", isVLen, tsize);
+            String[] strArray = { strValue };
+            value = strArray;
+            if (tclass == Datatype.CLASS_INTEGER) {
+                switch(idx) {
+                        case 0:
+                                tsize = 1;
+                                break;
+                        case 1:
+                                tsize = 2;
+                                break;
+                        case 2:
+                                tsize = 4;
+                                break;
+                        case 3:
+                                tsize = 8;
+                                break;
+                }
+                log.trace("Attribute VL-CLASS_INTEGER: tsize={}", tsize);
             }
-            else {
+            else if (tclass == Datatype.CLASS_FLOAT) {
+                tsize = (idx + 1) * 4;
+                log.trace("Attribute VL-CLASS_FLOAT: tsize={}", tsize);
+            }
+        }
+        else {
+            if (tclass == Datatype.CLASS_STRING) {
                 int stringLength = 0;
                 try {
                     stringLength = Integer.parseInt(lengthField.getText());
@@ -511,245 +535,245 @@ public class NewAttributeDialog extends JDialog implements ActionListener, ItemL
                 else {
                     arraySize = stringLength; // array of characters
                 }
-            }        
-            log.trace("Attribute CLASS_STRING: isVLen={} and tsize={} and arraySize={}", isVLen, tsize, arraySize);
-        }
-        else if (tclass == Datatype.CLASS_REFERENCE) {
-            tsize = 1;
-            arraySize = st.countTokens();
-            long[] ref = new long[arraySize];
-            for (int j = 0; j < arraySize; j++) {
-                theToken = st.nextToken().trim();
-                try {
-                    ref[j] = Long.parseLong(theToken);
-                }
-                catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(), JOptionPane.ERROR_MESSAGE);
-                    return false;
-                }
+                log.trace("Attribute CLASS_STRING: isVLen={} and tsize={} and arraySize={}", isVLen, tsize, arraySize);
             }
-
-            value = ref;
-            torder = Datatype.NATIVE;
-            log.trace("Attribute CLASS_REFERENCE: tsize={} and arraySize={}", tsize, arraySize);
-        }
-        else if (tclass == Datatype.CLASS_INTEGER) {
-            switch(idx) {
-            	case 0:
-            		tsize = 1;
-            		break;
-            	case 1:
-            		tsize = 2;
-            		break;
-            	case 2:
-            		tsize = 4;
-            		break;
-            	case 3:
-            		tsize = 8;
-            		break;
+            else if (tclass == Datatype.CLASS_REFERENCE) {
+                tsize = 1;
+                arraySize = st.countTokens();
+                long[] ref = new long[arraySize];
+                for (int j = 0; j < arraySize; j++) {
+                    theToken = st.nextToken().trim();
+                    try {
+                        ref[j] = Long.parseLong(theToken);
+                    }
+                    catch (NumberFormatException ex) {
+                        JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(), JOptionPane.ERROR_MESSAGE);
+                        return false;
+                    }
+                }
+    
+                value = ref;
+                torder = Datatype.NATIVE;
+                log.trace("Attribute CLASS_REFERENCE: tsize={} and arraySize={}", tsize, arraySize);
             }
-            log.trace("Attribute CLASS_INTEGER: tsize={}", tsize);
-        }
-        else if (tclass == Datatype.CLASS_FLOAT) {
-            tsize = (idx + 1) * 4;
-            log.trace("Attribute CLASS_FLOAT: tsize={}", tsize);
-        }
-        else {
-            tsize = 1 << (idx);
-            log.trace("Attribute other: tsize={}", tsize);
-        }
-
-        if ((tsize == 8) && !isH5 && (tclass == Datatype.CLASS_INTEGER)) {
-            JOptionPane.showMessageDialog(this,
-                    "HDF4 does not support 64-bit integer.", 
-                    getTitle(),
-                    JOptionPane.ERROR_MESSAGE);
-            return false;
-        }
-
-        if (tclass == Datatype.CLASS_INTEGER) {
-            if (tsign == Datatype.SIGN_NONE) {
-                if (tsize == 1) {
-                    byte[] b = new byte[arraySize];
-                    short sv = 0;
-                    for (int j = 0; j < count; j++) {
-                        theToken = st.nextToken().trim();
-                        try {
-                            sv = Short.parseShort(theToken);
-                        }
-                        catch (NumberFormatException ex) {
-                            JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(), JOptionPane.ERROR_MESSAGE);
-                            return false;
-                        }
-                        if (sv < 0) {
-                            sv = 0;
-                        }
-                        else if (sv > 255) {
-                            sv = 255;
-                        }
-                        b[j] = (byte) sv;
-                    }
-                    value = b;
+            else if (tclass == Datatype.CLASS_INTEGER) {
+                switch(idx) {
+                	case 0:
+                		tsize = 1;
+                		break;
+                	case 1:
+                		tsize = 2;
+                		break;
+                	case 2:
+                		tsize = 4;
+                		break;
+                	case 3:
+                		tsize = 8;
+                		break;
                 }
-                else if (tsize == 2) {
-                    short[] s = new short[arraySize];
-                    int iv = 0;
-                    for (int j = 0; j < count; j++) {
-                        theToken = st.nextToken().trim();
-                        try {
-                            iv = Integer.parseInt(theToken);
-                        }
-                        catch (NumberFormatException ex) {
-                            JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(), JOptionPane.ERROR_MESSAGE);
-                            return false;
-                        }
-                        if (iv < 0) {
-                            iv = 0;
-                        }
-                        else if (iv > 65535) {
-                            iv = 65535;
-                        }
-                        s[j] = (short) iv;
-                    }
-                    value = s;
-                }
-                else if (tsize == 4) {
-                    int[] i = new int[arraySize];
-                    long lv = 0;
-                    for (int j = 0; j < count; j++) {
-                        theToken = st.nextToken().trim();
-                        try {
-                            lv = Long.parseLong(theToken);
-                        }
-                        catch (NumberFormatException ex) {
-                            JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(), JOptionPane.ERROR_MESSAGE);
-                            return false;
-                        }
-                        if (lv < 0) {
-                            lv = 0;
-                        }
-                        if (lv > 4294967295L) {
-                            lv = 4294967295L;
-                        }
-                        i[j] = (int) lv;
-                    }
-                    value = i;
-                }
-                else if (tsize == 8) {
-                    long[] i = new long[arraySize];
-                    BigInteger lv = BigInteger.valueOf(0);
-                    for (int j = 0; j < count; j++) {
-                        theToken = st.nextToken().trim();
-                        try {
-                            lv = new BigInteger(theToken);
-                        }
-                        catch (NumberFormatException ex) {
-                            JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(), JOptionPane.ERROR_MESSAGE);
-                            return false;
-                        }
-                        i[j] = (long) lv.longValue();
-                    }
-                    value = i;
-                }
+                log.trace("Attribute CLASS_INTEGER: tsize={}", tsize);
+            }
+            else if (tclass == Datatype.CLASS_FLOAT) {
+                tsize = (idx + 1) * 4;
+                log.trace("Attribute CLASS_FLOAT: tsize={}", tsize);
             }
             else {
-                if (tsize == 1) {
-                    byte[] b = new byte[arraySize];
-                    for (int j = 0; j < count; j++) {
-                        theToken = st.nextToken().trim();
-                        try {
-                            b[j] = Byte.parseByte(theToken);
-                        }
-                        catch (NumberFormatException ex) {
-                            JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(), JOptionPane.ERROR_MESSAGE);
-                            return false;
-                        }
-                    }
-                    value = b;
-                }
-                else if (tsize == 2) {
-                    short[] s = new short[arraySize];
+                tsize = 1 << (idx);
+                log.trace("Attribute other: tsize={}", tsize);
+            }
+    
+            if ((tsize == 8) && !isH5 && (tclass == Datatype.CLASS_INTEGER)) {
+                JOptionPane.showMessageDialog(this,
+                        "HDF4 does not support 64-bit integer.", 
+                        getTitle(),
+                        JOptionPane.ERROR_MESSAGE);
+                return false;
+            }
 
-                    for (int j = 0; j < count; j++) {
-                        theToken = st.nextToken().trim();
-                        try {
-                            s[j] = Short.parseShort(theToken);
+            if (tclass == Datatype.CLASS_INTEGER) {
+                if (tsign == Datatype.SIGN_NONE) {
+                    if (tsize == 1) {
+                        byte[] b = new byte[arraySize];
+                        short sv = 0;
+                        for (int j = 0; j < count; j++) {
+                            theToken = st.nextToken().trim();
+                            try {
+                                sv = Short.parseShort(theToken);
+                            }
+                            catch (NumberFormatException ex) {
+                                JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(), JOptionPane.ERROR_MESSAGE);
+                                return false;
+                            }
+                            if (sv < 0) {
+                                sv = 0;
+                            }
+                            else if (sv > 255) {
+                                sv = 255;
+                            }
+                            b[j] = (byte) sv;
                         }
-                        catch (NumberFormatException ex) {
-                            JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(), JOptionPane.ERROR_MESSAGE);
-                            return false;
-                        }
+                        value = b;
                     }
-                    value = s;
+                    else if (tsize == 2) {
+                        short[] s = new short[arraySize];
+                        int iv = 0;
+                        for (int j = 0; j < count; j++) {
+                            theToken = st.nextToken().trim();
+                            try {
+                                iv = Integer.parseInt(theToken);
+                            }
+                            catch (NumberFormatException ex) {
+                                JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(), JOptionPane.ERROR_MESSAGE);
+                                return false;
+                            }
+                            if (iv < 0) {
+                                iv = 0;
+                            }
+                            else if (iv > 65535) {
+                                iv = 65535;
+                            }
+                            s[j] = (short) iv;
+                        }
+                        value = s;
+                    }
+                    else if (tsize == 4) {
+                        int[] i = new int[arraySize];
+                        long lv = 0;
+                        for (int j = 0; j < count; j++) {
+                            theToken = st.nextToken().trim();
+                            try {
+                                lv = Long.parseLong(theToken);
+                            }
+                            catch (NumberFormatException ex) {
+                                JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(), JOptionPane.ERROR_MESSAGE);
+                                return false;
+                            }
+                            if (lv < 0) {
+                                lv = 0;
+                            }
+                            if (lv > 4294967295L) {
+                                lv = 4294967295L;
+                            }
+                            i[j] = (int) lv;
+                        }
+                        value = i;
+                    }
+                    else if (tsize == 8) {
+                        long[] i = new long[arraySize];
+                        BigInteger lv = BigInteger.valueOf(0);
+                        for (int j = 0; j < count; j++) {
+                            theToken = st.nextToken().trim();
+                            try {
+                                lv = new BigInteger(theToken);
+                            }
+                            catch (NumberFormatException ex) {
+                                JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(), JOptionPane.ERROR_MESSAGE);
+                                return false;
+                            }
+                            i[j] = (long) lv.longValue();
+                        }
+                        value = i;
+                    }
                 }
-                else if (tsize == 4) {
-                    int[] i = new int[arraySize];
-
+                else {
+                    if (tsize == 1) {
+                        byte[] b = new byte[arraySize];
+                        for (int j = 0; j < count; j++) {
+                            theToken = st.nextToken().trim();
+                            try {
+                                b[j] = Byte.parseByte(theToken);
+                            }
+                            catch (NumberFormatException ex) {
+                                JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(), JOptionPane.ERROR_MESSAGE);
+                                return false;
+                            }
+                        }
+                        value = b;
+                    }
+                    else if (tsize == 2) {
+                        short[] s = new short[arraySize];
+    
+                        for (int j = 0; j < count; j++) {
+                            theToken = st.nextToken().trim();
+                            try {
+                                s[j] = Short.parseShort(theToken);
+                            }
+                            catch (NumberFormatException ex) {
+                                JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(), JOptionPane.ERROR_MESSAGE);
+                                return false;
+                            }
+                        }
+                        value = s;
+                    }
+                    else if (tsize == 4) {
+                        int[] i = new int[arraySize];
+    
+                        for (int j = 0; j < count; j++) {
+                            theToken = st.nextToken().trim();
+                            try {
+                                i[j] = Integer.parseInt(theToken);
+                            }
+                            catch (NumberFormatException ex) {
+                                JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(), JOptionPane.ERROR_MESSAGE);
+                                return false;
+                            }
+                        }
+                        value = i;
+                    }
+                    else if (tsize == 8) {
+                        long[] l = new long[arraySize];
+                        for (int j = 0; j < count; j++) {
+                            theToken = st.nextToken().trim();
+                            try {
+                                l[j] = Long.parseLong(theToken);
+                            }
+                            catch (NumberFormatException ex) {
+                                JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(), JOptionPane.ERROR_MESSAGE);
+                                return false;
+                            }
+                        }
+                        value = l;
+                    }
+                }
+            }
+    
+            if (tclass == Datatype.CLASS_FLOAT) {
+                if (tsize == 4) {
+                    float[] f = new float[arraySize];
                     for (int j = 0; j < count; j++) {
                         theToken = st.nextToken().trim();
                         try {
-                            i[j] = Integer.parseInt(theToken);
+                            f[j] = Float.parseFloat(theToken);
                         }
                         catch (NumberFormatException ex) {
                             JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(), JOptionPane.ERROR_MESSAGE);
                             return false;
                         }
+                        if (Float.isInfinite(f[j]) || Float.isNaN(f[j])) {
+                            f[j] = 0;
+                        }
                     }
-                    value = i;
+                    value = f;
                 }
                 else if (tsize == 8) {
-                    long[] l = new long[arraySize];
+                    double[] d = new double[arraySize];
                     for (int j = 0; j < count; j++) {
                         theToken = st.nextToken().trim();
                         try {
-                            l[j] = Long.parseLong(theToken);
+                            d[j] = Double.parseDouble(theToken);
                         }
                         catch (NumberFormatException ex) {
                             JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(), JOptionPane.ERROR_MESSAGE);
                             return false;
                         }
+                        if (Double.isInfinite(d[j]) || Double.isNaN(d[j])) {
+                            d[j] = 0;
+                        }
                     }
-                    value = l;
+                    value = d;
                 }
             }
-        }
-
-        if (tclass == Datatype.CLASS_FLOAT) {
-            if (tsize == 4) {
-                float[] f = new float[arraySize];
-                for (int j = 0; j < count; j++) {
-                    theToken = st.nextToken().trim();
-                    try {
-                        f[j] = Float.parseFloat(theToken);
-                    }
-                    catch (NumberFormatException ex) {
-                        JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(), JOptionPane.ERROR_MESSAGE);
-                        return false;
-                    }
-                    if (Float.isInfinite(f[j]) || Float.isNaN(f[j])) {
-                        f[j] = 0;
-                    }
-                }
-                value = f;
-            }
-            else if (tsize == 8) {
-                double[] d = new double[arraySize];
-                for (int j = 0; j < count; j++) {
-                    theToken = st.nextToken().trim();
-                    try {
-                        d[j] = Double.parseDouble(theToken);
-                    }
-                    catch (NumberFormatException ex) {
-                        JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(), JOptionPane.ERROR_MESSAGE);
-                        return false;
-                    }
-                    if (Double.isInfinite(d[j]) || Double.isNaN(d[j])) {
-                        d[j] = 0;
-                    }
-                }
-                value = d;
-            }
-        }
+        }        
 
         Datatype datatype = null;
         try {

@@ -748,6 +748,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
 
             e.getSource();
             String cmd = e.getActionCommand();
+            log.trace("DefaultTableView actionPerformed: {}", cmd);
 
             if (cmd.equals("Close")) {
                 dispose(); // terminate the application
@@ -3352,17 +3353,17 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
      */
     @Override
     public void updateValueInFile ( ) {
+        log.trace("DefaultTableView updateValueInFile enter");
         if (isReadOnly || showAsBin || showAsHex) {
             return;
         }
 
-        // if (!(dataset instanceof ScalarDS) || !isValueChanged)
         if (!isValueChanged) {
             return;
         }
-        log.trace("DefaultTableView updateValueInFile");
 
         try {
+            log.trace("DefaultTableView updateValueInFile write");
             dataset.write();
         }
         catch (Exception ex) {
@@ -3372,6 +3373,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
         }
 
         isValueChanged = false;
+        log.trace("DefaultTableView updateValueInFile exit");
     }
 
     /**
@@ -3456,6 +3458,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
      *            the column of the editing cell.
      */
     private void updateValueInMemory (String cellValue, int row, int col) throws Exception {
+        log.trace("DefaultTableView updateValueInMemory");
         if (currentEditingCellValue != null) {
             // data values are the same, no need to change the data
             if (currentEditingCellValue.toString().equals(cellValue)) return;
@@ -3492,12 +3495,13 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
         else {
             i = row * table.getColumnCount() + col;
         }
-        log.trace("DefaultTableView updateScalarData");
+        log.trace("DefaultTableView updateScalarData {} NT={}", cellValue, NT);
 
         ScalarDS sds = (ScalarDS) dataset;
         boolean isUnsigned = sds.isUnsigned();
         String cname = dataset.getOriginalClass().getName();
         char dname = cname.charAt(cname.lastIndexOf("[") + 1);
+        log.trace("updateScalarData isUnsigned={} cname={} dname={}", isUnsigned, cname, dname);
 
         // check data range for unsigned datatype converted sizes!
         if (isUnsigned) {
