@@ -504,7 +504,7 @@ if (HDFJAVA_PACK_JRE)
     )
   else (WIN32)
     install (
-        DIRECTORY "C:/Program Files/Java/jre7"
+        DIRECTORY "/usr/lib/jvm/jre"
         DESTINATION ${HJAVA_INSTALL_BIN_DIR}
         USE_SOURCE_PERMISSIONS
     )
