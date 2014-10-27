@@ -1718,7 +1718,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
                 if (isArray) {
                     // ARRAY dataset
                     int arraySize = dtype.getDatatypeSize() / btype.getDatatypeSize();
-                    log.trace("createTable:AbstractTableModel:getValueAt ARRAY dataset size={} isDisplayTypeChar={} isUINT64={}",
+                    log.trace("ScalarDS:createTable:AbstractTableModel:getValueAt ARRAY dataset size={} isDisplayTypeChar={} isUINT64={}",
                             arraySize, isDisplayTypeChar, isUINT64);
 
                     stringBuffer.setLength(0); // clear the old string
@@ -1760,18 +1760,21 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
                     int index = column * rowCount + row;
 
                     if (dataset.getRank() > 1) {
-                        log.trace("createTable:AbstractTableModel:getValueAt rank={} isDataTransposed={} isNaturalOrder={}", dataset.getRank(), isDataTransposed, isNaturalOrder);
+                        log.trace("ScalarDS:createTable:AbstractTableModel:getValueAt rank={} isDataTransposed={} isNaturalOrder={}", dataset.getRank(), isDataTransposed, isNaturalOrder);
                         if ((isDataTransposed && isNaturalOrder) || (!isDataTransposed && !isNaturalOrder))
                             index = column * rowCount + row;
                         else
                             index = row * colCount + column;
                     }
-                    log.trace("createTable:AbstractTableModel:getValueAt index={} isStr={} isUINT64={}", index, isStr, isUINT64);
-                    theValue = Array.get(dataValue, index);
-
-                    if (isStr) return theValue;
+                    log.trace("ScalarDS:createTable:AbstractTableModel:getValueAt index={} isStr={} isUINT64={}", index, isStr, isUINT64);
+ 
+                    if (isStr) {
+                        theValue = Array.get(dataValue, index);
+                        return theValue;
+                    }
 
                     if (isUINT64) {
+                        theValue = Array.get(dataValue, index);
                         Long l = (Long) theValue;
                         if (l < 0) {
                             l = (l << 1) >>> 1;
@@ -1783,20 +1786,41 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
                     }
                     else if (showAsHex && isInt) {
                         // show in Hexadecimal
-                        theValue = Long.toHexString(Long.valueOf(theValue.toString()));
+                        char[] hexArray = "0123456789ABCDEF".toCharArray();
+                        theValue = Array.get(dataValue, index * typeSize);
+                        log.trace("ScalarDS:createTable:AbstractTableModel:getValueAt() theValue[{}]={}", index, theValue.toString());
+                        // show in Hexadecimal
+                        char[] hexChars = new char[2];
+                        stringBuffer.setLength(0); // clear the old string
+                        for (int x = 0; x < typeSize; x++) {
+                            if (x > 0)
+                                theValue = Array.get(dataValue, index * typeSize + x);
+                            int v = (int)((Byte)theValue) & 0xFF;
+                            hexChars[0] = hexArray[v >>> 4];
+                            hexChars[1] = hexArray[v & 0x0F];
+                            if (x > 0) stringBuffer.append(":");
+                            stringBuffer.append(hexChars);
+                            log.trace("ScalarDS::createTable:AbstractTableModel:getValueAt() hexChars[{}]={}", x, hexChars);
+                        }
+                        theValue = stringBuffer;
                     }
                     else if (showAsBin && isInt) {
+                        theValue = Array.get(dataValue, index);
                         theValue = Tools.toBinaryString(Long.valueOf(theValue.toString()), typeSize);
                         // theValue =
                         // Long.toBinaryString(Long.valueOf(theValue.toString()));
                     }
                     else if (numberFormat != null) {
                         // show in scientific format
+                        theValue = Array.get(dataValue, index);
                         theValue = numberFormat.format(theValue);
+                    }
+                    else {
+                        theValue = Array.get(dataValue, index);
                     }
                 }
 
-                log.trace("createTable:AbstractTableModel:getValueAt finish");
+                log.trace("ScalarDS:createTable:AbstractTableModel:getValueAt finish");
                 return theValue;
             } // getValueAt(int row, int column)
         };
@@ -2277,6 +2301,9 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
 
                 int fieldIdx = col;
                 int rowIdx = row;
+                char CNT = ' ';
+                boolean CshowAsHex = false;
+                boolean CshowAsBin = false;
                 log.trace("CompoundDS:createTable:AbstractTableModel:getValueAt({},{}) start", row, col);
 
                 if (nSubColumns > 1) { // multi-dimension compound dataset
@@ -2285,10 +2312,13 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
                     // BUG 573: rowIdx = row * orders[fieldIdx] + colIdx * nRows
                     // * orders[fieldIdx];
                     rowIdx = row * orders[fieldIdx] * nSubColumns + colIdx * orders[fieldIdx];
+                    log.trace("CompoundDS:createTable:AbstractTableModel:getValueAt() row={} orders[{}]={} nSubColumns={} colIdx={}", row, fieldIdx, orders[fieldIdx], nSubColumns, colIdx);
                 }
                 else {
                     rowIdx = row * orders[fieldIdx];
+                    log.trace("CompoundDS:createTable:AbstractTableModel:getValueAt() row={} orders[{}]={}", row, fieldIdx, orders[fieldIdx]);
                 }
+                log.trace("CompoundDS:createTable:AbstractTableModel:getValueAt() rowIdx={}", rowIdx);
 
                 Object colValue = ((List<?>) dataValue).get(fieldIdx);
                 if (colValue == null) {
@@ -2311,19 +2341,33 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
                     // numerical values
                     Datatype dtype = types[fieldIdx];
                     if (dtype.getDatatypeClass() == Datatype.CLASS_ARRAY) dtype = types[fieldIdx].getBasetype();
-                    boolean isUINT64 = false;
 
+                    String cName = colValue.getClass().getName();
+                    int cIndex = cName.lastIndexOf("[");
+                    if (cIndex >= 0) {
+                        CNT = cName.charAt(cIndex + 1);
+                    }
+                    log.trace("CompoundDS:createTable:AbstractTableModel:getValueAt(): cName={} CNT={}", cName, CNT);
+
+                    boolean isUINT64 = false;
+                    boolean isInt = (CNT == 'B' || CNT == 'S' || CNT == 'I' || CNT == 'J');
+                    int typeSize = dtype.getDatatypeSize();
+                    
+                    if ((dtype.getDatatypeClass() == Datatype.CLASS_BITFIELD) || (dtype.getDatatypeClass() == Datatype.CLASS_OPAQUE)) {
+                        CshowAsHex = true;
+                        log.trace("CompoundDS:createTable:AbstractTableModel:getValueAt() class={} (BITFIELD or OPAQUE)", dtype.getDatatypeClass());
+                    }
                     if (dtype.isUnsigned()) {
-                        String cName = colValue.getClass().getName();
-                        int cIndex = cName.lastIndexOf("[");
                         if (cIndex >= 0) {
                             isUINT64 = (cName.charAt(cIndex + 1) == 'J');
                         }
                     }
+                    log.trace("CompoundDS:createTable:AbstractTableModel:getValueAt() isUINT64={} isInt={} CshowAsHex={} typeSize={}", isUINT64, isInt, CshowAsHex, typeSize);
 
                     for (int i = 0; i < orders[fieldIdx]; i++) {
-                        Object theValue = Array.get(colValue, rowIdx + i);
                         if (isUINT64) {
+                            Object theValue = Array.get(colValue, rowIdx + i);
+                            log.trace("CompoundDS:createTable:AbstractTableModel:getValueAt() theValue[{}]={}", i, theValue.toString());
                             Long l = (Long) theValue;
                             if (l < 0) {
                                 l = (l << 1) >>> 1;
@@ -2332,9 +2376,48 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
                                 BigInteger big = big1.add(big2);
                                 theValue = big.toString();
                             }
+                            if (i > 0) stringBuffer.append(", ");
+                            stringBuffer.append(theValue);
                         }
-                        if (i > 0) stringBuffer.append(", ");
-                        stringBuffer.append(theValue);
+                        else if (CshowAsHex && isInt) {
+                            char[] hexArray = "0123456789ABCDEF".toCharArray();
+                            Object theValue = Array.get(colValue, rowIdx * typeSize + typeSize * i);
+                            log.trace("CompoundDS:createTable:AbstractTableModel:getValueAt() theValue[{}]={}", i, theValue.toString());
+                            // show in Hexadecimal
+                            char[] hexChars = new char[2];
+                            if (i > 0) stringBuffer.append(", ");
+                            for (int x = 0; x < typeSize; x++) {
+                                if (x > 0)
+                                    theValue = Array.get(colValue, rowIdx * typeSize + typeSize * i + x);
+                                int v = (int)((Byte)theValue) & 0xFF;
+                                hexChars[0] = hexArray[v >>> 4];
+                                hexChars[1] = hexArray[v & 0x0F];
+                                if (x > 0) stringBuffer.append(":");
+                                stringBuffer.append(hexChars);
+                                log.trace("CompoundDS:createTable:AbstractTableModel:getValueAt() hexChars[{}]={}", x, hexChars);
+                            }
+                        }
+                        else if (showAsBin && isInt) {
+                            Object theValue = Array.get(colValue, rowIdx + typeSize * i);
+                            log.trace("CompoundDS:createTable:AbstractTableModel:getValueAt() theValue[{}]={}", i, theValue.toString());
+                            theValue = Tools.toBinaryString(Long.valueOf(theValue.toString()), typeSize);
+                            if (i > 0) stringBuffer.append(", ");
+                            stringBuffer.append(theValue);
+                        }
+                        else if (numberFormat != null) {
+                            // show in scientific format
+                            Object theValue = Array.get(colValue, rowIdx + i);
+                            log.trace("CompoundDS:createTable:AbstractTableModel:getValueAt() theValue[{}]={}", i, theValue.toString());
+                            theValue = numberFormat.format(theValue);
+                            if (i > 0) stringBuffer.append(", ");
+                            stringBuffer.append(theValue);
+                        }
+                        else {
+                            Object theValue = Array.get(colValue, rowIdx + i);
+                            log.trace("CompoundDS:createTable:AbstractTableModel:getValueAt() theValue[{}]={}", i, theValue.toString());
+                            if (i > 0) stringBuffer.append(", ");
+                            stringBuffer.append(theValue);
+                        }
                     }
                 } // end of else {
 

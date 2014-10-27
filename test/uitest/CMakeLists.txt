@@ -68,6 +68,7 @@ set (HDF_JAVA_TEST_FILES
       tcmpdints.h5
       tcmpdintsize.h5
       tfilters.h5
+      tbitnopaque.h5
       tscalarattrintsize.h5
       tscalarintsize.h5
       tscalarstring.h5
