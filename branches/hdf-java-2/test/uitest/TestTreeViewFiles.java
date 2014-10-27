@@ -962,4 +962,59 @@ public class TestTreeViewFiles {
             catch (Exception ex) {}
         }
     }
+    @Test 
+    public void openHDF5CompoundDSBits() {
+        File hdf_file = openHDF5File("tbitnopaque", 4);
+
+        try {
+            JTreeFixture filetree = mainFrameFixture.tree().focus();
+            filetree.requireVisible();
+            assertTrue("openHDF5CompoundDSBits filetree shows:", filetree.target.getRowCount()==4);
+            assertTrue("openHDF5CompoundDSBits filetree has file", (filetree.valueAt(0)).compareTo("tbitnopaque.h5")==0);
+            assertTrue("openHDF5CompoundDSBits filetree has group", (filetree.valueAt(1)).compareTo("bittypetests")==0);
+            assertTrue("openHDF5CompoundDSBits filetree has group", (filetree.valueAt(2)).compareTo("cmpdtypetests")==0);
+            assertTrue("openHDF5CompoundDSBits filetree has group", (filetree.valueAt(3)).compareTo("opaquetypetests")==0);
+
+            JMenuItemFixture expandMenuItem = filetree.showPopupMenuAt(0).menuItemWithPath("Expand All");
+            mainFrameFixture.robot.waitForIdle();
+            
+            expandMenuItem.requireVisible();
+            expandMenuItem.click();
+            mainFrameFixture.robot.waitForIdle();
+            assertTrue("openHDF5CompoundDSBits filetree shows:"+filetree.target.getRowCount(), filetree.target.getRowCount()==11);
+
+            JMenuItemFixture dataset1MenuItem = filetree.showPopupMenuAt(2).menuItemWithPath("Open");
+            mainFrameFixture.robot.waitForIdle();
+            
+            dataset1MenuItem.requireVisible();
+            dataset1MenuItem.click();
+            mainFrameFixture.robot.waitForIdle();
+            
+            JTableFixture dataset1table = mainFrameFixture.table("data");
+            JTableCellFixture cell = dataset1table.cell(row(0).column(0));
+            cell.requireValue("FF");
+            cell = dataset1table.cell(row(1).column(0));
+            cell.requireValue("FE");
+            cell = dataset1table.cell(row(2).column(0));
+            cell.requireValue("FD");
+            cell = dataset1table.cell(row(3).column(0));
+            cell.requireValue("FC");
+            cell = dataset1table.cell(row(30).column(0));
+            cell.requireValue("E1");
+            mainFrameFixture.menuItemWithPath("Table", "Close").click();
+            mainFrameFixture.robot.waitForIdle();
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        catch (AssertionError ae) {
+            ae.printStackTrace();
+        }
+        finally {
+            try {
+                closeHDFFile(hdf_file, false);
+            }
+            catch (Exception ex) {}
+        }
+    }
 }

@@ -233,7 +233,7 @@ public class TestHDFViewTAttr2 {
             
             JTableFixture dataset7table = mainFrameFixture.table("data");
             JTableCellFixture cell7 = dataset7table.cell(row(0).column(0));
-            cell7.requireValue("1");
+            cell7.requireValue("01");
             mainFrameFixture.menuItemWithPath("Table", "Close").click();
             mainFrameFixture.robot.waitForIdle();
 
@@ -247,7 +247,7 @@ public class TestHDFViewTAttr2 {
             
             JTableFixture dataset8table = mainFrameFixture.table("data");
             JTableCellFixture cell8 = dataset8table.cell(row(1).column(1));
-            cell8.requireValue("4");
+            cell8.requireValue("04");
             mainFrameFixture.menuItemWithPath("Table", "Close").click();
             mainFrameFixture.robot.waitForIdle();
 
@@ -543,7 +543,7 @@ public class TestHDFViewTAttr2 {
             
             JTableFixture dataset22table = mainFrameFixture.table("data");
             JTableCellFixture cell22 = dataset22table.cell(row(0).column(0));
-            cell22.requireValue("1");
+            cell22.requireValue("01");
             mainFrameFixture.menuItemWithPath("Table", "Close").click();
             mainFrameFixture.robot.waitForIdle();
 
@@ -557,7 +557,7 @@ public class TestHDFViewTAttr2 {
             
             JTableFixture dataset23table = mainFrameFixture.table("data");
             JTableCellFixture cell23 = dataset23table.cell(row(1).column(1));
-            cell23.requireValue("4");
+            cell23.requireValue("04");
             mainFrameFixture.menuItemWithPath("Table", "Close").click();
             mainFrameFixture.robot.waitForIdle();
 
