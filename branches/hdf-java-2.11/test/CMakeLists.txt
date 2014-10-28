@@ -1,0 +1,10 @@
+cmake_minimum_required (VERSION 2.8.10)
+PROJECT (HDFJAVA_TEST)
+
+add_subdirectory (${HDFJAVA_TEST_SOURCE_DIR}/hdf5lib     hdf5lib)
+add_subdirectory (${HDFJAVA_TEST_SOURCE_DIR}/object      object)
+add_subdirectory (${HDFJAVA_TEST_SOURCE_DIR}/object/misc      object/misc)
+if (NOT HDF_SKIP_GUI_TESTS)
+  add_subdirectory (${HDFJAVA_TEST_SOURCE_DIR}/modules      modules)
+  add_subdirectory (${HDFJAVA_TEST_SOURCE_DIR}/uitest      uitest)
+endif (NOT HDF_SKIP_GUI_TESTS)

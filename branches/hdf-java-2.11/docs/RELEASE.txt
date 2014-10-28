@@ -1,0 +1,50 @@
+The current HDF-Java products can be downloaded at:
+        http://www.hdfgroup.org/downloads/
+
+
+HDF Libraries
+=============================================================================
+This release was built and tested with HDF 4.2.x and HDF5 1.8.x. 
+
+JDK
+=============================================================================
+This release was built and tested with JDK 1.7. 
+
+
+Platforms
+==============================================================================
+This release was built and tested for the following platforms:
+
+64-bit distribution -- runs on 64-bit systems with 64-bit JRE only
+    * Linux
+    * Mac Intel
+    * Solaris
+    * Windows
+
+32-bit distribution -- runs on 32-bit systems with 32-bit JRE
+    * Windows
+
+
+Changes to the Java HDF5 Interface(JHI5)
+==============================================================================
+    * 
+
+
+Major Enhancements
+==============================================================================  
+    * 
+
+
+Major Bug Fixes
+============================================================================== 
+    * 
+
+
+Limitations / Known Problems
+==============================================================================  
+    * 
+
+Other Notes
+==============================================================================
+
+

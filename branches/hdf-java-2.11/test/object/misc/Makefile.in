@@ -1,0 +1,72 @@
+#/****************************************************************************
+#* Copyright by The HDF Group.                                               *
+#* Copyright by the Board of Trustees of the University of Illinois.         *
+#* All rights reserved.                                                      *
+#*                                                                           *
+#* This file is part of HDF Java Products. The full HDF Java copyright       *
+#* notice, including terms governing use, modification, and redistribution,  *
+#* is contained in the file, COPYING.  COPYING can be found at the root of   *
+#* the source code distribution tree. You can also access it online  at      *
+#* http://www.hdfgroup.org/products/licenses.html.  If you do not have       *
+#* access to the file, you may request a copy from help@hdfgroup.org.        *
+#****************************************************************************/
+ 
+TOP = ../../..
+DIR = test/object/misc 
+
+JAVAC           = @JAVAC@
+JAVADOC         = @JAVADOC@
+JAR             = @JAR@
+FIND            = @FIND@
+RM              = @RM@
+JAVADOC_FLAGS   = -version -author
+SLEXT=@SLEXT@
+JSLEXT=@JSLEXT@
+
+CLASSPATH=@CLASSPATH@:$(TOP)/lib:$(TOP)/lib/slf4j-api-1.7.5.jar
+JH45INSTALLDIR=@JH45INST@
+H45INC=@H45INC@
+H4INC=@HDF4INC@
+H5INC=@HDF5INC@
+
+#make this relative to the source root...
+LIBDIR=$(JH45INSTALLDIR)/lib
+BINDIR=$(JH45INSTALLDIR)/bin
+DOCDIR= $(JH45INSTALLDIR)/docs
+
+CLASS_DIR=$(TOP)/lib
+CP="$(CLASSPATH):$(CLASS_DIR):. "
+
+CURRENTDIR = .
+JAR_DIR=$(CLASS_DIR)
+OUT_DIR=.
+
+.SUFFIXES: .java .class
+
+.java.class:
+	$(JAVAC) -classpath $(CLASSPATH) $<
+
+all: testh4file testh5file
+	chmod u+x runtests.sh
+
+testh4file: TestH4File.class
+	chmod u+x testh4file.sh
+
+testh5file: TestH5File.class
+	chmod u+x testh5file.sh
+
+runtests: all
+	chmod u+x runtests.sh
+
+check: all
+	./TestH5Object.sh
+
+check-memory-leak:
+	./TestH5MemoryLeak.sh
+
+clean:
+	$(RM) -f *.class
+	$(RM) -f *.hdf
+	$(RM) -f *.h5
+
+

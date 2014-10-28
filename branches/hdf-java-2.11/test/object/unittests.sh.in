@@ -1,0 +1,72 @@
+#!/bin/sh
+
+# Set up default variable values if not supplied by the user.
+
+# where the new builds exist
+HDFBLD_HOME=@abs_top_builddir@
+export HDFBLD_HOME
+
+# where Java is installed (requires jdk1.4.x)
+JAVAPATH=@JAVABIN@
+export JAVAPATH
+
+###############################################################################
+#            DO NOT MODIFY BELOW THIS LINE
+###############################################################################
+
+
+CPATH=".:"$HDFBLD_HOME"/lib/jhdf5.jar:"$HDFBLD_HOME"/lib/jhdfobj.jar:"$HDFBLD_HOME"/lib/jhdf5obj.jar:"$HDFBLD_HOME"/lib/junit.jar:"$HDFBLD_HOME"/lib/hamcrest-core.jar:"$HDFBLD_HOME"/lib/slf4j-api-1.7.5.jar:"$HDFBLD_HOME"/lib/ext/slf4j-nop-1.7.5.jar"
+
+TEST=/usr/bin/test
+if [ ! -x /usr/bin/test ]
+then
+TEST=`which test`
+fi
+
+if $TEST -z "$CLASSPATH"; then
+        CLASSPATH=""
+fi
+CLASSPATH=$CPATH":"$CLASSPATH
+export CLASSPATH
+
+if $TEST -n "$JAVAPATH" ; then
+        PATH=$JAVAPATH":"$PATH
+        export PATH
+fi
+
+if $TEST -e /bin/uname; then
+   os_name=`/bin/uname -s`
+elif $TEST -e /usr/bin/uname; then
+   os_name=`/usr/bin/uname -s`
+else
+   os_name=unknown
+fi
+
+case  $os_name in
+    SunOS)
+        OS_NAME=solaris
+        ;;
+    Linux)
+        OS_NAME=linux
+        ;;
+    IRIX*)
+        OS_NAME=irix-6.5
+        ;;
+    OSF1)
+        OS_NAME=alpha
+        ;;
+    AIX)
+        OS_NAME=aix
+        ;;
+    Darwin)
+        OS_NAME=macosx
+        ;;
+    FreeBSD)
+        OS_NAME=freebsd
+        ;;
+    *)
+        echo "Unknown Operating System:  HDF-Java may not work correctly"
+        ;;
+esac
+
+(cd $HDFBLD_HOME/lib; $JAVAPATH/java -Xmx1024M -Djava.library.path=$HDFBLD_HOME"/lib/"$OS_NAME -ea org.junit.runner.JUnitCore test.object.AllH5ObjectTests)

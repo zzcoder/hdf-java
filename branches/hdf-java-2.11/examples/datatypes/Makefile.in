@@ -1,0 +1,52 @@
+#/****************************************************************************
+# * Copyright by The HDF Group.                                               *
+# * Copyright by the Board of Trustees of the University of Illinois.         *
+# * All rights reserved.                                                      *
+# *                                                                           *
+# * This file is part of HDF Java Products. The full HDF Java copyright       *
+# * notice, including terms governing use, modification, and redistribution,  *
+# * is contained in the file, COPYING.  COPYING can be found at the root of   *
+# * the source code distribution tree. You can also access it online  at      *
+# * http://www.hdfgroup.org/products/licenses.html.  If you do not have       *
+# * access to the file, you may request a copy from help@hdfgroup.org.        *
+# ****************************************************************************/
+
+TOP = ../..
+DIR	= examples/datatypes
+SUBDIRS = NULL
+
+JAVAC           = @JAVAC@
+JAVADOC         = @JAVADOC@
+JAR         	= @JAR@
+FIND            = @FIND@
+RM              = @RM@
+SLEXT=@SLEXT@
+JSLEXT=@JSLEXT@
+
+CLASSPATH=@CLASSPATH@
+JH45INSTALLDIR=@JH45INST@
+H45INC=@H45INC@
+H4INC=@HDF4INC@
+H5INC=@HDF5INC@
+
+JAVA_SRCS = \
+H5Ex_T_Array.java \
+H5Ex_T_ArrayAttribute.java \
+H5Ex_T_Bit.java \
+H5Ex_T_BitAttribute.java \
+H5Ex_T_Commit.java \
+H5Ex_T_Compound.java \
+H5Ex_T_CompoundAttribute.java \
+H5Ex_T_Float.java \
+H5Ex_T_FloatAttribute.java \
+H5Ex_T_Integer.java \
+H5Ex_T_IntegerAttribute.java \
+H5Ex_T_ObjectReference.java \
+H5Ex_T_ObjectReferenceAttribute.java \
+H5Ex_T_Opaque.java \
+H5Ex_T_OpaqueAttribute.java \
+H5Ex_T_String.java \
+H5Ex_T_StringAttribute.java \
+H5Ex_T_VLString.java
+
+include $(TOP)/config/Rules.mk
