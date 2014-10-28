@@ -35,7 +35,7 @@ import org.junit.Test;
 public class TestHDFViewImageFrameSelection {
 	private static FrameFixture mainFrameFixture;
 	// the version of the HDFViewer
-	private static String VERSION = "2.99";
+	private static String VERSION = "2.11";
 	private static File hdf_file = null;
 
 	private static File openHDF5File(String name, int initrows) {

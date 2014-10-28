@@ -33,7 +33,7 @@ import org.junit.Test;
 public class TestHDFViewTAttr2 {
     private static FrameFixture mainFrameFixture;
     // the version of the HDFViewer
-    private static String VERSION = "2.99";
+    private static String VERSION = "2.11";
     private static File hdf5file = null;
 
     private static File openHDF5File(String name, int initrows) {
