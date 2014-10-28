@@ -33,10 +33,10 @@ extern "C" {
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Rcreate
- * Signature: ([BJLjava/lang/String;IJ)I
+ * Signature: ([BILjava/lang/String;II)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Rcreate
-  (JNIEnv *env, jclass clss, jbyteArray ref, jlong loc_id, jstring name, jint ref_type, jlong space_id)
+  (JNIEnv *env, jclass clss, jbyteArray ref, jint loc_id, jstring name, jint ref_type, jint space_id)
 {
     char* rName;
     jboolean isCopy;
@@ -95,11 +95,11 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Rcreate
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
- * Method:    _H5Rdereference
- * Signature: (JJI[B)J
+ * Method:    H5Rdereference
+ * Signature: (II[B)I
  */
-JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Rdereference
-  (JNIEnv *env, jclass clss, jlong dataset, jlong access_list, jint ref_type, jbyteArray ref )
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Rdereference
+  (JNIEnv *env, jclass clss, jint dataset, jint ref_type, jbyteArray ref )
 {
     jboolean isCopy;
     jbyte *refP;
@@ -124,23 +124,23 @@ JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Rdereference
         return -1;
     }
 
-    status = H5Rdereference2((hid_t)dataset, (hid_t)access_list, (H5R_type_t)ref_type, refP);
+    status = H5Rdereference((hid_t)dataset, (H5R_type_t)ref_type, refP);
 
     ENVPTR->ReleaseByteArrayElements(ENVPAR ref, refP, JNI_ABORT);
 
     if (status < 0) {
         h5libraryError(env);
     }
-    return (jlong)status;
+    return (jint)status;
 }
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Rget_region
- * Signature: (JI[B)J
+ * Signature: (II[B)I
  */
-JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Rget_1region
-  (JNIEnv *env, jclass clss, jlong dataset, jint ref_type,
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Rget_1region
+  (JNIEnv *env, jclass clss, jint dataset, jint ref_type,
   jbyteArray ref )
 {
     hid_t status;
@@ -173,16 +173,16 @@ JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Rget_1region
     if (status < 0) {
         h5libraryError(env);
     }
-    return (jlong)status;
+    return (jint)status;
 }
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5G_obj_t H5Rget_obj_type
- * Signature: (JI[B)I
+ * Signature: (II[B)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Rget_1obj_1type
-  (JNIEnv *env, jclass clss, jlong loc_id, jint ref_type, jbyteArray ref)
+  (JNIEnv *env, jclass clss, jint loc_id, jint ref_type, jbyteArray ref)
 {
     int retVal =-1;
     jboolean isCopy;
@@ -216,10 +216,10 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Rget_1obj_1type
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    int H5Rget_obj_type2
- * Signature: (JI[B[I)I
+ * Signature: (II[B[I)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Rget_1obj_1type2
-  (JNIEnv *env, jclass clss, jlong loc_id, jint ref_type, jbyteArray ref, jintArray ref_obj)
+  (JNIEnv *env, jclass clss, jint loc_id, jint ref_type, jbyteArray ref, jintArray ref_obj)
 {
 
     jint status;
@@ -267,10 +267,10 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Rget_1obj_1type2
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Rget_name
- * Signature: (JI[B[Ljava/lang/String;J)J
+ * Signature: (II[B[Ljava/lang/String;J)J
  */
 JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Rget_1name
-  (JNIEnv *env, jclass clss, jlong loc_id, jint ref_type, jbyteArray ref, jobjectArray name, jlong size)
+  (JNIEnv *env, jclass clss, jint loc_id, jint ref_type, jbyteArray ref, jobjectArray name, jlong size)
 {
     jlong ret_val = -1;
     jbyte *refP;
@@ -279,7 +279,7 @@ JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Rget_1name
     jstring str;
     size_t bs;
 
-    bs = (size_t)size;
+    bs = (long)size;
     if (bs <= 0) {
         h5badArgument( env, "H5Rget_name:  size <= 0");
         return -1;

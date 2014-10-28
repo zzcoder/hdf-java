@@ -118,7 +118,7 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_exceptions_HDF5LibraryException_pri
 /*
  * Class:     ncsa_hdf_hdf5lib_exceptions_HDFLibraryException
  * Method:    getMajorErrorNumber
- * Signature: ()J
+ * Signature: ()I
  *
  *  Extract the HDF-5 major error number from the HDF-5 error stack.
  *
@@ -126,14 +126,14 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_exceptions_HDF5LibraryException_pri
  *  library.  Later releases will have a public interface for this
  *  purpose.
  */
-JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_exceptions_HDF5LibraryException_getMajorErrorNumber
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_exceptions_HDF5LibraryException_getMajorErrorNumber
   (JNIEnv *env, jobject obj)
 {
     H5E_num_t err_nums;
     
     H5Ewalk2(H5E_DEFAULT, H5E_WALK_DOWNWARD, walk_error_callback, &err_nums);
 
-    return (jlong) err_nums.maj_num;
+    return (int) err_nums.maj_num;
 }
 
 hid_t getMajorErrorNumber()
@@ -150,7 +150,7 @@ hid_t getMajorErrorNumber()
 /*
  * Class:     ncsa_hdf_hdf5lib_exceptions_HDFLibraryException
  * Method:    getMinorErrorNumber
- * Signature: ()J
+ * Signature: ()I
  *
  *  Extract the HDF-5 minor error number from the HDF-5 error stack.
  *
@@ -158,10 +158,10 @@ hid_t getMajorErrorNumber()
  *  library.  Later releases will have a public interface for this
  *  purpose.
  */
-JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_exceptions_HDF5LibraryException_getMinorErrorNumber
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_exceptions_HDF5LibraryException_getMinorErrorNumber
   (JNIEnv *env, jobject obj)
 {
-    return (jlong) getMinorErrorNumber();
+    return (jint) getMinorErrorNumber();
 }
 
 hid_t getMinorErrorNumber()

@@ -12,12 +12,9 @@ import ncsa.hdf.hdf5lib.exceptions.HDF5LibraryException;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestName;
 
 public class TestH5Dplist {
-    @Rule public TestName testname = new TestName();
     private static final String H5_FILE = "test.h5";
     private static final int DIM_X = 4;
     private static final int DIM_Y = 7;
@@ -28,10 +25,10 @@ public class TestH5Dplist {
     private static final int NDIMS = 2;
     private static final int FILLVAL = 99;
     private static final int RANK = 2;
-    long H5fid = -1;
-    long H5dsid = -1;
-    long H5did = -1;
-    long H5dcpl_id = -1;
+    int H5fid = -1;
+    int H5dsid = -1;
+    int H5did = -1;
+    int H5dcpl_id = -1;
     long[] H5dims = { DIM_X, DIM_Y };
     long[] H5extdims = { EDIM_X, EDIM_Y };
     long[] H5chunk_dims = { CHUNK_X, CHUNK_Y };
@@ -45,7 +42,7 @@ public class TestH5Dplist {
         }
     }
 
-    private final void _createPDataset(long fid, long dsid, String name, long dcpl_val) {
+    private final void _createPDataset(int fid, int dsid, String name, int dcpl_val) {
         try {
             H5dcpl_id = H5.H5Pcreate(dcpl_val);
         }
@@ -85,7 +82,7 @@ public class TestH5Dplist {
         _createDataset(H5fid, H5dsid, "dset", H5dcpl_id, HDF5Constants.H5P_DEFAULT);
     }
 
-    private final void _createDataset(long fid, long dsid, String name, long dcpl, long dapl) {
+    private final void _createDataset(int fid, int dsid, String name, int dcpl, int dapl) {
         try {
             H5did = H5.H5Dcreate(fid, name,
                         HDF5Constants.H5T_STD_I32BE, dsid,
@@ -101,7 +98,6 @@ public class TestH5Dplist {
     @Before
     public void createH5file() throws NullPointerException, HDF5Exception {
         assertTrue("H5 open ids is 0",H5.getOpenIDCount()==0);
-        System.out.print(testname.getMethodName());
         try {
             H5fid = H5.H5Fcreate(H5_FILE, HDF5Constants.H5F_ACC_TRUNC,
                     HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
@@ -129,7 +125,6 @@ public class TestH5Dplist {
             try {H5.H5Fclose(H5fid);} catch (Exception ex) {}
 
         _deleteFile(H5_FILE);
-        System.out.println();
     }
     
   @Test

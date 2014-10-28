@@ -14,31 +14,28 @@ import ncsa.hdf.hdf5lib.exceptions.HDF5LibraryException;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestName;
 
 public class TestH5P {
-    @Rule public TestName testname = new TestName();
     
     private static final String H5_FILE = "test.h5";
     private static final int DIM_X = 4;
     private static final int DIM_Y = 6;
     long[] H5dims = { DIM_X, DIM_Y };
-    long H5fid = -1;
-    long H5dsid = -1;
-    long H5did = -1;
-    long lapl_id = -1;
-    long fapl_id = -1;
-    long fcpl_id = -1;
-    long ocpl_id = -1;
-    long ocp_plist_id = -1;
-    long lcpl_id = -1;
-    long plapl_id = -1;
-    long plist_id = -1;
-    long gapl_id = -1;
-    long gcpl_id = -1;
-    long acpl_id = -1;
+    int H5fid = -1;
+    int H5dsid = -1;
+    int H5did = -1;
+    int lapl_id = -1;
+    int fapl_id = -1;
+    int fcpl_id = -1;
+    int ocpl_id = -1;
+    int ocp_plist_id = -1;
+    int lcpl_id = -1;
+    int plapl_id = -1;
+    int plist_id = -1;
+    int gapl_id = -1;
+    int gcpl_id = -1;
+    int acpl_id = -1;
 
     private final void _deleteFile(String filename) {
         File file = new File(filename);
@@ -48,8 +45,8 @@ public class TestH5P {
         }
     }
 
-    private final long _createDataset(long fid, long dsid, String name, long dapl) {
-        long did = -1;
+    private final int _createDataset(int fid, int dsid, String name, int dapl) {
+        int did = -1;
         try {
             did = H5.H5Dcreate(fid, name, HDF5Constants.H5T_STD_I32BE, dsid,
                     HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, dapl);
@@ -63,7 +60,7 @@ public class TestH5P {
         return did;
     }
 
-    private final void _createH5File(long fcpl, long fapl) {
+    private final void _createH5File(int fcpl, int fapl) {
         try {
             H5fid = H5.H5Fcreate(H5_FILE, HDF5Constants.H5F_ACC_TRUNC,
                     fcpl, fapl);
@@ -94,7 +91,6 @@ public class TestH5P {
     public void createH5fileProperties()
             throws NullPointerException, HDF5Exception {
         assertTrue("H5 open ids is 0",H5.getOpenIDCount()==0);
-        System.out.print(testname.getMethodName());
 
         try {
             lapl_id = H5.H5Pcreate(HDF5Constants.H5P_DATASET_ACCESS);
@@ -156,7 +152,6 @@ public class TestH5P {
             try {H5.H5Dclose(H5did);} catch (Exception ex) {}       
         if (H5fid > 0) 
             try {H5.H5Fclose(H5fid);} catch (Exception ex) {}
-        System.out.println();
     }
 
     @Test

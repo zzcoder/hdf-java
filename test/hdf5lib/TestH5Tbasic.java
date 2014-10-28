@@ -6,28 +6,19 @@ import static org.junit.Assert.fail;
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 
-import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestName;
 
 public class TestH5Tbasic {
-    @Rule public TestName testname = new TestName();
 
     @Before
     public void checkOpenIDs() {
         assertTrue("H5 open ids is 0",H5.getOpenIDCount()==0);
-        System.out.print(testname.getMethodName());
-    }
-    @After
-    public void nextTestName() {
-        System.out.println();
     }
     
     @Test
     public void testH5Tcopy() {
-        long H5strdid = -1;
+        int H5strdid = -1;
         try {
             H5strdid = H5.H5Tcopy(HDF5Constants.H5T_C_S1);
             assertTrue("H5.H5Tcopy",H5strdid > 0);
@@ -44,7 +35,7 @@ public class TestH5Tbasic {
     
     @Test
     public void testH5Tequal() {
-        long H5strdid = -1;
+        int H5strdid = -1;
         try {
             H5strdid = H5.H5Tcopy(HDF5Constants.H5T_C_S1);
             assertTrue("H5.H5Tcopy",H5strdid > 0);
@@ -63,7 +54,7 @@ public class TestH5Tbasic {
 
     @Test
     public void testH5Tequal_not() {
-        long H5strdid = -1;
+        int H5strdid = -1;
         try {
             H5strdid = H5.H5Tcopy(HDF5Constants.H5T_STD_U64LE);
             assertTrue("H5.H5Tcopy",H5strdid > 0);
@@ -85,8 +76,8 @@ public class TestH5Tbasic {
         String[] strs = {"a1234","b1234"};
         int srcLen = 5;
         int dstLen = 10;
-        long srcId = -1;
-        long dstId = -1;
+        int srcId = -1;
+        int dstId = -1;
         int dimSize = strs.length;
         byte[]   buf = new byte[dimSize*dstLen];
         
@@ -95,10 +86,10 @@ public class TestH5Tbasic {
    
         try {
             srcId = H5.H5Tcopy(HDF5Constants.H5T_C_S1);
-            H5.H5Tset_size(srcId, (long)srcLen);
+            H5.H5Tset_size(srcId, srcLen);
      
             dstId = H5.H5Tcopy(HDF5Constants.H5T_C_S1);
-            H5.H5Tset_size(dstId, (long)dstLen);
+            H5.H5Tset_size(dstId, dstLen);
      
             H5.H5Tconvert(srcId, dstId, dimSize, buf, null, HDF5Constants.H5P_DEFAULT);
         }
@@ -118,7 +109,7 @@ public class TestH5Tbasic {
     
     @Test
     public void testH5Torder_size() {
-        long H5strdid = -1;
+        int H5strdid = -1;
         try {
             // Fixed length string
             H5strdid = H5.H5Tcopy(HDF5Constants.H5T_C_S1);

@@ -9,23 +9,14 @@ import java.io.File;
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 
-import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestName;
 
 public class TestH5Fparams {
-    @Rule public TestName testname = new TestName();
 
     @Before
     public void checkOpenIDs() {
         assertTrue("H5 open ids is 0",H5.getOpenIDCount()==0);
-        System.out.print(testname.getMethodName());
-    }
-    @After
-    public void nextTestName() {
-        System.out.println();
     }
 
     @Test(expected = NullPointerException.class)
@@ -88,7 +79,7 @@ public class TestH5Fparams {
 
     @Test
     public void testH5Fcreate() {
-        long fid = -1;
+        int fid = -1;
         File file = null;
 
         try {
@@ -115,7 +106,7 @@ public class TestH5Fparams {
 
     @Test
     public void testH5Fflush_global() {
-        long fid = -1;
+        int fid = -1;
 
         try {
             fid = H5.H5Fcreate("test.h5", HDF5Constants.H5F_ACC_TRUNC,
@@ -141,7 +132,7 @@ public class TestH5Fparams {
 
     @Test
     public void testH5Fflush_local() {
-        long fid = -1;
+        int fid = -1;
 
         try {
             fid = H5.H5Fcreate("test.h5", HDF5Constants.H5F_ACC_TRUNC,

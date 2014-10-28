@@ -11,243 +11,241 @@ extern "C" {
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Acreate
- * Signature: (JLjava/lang/String;JJJ)J
+ * Signature: (ILjava/lang/String;III)I
  */
-JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Acreate
-  (JNIEnv *, jclass, jlong, jstring, jlong, jlong, jlong);
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Acreate
+  (JNIEnv *, jclass, jint, jstring, jint, jint, jint);
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Aopen_name
- * Signature: (JLjava/lang/String;)J
+ * Signature: (ILjava/lang/String;)I
  */
-JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Aopen_1name
-  (JNIEnv *, jclass, jlong, jstring);
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Aopen_1name
+  (JNIEnv *, jclass, jint, jstring);
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Aopen_idx
- * Signature: (JI)J
+ * Signature: (II)I
  */
-JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Aopen_1idx
-  (JNIEnv *, jclass, jlong, jint);
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Aopen_1idx
+  (JNIEnv *, jclass, jint, jint);
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Awrite
- * Signature: (JJ[B)I
+ * Signature: (II[B)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Awrite
-  (JNIEnv *, jclass, jlong, jlong, jbyteArray);
+  (JNIEnv *, jclass, jint, jint, jbyteArray);
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5AwriteVL
- * Signature: (JJ[Ljava/lang/String;)I
+ * Signature: (II[Ljava/lang/String;)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5AwriteVL
-  (JNIEnv *, jclass, jlong, jlong, jobjectArray);
+  (JNIEnv *, jclass, jint, jint, jobjectArray);
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Aread
- * Signature: (JJ[B)I
+ * Signature: (II[B)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Aread
-  (JNIEnv *, jclass, jlong, jlong, jbyteArray);
+  (JNIEnv *, jclass, jint, jint, jbyteArray);
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Aget_space
- * Signature: (J)J
+ * Signature: (I)I
  */
-JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Aget_1space
-  (JNIEnv *, jclass, jlong);
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Aget_1space
+  (JNIEnv *, jclass, jint);
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Aget_type
- * Signature: (J)J
+ * Signature: (I)I
  */
-JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Aget_1type
-  (JNIEnv *, jclass, jlong);
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Aget_1type
+  (JNIEnv *, jclass, jint);
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Aget_name
- * Signature: (JJ[Ljava/lang/String;)J
+ * Signature: (IJ[Ljava/lang/String;)J
  */
 JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Aget_1name
-  (JNIEnv *, jclass, jlong, jlong, jobjectArray);
+  (JNIEnv *, jclass, jint, jlong, jobjectArray);
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Aget_num_attrs
- * Signature: (J)I
+ * Signature: (I)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Aget_1num_1attrs
-  (JNIEnv *, jclass, jlong);
+  (JNIEnv *, jclass, jint);
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Adelete
- * Signature: (JLjava/lang/String;)I
+ * Signature: (ILjava/lang/String;)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Adelete
-  (JNIEnv *, jclass, jlong, jstring);
+  (JNIEnv *, jclass, jint, jstring);
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Aclose
- * Signature: (J)I
+ * Signature: (I)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Aclose
-  (JNIEnv *, jclass, jlong);
+  (JNIEnv *, jclass, jint);
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5AreadVL
- * Signature: (JJ[Ljava/lang/String;)I
+ * Signature: (II[Ljava/lang/String;)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5AreadVL
-  (JNIEnv *, jclass, jlong, jlong, jobjectArray);
-
+  (JNIEnv *, jclass, jint, jint, jobjectArray);
 /*
  * Copies the content of one dataset to another dataset
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Acopy
- * Signature: (JJ)I
+ * Signature: (II)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Acopy
-  (JNIEnv *, jclass, jlong, jlong);
+  (JNIEnv *, jclass, jint, jint);
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    _H5Acreate2
- * Signature: (JLjava/lang/String;JJJJ)J
+ * Signature: (ILjava/lang/String;IIII)I
  */
-JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Acreate2
-(JNIEnv *, jclass, jlong, jstring, jlong, jlong, jlong, jlong);
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Acreate2
+(JNIEnv *, jclass, jint, jstring, jint, jint, jint, jint);
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    _H5Aopen
- * Signature: (JLjava/lang/String;J)J
+ * Signature: (ILjava/lang/String;I)I
  */
-JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Aopen
-  (JNIEnv *, jclass, jlong, jstring, jlong);
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Aopen
+  (JNIEnv *, jclass, jint, jstring, jint);
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    _H5Aopen_by_idx
- * Signature: (JLjava/lang/String;IIJJJ)J
+ * Signature: (ILjava/lang/String;IIIII)I
  */
-JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Aopen_1by_1idx
-  (JNIEnv *, jclass, jlong, jstring, jint, jint, jlong, jlong, jlong);
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Aopen_1by_1idx
+  (JNIEnv *, jclass, jint, jstring, jint, jint, jlong, jint, jint);
 
 /*
 * Class:     ncsa_hdf_hdf5lib_H5
 * Method:    _H5Acreate_by_name
-* Signature: (JLjava/lang/String;Ljava/lang/String;JJJJJ)J
+* Signature: (ILjava/lang/String;Ljava/lang/String;IIIII)I
 */
-JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Acreate_1by_1name
-(JNIEnv *, jclass, jlong, jstring, jstring, jlong, jlong, jlong, jlong, jlong);
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Acreate_1by_1name
+(JNIEnv *, jclass, jint, jstring, jstring, jint, jint, jint, jint, jint);
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Aexists_by_name
- * Signature: (JLjava/lang/String;Ljava/lang/String;J)Z
+ * Signature: (ILjava/lang/String;Ljava/lang/String;I)Z
  */
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Aexists_1by_1name
-  (JNIEnv *, jclass, jlong, jstring, jstring, jlong);
+  (JNIEnv *, jclass, jint, jstring, jstring, jint);
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Arename
- * Signature: (JLjava/lang/String;Ljava/lang/String)I
+ * Signature: (ILjava/lang/String;Ljava/lang/String)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Arename
-  (JNIEnv *, jclass, jlong, jstring, jstring);
+  (JNIEnv *, jclass, jint, jstring, jstring);
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Arename_by_name
- * Signature: (JLjava/lang/String;Ljava/lang/String;Ljava/lang/String;J)I
+ * Signature: (ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;I)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Arename_1by_1name
-  (JNIEnv *, jclass, jlong, jstring, jstring, jstring, jlong);
+  (JNIEnv *, jclass, jint, jstring, jstring, jstring, jint);
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Aget_name_by_idx
- * Signature: (JLjava/lang/String;IIJJ)Ljava/lang/String;
+ * Signature: (ILjava/lang/String;IIJI)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Aget_1name_1by_1idx
-  (JNIEnv *, jclass, jlong, jstring, jint, jint, jlong, jlong);
+  (JNIEnv *, jclass, jint, jstring, jint, jint, jlong, jint);
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Aget_storage_size
- * Signature: (J)J
+ * Signature: (I)J
  */
 JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Aget_1storage_1size
-  (JNIEnv *, jclass, jlong);
-
+  (JNIEnv *, jclass, jint);
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Aget_info
- * Signature: (J)Lncsa/hdf/hdf5lib/structs/H5A_info_t;
+ * Signature: (I)Lncsa/hdf/hdf5lib/structs/H5A_info_t;
  */
 JNIEXPORT jobject JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Aget_1info
-  (JNIEnv *, jclass, jlong);
+  (JNIEnv *, jclass, jint);
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Aget_info_by_idx
- * Signature: (JLjava/lang/String;IIJJ)Lncsa/hdf/hdf5lib/structs/H5A_info_t;
+ * Signature: (ILjava/lang/String;IIJI)Lncsa/hdf/hdf5lib/structs/H5A_info_t;
  */
 JNIEXPORT jobject JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Aget_1info_1by_1idx
-  (JNIEnv *, jclass, jlong, jstring, jint, jint, jlong, jlong);
+  (JNIEnv *, jclass, jint, jstring, jint, jint, jlong, jint);
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Aget_info_by_name
- * Signature: (JLjava/lang/String;Ljava/lang/String;J)Lncsa/hdf/hdf5lib/structs/H5A_info_t;
+ * Signature: (ILjava/lang/String;Ljava/lang/String;I)Lncsa/hdf/hdf5lib/structs/H5A_info_t;
  */
 JNIEXPORT jobject JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Aget_1info_1by_1name
-  (JNIEnv *, jclass, jlong, jstring, jstring, jlong);
+  (JNIEnv *, jclass, jint, jstring, jstring, jint);
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Adelete_by_name
- * Signature: (JLjava/lang/String;Ljava/lang/String;J)I
+ * Signature: (ILjava/lang/String;Ljava/lang/String;I)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Adelete_1by_1name
-  (JNIEnv *, jclass, jlong, jstring, jstring, jlong);
+  (JNIEnv *, jclass, jint, jstring, jstring, jint);
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Aexists
- * Signature: (JLjava/lang/String;)Z
+ * Signature: (ILjava/lang/String;)Z
  */
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Aexists
-  (JNIEnv *, jclass, jlong, jstring);
+  (JNIEnv *, jclass, jint, jstring);
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Adelete_by_idx
- * Signature: (JLjava/lang/String;IIJJ)V
+ * Signature: (ILjava/lang/String;IIJI)V
  */
 JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Adelete_1by_1idx
-  (JNIEnv *, jclass, jlong, jstring, jint, jint, jlong, jlong);
+  (JNIEnv *, jclass, jint, jstring, jint, jint, jlong, jint);
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    _H5Aopen_by_name
- * Signature: (JLjava/lang/String;Ljava/lang/String;JJ)J
+ * Signature: (ILjava/lang/String;Ljava/lang/String;II)I
  */
-JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Aopen_1by_1name
-  (JNIEnv *, jclass, jlong, jstring, jstring, jlong, jlong);
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Aopen_1by_1name
+  (JNIEnv *, jclass, jint, jstring, jstring, jint, jint);
 
 #ifdef __cplusplus
 }

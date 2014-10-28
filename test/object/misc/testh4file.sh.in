@@ -1,0 +1,24 @@
+#!/bin/sh
+
+# Set up default variable values if not supplied by the user.
+
+# where the new builds exist
+HDFBLD_HOME=@abs_top_builddir@
+export HDFBLD_HOME
+
+# where Java is installed (requires jdk1.4.x)
+JAVAPATH=@JAVABIN@
+export JAVAPATH
+
+CLASSPATH=$HDFBLD_HOME"/lib/jh4toh5.jar:"$HDFBLD_HOME"/lib/jhdf.jar:"$HDFBLD_HOME"/lib/jhdf5.jar:"$HDFBLD_HOME"/lib/jhdf5obj.jar:"$HDFBLD_HOME"/lib/jhdfobj.jar:"$HDFBLD_HOME"/lib/slf4j-api-1.7.5.jar:"$HDFBLD_HOME"/lib/extlf4j-nop-1.7.5.jar:../../.."
+
+LD_LIBRARY_PATH=$HDFBLD_HOME"/lib/@JAVATARG@"
+
+export CLASSPATH
+export LD_LIBRARY_PATH
+
+#modify to try different files
+@JAVA@ -Djava.library.path=$LD_LIBRARY_PATH -Dncsa.hdf.hdflib.HDFLibrary.hdflib=$HDFBLD_HOME"/lib/@JAVATARG@/libjhdf.so" test.object.misc.TestH4File vg_all_test.hdf
+
+#check output?
+

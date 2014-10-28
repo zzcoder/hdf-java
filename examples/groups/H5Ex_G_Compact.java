@@ -43,11 +43,11 @@ public class H5Ex_G_Compact {
     }
 
     public static void CreateGroup() {
-        long         file_id = -1;
-        long         group_id = -1;
-        long         fapl_id = -1; 
-        H5G_info_t   ginfo;
-        long         size;
+        int         file_id = -1;
+        int         group_id = -1;
+        int         fapl_id = -1; 
+        H5G_info_t  ginfo;
+        long        size;
 
         //Create file 1.  This file will use original format groups.
         try {
@@ -79,10 +79,6 @@ public class H5Ex_G_Compact {
                     break;
                 case H5G_STORAGE_TYPE_SYMBOL_TABLE:
                     System.out.println("H5G_STORAGE_TYPE_SYMBOL_TABLE"); //Original format 
-                case H5G_STORAGE_TYPE_UNKNOWN:
-                    break;
-                default:
-                    break;
                 }
             }
         }
@@ -179,10 +175,6 @@ public class H5Ex_G_Compact {
                     break;
                 case H5G_STORAGE_TYPE_SYMBOL_TABLE:
                     System.out.println("H5G_STORAGE_TYPE_SYMBOL_TABLE"); // Original format
-                case H5G_STORAGE_TYPE_UNKNOWN:
-                    break;
-                default:
-                    break;
                 }
             }
         }

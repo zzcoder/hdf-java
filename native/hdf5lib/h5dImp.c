@@ -50,6 +50,12 @@ extern "C" {
   #define GETCWD getcwd
 #endif
 
+#ifdef H5_HAVE_WIN32_API
+  #define strtoll(S,R,N)     _strtoi64(S,R,N)
+  #define strtoull(S,R,N)    _strtoui64(S,R,N)
+  #define strtof(S,R)    atof(S)
+#endif /* H5_HAVE_WIN32_API */
+
 #ifdef __cplusplus
   #define CBENVPTR (cbenv)
   #define CBENVPAR 
@@ -154,11 +160,11 @@ herr_t H5DreadVL_notstr (JNIEnv *env, hid_t did, hid_t tid, hid_t mem_sid, hid_t
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    _H5Dcreate
- * Signature: (JLjava/lang/String;JJJ)J
+ * Signature: (ILjava/lang/String;III)I
  */
-JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Dcreate
-  (JNIEnv *env, jclass clss, jlong loc_id, jstring name, jlong type_id,
-          jlong space_id, jlong create_plist_id)
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Dcreate
+  (JNIEnv *env, jclass clss, jint loc_id, jstring name, jint type_id,
+  jint space_id, jint create_plist_id)
 {
     hid_t    status;
     char    *file;
@@ -181,7 +187,7 @@ JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Dcreate
         h5libraryError(env);
     }
 
-    return (jlong)status;
+    return (jint)status;
 }
 
 /*
@@ -255,10 +261,10 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dgetdir_1ext
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    _H5Dopen
- * Signature: (JLjava/lang/String;)J
+ * Signature: (ILjava/lang/String;)I
  */
-JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Dopen
-  (JNIEnv *env, jclass clss, jlong loc_id, jstring name)
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Dopen
+  (JNIEnv *env, jclass clss, jint loc_id, jstring name)
 {
     hid_t    status;
     char    *file;
@@ -282,16 +288,16 @@ JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Dopen
         h5libraryError(env);
     }
 
-    return (jlong)status;
+    return (jint)status;
 }
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    _H5Dget_space
- * Signature: (J)J
+ * Signature: (I)I
  */
-JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Dget_1space
-  (JNIEnv *env, jclass clss, jlong dataset_id)
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Dget_1space
+  (JNIEnv *env, jclass clss, jint dataset_id)
 {
     hid_t retVal = -1;
 
@@ -300,16 +306,16 @@ JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Dget_1space
         h5libraryError(env);
     }
 
-    return (jlong)retVal;
+    return (jint)retVal;
 }
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    _H5Dget_type
- * Signature: (J)J
+ * Signature: (I)I
  */
-JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Dget_1type
-  (JNIEnv *env, jclass clss, jlong dataset_id)
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Dget_1type
+  (JNIEnv *env, jclass clss, jint dataset_id)
 {
     hid_t retVal = -1;
 
@@ -318,16 +324,16 @@ JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Dget_1type
         h5libraryError(env);
     }
 
-    return (jlong)retVal;
+    return (jint)retVal;
 }
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    _H5Dget_create_plist
- * Signature: (J)J
+ * Signature: (I)I
  */
-JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Dget_1create_1plist
-  (JNIEnv *env, jclass clss, jlong dataset_id)
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Dget_1create_1plist
+  (JNIEnv *env, jclass clss, jint dataset_id)
 {
     hid_t retVal = -1;
 
@@ -336,7 +342,7 @@ JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Dget_1create_1plist
         h5libraryError(env);
     }
 
-    return (jlong)retVal;
+    return (jint)retVal;
 }
 
 htri_t H5Tdetect_variable_str(hid_t tid) {
@@ -356,11 +362,11 @@ htri_t H5Tdetect_variable_str(hid_t tid) {
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Dread
- * Signature: (JJJJJ[BZ)I
+ * Signature: (IIIII[BZ)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dread
-  (JNIEnv *env, jclass clss, jlong dataset_id, jlong mem_type_id, jlong mem_space_id,
-          jlong file_space_id, jlong xfer_plist_id, jbyteArray buf, jboolean isCriticalPinning)
+  (JNIEnv *env, jclass clss, jint dataset_id, jint mem_type_id, jint mem_space_id,
+  jint file_space_id, jint xfer_plist_id, jbyteArray buf, jboolean isCriticalPinning)
 {
     herr_t   status;
     jbyte   *buffP;
@@ -409,11 +415,11 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dread
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Dwrite
- * Signature: (JJJJJ[BZ)I
+ * Signature: (IIIII[BZ)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dwrite
-  (JNIEnv *env, jclass clss, jlong dataset_id, jlong mem_type_id, jlong mem_space_id,
-          jlong file_space_id, jlong xfer_plist_id, jbyteArray buf, jboolean isCriticalPinning)
+  (JNIEnv *env, jclass clss, jint dataset_id, jint mem_type_id, jint mem_space_id,
+  jint file_space_id, jint xfer_plist_id, jbyteArray buf, jboolean isCriticalPinning)
 {
     herr_t   status;
     jbyte   *buffP;
@@ -445,10 +451,10 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dwrite
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Dextend
- * Signature: (J[B)I
+ * Signature: (I[B)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dextend
-  (JNIEnv *env, jclass clss, jlong dataset_id, jbyteArray size)
+  (JNIEnv *env, jclass clss, jint dataset_id, jbyteArray size)
 {
     herr_t   status;
     int      i;
@@ -502,12 +508,12 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dextend
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    _H5Dclose
- * Signature: (J)I
+ * Signature: (I)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Dclose
-  (JNIEnv *env, jclass clss, jlong dataset_id)
+  (JNIEnv *env, jclass clss, jint dataset_id)
 {
-    herr_t retVal = 0;
+    hid_t retVal = 0;
 
     retVal = H5Dclose((hid_t)dataset_id);
 
@@ -521,10 +527,10 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Dclose
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Dget_storage_size
- * Signature: (J)J
+ * Signature: (I)J
  */
 JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dget_1storage_1size
-  (JNIEnv *env, jclass clss, jlong dataset_id)
+  (JNIEnv *env, jclass clss, jint dataset_id)
 {
     hsize_t retVal = (hsize_t)-1;
     if (dataset_id < 0) {
@@ -538,10 +544,10 @@ JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dget_1storage_1size
  * Copies the content of one dataset to another dataset
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Dcopy
- * Signature: (JJ)I
+ * Signature: (II)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dcopy
-  (JNIEnv *env, jclass clss, jlong src_id, jlong dst_id)
+  (JNIEnv *env, jclass clss, jint src_id, jint dst_id)
 {
     jbyte  *buf;
     herr_t  retVal = -1;
@@ -609,10 +615,10 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dcopy
  * Copies the content of one dataset to another dataset
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Dvlen_get_buf_size
- * Signature: (JJJ[I)I
+ * Signature: (III[I)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dvlen_1get_1buf_1size
-  (JNIEnv *env, jclass clss, jlong dataset_id, jlong type_id, jlong space_id,
+  (JNIEnv *env, jclass clss, jint dataset_id, jint type_id, jint space_id,
           jintArray size)
 {
     jint    *P;
@@ -648,11 +654,11 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dvlen_1get_1buf_1size
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Dvlen_reclaim
- * Signature: (JJJ[B)I
+ * Signature: (III[B)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dvlen_1reclaim
-  (JNIEnv *env, jclass clss, jlong type_id, jlong space_id,
-          jlong xfer_plist_id, jbyteArray buf)
+  (JNIEnv *env, jclass clss, jint type_id, jint space_id,
+   jint xfer_plist_id, jbyteArray buf)
 {
     herr_t   status;
     jbyte   *byteP;
@@ -686,10 +692,10 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dvlen_1reclaim
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    _H5Dget_space_status
- * Signature: (J[I)I
+ * Signature: (I[I)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Dget_1space_1status
-  (JNIEnv *env, jclass clss, jlong dset_id, jintArray status)
+  (JNIEnv *env, jclass clss, jint dset_id, jintArray status)
 {
     jint    *theArray;
     jboolean isCopy;
@@ -736,11 +742,11 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Dget_1space_1status
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Dread_short
- * Signature: (JJJJJ[SZ)I
+ * Signature: (IIIII[SZ)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dread_1short
-  (JNIEnv *env, jclass clss, jlong dataset_id, jlong mem_type_id, jlong mem_space_id,
-          jlong file_space_id, jlong xfer_plist_id, jshortArray buf, jboolean isCriticalPinning)
+  (JNIEnv *env, jclass clss, jint dataset_id, jint mem_type_id, jint mem_space_id,
+  jint file_space_id, jint xfer_plist_id, jshortArray buf, jboolean isCriticalPinning)
 {
     herr_t   status;
     jshort  *buffP;
@@ -788,11 +794,11 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dread_1short
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Dread_int
- * Signature: (JJJJJ[IZ)I
+ * Signature: (IIIII[IZ)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dread_1int
-  (JNIEnv *env, jclass clss, jlong dataset_id, jlong mem_type_id, jlong mem_space_id,
-          jlong file_space_id, jlong xfer_plist_id, jintArray buf, jboolean isCriticalPinning)
+  (JNIEnv *env, jclass clss, jint dataset_id, jint mem_type_id, jint mem_space_id,
+  jint file_space_id, jint xfer_plist_id, jintArray buf, jboolean isCriticalPinning)
 {
     herr_t   status;
     jint    *buffP;
@@ -840,11 +846,11 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dread_1int
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Dread_long
- * Signature: (JJJJJ[JZ)I
+ * Signature: (IIIII[JZ)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dread_1long
-  (JNIEnv *env, jclass clss, jlong dataset_id, jlong mem_type_id, jlong mem_space_id,
-          jlong file_space_id, jlong xfer_plist_id, jlongArray buf, jboolean isCriticalPinning)
+  (JNIEnv *env, jclass clss, jint dataset_id, jint mem_type_id, jint mem_space_id,
+  jint file_space_id, jint xfer_plist_id, jlongArray buf, jboolean isCriticalPinning)
 {
     herr_t   status;
     jlong   *buffP;
@@ -892,11 +898,11 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dread_1long
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Dread_float
- * Signature: (JJJJJ[FZ)I
+ * Signature: (IIIII[FZ)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dread_1float
-  (JNIEnv *env, jclass clss, jlong dataset_id, jlong mem_type_id, jlong mem_space_id,
-          jlong file_space_id, jlong xfer_plist_id, jfloatArray buf, jboolean isCriticalPinning)
+  (JNIEnv *env, jclass clss, jint dataset_id, jint mem_type_id, jint mem_space_id,
+  jint file_space_id, jint xfer_plist_id, jfloatArray buf, jboolean isCriticalPinning)
 {
     herr_t   status;
     jfloat  *buffP;
@@ -944,11 +950,11 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dread_1float
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Dread_double
- * Signature: (JJJJJ[DZ)I
+ * Signature: (IIIII[DZ)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dread_1double
-  (JNIEnv *env, jclass clss, jlong dataset_id, jlong mem_type_id, jlong mem_space_id,
-          jlong file_space_id, jlong xfer_plist_id, jdoubleArray buf, jboolean isCriticalPinning)
+  (JNIEnv *env, jclass clss, jint dataset_id, jint mem_type_id, jint mem_space_id,
+  jint file_space_id, jint xfer_plist_id, jdoubleArray buf, jboolean isCriticalPinning)
 {
     herr_t   status;
     jdouble *buffP;
@@ -995,11 +1001,11 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dread_1double
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Dread_string
- * Signature: (JJJJJ[Ljava/lang/String;)I
+ * Signature: (IIIII[Ljava/lang/String;)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dread_1string
-  (JNIEnv *env, jclass clss, jlong dataset_id, jlong mem_type_id, jlong mem_space_id,
-          jlong file_space_id, jlong xfer_plist_id, jobjectArray j_buf)
+  (JNIEnv *env, jclass clss, jint dataset_id, jint mem_type_id, jint mem_space_id,
+  jint file_space_id, jint xfer_plist_id, jobjectArray j_buf)
 {
     herr_t  status;
     char   *c_buf;
@@ -1075,11 +1081,11 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dread_1string
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Dwrite_short
- * Signature: (JJJJJ[SZ)I
+ * Signature: (IIIII[SZ)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dwrite_1short
-  (JNIEnv *env, jclass clss, jlong dataset_id, jlong mem_type_id, jlong mem_space_id,
-          jlong file_space_id, jlong xfer_plist_id, jshortArray buf, jboolean isCriticalPinning)
+  (JNIEnv *env, jclass clss, jint dataset_id, jint mem_type_id, jint mem_space_id,
+  jint file_space_id, jint xfer_plist_id, jshortArray buf, jboolean isCriticalPinning)
 {
     herr_t   status;
     jshort  *buffP;
@@ -1111,11 +1117,11 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dwrite_1short
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Dwrite_int
- * Signature: (JJJJJ[IZ)I
+ * Signature: (IIIII[IZ)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dwrite_1int
-  (JNIEnv *env, jclass clss, jlong dataset_id, jlong mem_type_id, jlong mem_space_id,
-          jlong file_space_id, jlong xfer_plist_id, jintArray buf, jboolean isCriticalPinning)
+  (JNIEnv *env, jclass clss, jint dataset_id, jint mem_type_id, jint mem_space_id,
+  jint file_space_id, jint xfer_plist_id, jintArray buf, jboolean isCriticalPinning)
 {
     herr_t   status;
     jint    *buffP;
@@ -1147,11 +1153,11 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dwrite_1int
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Dwrite_long
- * Signature: (JJJJJ[JZ)I
+ * Signature: (IIIII[JZ)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dwrite_1long
-  (JNIEnv *env, jclass clss, jlong dataset_id, jlong mem_type_id, jlong mem_space_id,
-          jlong file_space_id, jlong xfer_plist_id, jlongArray buf, jboolean isCriticalPinning)
+  (JNIEnv *env, jclass clss, jint dataset_id, jint mem_type_id, jint mem_space_id,
+  jint file_space_id, jint xfer_plist_id, jlongArray buf, jboolean isCriticalPinning)
 {
     herr_t   status;
     jlong   *buffP;
@@ -1182,11 +1188,11 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dwrite_1long
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Dwrite_float
- * Signature: (JJJJJ[FZ)I
+ * Signature: (IIIII[FZ)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dwrite_1float
-  (JNIEnv *env, jclass clss, jlong dataset_id, jlong mem_type_id, jlong mem_space_id,
-          jlong file_space_id, jlong xfer_plist_id, jfloatArray buf, jboolean isCriticalPinning)
+  (JNIEnv *env, jclass clss, jint dataset_id, jint mem_type_id, jint mem_space_id,
+  jint file_space_id, jint xfer_plist_id, jfloatArray buf, jboolean isCriticalPinning)
 {
     herr_t   status;
     jfloat  *buffP;
@@ -1217,11 +1223,11 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dwrite_1float
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Dwrite_double
- * Signature: (JJJJJ[DZ)I
+ * Signature: (IIIII[DZ)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dwrite_1double
-  (JNIEnv *env, jclass clss, jlong dataset_id, jlong mem_type_id, jlong mem_space_id,
-          jlong file_space_id, jlong xfer_plist_id, jdoubleArray buf, jboolean isCriticalPinning)
+  (JNIEnv *env, jclass clss, jint dataset_id, jint mem_type_id, jint mem_space_id,
+  jint file_space_id, jint xfer_plist_id, jdoubleArray buf, jboolean isCriticalPinning)
 {
     herr_t   status;
     jdouble *buffP;
@@ -1253,11 +1259,11 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dwrite_1double
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5DwriteString
- * Signature: (JJJJJ[Ljava/lang/String;)I
+ * Signature: (IIIII[Ljava/lang/String;)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5DwriteString
-  (JNIEnv *env, jclass clss, jlong dataset_id, jlong mem_type_id, jlong mem_space_id,
-          jlong file_space_id, jlong xfer_plist_id, jobjectArray buf)
+  (JNIEnv *env, jclass clss, jint dataset_id, jint mem_type_id, jint mem_space_id,
+  jint file_space_id, jint xfer_plist_id, jobjectArray buf)
 {
     herr_t  status;
     char  **wdata;
@@ -1318,20 +1324,46 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5DwriteString
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5DwriteNotString
- * Signature: (JJJJJ[BZ)I
+ * Signature: (IIIII[Ljava/lang/String;Z)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5DwriteNotString
-  (JNIEnv *env, jclass clss, jlong dataset_id, jlong mem_type_id, jlong mem_space_id,
-          jlong file_space_id, jlong xfer_plist_id, jbyteArray buf, jboolean isCriticalPinning)
+  (JNIEnv *env, jclass clss, jint dataset_id, jint mem_type_id, jint mem_space_id,
+  jint file_space_id, jint xfer_plist_id, jobjectArray buf, jboolean isCriticalPinning)
 {
     herr_t  status;
     hvl_t  *wdata;
-    size_t  size;
     jsize   n;
     jbyte   *buffP;
     jboolean isCopy;
     jint    i;
     jint    j;
+    unsigned char   tmp_uchar = 0;
+    char            tmp_char = 0;
+    unsigned short  tmp_ushort = 0;
+    short           tmp_short = 0;
+    unsigned int    tmp_uint = 0;
+    int             tmp_int = 0;
+    unsigned long   tmp_ulong = 0;
+    long            tmp_long = 0;
+    unsigned long long tmp_ullong = 0;
+    long long       tmp_llong = 0;
+    float           tmp_float = 0.0;
+    double          tmp_double = 0.0;
+    long double     tmp_ldouble = 0.0;
+    H5T_class_t     tclass = H5Tget_class(mem_type_id);
+    size_t          size = H5Tget_size(mem_type_id);
+    H5T_sign_t      nsign = H5Tget_sign(mem_type_id);
+    hid_t           sid = H5Aget_space(mem_type_id);
+    hid_t           basetid = -1;
+    H5T_class_t     basetclass = -1;
+    char           *temp;
+    char           *token;
+
+    if(tclass == H5T_VLEN) {
+        basetid = H5Tget_super(mem_type_id);
+        size = H5Tget_size(basetid);
+        basetclass = H5Tget_class(basetid);
+    }
 
     if (buf == NULL) {
         h5nullArgument(env, "H5DwriteNotString:  buf is NULL");
@@ -1347,41 +1379,521 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5DwriteNotString
 
     /* rebuild VL structure */
     n = ENVPTR->GetArrayLength(ENVPAR (jarray) buf);
-    wdata = (hvl_t*)calloc(n, sizeof(hvl_t));
-
+printf("H5AwriteVL_num: n=%d of len %d\n", n, sizeof(buf));
+    wdata = (hvl_t*)calloc(n+1, sizeof(hvl_t));
     if (!wdata) {
         h5JNIFatalError(env, "H5DwriteNotString:  cannot allocate buffer");
         return -1;
     }
-
-    size = H5Tget_size(mem_type_id);
-    memset(wdata, 0, n * sizeof(hvl_t));
     /* Allocate and initialize VL data to write */
-//    for (i = 0; i < n; i++) {
-//        jbyte *obj = (jbyte *) ENVPTR->GetByteArrayElement(ENVPAR (jbyteArray) buf, i);
-//        if (obj != 0) {
-//            jsize length = ENVPTR->GetStringUTFLength(ENVPAR obj);
-//            const char *utf8 = ENVPTR->GetStringUTFChars(ENVPAR obj, 0);
-//
-//            if (utf8) {
-//                wdata[i].p = malloc(length * size);
-//                if (wdata[i].p == NULL) {
-//                    h5JNIFatalError(env, "H5DwriteNotString:  cannot allocate memory for VL data!");
-//                    return -1;
-//                } /* end if */
-//                wdata[i].len = length;
-//                for(j = 0; j < length; j++)
-//                    switch(mem_type_id) {
-//                    case float:
-//                        ((float *)wdata[i].p)[j] = (float)(utf8);
-//                        break;
-//                    }
-//            }
-//
-//            ENVPTR->ReleaseStringUTFChars(ENVPAR obj, utf8);
-//            ENVPTR->ReleaseByteArrayElements(ENVPAR ref, refP, JNI_ABORT);
-//        }
-//    } /*for (i = 0; i < n; ++i) */
+    for (i = 0; i < n; i++) {
+        int j;
+
+        jstring obj = (jstring) ENVPTR->GetObjectArrayElement(ENVPAR (jobjectArray) buf, i);
+        if (obj != 0) {
+            jsize length = ENVPTR->GetStringUTFLength(ENVPAR obj);
+            const char *utf8 = ENVPTR->GetStringUTFChars(ENVPAR obj, 0);
+printf("utf8=%s\n", utf8);
+            temp = malloc(length+1);
+            strncpy(temp, utf8, length);
+            temp[length] = '\0';
+printf("temp=%s\n", temp);
+            token = strtok(temp, ",");
+printf("token[0]:%s\n", token);
+            j = 1;
+            while (1) {
+                token = strtok (NULL, ",");
+printf("token[%d]:%s\n", j, token);
+                if (token == NULL)
+                    break;
+                j++;
+            }
+printf("H5AwriteVL_num: count=%d obj_len=%d of utf8_len %d\n", j, length, sizeof(utf8));
+            wdata[i].p = malloc(j * size);
+            wdata[i].len = j;
+
+            strncpy(temp, utf8, length);
+            temp[length] = '\0';
+            switch (tclass) {
+                case H5T_FLOAT:
+                    if (sizeof(float) == size) {
+printf("float:%s\n", utf8);
+                        j = 0;
+                        tmp_float = strtof(strtok(temp, ","), NULL);
+                        ((float *)wdata[i].p)[j++] = tmp_float;
+
+                        while (1) {
+                            token = strtok (NULL, ",");
+                            if (token == NULL)
+                                break;
+                            if (token[0] == ' ')
+                                token++;
+                            tmp_float = strtof(token, NULL);
+                            ((float *)wdata[i].p)[j++] = tmp_float;
+                        }
+                    }
+                    else if (sizeof(double) == size) {
+printf("double:%s\n", utf8);
+                        j = 0;
+                        tmp_double = strtod(strtok(temp, ","), NULL);
+                        ((double *)wdata[i].p)[j++] = tmp_double;
+
+                        while (1) {
+                            token = strtok (NULL, ",");
+                            if (token == NULL)
+                                break;
+                            if (token[0] == ' ')
+                                token++;
+                            tmp_double = strtod(token, NULL);
+                            ((double *)wdata[i].p)[j++] = tmp_double;
+                        }
+                    }
+#if H5_SIZEOF_LONG_DOUBLE !=0
+                    else if (sizeof(long double) == size) {
+printf("longdouble:%s\n", utf8);
+                        j = 0;
+                        tmp_ldouble = strtold(strtok(temp, ","), NULL);
+                        ((long double *)wdata[i].p)[j++] = tmp_ldouble;
+
+                        while (1) {
+                            token = strtok (NULL, ",");
+                            if (token == NULL)
+                                break;
+                            if (token[0] == ' ')
+                                token++;
+                            tmp_ldouble = strtold(token, NULL);
+                            ((long double *)wdata[i].p)[j++] = tmp_ldouble;
+                        }
+                   }
+#endif
+                    break;
+                case H5T_INTEGER:
+                    if (sizeof(char) == size) {
+                        if(H5T_SGN_NONE == nsign) {
+printf("uchar:%s\n", utf8);
+                            j = 0;
+                            tmp_uchar = (unsigned char)strtoul(strtok(temp, ","), NULL, 10);
+                            ((unsigned char *)wdata[i].p)[j++] = tmp_uchar;
+
+                            while (1) {
+                                token = strtok (NULL, ",");
+                                if (token == NULL)
+                                    break;
+                                if (token[0] == ' ')
+                                    token++;
+                                tmp_uchar = (unsigned char)strtoul(token, NULL, 10);
+                                ((unsigned char *)wdata[i].p)[j++] = tmp_uchar;
+                            }
+                        }
+                        else {
+printf("char:%s\n", utf8);
+                            j = 0;
+                            tmp_char = (char)strtoul(strtok(temp, ","), NULL, 10);
+                            ((char *)wdata[i].p)[j++] = tmp_char;
+
+                            while (1) {
+                                token = strtok (NULL, ",");
+                                if (token == NULL)
+                                    break;
+                                if (token[0] == ' ')
+                                    token++;
+                                tmp_char = (char)strtoul(token, NULL, 10);
+                                ((char *)wdata[i].p)[j++] = tmp_char;
+                            }
+                        }
+                    }
+                    else if (sizeof(int) == size) {
+                        if(H5T_SGN_NONE == nsign) {
+printf("uint:%s\n", utf8);
+                            j = 0;
+                            tmp_uint = (unsigned int)strtoul(strtok(temp, ","), NULL, 10);
+                            ((unsigned int *)wdata[i].p)[j++] = tmp_uint;
+
+                            while (1) {
+                                token = strtok (NULL, ",");
+                                if (token == NULL)
+                                    break;
+                                if (token[0] == ' ')
+                                    token++;
+                                tmp_uint = (unsigned int)strtoul(token, NULL, 10);
+                                ((unsigned int *)wdata[i].p)[j++] = tmp_uint;
+                            }
+                        }
+                        else {
+printf("int:%s\n", utf8);
+                            j = 0;
+                            tmp_int = (int)strtoul(strtok(temp, ","), NULL, 10);
+                            ((int *)wdata[i].p)[j++] = tmp_int;
+
+                            while (1) {
+                                token = strtok (NULL, ",");
+                                if (token == NULL)
+                                    break;
+                                if (token[0] == ' ')
+                                    token++;
+                                tmp_int = (int)strtoul(token, NULL, 10);
+                                ((int *)wdata[i].p)[j++] = tmp_int;
+                            }
+                        }
+                    }
+                    else if (sizeof(short) == size) {
+                        if(H5T_SGN_NONE == nsign) {
+printf("ushort:%s\n", utf8);
+                            j = 0;
+                            tmp_ushort = (unsigned short)strtoul(strtok(temp, ","), NULL, 10);
+                            ((unsigned short *)wdata[i].p)[j++] = tmp_ushort;
+
+                            while (1) {
+                                token = strtok (NULL, ",");
+                                if (token == NULL)
+                                    break;
+                                if (token[0] == ' ')
+                                    token++;
+                                tmp_ushort = (unsigned short)strtoul(token, NULL, 10);
+                                ((unsigned short *)wdata[i].p)[j++] = tmp_ushort;
+                            }
+                        }
+                        else {
+printf("short:%s\n", utf8);
+                            j = 0;
+                            tmp_short = (short)strtoul(strtok(temp, ","), NULL, 10);
+                            ((short *)wdata[i].p)[j++] = tmp_short;
+
+                            while (1) {
+                                token = strtok (NULL, ",");
+                                if (token == NULL)
+                                    break;
+                                if (token[0] == ' ')
+                                    token++;
+                                tmp_short = (short)strtoul(token, NULL, 10);
+                                ((short *)wdata[i].p)[j++] = tmp_short;
+                            }
+                        }
+                    }
+                    else if (sizeof(long) == size) {
+                        if(H5T_SGN_NONE == nsign) {
+printf("ulong:%s\n", utf8);
+                            j = 0;
+                            tmp_ulong = strtoul(strtok(temp, ","), NULL, 10);
+                            ((unsigned long *)wdata[i].p)[j++] = tmp_ulong;
+
+                            while (1) {
+                                token = strtok (NULL, ",");
+                                if (token == NULL)
+                                    break;
+                                if (token[0] == ' ')
+                                    token++;
+                                tmp_ulong = strtoul(token, NULL, 10);
+                                ((unsigned long *)wdata[i].p)[j++] = tmp_ulong;
+                            }
+                        }
+                        else {
+printf("long:%s\n", utf8);
+                            j = 0;
+                            tmp_long = strtol(strtok(temp, ","), NULL, 10);
+                            ((long *)wdata[i].p)[j++] = tmp_long;
+
+                            while (1) {
+                                token = strtok (NULL, ",");
+                                if (token == NULL)
+                                    break;
+                                if (token[0] == ' ')
+                                    token++;
+                                tmp_long = strtol(token, NULL, 10);
+                                ((long *)wdata[i].p)[j++] = tmp_long;
+                            }
+                        }
+                    }
+                    else if (sizeof(long long) == size) {
+                        if(H5T_SGN_NONE == nsign) {
+printf("ulonglong:%s\n", utf8);
+                            j = 0;
+                            tmp_ullong = strtoull(strtok(temp, ","), NULL, 10);
+                            ((unsigned long long *)wdata[i].p)[j++] = tmp_ullong;
+
+                            while (1) {
+                                token = strtok (NULL, ",");
+                                if (token == NULL)
+                                    break;
+                                if (token[0] == ' ')
+                                    token++;
+                                tmp_ullong = strtoull(token, NULL, 10);
+                                ((unsigned long long *)wdata[i].p)[j++] = tmp_ullong;
+                            }
+                        }
+                        else {
+printf("longlong:%s\n", utf8);
+                            j = 0;
+                            tmp_llong = strtoll(strtok(temp, ","), NULL, 10);
+                            ((long long *)wdata[i].p)[j++] = tmp_llong;
+
+                            while (1) {
+                                token = strtok (NULL, ",");
+                                if (token == NULL)
+                                    break;
+                                if (token[0] == ' ')
+                                    token++;
+                                tmp_llong = strtoll(token, NULL, 10);
+                                ((long long *)wdata[i].p)[j++] = tmp_llong;
+                            }
+                       }
+                    }
+                    break;
+                case H5T_STRING:
+                    {
+printf("string:%s\n", utf8);
+                    }
+                    break;
+                case H5T_COMPOUND:
+                    {
+printf("compound:%s\n", utf8);
+                    }
+                    break;
+                case H5T_ENUM:
+                    {
+printf("enum:%s\n", utf8);
+                    }
+                    break;
+                case H5T_REFERENCE:
+printf("reference:%s\n", utf8);
+                    break;
+                case H5T_ARRAY:
+                    {
+printf("array:%s\n", utf8);
+                    }
+                    break;
+                case H5T_VLEN:
+                    {
+printf("vlen:type size=%d, %s\n", size, utf8);
+                        switch (basetclass) {
+                        case H5T_FLOAT:
+                            if (sizeof(float) == size) {
+printf("vlfloat:%s\n", utf8);
+                                j = 0;
+                                tmp_float = strtof(strtok(temp, ","), NULL);
+                                ((float *)wdata[i].p)[j++] = tmp_float;
+
+                                while (1) {
+                                    token = strtok (NULL, ",");
+                                    if (token == NULL)
+                                        break;
+                                    if (token[0] == ' ')
+                                        token++;
+                                    tmp_float = strtof(token, NULL);
+                                    ((float *)wdata[i].p)[j++] = tmp_float;
+                                }
+                            }
+                            else if (sizeof(double) == size) {
+printf("vldouble:%s\n", utf8);
+                                j = 0;
+                                tmp_double = strtod(strtok(temp, ","), NULL);
+                                ((double *)wdata[i].p)[j++] = tmp_double;
+
+                                while (1) {
+                                    token = strtok (NULL, ",");
+                                    if (token == NULL)
+                                        break;
+                                    if (token[0] == ' ')
+                                        token++;
+                                    tmp_double = strtod(token, NULL);
+                                    ((double *)wdata[i].p)[j++] = tmp_double;
+                                }
+                            }
+        #if H5_SIZEOF_LONG_DOUBLE !=0
+                            else if (sizeof(long double) == size) {
+printf("vllongdouble:%s\n", utf8);
+                                j = 0;
+                                tmp_ldouble = strtold(strtok(temp, ","), NULL);
+                                ((long double *)wdata[i].p)[j++] = tmp_ldouble;
+
+                                while (1) {
+                                    token = strtok (NULL, ",");
+                                    if (token == NULL)
+                                        break;
+                                    if (token[0] == ' ')
+                                        token++;
+                                    tmp_ldouble = strtold(token, NULL);
+                                    ((long double *)wdata[i].p)[j++] = tmp_ldouble;
+                                }
+                           }
+        #endif
+                            break;
+                        case H5T_INTEGER:
+                            if (sizeof(char) == size) {
+                                if(H5T_SGN_NONE == nsign) {
+printf("vluchar:%s\n", utf8);
+                                    j = 0;
+                                    tmp_uchar = (unsigned char)strtoul(strtok(temp, ","), NULL, 10);
+                                    ((unsigned char *)wdata[i].p)[j++] = tmp_uchar;
+
+                                    while (1) {
+                                        token = strtok (NULL, ",");
+                                        if (token == NULL)
+                                            break;
+                                        if (token[0] == ' ')
+                                            token++;
+                                        tmp_uchar = (unsigned char)strtoul(token, NULL, 10);
+                                        ((unsigned char *)wdata[i].p)[j++] = tmp_uchar;
+                                    }
+                                }
+                                else {
+printf("vlchar:%s\n", utf8);
+                                    j = 0;
+                                    tmp_char = (char)strtoul(strtok(temp, ","), NULL, 10);
+                                    ((char *)wdata[i].p)[j++] = tmp_char;
+
+                                    while (1) {
+                                        token = strtok (NULL, ",");
+                                        if (token == NULL)
+                                            break;
+                                        if (token[0] == ' ')
+                                            token++;
+                                        tmp_char = (char)strtoul(token, NULL, 10);
+                                        ((char *)wdata[i].p)[j++] = tmp_char;
+                                    }
+                                }
+                            }
+                            else if (sizeof(int) == size) {
+                                if(H5T_SGN_NONE == nsign) {
+printf("vluint:%s\n", utf8);
+                                    j = 0;
+                                    tmp_uint = (unsigned int)strtoul(strtok(temp, ","), NULL, 10);
+                                    ((unsigned int *)wdata[i].p)[j++] = tmp_uint;
+
+                                    while (1) {
+                                        token = strtok (NULL, ",");
+printf("token[%d]:%s\n", j, token);
+                                        if (token == NULL)
+                                            break;
+                                        if (token[0] == ' ')
+                                            token++;
+                                        tmp_uint = (unsigned int)strtoul(token, NULL, 10);
+                                        ((unsigned int *)wdata[i].p)[j++] = tmp_uint;
+                                    }
+                                }
+                                else {
+printf("vlint:%s\n", utf8);
+                                    j = 0;
+                                    tmp_int = (int)strtoul(strtok(temp, ","), NULL, 10);
+                                    ((int *)wdata[i].p)[j++] = tmp_int;
+
+                                    while (1) {
+                                        token = strtok (NULL, ",");
+                                        if (token == NULL)
+                                            break;
+                                        if (token[0] == ' ')
+                                            token++;
+                                        tmp_int = (int)strtoul(token, NULL, 10);
+                                        ((int *)wdata[i].p)[j++] = tmp_int;
+                                    }
+                                }
+                            }
+                            else if (sizeof(short) == size) {
+                                if(H5T_SGN_NONE == nsign) {
+printf("vlushort:%s\n", utf8);
+                                    j = 0;
+                                    tmp_ushort = (unsigned short)strtoul(strtok(temp, ","), NULL, 10);
+                                    ((unsigned short *)wdata[i].p)[j++] = tmp_ushort;
+
+                                    while (1) {
+                                        token = strtok (NULL, ",");
+                                        if (token == NULL)
+                                            break;
+                                        tmp_ushort = (unsigned short)strtoul(token, NULL, 10);
+                                        ((unsigned short *)wdata[i].p)[j++] = tmp_ushort;
+                                    }
+                                }
+                                else {
+printf("vlshort:%s\n", utf8);
+                                    j = 0;
+                                    tmp_short = (short)strtoul(strtok(temp, ","), NULL, 10);
+                                    ((short *)wdata[i].p)[j++] = tmp_short;
+
+                                    while (1) {
+                                        token = strtok (NULL, ",");
+                                        if (token == NULL)
+                                            break;
+                                        tmp_short = (short)strtoul(token, NULL, 10);
+                                        ((short *)wdata[i].p)[j++] = tmp_short;
+                                    }
+                                }
+                            }
+                            else if (sizeof(long) == size) {
+                                if(H5T_SGN_NONE == nsign) {
+printf("vlulong:%s\n", utf8);
+                                    j = 0;
+                                    tmp_ulong = strtoul(strtok(temp, ","), NULL, 10);
+                                    ((unsigned long *)wdata[i].p)[j++] = tmp_ulong;
+
+                                    while (1) {
+                                        token = strtok (NULL, ",");
+                                        if (token == NULL)
+                                            break;
+                                        if (token[0] == ' ')
+                                            token++;
+                                        tmp_ulong = strtoul(token, NULL, 10);
+                                        ((unsigned long *)wdata[i].p)[j++] = tmp_ulong;
+                                    }
+                                }
+                                else {
+printf("vllong:%s\n", utf8);
+                                    j = 0;
+                                    tmp_long = strtol(strtok(temp, ","), NULL, 10);
+                                    ((long *)wdata[i].p)[j++] = tmp_long;
+
+                                    while (1) {
+                                        token = strtok (NULL, ",");
+                                        if (token == NULL)
+                                            break;
+                                        if (token[0] == ' ')
+                                            token++;
+                                        tmp_long = strtol(token, NULL, 10);
+                                        ((long *)wdata[i].p)[j++] = tmp_long;
+                                    }
+                                }
+                            }
+                            else if (sizeof(long long) == size) {
+                                if(H5T_SGN_NONE == nsign) {
+printf("vlulonglong:%s\n", utf8);
+                                    j = 0;
+                                    tmp_ullong = strtoull(strtok(temp, ","), NULL, 10);
+                                    ((unsigned long long *)wdata[i].p)[j++] = tmp_ullong;
+
+                                    while (1) {
+                                        token = strtok (NULL, ",");
+                                        if (token == NULL)
+                                            break;
+                                        if (token[0] == ' ')
+                                            token++;
+                                        tmp_ullong = strtoull(token, NULL, 10);
+                                        ((unsigned long long *)wdata[i].p)[j++] = tmp_ullong;
+                                    }
+                                }
+                                else {
+printf("vllonglong:%s\n", utf8);
+                                    j = 0;
+                                    tmp_llong = strtoll(strtok(temp, ","), NULL, 10);
+                                    ((long long *)wdata[i].p)[j++] = tmp_llong;
+
+                                    while (1) {
+                                        token = strtok (NULL, ",");
+                                        if (token == NULL)
+                                            break;
+                                        if (token[0] == ' ')
+                                            token++;
+                                        tmp_llong = strtoll(token, NULL, 10);
+                                        ((long long *)wdata[i].p)[j++] = tmp_llong;
+                                    }
+                               }
+                            }
+                            break;
+                        }
+                    }
+                    break;
+            } /* end switch */
+
+        }
+    } /*for (i = 0; i < n; ++i) */
 
     UNPIN_BYTE_ARRAY(0);
 
@@ -1413,11 +1925,11 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5DwriteNotString
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5DreadVL
- * Signature: (JJJJJ[Ljava/lang/String;)I
+ * Signature: (IIIII[Ljava/lang/String;)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5DreadVL
-  (JNIEnv *env, jclass clss, jlong dataset_id, jlong mem_type_id, jlong mem_space_id,
-          jlong file_space_id, jlong xfer_plist_id, jobjectArray buf)
+  (JNIEnv *env, jclass clss, jint dataset_id, jint mem_type_id, jint mem_space_id,
+  jint file_space_id, jint xfer_plist_id, jobjectArray buf)
 {
     htri_t isStr=0, isComplex=0, isVlenStr=0;
 
@@ -1511,7 +2023,7 @@ herr_t H5DreadVL_notstr (JNIEnv *env, hid_t did, hid_t tid, hid_t mem_sid,
     h5str_new(&h5str, 4 * size);
 
     if (h5str.s == NULL) {
-        H5Dvlen_reclaim(tid, mem_sid, xfer_plist_id, rdata);
+//        H5Dvlen_reclaim(tid, mem_sid, xfer_plist_id, rdata);
         free(rdata);
         h5JNIFatalError(env, "H5DreadVL_notstr:  failed to allocate strng buf");
         return -1;
@@ -1525,7 +2037,7 @@ herr_t H5DreadVL_notstr (JNIEnv *env, hid_t did, hid_t tid, hid_t mem_sid,
     }
     h5str_free(&h5str);
 
-    H5Dvlen_reclaim(tid, mem_sid, xfer_plist_id, rdata);
+//    H5Dvlen_reclaim(tid, mem_sid, xfer_plist_id, rdata);
     free(rdata);
 
     return status;
@@ -1579,11 +2091,11 @@ herr_t H5DreadVL_str (JNIEnv *env, hid_t did, hid_t tid, hid_t mem_sid, hid_t
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Dread_reg_ref
- * Signature: (JJJJJ[Ljava/lang/String;)I
+ * Signature: (IIIII[Ljava/lang/String;)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dread_1reg_1ref (JNIEnv *env, jclass clss,
-        jlong dataset_id, jlong mem_type_id, jlong mem_space_id,
-        jlong file_space_id, jlong xfer_plist_id, jobjectArray buf)
+    jint dataset_id, jint mem_type_id, jint mem_space_id,
+    jint file_space_id, jint xfer_plist_id, jobjectArray buf)
 {
     herr_t    status;
     h5str_t   h5str;
@@ -1635,11 +2147,11 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dread_1reg_1ref (JNIEnv *env, 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Dread_reg_ref_data
- * Signature: (JJJJJ[Ljava/lang/String;)I
+ * Signature: (IIIII[Ljava/lang/String;)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dread_1reg_1ref_1data (JNIEnv *env, jclass clss,
-        jlong dataset_id, jlong mem_type_id, jlong mem_space_id,
-        jlong file_space_id, jlong xfer_plist_id, jobjectArray buf)
+    jint dataset_id, jint mem_type_id, jint mem_space_id,
+    jint file_space_id, jint xfer_plist_id, jobjectArray buf)
 {
     herr_t    status;
     h5str_t   h5str;
@@ -1681,7 +2193,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dread_1reg_1ref_1data (JNIEnv 
         h5str.s[0] = '\0';
 
         /* get name of the dataset the region reference points to using H5Rget_name */
-        region_obj = H5Rdereference2(did, H5P_DEFAULT, H5R_DATASET_REGION, ref_data[i]);
+        region_obj = H5Rdereference(did, H5R_DATASET_REGION, ref_data[i]);
         if (region_obj >= 0) {
             region = H5Rget_region(did, H5R_DATASET_REGION, ref_data[i]);
             if (region >= 0) {
@@ -1711,11 +2223,11 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dread_1reg_1ref_1data (JNIEnv 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    _H5Dcreate2
- * Signature: (JLjava/lang/String;JJJJJ)J
+ * Signature: (ILjava/lang/String;IIIII)I
  */
-JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Dcreate2
-  (JNIEnv *env, jclass clss, jlong loc_id, jstring name, jlong type_id,
-          jlong space_id, jlong link_plist_id, jlong create_plist_id, jlong access_plist_id)
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Dcreate2
+  (JNIEnv *env, jclass clss, jint loc_id, jstring name, jint type_id,
+  jint space_id, jint link_plist_id, jint create_plist_id, jint access_plist_id)
 {
     hid_t    status;
     char    *file;
@@ -1737,16 +2249,16 @@ JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Dcreate2
     if (status < 0) {
         h5libraryError(env);
     }
-    return (jlong)status;
+    return (jint)status;
 }
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    _H5Dopen2
- * Signature: (JLjava/lang/String;J)J
+ * Signature: (ILjava/lang/String;I)I
  */
-JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Dopen2
-  (JNIEnv *env, jclass clss, jlong loc_id, jstring name, jlong access_plist)
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Dopen2
+  (JNIEnv *env, jclass clss, jint loc_id, jstring name, jint access_plist)
 {
     hid_t    status;
     char    *file;
@@ -1769,16 +2281,16 @@ JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Dopen2
     if (status < 0) {
         h5libraryError(env);
     }
-    return (jlong)status;
+    return (jint)status;
 }
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    _H5Dcreate_anon
- * Signature: (JJJJJ)J
+ * Signature: (IIIII)I
  */
-JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Dcreate_1anon
-  (JNIEnv *env, jclass clss, jlong loc_id, jlong type_id, jlong space_id, jlong dcpl_id, jlong dapl_id)
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Dcreate_1anon
+  (JNIEnv *env, jclass clss, jint loc_id, jint type_id, jint space_id, jint dcpl_id, jint dapl_id)
 {
     hid_t status;
 
@@ -1786,16 +2298,16 @@ JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Dcreate_1anon
     if (status < 0) {
         h5libraryError(env);
     }
-    return (jlong)status;
+    return (jint)status;
 }
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Dget_space_status
- * Signature: (J)I;
+ * Signature: (I)I;
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dget_1space_1status
-  (JNIEnv *env, jclass clss, jlong loc_id)
+  (JNIEnv *env, jclass clss, jint loc_id)
 {
     herr_t             status;
     H5D_space_status_t space_status;
@@ -1810,10 +2322,10 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dget_1space_1status
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Dget_access_plist
- * Signature: (J)J
+ * Signature: (I)I
  */
-JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dget_1access_1plist
-  (JNIEnv *env, jclass clss, jlong loc_id)
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dget_1access_1plist
+  (JNIEnv *env, jclass clss, jint loc_id)
 {
     hid_t status;
 
@@ -1821,16 +2333,16 @@ JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dget_1access_1plist
     if (status < 0) {
         h5libraryError(env);
     }
-    return (jlong)status;
+    return (jint)status;
 }
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Dget_offset
- * Signature: (J)J
+ * Signature: (I)J
  */
 JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dget_1offset
-  (JNIEnv *env, jclass clss, jlong loc_id)
+  (JNIEnv *env, jclass clss, jint loc_id)
 {
     haddr_t offset;
 
@@ -1844,10 +2356,10 @@ JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dget_1offset
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Dvlen_get_buf_size_long
- * Signature: (JJJ)J
+ * Signature: (III)J
  */
 JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dvlen_1get_1buf_1size_1long
-(JNIEnv *env, jclass clss, jlong dataset_id, jlong type_id, jlong space_id)
+(JNIEnv *env, jclass clss, jint dataset_id, jint type_id, jint space_id)
 {
   herr_t  status;
   hsize_t sz;
@@ -1866,10 +2378,10 @@ JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dvlen_1get_1buf_1size_1long
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Dfill
- * Signature: ([BJ[BJJ)V
+ * Signature: ([BI[BII)V
  */
 JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dfill
-  (JNIEnv *env, jclass clss, jbyteArray fill, jlong fill_type_id, jbyteArray buf, jlong buf_type_id, jlong space_id)
+  (JNIEnv *env, jclass clss, jbyteArray fill, jint fill_type_id, jbyteArray buf, jint buf_type_id, jint space_id)
 {
     herr_t    status;
     jbyte    *fillP;
@@ -1919,10 +2431,10 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dfill
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Dset_extent
- * Signature: (J[J)V
+ * Signature: (I[J)V
  */
 JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dset_1extent
-  (JNIEnv *env, jclass clss, jlong loc_id, jlongArray buf)
+  (JNIEnv *env, jclass clss, jint loc_id, jlongArray buf)
 {
     herr_t    status;
     hsize_t  *dims;
@@ -1981,7 +2493,7 @@ herr_t H5D_iterate_cb(void* elem, hid_t elem_id, unsigned ndim, const hsize_t *p
        JVMPTR->DetachCurrentThread(JVMPAR);
        return -1;
     }
-    mid = CBENVPTR->GetMethodID(CBENVPAR cls, "callback", "([BJI[JLncsa/hdf/hdf5lib/callbacks/H5D_iterate_t;)I");
+    mid = CBENVPTR->GetMethodID(CBENVPAR cls, "callback", "([BII[JLncsa/hdf/hdf5lib/callbacks/H5D_iterate_t;)I");
     if (mid == 0) {
         JVMPTR->DetachCurrentThread(JVMPAR);
         return -1;
@@ -2011,7 +2523,7 @@ herr_t H5D_iterate_cb(void* elem, hid_t elem_id, unsigned ndim, const hsize_t *p
     }
     CBENVPTR->SetLongArrayRegion(CBENVPAR pointArray, 0, 2, (const jlong *)point);
 
-    status = CBENVPTR->CallIntMethod(CBENVPAR visit_callback, mid, (void*)elemArray, elem_id, ndim, pointArray, op_data);
+    status = CBENVPTR->CallIntMethod(CBENVPAR visit_callback, mid, elemArray, elem_id, ndim, pointArray, op_data);
 
     CBENVPTR->GetByteArrayRegion(CBENVPAR elemArray, 0, size, (jbyte *)elem);
 
@@ -2022,10 +2534,10 @@ herr_t H5D_iterate_cb(void* elem, hid_t elem_id, unsigned ndim, const hsize_t *p
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Diterate
- * Signature: ([BJJLjava/lang/Object;Ljava/lang/Object;)I
+ * Signature: ([BIILjava/lang/Object;Ljava/lang/Object;)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Diterate
-  (JNIEnv *env, jclass clss, jbyteArray buf, jlong buf_type, jlong space,
+  (JNIEnv *env, jclass clss, jbyteArray buf, jint buf_type, jint space,
           jobject callback_op, jobject op_data)
 {
     jboolean      isCopy;

@@ -15,20 +15,16 @@ import ncsa.hdf.hdf5lib.structs.H5L_info_t;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestName;
 
 public class TestH5Lbasic {
-    @Rule public TestName testname = new TestName();
     private static final String H5_FILE = "test/hdf5lib/h5ex_g_iterate.hdf";
-    long H5fid = -1;
+    int H5fid = -1;
 
     @Before
     public void openH5file()
             throws HDF5LibraryException, NullPointerException {
         assertTrue("H5 open ids is 0",H5.getOpenIDCount()==0);
-        System.out.print(testname.getMethodName());
 
         try {
             H5fid = H5.H5Fopen(H5_FILE, HDF5Constants.H5F_ACC_RDONLY,
@@ -45,7 +41,6 @@ public class TestH5Lbasic {
         if (H5fid > 0) {
             try {H5.H5Fclose(H5fid);} catch (Exception ex) {}
         }
-        System.out.println();
     }
 
     @Test
@@ -225,7 +220,7 @@ public class TestH5Lbasic {
         }
         H5L_iterate_t iter_data = new H5L_iter_data();
         class H5L_iter_callback implements H5L_iterate_cb {
-            public int callback(long group, String name, H5L_info_t info, H5L_iterate_t op_data) {
+            public int callback(int group, String name, H5L_info_t info, H5L_iterate_t op_data) {
                 idata id = new idata(name, info.type);
                 ((H5L_iter_data)op_data).iterdata.add(id);
                 return 0;
@@ -263,7 +258,7 @@ public class TestH5Lbasic {
         }
         H5L_iterate_t iter_data = new H5L_iter_data();
         class H5L_iter_callback implements H5L_iterate_cb {
-            public int callback(long group, String name, H5L_info_t info, H5L_iterate_t op_data) {
+            public int callback(int group, String name, H5L_info_t info, H5L_iterate_t op_data) {
                 idata id = new idata(name, info.type);
                 ((H5L_iter_data)op_data).iterdata.add(id);
                 return 0;
@@ -297,7 +292,7 @@ public class TestH5Lbasic {
         }
         H5L_iterate_t iter_data = new H5L_iter_data();
         class H5L_iter_callback implements H5L_iterate_cb {
-            public int callback(long group, String name, H5L_info_t info, H5L_iterate_t op_data) {
+            public int callback(int group, String name, H5L_info_t info, H5L_iterate_t op_data) {
                 idata id = new idata(name, info.type);
                 ((H5L_iter_data)op_data).iterdata.add(id);
                 return 0;
@@ -334,7 +329,7 @@ public class TestH5Lbasic {
         }
         H5L_iterate_t iter_data = new H5L_iter_data();
         class H5L_iter_callback implements H5L_iterate_cb {
-            public int callback(long group, String name, H5L_info_t info, H5L_iterate_t op_data) {
+            public int callback(int group, String name, H5L_info_t info, H5L_iterate_t op_data) {
                 idata id = new idata(name, info.type);
                 ((H5L_iter_data)op_data).iterdata.add(id);
                 return 0;

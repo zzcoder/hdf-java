@@ -214,7 +214,7 @@ Windows should adjust the forward slash to double backslashes, except for
 the HDF_DIR environment variable.
 
 NOTE: these files are available at the HDF web site:
-    http://www.hdfgroup.org/HDF-JAVA/release/cmakebuild.html
+    http://www.hdfgroup.org/products/java/release/downloadsrc.html
 
     CTestScript.cmake
 

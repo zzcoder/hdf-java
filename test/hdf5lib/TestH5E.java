@@ -12,19 +12,15 @@ import ncsa.hdf.hdf5lib.exceptions.HDF5LibraryException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestName;
 
 public class TestH5E {
-    @Rule public TestName testname = new TestName();
-    long hdf_java_classid = -1;
-    long current_stackid = -1;
+    int hdf_java_classid = -1;
+    int current_stackid = -1;
 
     @Before
     public void H5Eget_stack_class() {
         assertTrue("H5 open ids is 0",H5.getOpenIDCount()==0);
-        System.out.print(testname.getMethodName());
 
         hdf_java_classid = -1;
         try {
@@ -50,7 +46,6 @@ public class TestH5E {
             err.printStackTrace();
             fail("H5.H5Erestore_stack_class: " + err);
         }
-        System.out.println();
     }
 
     @Test
@@ -91,7 +86,7 @@ public class TestH5E {
     @Test
     public void testH5Ecreate_msg_major() {
         try {
-            long err_id = H5.H5Ecreate_msg(hdf_java_classid,
+            int err_id = H5.H5Ecreate_msg(hdf_java_classid,
                     HDF5Constants.H5E_MAJOR, "Error in Test");
             assertFalse("H5.H5Ecreate_msg_major: " + err_id, err_id < 0);
             H5.H5Eclose_msg(err_id);
@@ -105,7 +100,7 @@ public class TestH5E {
     @Test
     public void testH5Ecreate_msg_minor() {
         try {
-            long err_id = H5.H5Ecreate_msg(hdf_java_classid,
+            int err_id = H5.H5Ecreate_msg(hdf_java_classid,
                     HDF5Constants.H5E_MINOR, "Error in Test Function");
             assertFalse("H5.H5Ecreate_msg_minor: " + err_id, err_id < 0);
             H5.H5Eclose_msg(err_id);
@@ -119,7 +114,7 @@ public class TestH5E {
     @Test
     public void testH5Eget_msg() {
         int[] error_msg_type = { HDF5Constants.H5E_MINOR };
-        long err_id = -1;
+        int err_id = -1;
         String msg = null;
         try {
             err_id = H5.H5Ecreate_msg(hdf_java_classid,
@@ -208,7 +203,7 @@ public class TestH5E {
 
     @Test
     public void testH5Ecreate_stack() {
-        long stk_id = -1;
+        int stk_id = -1;
         try {
             stk_id = H5.H5Ecreate_stack();
         }

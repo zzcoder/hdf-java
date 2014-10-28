@@ -19,27 +19,13 @@ import java.io.ObjectOutputStream;
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestName;
 
 /**
  * @author xcao
  * 
  */
 public class TestH5 {
-    @Rule public TestName testname = new TestName();
-    @Before
-    public void showTestName() {
-        System.out.print(testname.getMethodName());
-    }
-    @After
-    public void nextTestName() {
-        System.out.println();
-    }
 
     /**
      * Test method for {@link ncsa.hdf.hdf5lib.H5#J2C(int)}.
@@ -150,7 +136,7 @@ public class TestH5 {
      */
     @Test
     public void testH5get_libversion() {
-        int libversion[] = { 1, 9, 0 };
+        int libversion[] = { 0, 0, 0 };
 
         try {
             H5.H5get_libversion(libversion);
@@ -159,10 +145,10 @@ public class TestH5 {
             fail("H5.H5get_libversion: " + err);
         }
 
-        for (int i = 0; i < 2; i++)
+        for (int i = 0; i < 3; i++)
             assertEquals(H5.LIB_VERSION[i], libversion[i]);
 
-        for (int i = 0; i < 2; i++)
+        for (int i = 0; i < 3; i++)
             assertFalse(libversion[i] == 0);
     }
 
@@ -172,7 +158,7 @@ public class TestH5 {
      */
     @Test
     public void testH5check_version() {
-        int majnum = 1, minnum = 9, relnum = 192;
+        int majnum = 1, minnum = 8, relnum = 15;
 
         try {
             H5.H5check_version(majnum, minnum, relnum);
@@ -231,7 +217,7 @@ public class TestH5 {
             
             assertTrue("H5.LIB_VERSION[0]", test.LIB_VERSION[0]==H5.LIB_VERSION[0]);
             assertTrue("H5.LIB_VERSION[1]", test.LIB_VERSION[1]==H5.LIB_VERSION[1]);
-//            assertTrue("H5.LIB_VERSION[2]", test.LIB_VERSION[2]==H5.LIB_VERSION[2]);
+            assertTrue("H5.LIB_VERSION[2]", test.LIB_VERSION[2]==H5.LIB_VERSION[2]);
             
             // Clean up the file
             new File("temph5.ser").delete();
