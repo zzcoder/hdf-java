@@ -28,7 +28,7 @@ import org.junit.Test;
 public class TestHDFViewImageConversion {
     private static FrameFixture mainFrameFixture;
     // the version of the HDFViewer
-    private static String VERSION = "2.99";
+    private static String VERSION = "2.11";
     private static String JPGFILE = "apollo17_earth.jpg";
     private static String HDF4IMAGE = JPGFILE+".hdf";
     private static String HDF5IMAGE = JPGFILE+".h5";
