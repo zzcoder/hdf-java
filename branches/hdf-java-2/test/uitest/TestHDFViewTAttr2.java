@@ -7,26 +7,21 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.util.regex.Pattern;
 
 import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
-import javax.swing.JComponent;
 
-import org.fest.swing.core.BasicRobot;
-import org.fest.swing.core.GenericTypeMatcher;
-import org.fest.swing.core.ComponentFinder;
 import org.fest.swing.core.BasicComponentFinder;
+import org.fest.swing.core.BasicRobot;
+import org.fest.swing.core.ComponentFinder;
+import org.fest.swing.core.GenericTypeMatcher;
 import org.fest.swing.core.Robot;
 import org.fest.swing.edt.FailOnThreadViolationRepaintManager;
 import org.fest.swing.finder.JFileChooserFinder;
-import org.fest.swing.finder.WindowFinder;
 import org.fest.swing.fixture.DialogFixture;
-import org.fest.swing.fixture.ComponentFixture;
-import org.fest.swing.fixture.ContainerFixture;
 import org.fest.swing.fixture.FrameFixture;
-import org.fest.swing.fixture.JInternalFrameFixture;
 import org.fest.swing.fixture.JFileChooserFixture;
+import org.fest.swing.fixture.JInternalFrameFixture;
 import org.fest.swing.fixture.JMenuItemFixture;
 import org.fest.swing.fixture.JTabbedPaneFixture;
 import org.fest.swing.fixture.JTableCellFixture;
@@ -34,7 +29,6 @@ import org.fest.swing.fixture.JTableFixture;
 import org.fest.swing.fixture.JTreeFixture;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 
