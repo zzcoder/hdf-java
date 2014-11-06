@@ -122,6 +122,7 @@ set (HDF_JAVA_TEST_REFERENCE
 
 set (HDF_JAVA_EXPORT_REFERENCE
       DS64BITS.xtxt
+      DS64BITS.ttxt
 )
 
 foreach (h5_file ${HDF_JAVA_TEST_FILES})

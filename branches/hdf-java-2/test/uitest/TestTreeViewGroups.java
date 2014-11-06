@@ -196,7 +196,7 @@ public class TestTreeViewGroups {
             filetree.requireVisible();
             assertTrue("openHDF5Group filetree shows:", filetree.target.getRowCount()==10);
             assertTrue("openHDF5Group filetree has file", (filetree.valueAt(0)).compareTo("tintsize.h5")==0);
-            assertTrue("openHDF5Group filetree has group", (filetree.valueAt(1)).compareTo("DS08BITS")==0);
+            assertTrue("openHDF5Group filetree has dataset", (filetree.valueAt(1)).compareTo("DS08BITS")==0);
 
             JMenuItemFixture dataset1MenuItem = filetree.showPopupMenuAt(1).menuItemWithPath("Open");
             mainFrameFixture.robot.waitForIdle();
@@ -245,7 +245,7 @@ public class TestTreeViewGroups {
             filetree.requireVisible();
             assertTrue("openHDF5Group filetree shows:", filetree.target.getRowCount()==10);
             assertTrue("openHDF5Group filetree has file", (filetree.valueAt(0)).compareTo("tintsize.h5")==0);
-            assertTrue("openHDF5Group filetree has group", (filetree.valueAt(5)).compareTo("DU08BITS")==0);
+            assertTrue("openHDF5Group filetree has dataset", (filetree.valueAt(5)).compareTo("DU08BITS")==0);
 
             JMenuItemFixture dataset5MenuItem = filetree.showPopupMenuAt(5).menuItemWithPath("Open");
             mainFrameFixture.robot.waitForIdle();
@@ -294,7 +294,7 @@ public class TestTreeViewGroups {
             filetree.requireVisible();
             assertTrue("openHDF5Group filetree shows:", filetree.target.getRowCount()==10);
             assertTrue("openHDF5Group filetree has file", (filetree.valueAt(0)).compareTo("tintsize.h5")==0);
-            assertTrue("openHDF5Group filetree has group", (filetree.valueAt(2)).compareTo("DS16BITS")==0);
+            assertTrue("openHDF5Group filetree has dataset", (filetree.valueAt(2)).compareTo("DS16BITS")==0);
 
             JMenuItemFixture dataset2MenuItem = filetree.showPopupMenuAt(2).menuItemWithPath("Open");
             mainFrameFixture.robot.waitForIdle();
@@ -343,7 +343,7 @@ public class TestTreeViewGroups {
             filetree.requireVisible();
             assertTrue("openHDF5Group filetree shows:", filetree.target.getRowCount()==10);
             assertTrue("openHDF5Group filetree has file", (filetree.valueAt(0)).compareTo("tintsize.h5")==0);
-            assertTrue("openHDF5Group filetree has group", (filetree.valueAt(6)).compareTo("DU16BITS")==0);
+            assertTrue("openHDF5Group filetree has dataset", (filetree.valueAt(6)).compareTo("DU16BITS")==0);
 
             JMenuItemFixture dataset6MenuItem = filetree.showPopupMenuAt(6).menuItemWithPath("Open");
             mainFrameFixture.robot.waitForIdle();
@@ -392,7 +392,7 @@ public class TestTreeViewGroups {
             filetree.requireVisible();
             assertTrue("openHDF5Group filetree shows:", filetree.target.getRowCount()==10);
             assertTrue("openHDF5Group filetree has file", (filetree.valueAt(0)).compareTo("tintsize.h5")==0);
-            assertTrue("openHDF5Group filetree has group", (filetree.valueAt(3)).compareTo("DS32BITS")==0);
+            assertTrue("openHDF5Group filetree has dataset", (filetree.valueAt(3)).compareTo("DS32BITS")==0);
 
             JMenuItemFixture dataset3MenuItem = filetree.showPopupMenuAt(3).menuItemWithPath("Open");
             mainFrameFixture.robot.waitForIdle();
@@ -441,7 +441,7 @@ public class TestTreeViewGroups {
             filetree.requireVisible();
             assertTrue("openHDF5Group filetree shows:", filetree.target.getRowCount()==10);
             assertTrue("openHDF5Group filetree has file", (filetree.valueAt(0)).compareTo("tintsize.h5")==0);
-            assertTrue("openHDF5Group filetree has group", (filetree.valueAt(7)).compareTo("DU32BITS")==0);
+            assertTrue("openHDF5Group filetree has dataset", (filetree.valueAt(7)).compareTo("DU32BITS")==0);
 
             JMenuItemFixture dataset7MenuItem = filetree.showPopupMenuAt(7).menuItemWithPath("Open");
             mainFrameFixture.robot.waitForIdle();
@@ -490,7 +490,7 @@ public class TestTreeViewGroups {
             filetree.requireVisible();
             assertTrue("openHDF5Group filetree shows:", filetree.target.getRowCount()==10);
             assertTrue("openHDF5Group filetree has file", (filetree.valueAt(0)).compareTo("tintsize.h5")==0);
-            assertTrue("openHDF5Group filetree has group", (filetree.valueAt(4)).compareTo("DS64BITS")==0);
+            assertTrue("openHDF5Group filetree has dataset", (filetree.valueAt(4)).compareTo("DS64BITS")==0);
 
             JMenuItemFixture dataset4MenuItem = filetree.showPopupMenuAt(4).menuItemWithPath("Open");
             mainFrameFixture.robot.waitForIdle();
@@ -539,7 +539,7 @@ public class TestTreeViewGroups {
             filetree.requireVisible();
             assertTrue("openHDF5Group filetree shows:", filetree.target.getRowCount()==10);
             assertTrue("openHDF5Group filetree has file", (filetree.valueAt(0)).compareTo("tintsize.h5")==0);
-            assertTrue("openHDF5Group filetree has group", (filetree.valueAt(8)).compareTo("DU64BITS")==0);
+            assertTrue("openHDF5Group filetree has dataset", (filetree.valueAt(8)).compareTo("DU64BITS")==0);
 
             JMenuItemFixture dataset8MenuItem = filetree.showPopupMenuAt(8).menuItemWithPath("Open");
             mainFrameFixture.robot.waitForIdle();
