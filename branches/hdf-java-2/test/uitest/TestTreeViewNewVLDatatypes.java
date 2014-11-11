@@ -250,7 +250,7 @@ public class TestTreeViewNewVLDatatypes {
 
             propDialog.textBox("attrname").setText("testvlattrname");
             propDialog.comboBox("attrclass").selectItem("VLEN_STRING");
-            propDialog.textBox("attrvalue").setText("");
+            propDialog.textBox("attrvalue").setText("ABC");
             propDialog.button("OK").click();
             mainFrameFixture.robot.waitForIdle();
             propDialog.button("Close").click();
