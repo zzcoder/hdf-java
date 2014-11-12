@@ -7,11 +7,13 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.util.regex.Pattern;
 
 import javax.swing.JFrame;
+import javax.swing.JInternalFrame;
 
+import org.fest.swing.core.BasicComponentFinder;
 import org.fest.swing.core.BasicRobot;
+import org.fest.swing.core.ComponentFinder;
 import org.fest.swing.core.GenericTypeMatcher;
 import org.fest.swing.core.Robot;
 import org.fest.swing.edt.FailOnThreadViolationRepaintManager;
@@ -19,6 +21,7 @@ import org.fest.swing.finder.JFileChooserFinder;
 import org.fest.swing.fixture.DialogFixture;
 import org.fest.swing.fixture.FrameFixture;
 import org.fest.swing.fixture.JFileChooserFixture;
+import org.fest.swing.fixture.JInternalFrameFixture;
 import org.fest.swing.fixture.JMenuItemFixture;
 import org.fest.swing.fixture.JTabbedPaneFixture;
 import org.fest.swing.fixture.JTableCellFixture;
@@ -26,7 +29,6 @@ import org.fest.swing.fixture.JTableFixture;
 import org.fest.swing.fixture.JTreeFixture;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 
@@ -914,6 +916,64 @@ public class TestHDFViewTAttr2 {
             celldata = attrTable.cell(row(29).column(1));
             celldata.requireValue("0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59");
             propDialog.button("Close").click();
+            mainFrameFixture.robot.waitForIdle();
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        catch (AssertionError ae) {
+            ae.printStackTrace();
+        }
+    }
+
+    @Test 
+    public void openTAttr2GroupReferenceAsTable() {
+        try {
+            JTreeFixture filetree = mainFrameFixture.tree().focus();
+            filetree.requireVisible();
+            JMenuItemFixture expandMenuItem = filetree.showPopupMenuAt(0).menuItemWithPath("Expand All");
+            mainFrameFixture.robot.waitForIdle();
+            
+            expandMenuItem.requireVisible();
+            expandMenuItem.click();
+            mainFrameFixture.robot.waitForIdle();
+
+            assertTrue("openTAttr2GroupReference filetree has dataset", (filetree.valueAt(27)).compareTo("reference3D")==0);
+            JMenuItemFixture dataset27MenuItem = filetree.showPopupMenuAt(27).menuItemWithPath("Open");
+            mainFrameFixture.robot.waitForIdle();
+            
+            dataset27MenuItem.requireVisible();
+            dataset27MenuItem.click();
+            mainFrameFixture.robot.waitForIdle();
+            
+            JTableFixture dataset27table = mainFrameFixture.table("data");
+            JTableCellFixture cell22 = dataset27table.cell(row(2).column(2));
+            cell22.requireValue("976");
+            
+            cell22.select();
+            JMenuItemFixture dataset22MenuItem = cell22.showPopupMenu().menuItemWithPath("Show As Table");
+            dataset22MenuItem.requireVisible();
+            dataset22MenuItem.click();
+            mainFrameFixture.robot.waitForIdle();
+
+            ComponentFinder finder = BasicComponentFinder.finderWithCurrentAwtHierarchy();
+            GenericTypeMatcher<JInternalFrame> matcher = new GenericTypeMatcher<JInternalFrame>(JInternalFrame.class) {
+                   protected boolean isMatching(JInternalFrame frame) {
+                       System.out.println("Find reference3D frame is "+frame.getName());
+                       return "/g2/reference3D".equals(frame.getName());
+                   }
+            };
+            JInternalFrame tableview = (JInternalFrame)finder.findByName("/g2/reference3D");
+            JInternalFrameFixture framefix = new JInternalFrameFixture(mainFrameFixture.robot, tableview);
+            framefix.moveToFront();
+            framefix.menuItemWithPath("Table", "Close").click();
+            mainFrameFixture.robot.waitForIdle();
+            
+            JTableFixture dataset22table = mainFrameFixture.table("data");
+            JTableCellFixture cell1 = dataset22table.cell(row(1).column(0));
+            cell1.requireValue("0");
+
+            mainFrameFixture.menuItemWithPath("Table", "Close").click();
             mainFrameFixture.robot.waitForIdle();
         }
         catch (Exception ex) {

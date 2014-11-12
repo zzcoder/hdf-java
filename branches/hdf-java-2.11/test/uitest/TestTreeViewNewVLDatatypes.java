@@ -141,8 +141,8 @@ public class TestTreeViewNewVLDatatypes {
         try {
             JTreeFixture filetree = mainFrameFixture.tree().focus();
             filetree.requireVisible();
-            assertTrue("File-Dataset-HDF5 filetree shows:", filetree.target.getRowCount()==1);
-            assertTrue("File-Dataset-HDF5 filetree has file", (filetree.valueAt(0)).compareTo("testvldt.h5")==0);
+            assertTrue("createNewHDF5VLDatatype filetree shows:", filetree.target.getRowCount()==1);
+            assertTrue("createNewHDF5VLDatatype filetree has file", (filetree.valueAt(0)).compareTo("testvldt.h5")==0);
 
             JMenuItemFixture groupMenuItem = filetree.showPopupMenuAt(0).menuItemWithPath("New","Datatype");
             mainFrameFixture.robot.waitForIdle();
@@ -158,9 +158,9 @@ public class TestTreeViewNewVLDatatypes {
             mainFrameFixture.robot.waitForIdle();
 
             filetree = mainFrameFixture.tree().focus();
-            assertTrue("File-Dataset-HDF5 filetree shows:", filetree.target.getRowCount()==2);
-            assertTrue("File-Dataset-HDF5 filetree has file", (filetree.valueAt(0)).compareTo("testvldt.h5")==0);
-            assertTrue("File-Dataset-HDF5 filetree has group", (filetree.valueAt(1)).compareTo("testvldtname")==0);
+            assertTrue("createNewHDF5VLDatatype filetree shows:", filetree.target.getRowCount()==2);
+            assertTrue("createNewHDF5VLDatatype filetree has file", (filetree.valueAt(0)).compareTo("testvldt.h5")==0);
+            assertTrue("createNewHDF5VLDatatype filetree has dataset", (filetree.valueAt(1)).compareTo("testvldtname")==0);
         }
         catch (Exception ex) {
             ex.printStackTrace();
@@ -183,8 +183,8 @@ public class TestTreeViewNewVLDatatypes {
         try {
             JTreeFixture filetree = mainFrameFixture.tree().focus();
             filetree.requireVisible();
-            assertTrue("File-Dataset-HDF5 filetree shows:", filetree.target.getRowCount()==1);
-            assertTrue("File-Dataset-HDF5 filetree has file", (filetree.valueAt(0)).compareTo("testvldataset.h5")==0);
+            assertTrue("createNewHDF5VLDataset filetree shows:", filetree.target.getRowCount()==1);
+            assertTrue("createNewHDF5VLDataset filetree has file", (filetree.valueAt(0)).compareTo("testvldataset.h5")==0);
 
             JMenuItemFixture groupMenuItem = filetree.showPopupMenuAt(0).menuItemWithPath("New","Dataset");
             mainFrameFixture.robot.waitForIdle();
@@ -200,9 +200,9 @@ public class TestTreeViewNewVLDatatypes {
             mainFrameFixture.robot.waitForIdle();
 
             filetree = mainFrameFixture.tree().focus();
-            assertTrue("File-Dataset-HDF5 filetree shows:", filetree.target.getRowCount()==2);
-            assertTrue("File-Dataset-HDF5 filetree has file", (filetree.valueAt(0)).compareTo("testvldataset.h5")==0);
-            assertTrue("File-Dataset-HDF5 filetree has group", (filetree.valueAt(1)).compareTo("testvldatasetname")==0);
+            assertTrue("createNewHDF5VLDataset filetree shows:", filetree.target.getRowCount()==2);
+            assertTrue("createNewHDF5VLDataset filetree has file", (filetree.valueAt(0)).compareTo("testvldataset.h5")==0);
+            assertTrue("createNewHDF5VLDataset filetree has dataset", (filetree.valueAt(1)).compareTo("testvldatasetname")==0);
         }
         catch (Exception ex) {
             ex.printStackTrace();
@@ -225,8 +225,8 @@ public class TestTreeViewNewVLDatatypes {
         try {
             JTreeFixture filetree = mainFrameFixture.tree().focus();
             filetree.requireVisible();
-            assertTrue("File-Dataset-HDF5 filetree shows:", filetree.target.getRowCount()==1);
-            assertTrue("File-Dataset-HDF5 filetree has file", (filetree.valueAt(0)).compareTo("testvlattr.h5")==0);
+            assertTrue("createNewHDF5VLAttribute filetree shows:", filetree.target.getRowCount()==1);
+            assertTrue("createNewHDF5VLAttribute filetree has file", (filetree.valueAt(0)).compareTo("testvlattr.h5")==0);
 
             JMenuItemFixture propMenuItem = filetree.showPopupMenuAt(0).menuItemWithPath("Show Properties");
             mainFrameFixture.robot.waitForIdle();
@@ -250,15 +250,15 @@ public class TestTreeViewNewVLDatatypes {
 
             propDialog.textBox("attrname").setText("testvlattrname");
             propDialog.comboBox("attrclass").selectItem("VLEN_STRING");
-            propDialog.textBox("attrvalue").setText("");
+            propDialog.textBox("attrvalue").setText("ABC");
             propDialog.button("OK").click();
             mainFrameFixture.robot.waitForIdle();
             propDialog.button("Close").click();
             mainFrameFixture.robot.waitForIdle();
 
             filetree = mainFrameFixture.tree().focus();
-            assertTrue("File-Dataset-HDF5 filetree shows:", filetree.target.getRowCount()==1);
-            assertTrue("File-Dataset-HDF5 filetree has file", (filetree.valueAt(0)).compareTo("testvlattr.h5")==0);
+            assertTrue("createNewHDF5VLAttribute filetree shows:", filetree.target.getRowCount()==1);
+            assertTrue("createNewHDF5VLAttribute filetree has file", (filetree.valueAt(0)).compareTo("testvlattr.h5")==0);
         }
         catch (Exception ex) {
             ex.printStackTrace();

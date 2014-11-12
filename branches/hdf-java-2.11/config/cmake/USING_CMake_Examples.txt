@@ -88,9 +88,9 @@ III. Common Changes to the HDFJAVA_Examples.cmake File
 
 Line 8: change the INSTALLDIR to a different HDF-JAVA install location.
 
-Line 14: uncomment to allow Mac machines to build shared examples.
+Line 13: comment to use an existing source directory.
 
-Line 40: change the CTEST_7Z_COMMAND to a different unzip program on Windows.
+Line 43: change the CTEST_7Z_COMMAND to a different unzip program on Windows.
 
 
 
