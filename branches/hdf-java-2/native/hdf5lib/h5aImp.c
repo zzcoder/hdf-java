@@ -235,7 +235,7 @@ herr_t H5AwriteVL_num (JNIEnv *env, hid_t aid, hid_t tid, jobjectArray buf)
         n = ENVPTR->GetArrayLength(ENVPAR (jarray)buf);
 
         if(basetclass == H5T_STRING) {
-            wsdata = (char**)malloc(n * sizeof(char*));
+            wsdata = (char**)malloc(n+1 * sizeof(char*));
             wdata = wsdata;
         }
         else {
