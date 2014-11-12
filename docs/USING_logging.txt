@@ -2,7 +2,7 @@
 * How to use logging in HDFView and HDF-JAVA Library                   *
 ************************************************************************
 
-HDFView 2.10.1 implemented logging in the java code with support for the
+HDFView 2.11 implemented logging in the java code with support for the
 slf4j 1.7.5 package. HDFView by default uses the slf4j-nop-1.7.5.jar. 
 This suppresses any logging information.
 

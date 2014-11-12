@@ -254,28 +254,28 @@ IV. Further considerations
       A. Download the binary packages and install them in a central location. 
          For example on Windows, create a folder extlibs and install the 
          packages there. Add the following CMake options:
-            -DZLIB_LIBRARY:FILEPATH=some_location/lib/zlib.lib
-            -DZLIB_INCLUDE_DIR:PATH=some_location/include
-            -DSZIP_LIBRARY:FILEPATH=some_location/lib/szlib.lib
-            -DSZIP_INCLUDE_DIR:PATH=some_location/include
-            -DJPEG_LIBRARY:FILEPATH=some_location/lib/jpeg.lib
-            -DJPEG_INCLUDE_DIR:PATH=some_location/include
-            -DHDF4_LIBRARY:FILEPATH=some_location/lib/hdf.lib;some_location/lib/mfhdf.lib
-            -DHDF4_INCLUDE_DIR:PATH=some_location/include
-            -DHDF5_LIBRARY:FILEPATH=some_location/lib/hdf5.lib
-            -DHDF5_INCLUDE_DIR:PATH=some_location/include
-         where "some_location" is the full path to the extlibs folder. 
+            -DZLIB_LIBRARY:FILEPATH=${some_location}/lib/zlib.lib
+            -DZLIB_INCLUDE_DIR:PATH=${some_location}/include
+            -DSZIP_LIBRARY:FILEPATH=${some_location}/lib/szlib.lib
+            -DSZIP_INCLUDE_DIR:PATH=${some_location}/include
+            -DJPEG_LIBRARY:FILEPATH=${some_location}/lib/jpeg.lib
+            -DJPEG_INCLUDE_DIR:PATH=${some_location}/include
+            -DHDF4_LIBRARY:FILEPATH=${some_location}/lib/hdf.lib;some_location/lib/mfhdf.lib
+            -DHDF4_INCLUDE_DIR:PATH=${some_location}/include
+            -DHDF5_LIBRARY:FILEPATH=${some_location}/lib/hdf5.lib
+            -DHDF5_INCLUDE_DIR:PATH=${some_location}/include
+         where "${some_location}" is the full path to the extlibs folder. 
 
       B. Use source packages from an SVN server by adding the following CMake 
          options:
          
             HDF_ALLOW_EXTERNAL_SUPPORT:STRING="SVN"
-            HDF4_SVN_URL:STRING="http://some_location/hdf4/trunk"
-            HDF5_SVN_URL:STRING="http://some_location/hdf5/trunk"
-            JPEG_SVN_URL:STRING="http://some_location/jpeg/trunk"
-            ZLIB_SVN_URL:STRING="http://some_location/zlib/trunk"
-            SZIP_SVN_URL:STRING="http://some_location/szip/trunk"
-         where "some_location" is the URL to the SVN repository. Also set
+            HDF4_SVN_URL:STRING="http://${some_location}/hdf4/trunk"
+            HDF5_SVN_URL:STRING="http://${some_location}/hdf5/trunk"
+            JPEG_SVN_URL:STRING="http://${some_location}/jpeg/trunk"
+            ZLIB_SVN_URL:STRING="http://${some_location}/zlib/trunk"
+            SZIP_SVN_URL:STRING="http://${some_location}/szip/trunk"
+         where "${some_location}" is the URL to the SVN repository. Also set
          CMAKE_BUILD_TYPE to the configuration type.
          
       C. Use source packages from a compressed file by adding the following 
@@ -286,8 +286,8 @@ IV. Further considerations
             JPEG_TGZ_NAME:STRING="jpeg_src.ext"
             ZLIB_TGZ_NAME:STRING="zlib_src.ext"
             SZIP_TGZ_NAME:STRING="szip_src.ext"
-            TGZPATH:STRING="some_location"
-         where "some_location" is the URL or full path to the compressed 
+            TGZPATH:STRING="${some_location}"
+         where "${some_location}" is the URL or full path to the compressed 
          file and ext is the type of compression file. Also set CMAKE_BUILD_TYPE
          to the configuration type during configuration
                                     
@@ -430,11 +430,6 @@ These five steps are described in detail below.
                 set (HDF_PACKAGE_EXTLIBS OFF CACHE BOOL "(WINDOWS)CPACK - include external libraries" FORCE)
                 set (HDF_ALLOW_EXTERNAL_SUPPORT "NO" CACHE STRING "Allow External Library Building (NO SVN TGZ)" FORCE)
                 set_property (CACHE HDF_ALLOW_EXTERNAL_SUPPORT PROPERTY STRINGS NO SVN TGZ)
-                set (ZLIB_SVN_URL "http://svn.hdfgroup.uiuc.edu/zlib/trunk" CACHE STRING "Use ZLib from HDF repository" FORCE)
-                set (SZIP_SVN_URL "http://svn.hdfgroup.uiuc.edu/szip/trunk" CACHE STRING "Use SZip from HDF repository" FORCE)
-                set (JPEG_SVN_URL "http://svn.hdfgroup.uiuc.edu/jpeg/branches/jpeg8b" CACHE STRING "Use JPEG from HDF repository" FORCE)
-                set (HDF4_SVN_URL "http://svn.hdfgroup.uiuc.edu/hdf4/trunk" CACHE STRING "Use HDF4 from HDF repository" FORCE)
-                set (HDF5_SVN_URL "http://svn.hdfgroup.uiuc.edu/hdf5/branches/hdf5_1_8" CACHE STRING "Use HDF5 from HDF repository" FORCE)
                 set (ZLIB_TGZ_NAME "ZLib.tar.gz" CACHE STRING "Use ZLib from compressed file" FORCE)
                 set (SZIP_TGZ_NAME "SZip.tar.gz" CACHE STRING "Use SZip from compressed file" FORCE)
                 set (JPEG_TGZ_NAME "JPEG8b.tar.gz" CACHE STRING "Use JPEG from compressed file" FORCE)
@@ -503,12 +498,12 @@ These five steps are described in detail below.
                -DHDF_ALLOW_EXTERNAL_SUPPORT:STRING="SVN"
                
            The options to control the SVN URL (config/cmake/cacheinit.cmake file) are:
-               HDF4_SVN_URL:STRING="http://some_location/hdf4/trunk"
-               HDF5_SVN_URL:STRING="http://some_location/hdf5/trunk"
-               JPEG_SVN_URL:STRING="http://some_location/jpeg/trunk"
-               ZLIB_SVN_URL:STRING="http://svn.hdfgroup.uiuc.edu/zlib/trunk"
-               SZIP_SVN_URL:STRING="http://svn.hdfgroup.uiuc.edu/szip/trunk"
-           These should be changed to your location. Also define CMAKE_BUILD_TYPE
+               HDF4_SVN_URL:STRING="http://${some_location}/hdf4/trunk"
+               HDF5_SVN_URL:STRING="http://${some_location}/hdf5/trunk"
+               JPEG_SVN_URL:STRING="http://${some_location}/jpeg/trunk"
+               ZLIB_SVN_URL:STRING="http://${some_location}/zlib/trunk"
+               SZIP_SVN_URL:STRING="http://${some_location}/szip/trunk"
+           ${some_location} should be changed to your location. Also define CMAKE_BUILD_TYPE
            to be the configuration type.
            
       3.2.2  Or the external libraries (zlib, szip, jpeg, hdf4 and hdf5) can 
@@ -700,9 +695,9 @@ set(SITE_BUILDNAME_SUFFIX "STATIC")
 #########   Following controls source update             ##########
 #set(LOCAL_UPDATE "TRUE")
 #########   Following controls source repository         ##########
-#set(REPOSITORY_URL "http://svn.hdfgroup.uiuc.edu/hdf-java/branches/hdf-java-2.10")
+#set(REPOSITORY_URL "http://svn.${hdfgroup_url}/hdf-java/branches/hdf-java-2.11")
 #comment to use a uncompressed source folder
-set(CTEST_USE_TAR_SOURCE "hdf-java-2.10.1")
+set(CTEST_USE_TAR_SOURCE "hdf-java-2.11")
 ###################################################################
 
 ###################################################################
@@ -720,8 +715,8 @@ set(ADD_BUILD_OPTIONS "${ADD_BUILD_OPTIONS} -DHDF_ALLOW_EXTERNAL_SUPPORT:STRING=
 ### ext libs from svn
 #set(ADD_BUILD_OPTIONS "${ADD_BUILD_OPTIONS} -DHDF_ALLOW_EXTERNAL_SUPPORT:STRING=SVN")
 ### ext libs on system
-#set(ADD_BUILD_OPTIONS "${ADD_BUILD_OPTIONS} -DZLIB_LIBRARY:FILEPATH=some_location/lib/zlib.lib -DZLIB_INCLUDE_DIR:PATH=some_location/include")
-#set(ADD_BUILD_OPTIONS "${ADD_BUILD_OPTIONS} -DSZIP_LIBRARY:FILEPATH=some_location/lib/szlib.lib -DSZIP_INCLUDE_DIR:PATH=some_location/include")
+#set(ADD_BUILD_OPTIONS "${ADD_BUILD_OPTIONS} -DZLIB_LIBRARY:FILEPATH=${some_location}/lib/zlib.lib -DZLIB_INCLUDE_DIR:PATH=${some_location}/include")
+#set(ADD_BUILD_OPTIONS "${ADD_BUILD_OPTIONS} -DSZIP_LIBRARY:FILEPATH=${some_location}/lib/szlib.lib -DSZIP_INCLUDE_DIR:PATH=${some_location}/include")
 
 ### Create install package with external libraries (szip, zlib)
 set(ADD_BUILD_OPTIONS "${ADD_BUILD_OPTIONS} -DHDF_PACKAGE_EXTLIBS:BOOL=ON")
