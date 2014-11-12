@@ -36,7 +36,7 @@ I. Preconditions
 ========================================================================
 
    1. We suggest you obtain the latest CMake for Windows from the Kitware
-      web site. The HDF-JAVA 2.10.1 product requires a minimum CMake version 
+      web site. The HDF-JAVA 2.11 product requires a minimum CMake version 
       of 2.8.12.
                                                                          
    2. You have installed the HDF-JAVA Library built with CMake by executing 
@@ -47,7 +47,7 @@ I. Preconditions
 
    3. Set the environment variable HDFJAVA_DIR to the installed location of 
       the config files for HDF-JAVA. On Windows: 
-            HDFJAVA_DIR=C:/Program Files/HDF_Group/HDFView/2.10.1/cmake/hdf-java
+            HDFJAVA_DIR=C:/Program Files/HDF_Group/HDFView/2.11/cmake/hdf-java
       
       (Note there are no quote characters used on Windows and all platforms
       use forward slashes)
@@ -255,7 +255,7 @@ set(SITE_COMPILER_NAME "compiler name")
 set(SITE_COMPILER_VERSION "compiler version")
 
 # needed for source updates, change as required
-set(REPOSITORY_URL "http://svn.hdfgroup.uiuc.edu/hdf-java-examples/trunk")
+set(REPOSITORY_URL "http://svn.${hdfgroup_url}/hdf-java-examples/trunk")
 
 set(ADD_BUILD_OPTIONS "${ADD_BUILD_OPTIONS} -DCMAKE_INSTALL_PREFIX:PATH=${CTEST_BINARY_NAME}")
 
