@@ -42,7 +42,48 @@ Major Bug Fixes
 
 Limitations / Known Problems
 ==============================================================================  
-    * 
+    * HDFView does not support undo operations; the editing results go to
+      files and cannot be recovered.
+    * HDFView does not support conversion between HDF4 and HDF5.
+    * HDFView supports only indexed images with RGB color model or 24-bit
+      true color images.
+    * Directly using multiple dimensional arrays causes a performance
+      problem because there is no direct mapping for multiple dimensional
+      arrays between Java and C.
+    * HDF 4 APIs with function pointers are not supported in HDF-Java.
+    * HDF 5 APIs with function pointers are selectively supported in HDF-Java.
+
+    * Specific to HDF4:
+        -- Deleting an object or attribute from an HDF4 file is not
+           supported. Deleting objects in HDF4 may leave dangling objects
+           or corrupt the file.
+        -- HDFView cannot modify compressed HDF4 SDS if the rank is greater
+           than two because the existing compression algorithms supported
+           by HDF do not allow partial modification to a compressed
+           data stream.
+        -- HDFView cannot modify HDF4 vdata. HDF4 only writes vdata by
+           records.
+           HDF-Java reads data by vdata fields because HDF-Java does not
+           support the data structure of a vdata record.
+
+    * Specific to HDF5:
+        -- Writing compound data is limited to simple cases. For example,
+           base compound fields that have primitive types such as integers,
+           floats, or characters can be written. HDFView does not write
+           complex compound data. For example, HDFView cannot write a dataset
+           that has a compound datatype with a region reference.
+        -- Writing variable-length data is not supported except for datasets
+           where each data point is a single variable-length string or a
+           one dimensional integer type.
+        -- There is no single JNI function that can handle HDF5 library
+           functions that have different return types for version 1.6 and
+           version 1.8. An additional function has been added to the JNI.
+           For example,
+             * public synchronized static native
+                      int H5Tget_size(int type_id)
+             * public synchronized static native
+                      long H5Tget_size_long(int type_id)
+
 
 Other Notes
 ==============================================================================

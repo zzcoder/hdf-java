@@ -1619,7 +1619,7 @@ public class HDFView extends JFrame implements ViewManager, ActionListener, Chan
         // make the window to be unique: fid+path
         log.trace("addDataView: cmd={}", cmd);
 
-        frame.setName(cmd); // data windows are identified by full path the file
+        frame.setName(fullPath); // data windows are identified by full path the file
         // id
         frame.setMaximizable(true);
         frame.setClosable(true);

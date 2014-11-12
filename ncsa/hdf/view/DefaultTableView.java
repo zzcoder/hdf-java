@@ -1029,6 +1029,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
                 }
             }
             else if (cmd.startsWith("Show data as")) {
+                log.trace("DefaultTableView actionPerformed: {}", cmd);
                 // show data pointed by reg. ref.
                 if (cmd.endsWith("table"))
                     viewType = ViewType.TABLE;
@@ -1036,6 +1037,7 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
                     viewType = ViewType.IMAGE;
                 else
                     viewType = ViewType.TABLE;
+                log.trace("DefaultTableView actionPerformed: Show data as: {}", viewType);
 
                 Object theData = getSelectedData();
                 if (theData == null) {
@@ -1046,14 +1048,22 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
                 }
 
                 int[] selectedRows = table.getSelectedRows();
+                int[] selectedCols = table.getSelectedColumns();
                 if (selectedRows == null || selectedRows.length <= 0) {
+                    log.trace("DefaultTableView actionPerformed: Show data as: selectedRows is empty");
                     return;
                 }
-                int len = Array.getLength(selectedRows);
+                int len = Array.getLength(selectedRows) * Array.getLength(selectedCols);
+                log.trace("DefaultTableView actionPerformed: Show data as: len={}", len);
                 for (int i = 0; i < len; i++) {
-                    if (isRegRef)
-                        showRegRefData((String) Array.get(theData, selectedRows[i]));
-                    else if (isObjRef) showObjRefData(Array.getLong(theData, selectedRows[i]));
+                    if (isRegRef) {
+                        log.trace("DefaultTableView actionPerformed: Show data[{}] as: isRegRef={}", i, isRegRef);
+                        showRegRefData((String) Array.get(theData, i));
+                    }
+                    else if (isObjRef) {
+                        log.trace("DefaultTableView actionPerformed: Show data[{}] as: isObjRef={}", i, isObjRef);
+                        showObjRefData(Array.getLong(theData, i));
+                    }
                 }
             }
         }
@@ -1463,17 +1473,21 @@ public class DefaultTableView extends JInternalFrame implements TableView, Actio
             JOptionPane.showMessageDialog(this, "Unsupported data type.", getTitle(), JOptionPane.ERROR_MESSAGE);
             return null;
         }
-        log.trace("DefaultTableView getSelectedScalarData: selectedData={}", selectedData);
+        log.trace("DefaultTableView getSelectedScalarData: selectedData is type {}", NT);
 
         table.getSelectedRow();
         table.getSelectedColumn();
         int w = table.getColumnCount();
+        log.trace("DefaultTableView getSelectedScalarData: getColumnCount={}", w);
         int idx_src = 0;
         int idx_dst = 0;
+        log.trace("DefaultTableView getSelectedScalarData: Rows.length={} Cols.length={}", selectedRows.length, selectedCols.length);
         for (int i = 0; i < selectedRows.length; i++) {
             for (int j = 0; j < selectedCols.length; j++) {
                 idx_src = selectedRows[i] * w + selectedCols[j];
+                log.trace("DefaultTableView getSelectedScalarData[{},{}]: dataValue[{}]={} from r{} and c{}", i, j, idx_src, Array.get(dataValue, idx_src), selectedRows[i], selectedCols[j]);
                 Array.set(selectedData, idx_dst, Array.get(dataValue, idx_src));
+                log.trace("DefaultTableView getSelectedScalarData[{},{}]: selectedData[{}]={}", i, j, idx_dst, Array.get(selectedData, idx_dst));
                 idx_dst++;
             }
         }
