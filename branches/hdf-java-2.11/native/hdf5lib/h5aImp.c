@@ -235,7 +235,7 @@ herr_t H5AwriteVL_num (JNIEnv *env, hid_t aid, hid_t tid, jobjectArray buf)
         n = ENVPTR->GetArrayLength(ENVPAR (jarray)buf);
 
         if(basetclass == H5T_STRING) {
-            wsdata = (char**)malloc(n+1 * sizeof(char*));
+            wsdata = (char**)calloc(n+1, sizeof(char*));
             wdata = wsdata;
         }
         else {
@@ -547,7 +547,7 @@ herr_t H5AwriteVL_str (JNIEnv *env, hid_t aid, hid_t tid, jobjectArray buf)
 
     size = ENVPTR->GetArrayLength(ENVPAR (jarray) buf);
 
-    wdata = (char**)malloc(size * sizeof (char*));
+    wdata = (char**)calloc(size + 1, sizeof (char*));
     if (!wdata) {
         h5JNIFatalError(env, "H5AwriteVL_str:  cannot allocate buffer");
         return -1;
