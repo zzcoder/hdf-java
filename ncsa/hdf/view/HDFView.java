@@ -212,6 +212,11 @@ public class HDFView extends JFrame implements ViewManager, ActionListener, Chan
     public HDFView(String root, List<File> flist, int width, int height, int x, int y) {
         super("HDFView " + ViewProperties.VERSION);
         this.setName("hdfview");
+        try { 
+            UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName()); 
+        } 
+        catch(Exception e) { System.out.println("Error setting Java LAF: " + e); }
+
 
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         
