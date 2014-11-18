@@ -503,7 +503,7 @@ These five steps are described in detail below.
                JPEG_SVN_URL:STRING="http://${some_location}/jpeg/trunk"
                ZLIB_SVN_URL:STRING="http://${some_location}/zlib/trunk"
                SZIP_SVN_URL:STRING="http://${some_location}/szip/trunk"
-           ${some_location} should be changed to your location. Also define CMAKE_BUILD_TYPE
+           ${some_location} should be changed to your svn location. Also define CMAKE_BUILD_TYPE
            to be the configuration type.
            
       3.2.2  Or the external libraries (zlib, szip, jpeg, hdf4 and hdf5) can 
@@ -695,6 +695,8 @@ set(SITE_BUILDNAME_SUFFIX "STATIC")
 #########   Following controls source update             ##########
 #set(LOCAL_UPDATE "TRUE")
 #########   Following controls source repository         ##########
+# current HDF Group svn url
+#set(hdfgroup_url "hdfgroup.uiuc.edu")
 #set(REPOSITORY_URL "http://svn.${hdfgroup_url}/hdf-java/branches/hdf-java-2.11")
 #comment to use a uncompressed source folder
 set(CTEST_USE_TAR_SOURCE "hdf-java-2.11")
