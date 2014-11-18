@@ -228,9 +228,12 @@ ctest
 
 ############################################################################
 # Product specific script, HDFJavaExample.cmake, that uses the 
-# CTestScript.cmake file (see Appendix in the CMake.txt). Usage:
-# "ctest -S HDFJavaExample.cmake,hdfjavaExamples -C Release -O hdfjavaEX.log"
-# where hdfjavaExamples is the source folder relative to the location of these scripts
+# CTestScript.cmake file(see II. Quick Step Building HDF-JAVA
+# Libraries with CMake Script Mode in the INSTALL_CMake.txt file for
+# downloading script files).
+# Usage:
+# "ctest -S HDFJavaExample.cmake,hjExamples -C Release -O hdfjavaEX.log"
+# where hjExamples is the source folder relative to the location of these scripts
 ############################################################################
 
 cmake_minimum_required(VERSION 2.8.12 FATAL_ERROR)
@@ -254,6 +257,8 @@ set(SITE_OS_BITS "os size")
 set(SITE_COMPILER_NAME "compiler name")
 set(SITE_COMPILER_VERSION "compiler version")
 
+# current HDF Group svn url
+set(hdfgroup_url "hdfgroup.uiuc.edu")
 # needed for source updates, change as required
 set(REPOSITORY_URL "http://svn.${hdfgroup_url}/hdf-java-examples/trunk")
 
