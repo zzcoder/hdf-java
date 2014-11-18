@@ -630,7 +630,7 @@ elseif (APPLE)
     set (CPACK_APPLE_GUI_VERSION_STRING "${CPACK_PACKAGE_VERSION}")
     set (CPACK_APPLE_GUI_SHORT_VERSION_STRING "${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}")
     #-----------------------------------------------------------------------------
-    # Configure the HDFJAVA-startup.sh and Info.plist file for the install bundle
+    # Configure the Info.plist file for the install bundle
     #-----------------------------------------------------------------------------
     configure_file (
         ${HDF_RESOURCES_DIR}/CPack.Info.plist.in
