@@ -420,6 +420,14 @@ if (NOT ${HDFJAVA_USERSGUIDE_COMPRESSED} STREQUAL "")
 endif (NOT ${HDFJAVA_USERSGUIDE_COMPRESSED} STREQUAL "")
 
 #-----------------------------------------------------------------------------
+# Check for Installation Utilities
+#-----------------------------------------------------------------------------
+if (WIN32)
+  find_program (NSIS_EXECUTABLE NSIS.exe PATHS "$ENV{ProgramFiles}\\NSIS" "$ENV{ProgramFiles(x86)}\\NSIS")
+  find_program (WIX_EXECUTABLE candle  PATHS "$ENV{ProgramFiles}\\WiX\ Toolset\ v3.9\\bin" "$ENV{ProgramFiles(x86)}\\WiX\ Toolset\ v3.9\\bin")
+endif (WIN32)
+
+#-----------------------------------------------------------------------------
 # Add Target(s) to CMake Install for import into other projects
 #-----------------------------------------------------------------------------
 if (NOT HDFJAVA_EXTERNALLY_CONFIGURED)
@@ -590,7 +598,11 @@ set (CPACK_PACKAGE_ICON "${HDF_RESOURCES_EXT_DIR}/hdf.bmp")
 
 set (CPACK_GENERATOR "TGZ") 
 if (WIN32)
-  list (APPEND CPACK_GENERATOR "NSIS") 
+    set (CPACK_GENERATOR "ZIP") 
+
+    if (NSIS_EXECUTABLE)    
+      list (APPEND CPACK_GENERATOR "NSIS") 
+    endif (NSIS_EXECUTABLE)    
   # Installers for 32- vs. 64-bit CMake:
   #  - Root install directory (displayed to end user at installer-run time)
   #  - "NSIS package/display name" (text used in the installer GUI)
@@ -614,6 +626,46 @@ if (WIN32)
   set (CPACK_MONOLITHIC_INSTALL ON)
   set (CPACK_NSIS_CONTACT "${HDFJAVA_PACKAGE_BUGREPORT}")
   set (CPACK_NSIS_MODIFY_PATH ON)
+    if (WIX_EXECUTABLE)    
+      list (APPEND CPACK_GENERATOR "WIX") 
+    endif (WIX_EXECUTABLE)    
+#WiX variables
+    set (CPACK_WIX_UNINSTALL "1")
+# .. variable:: CPACK_WIX_LICENSE_RTF
+#  RTF License File
+#
+#  If CPACK_RESOURCE_FILE_LICENSE has an .rtf extension it is used as-is.
+#
+#  If CPACK_RESOURCE_FILE_LICENSE has an .txt extension it is implicitly
+#  converted to RTF by the WiX Generator.
+#  The expected encoding of the .txt file is UTF-8.
+#
+#  With CPACK_WIX_LICENSE_RTF you can override the license file used by the
+#  WiX Generator in case CPACK_RESOURCE_FILE_LICENSE is in an unsupported
+#  format or the .txt -> .rtf conversion does not work as expected.
+    set (CPACK_RESOURCE_FILE_LICENSE "${HDFJAVA_BINARY_DIR}/COPYING.txt")
+# .. variable:: CPACK_WIX_PRODUCT_ICON
+#  The Icon shown next to the program name in Add/Remove programs.
+    set(CPACK_WIX_PRODUCT_ICON "${HDF_RESOURCES_EXT_DIR}\\\\hdf.ico")
+#
+# .. variable:: CPACK_WIX_UI_BANNER
+#
+#  The bitmap will appear at the top of all installer pages other than the
+#  welcome and completion dialogs.
+#
+#  If set, this image will replace the default banner image.
+#
+#  This image must be 493 by 58 pixels.
+#
+# .. variable:: CPACK_WIX_UI_DIALOG
+#
+#  Background bitmap used on the welcome and completion dialogs.
+#
+#  If this variable is set, the installer will replace the default dialog
+#  image.
+#
+#  This image must be 493 by 312 pixels.
+#
 elseif (APPLE)
 #  list (APPEND CPACK_GENERATOR "DragNDrop") 
   set (CPACK_COMPONENTS_ALL_IN_ONE_PACKAGE ON)
@@ -627,17 +679,13 @@ elseif (APPLE)
     set (CMAKE_INSTALL_PREFIX "/${CPACK_BUNDLE_NAME}.app/Contents/Resources")
     set (CPACK_BUNDLE_ICON "${HDF_RESOURCES_EXT_DIR}/hdf.icns")
     set (CPACK_BUNDLE_PLIST "${HDFJAVA_BINARY_DIR}/CMakeFiles/Info.plist")
-    if (HDFJAVA_PACK_MACOSX_16_BUNDLE)
-      set (CPACK_BUNDLE_STARTUP_COMMAND "/System/Library/Frameworks/JavaVM.framework/Resources/MacOS/JavaApplicationStub")
-    else (HDFJAVA_PACK_MACOSX_16_BUNDLE)
-      set (CPACK_BUNDLE_STARTUP_COMMAND "${HDF_RESOURCES_DIR}/JavaAppLauncher")
-    endif (HDFJAVA_PACK_MACOSX_16_BUNDLE)
+    set (CPACK_BUNDLE_STARTUP_COMMAND "${HDF_RESOURCES_DIR}/JavaAppLauncher")
     set (CPACK_APPLE_GUI_BUNDLE_NAME "HDFView")
     set (CPACK_APPLE_GUI_COPYRIGHT "Copyright © 2006-2014 by The HDF Group. All rights reserved.")
     set (CPACK_APPLE_GUI_VERSION_STRING "${CPACK_PACKAGE_VERSION}")
     set (CPACK_APPLE_GUI_SHORT_VERSION_STRING "${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}")
     #-----------------------------------------------------------------------------
-    # Configure the HDFJAVA-startup.sh and Info.plist file for the install bundle
+    # Configure the Info.plist file for the install bundle
     #-----------------------------------------------------------------------------
     configure_file (
         ${HDF_RESOURCES_DIR}/CPack.Info.plist.in
