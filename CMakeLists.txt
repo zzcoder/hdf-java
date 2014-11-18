@@ -573,6 +573,13 @@ configure_file (
 )
 
 #-----------------------------------------------------------------------------
+# Configure the COPYING.txt file for the windows binary package
+#-----------------------------------------------------------------------------
+if (WIN32)
+  configure_file (${HDFJAVA_SOURCE_DIR}/COPYING ${HDFJAVA_BINARY_DIR}/COPYING.txt @ONLY)
+endif (WIN32)
+
+#-----------------------------------------------------------------------------
 # Set the cpack variables
 #-----------------------------------------------------------------------------
 set (CPACK_PACKAGE_VENDOR "HDF_Group")
