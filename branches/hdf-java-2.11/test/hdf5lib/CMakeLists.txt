@@ -103,6 +103,7 @@ add_test (
         -D "TEST_LIBRARY_DIRECTORY=${CMAKE_TEST_OUTPUT_DIRECTORY}"
         -D "TEST_FOLDER=${HDFJAVA_BINARY_DIR}"
         -D "TEST_OUTPUT=test/hdf5lib/JUnit-interface.out"
+#        -D "TEST_LOG_LEVEL=trace"
         -D "TEST_EXPECT=0"
         -D "TEST_MASK_ERROR=TRUE"
         -D "TEST_FILTER:STRING=${testfilter}"
