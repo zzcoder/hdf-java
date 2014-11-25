@@ -42,6 +42,10 @@ Major Bug Fixes
 
 Limitations / Known Problems
 ==============================================================================  
+    * HDFView updates attribute changes directly to the file. However, the
+      metadata window will only update the values of attributes when focus is 
+      changed in the treeview. The metadata window will only show the name
+      change when the file is reloaded.
     * HDFView does not support undo operations; the editing results go to
       files and cannot be recovered.
     * HDFView does not support conversion between HDF4 and HDF5.
