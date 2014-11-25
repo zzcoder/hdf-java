@@ -605,11 +605,10 @@ set (CPACK_PACKAGE_ICON "${HDF_RESOURCES_EXT_DIR}/hdf.bmp")
 
 set (CPACK_GENERATOR "TGZ") 
 if (WIN32)
-    set (CPACK_GENERATOR "ZIP") 
-
-    if (NSIS_EXECUTABLE)    
-      list (APPEND CPACK_GENERATOR "NSIS") 
-    endif (NSIS_EXECUTABLE)    
+  set (CPACK_GENERATOR "ZIP") 
+  if (NSIS_EXECUTABLE)    
+    list (APPEND CPACK_GENERATOR "NSIS") 
+  endif (NSIS_EXECUTABLE)    
   # Installers for 32- vs. 64-bit CMake:
   #  - Root install directory (displayed to end user at installer-run time)
   #  - "NSIS package/display name" (text used in the installer GUI)
@@ -633,9 +632,9 @@ if (WIN32)
   set (CPACK_MONOLITHIC_INSTALL ON)
   set (CPACK_NSIS_CONTACT "${HDFJAVA_PACKAGE_BUGREPORT}")
   set (CPACK_NSIS_MODIFY_PATH ON)
-    if (WIX_EXECUTABLE)    
-      list (APPEND CPACK_GENERATOR "WIX") 
-    endif (WIX_EXECUTABLE)    
+  if (WIX_EXECUTABLE)    
+    list (APPEND CPACK_GENERATOR "WIX") 
+  endif (WIX_EXECUTABLE)    
 #WiX variables
     set (CPACK_WIX_UNINSTALL "1")
 # .. variable:: CPACK_WIX_LICENSE_RTF
