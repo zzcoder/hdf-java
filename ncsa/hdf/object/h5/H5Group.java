@@ -228,6 +228,7 @@ public class H5Group extends Group {
 
         boolean attrExisted = false;
         Attribute attr = (Attribute) info;
+        log.trace("writeMetadata: {}", attr.getName());
 
         if (attributeList == null) {
             this.getMetadata();
@@ -255,21 +256,37 @@ public class H5Group extends Group {
     	}
 
     	Attribute attr = (Attribute) info;
+        log.trace("removeMetadata: {}", attr.getName());
     	int gid = open();
     	if(gid >= 0) {
-    		try {
-    			H5.H5Adelete(gid, attr.getName());
-    			List attrList = getMetadata();
-    			attrList.remove(attr);
-    			nAttributes = attributeList.size();
-    		}
-    		finally {
-    			close(gid);
-    		}
+    	    try {
+    	        H5.H5Adelete(gid, attr.getName());
+    	        List attrList = getMetadata();
+    	        attrList.remove(attr);
+    	        nAttributes = attributeList.size();
+    	    }
+    	    finally {
+    	        close(gid);
+    	    }
     	}
     	else {
-    		log.debug("failed to open group");
+    	    log.debug("failed to open group");
     	}
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ncsa.hdf.object.DataFormat#updateMetadata(java.lang.Object)
+     */
+    public void updateMetadata(Object info) throws HDF5Exception {
+        // only attribute metadata is supported.
+        if (!(info instanceof Attribute)) {
+            return;
+        }
+        log.trace("updateMetadata");
+
+        nAttributes = -1;
     }
 
     /*

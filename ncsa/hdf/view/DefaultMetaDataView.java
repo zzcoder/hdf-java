@@ -936,11 +936,8 @@ public class DefaultMetaDataView extends JDialog implements ActionListener, Meta
             int                       lastSelectedCol  = -1;
 
             public boolean isCellEditable(int row, int column) {
-                return ((column == 1) || (isH5 && (column == 0))); // only
-                // attribute
-                // value and
-                // name can
-                // be changed
+                return ((column == 1) || (isH5 && (column == 0))); 
+                // only attribute value and name can be changed
             }
 
             public void editingStopped(ChangeEvent e) {
@@ -1143,9 +1140,6 @@ public class DefaultMetaDataView extends JDialog implements ActionListener, Meta
      *            the column number of the selected cell.
      */
     private void updateAttributeValue(String newValue, int row, int col) {
-        // if (col != 1) {
-        // return; // can only change attribute value
-        // }
         log.trace("updateAttributeValue:start value={}[{},{}]", newValue, row, col);
 
         String attrName = (String) attrTable.getValueAt(row, 0);
@@ -1161,6 +1155,7 @@ public class DefaultMetaDataView extends JDialog implements ActionListener, Meta
         Attribute attr = (Attribute) attrList.get(row);
 
         if (col == 1) { // To change attribute value
+            log.trace("updateAttributeValue: change attribute value");
             Object data = attr.getValue();
             if (data == null) {
                 return;
@@ -1318,6 +1313,7 @@ public class DefaultMetaDataView extends JDialog implements ActionListener, Meta
         }
 
         if ((col == 0) && isH5) { // To change attribute name
+            log.trace("updateAttributeValue: change attribute name");
             try {
                 hObject.getFileFormat().renameAttribute(hObject, attrName, newValue);
             }
@@ -1328,6 +1324,19 @@ public class DefaultMetaDataView extends JDialog implements ActionListener, Meta
 
             // update the attribute table
             attrTable.setValueAt(newValue, row, 0);
+        }
+        if (hObject instanceof ScalarDS) {
+            ScalarDS ds = (ScalarDS) hObject;
+            try {
+                log.trace("updateAttributeValue: ScalarDS:updateMetadata");
+                ds.updateMetadata(attr);
+            }
+            catch (Exception ex) {
+                JOptionPane.showMessageDialog(getOwner(), ex.getMessage(), getTitle(), JOptionPane.ERROR_MESSAGE);
+            }
+        }
+        else {
+            log.trace("updateAttributeValue: hObject is not instanceof ScalarDS");
         }
     }
 

@@ -73,6 +73,14 @@ public interface DataFormat {
     public abstract void removeMetadata(Object info) throws Exception;
 
     /**
+     * Updates an existing metadata from this data object.
+     * 
+     * @param info
+     *            the metadata to update.
+     */
+    public abstract void updateMetadata(Object info) throws Exception;
+
+    /**
      * Check if the object has any attributes attached.
      * 
      * @return true if it has any attribute(s), false otherwise.
