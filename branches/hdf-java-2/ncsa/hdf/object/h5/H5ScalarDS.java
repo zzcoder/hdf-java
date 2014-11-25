@@ -890,6 +890,7 @@ public class H5ScalarDS extends ScalarDS {
         }
 
         if (attributeList != null) {
+            log.trace("getMetadata: attributeList != null");
             return attributeList;
         }
 
@@ -1101,6 +1102,7 @@ public class H5ScalarDS extends ScalarDS {
 
         boolean attrExisted = false;
         Attribute attr = (Attribute) info;
+        log.trace("writeMetadata: {}", attr.getName());
 
         if (attributeList == null) {
             this.getMetadata();
@@ -1129,6 +1131,7 @@ public class H5ScalarDS extends ScalarDS {
         }
 
         Attribute attr = (Attribute) info;
+        log.trace("removeMetadata: {}", attr.getName());
         int did = open();
         if (did >= 0) {
             try {
@@ -1141,6 +1144,23 @@ public class H5ScalarDS extends ScalarDS {
                 close(did);
             }
         }
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ncsa.hdf.object.DataFormat#updateMetadata(java.lang.Object)
+     */
+    public void updateMetadata(Object info) throws HDF5Exception {
+        // only attribute metadata is supported.
+        if (!(info instanceof Attribute)) {
+            return;
+        }
+        log.trace("updateMetadata");
+
+        Attribute attr = (Attribute) info;
+        log.trace("updateMetadata: {}", attr.getName());
+        nAttributes = -1;
     }
 
     /*

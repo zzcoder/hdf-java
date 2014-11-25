@@ -487,6 +487,11 @@ public class H4Vdata extends CompoundDS
         log.trace("removeMetadata(): disabled");
     }
 
+    // implementing DataFormat
+    public void updateMetadata(Object info) throws Exception {
+        log.trace("updateMetadata(): disabled");
+    }
+
     // Implementing DataFormat
     @Override
     public int open()

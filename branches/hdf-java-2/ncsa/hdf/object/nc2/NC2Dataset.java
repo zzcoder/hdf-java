@@ -194,6 +194,12 @@ public class NC2Dataset extends ScalarDS {
                 "Unsupported operation for NetCDF.");
     }
 
+    // implementing DataFormat
+    public void updateMetadata(Object info) throws Exception {
+        // not supported
+        throw new UnsupportedOperationException("Unsupported operation for NetCDF.");
+    }
+
     // Implementing HObject
     @Override
     public int open() {

@@ -1186,6 +1186,7 @@ public class H5CompoundDS extends CompoundDS {
 
         boolean attrExisted = false;
         Attribute attr = (Attribute) info;
+        log.trace("writeMetadata: {}", attr.getName());
 
         if (attributeList == null) {
             this.getMetadata();
@@ -1214,6 +1215,7 @@ public class H5CompoundDS extends CompoundDS {
         }
 
         Attribute attr = (Attribute) info;
+        log.trace("removeMetadata: {}", attr.getName());
         int did = open();
         if (did >= 0) {
             try {
@@ -1226,6 +1228,21 @@ public class H5CompoundDS extends CompoundDS {
                 close(did);
             }
         }
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ncsa.hdf.object.DataFormat#updateMetadata(java.lang.Object)
+     */
+    public void updateMetadata(Object info) throws HDF5Exception {
+        // only attribute metadata is supported.
+        if (!(info instanceof Attribute)) {
+            return;
+        }
+        log.trace("updateMetadata");
+
+        nAttributes = -1;
     }
 
     /*
