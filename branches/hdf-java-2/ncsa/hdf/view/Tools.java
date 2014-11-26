@@ -1744,7 +1744,7 @@ public final class Tools {
      * @return true if bitmask is applied successfuly; otherwise, false.
      */
     public static final boolean applyBitmask(Object theData, BitSet theMask, ViewProperties.BITMASK_OP op) {
-        if (theData == null || Array.getLength(theData) <= 0 || theMask == null) return false;
+    	if (theData == null || Array.getLength(theData) <= 0 || theMask == null) return false;
 
         char nt = '0';
         String cName = theData.getClass().getName();
@@ -1753,11 +1753,11 @@ public final class Tools {
             nt = cName.charAt(cIndex + 1);
         }
 
-        // only deal with 8 or 16 bit data
-        if (!(nt == 'B' || nt == 'S')) return false;
+        // only deal with 8/16/32/64 bit datasets
+        if (!(nt == 'B' || nt == 'S' || nt == 'I' || nt == 'J')) return false;
 
-        int bmask = 0, theValue = 0, packedValue = 0;
-
+        long bmask = 0, theValue = 0, packedValue = 0, bitValue = 0;
+        
         int nbits = theMask.length();
         int len = Array.getLength(theData);
 
@@ -1768,17 +1768,22 @@ public final class Tools {
         for (int i = 0; i < len; i++) {
             if (nt == 'B')
                 theValue = ((byte[]) theData)[i] & bmask;
-            else
+            else if (nt == 'S')
                 theValue = ((short[]) theData)[i] & bmask;
-
+            else if (nt == 'I')
+                theValue = ((int[]) theData)[i] & bmask;
+            else if (nt == 'J')
+            	theValue = ((long[]) theData)[i] & bmask;
+            
             // apply bitmask only
             if (op == BITMASK_OP.AND)
                 packedValue = theValue;
             else {
                 // extract bits
                 packedValue = 0;
-                int bitPosition = 0, bitValue = 0;
-                ;
+                int bitPosition = 0;
+                bitValue = 0;
+                
                 for (int j = 0; j < nbits; j++) {
                     if (theMask.get(j)) {
                         bitValue = (theValue & 1);
@@ -1792,8 +1797,12 @@ public final class Tools {
 
             if (nt == 'B')
                 ((byte[]) theData)[i] = (byte) packedValue;
-            else
+            else if (nt == 'S')
                 ((short[]) theData)[i] = (short) packedValue;
+            else if (nt == 'I')
+            	((int[]) theData)[i] = (int) packedValue;
+            else if (nt == 'J')
+            	((long[]) theData)[i] = packedValue;
         } /* for (int i = 0; i < len; i++) */
 
         return true;
