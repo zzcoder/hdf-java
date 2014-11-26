@@ -356,8 +356,8 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
                 centerP.add(txtviewP, BorderLayout.SOUTH);
             }
             else {
-                w1 = 800 + (ViewProperties.getFontSize() - 12) * 15;
-                h1 = 400 + (ViewProperties.getFontSize() - 12) * 10;
+                w1 = 850 + (ViewProperties.getFontSize() - 12) * 15;
+                h1 = 500 + (ViewProperties.getFontSize() - 12) * 10;
                 contentPane.setPreferredSize(new Dimension(w1, h1));
                 if (rank > 1) {
                     centerP.add(navigatorP, BorderLayout.WEST);
@@ -489,23 +489,14 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
                 sheetP2.setBorder(tborder);
 
                 tmpP = new JPanel();
-                if (bitmaskButtons.length <= 8) {
-                    tmpP.setLayout(new GridLayout(1, bitmaskButtons.length));
+                if (bitmaskButtons.length >= 8) {
+                	tmpP.setLayout(new GridLayout(tsize, bitmaskButtons.length / tsize));
                     for (int i = bitmaskButtons.length; i > 0; i--)
                         tmpP.add(bitmaskButtons[i - 1]);
                 }
-                else {
-                    tmpP.setLayout(new GridLayout(2, bitmaskButtons.length / 2));
-
-                    for (int i = bitmaskButtons.length; i > bitmaskButtons.length / 2; i--)
-                        tmpP.add(bitmaskButtons[i - 1]);
-
-                    for (int i = bitmaskButtons.length / 2; i > 0; i--)
-                        tmpP.add(bitmaskButtons[i - 1]);
-
-                }
+                
                 sheetP2.setLayout(new BorderLayout(10, 10));
-                if (tsize <= 2) sheetP2.add(tmpP, BorderLayout.CENTER);
+                if (tsize <= 8) sheetP2.add(tmpP, BorderLayout.CENTER);
                 sheetP2.add(new JLabel(), BorderLayout.NORTH);
 
                 JPanel tmpP2 = new JPanel();
@@ -522,7 +513,7 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
                 contentPane.add(northP, BorderLayout.NORTH);
 
                 if (tclass == Datatype.CLASS_CHAR
-                        || (tclass == Datatype.CLASS_INTEGER && tsize <= 2)) {
+                        || (tclass == Datatype.CLASS_INTEGER && tsize <= 8)) {
                     extractBitButton.setEnabled(true);
                     applyBitmaskButton.setEnabled(true);
                     bitmaskHelp.setEnabled(true);
@@ -1042,8 +1033,8 @@ public class DataOptionDialog extends JDialog implements ActionListener, ItemLis
         if (tclass == Datatype.CLASS_CHAR || tclass == Datatype.CLASS_INTEGER) {
             int tsize = dtype.getDatatypeSize();
             charCheckbox.setEnabled((tsize == 1) && spreadsheetButton.isSelected());
-            extractBitButton.setEnabled(tsize <= 2);
-            applyBitmaskButton.setEnabled(tsize <= 2);
+            extractBitButton.setEnabled(tsize <= 8);
+            applyBitmaskButton.setEnabled(tsize <= 8);
         }
         else {
             charCheckbox.setEnabled(false);
