@@ -39,7 +39,9 @@ Major Enhancements
 
 Major Bug Fixes
 ============================================================================== 
-    * JAVA-1840, JAVA-1854: Issues with bit mask selection and usage.
+    * JAVA-1840, JAVA-1854, JAVA-1862: Issues with bit mask selection and usage.
+    * JAVA-1847: Notification added to display fields that couldn't be read in 
+    			 datasets.
     * JAVA-1666, JAVA-1878, JAVA-1880: Issues with filters and dynamic loading.
     * JAVA-183:  Correctly show bitfield and opaque datatypes.
     * JAVA-1855: Object and Dataset Region references can be selected and viewed.
