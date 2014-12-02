@@ -720,7 +720,7 @@ public class TestHDFViewLinks {
 
             // Change link target to existing object
             String currentTarget = mainFrameFixture.dialog().textBox("linkField").text();
-            int targetIndex = currentTarget.indexOf(':');
+            int targetIndex = currentTarget.lastIndexOf(':');
             String target = currentTarget.substring(0, targetIndex) + ":///DU32BITS";
 
             mainFrameFixture.dialog().textBox("linkField").deleteText();
