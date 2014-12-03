@@ -247,7 +247,7 @@ public class UserOptionsDialog extends JDialog implements ActionListener, ItemLi
         p0.setLayout(new BorderLayout());
         p0.add(checkCurrentUserDir = new JCheckBox("\"Current Working Directory\" or", false), BorderLayout.WEST);
         checkCurrentUserDir.addActionListener(this);
-        checkCurrentUserDir.setActionCommand("Set current dir to user.dir");
+        checkCurrentUserDir.setActionCommand("Set current dir to user.home");
         p0.add(workField = new JTextField(workDir), BorderLayout.CENTER);
         JButton b = new JButton("Browse...");
         currentDirButton = b;
@@ -490,7 +490,7 @@ public class UserOptionsDialog extends JDialog implements ActionListener, ItemLi
         c.gridy = 7;
         centerP.add(p0, c);
 
-        if (workDir.equals(System.getProperty("user.dir"))) {
+        if (workDir.equals(System.getProperty("user.home"))) {
             checkCurrentUserDir.setSelected(true);
             workField.setEnabled(false);
         }
@@ -638,7 +638,7 @@ public class UserOptionsDialog extends JDialog implements ActionListener, ItemLi
             isFontChanged = false;
             setVisible(false);
         }
-        else if (cmd.equals("Set current dir to user.dir")) {
+        else if (cmd.equals("Set current dir to user.home")) {
             boolean isCheckCurrentUserDirSelected = checkCurrentUserDir.isSelected();
             workField.setEnabled(!isCheckCurrentUserDirSelected);
             currentDirButton.setEnabled(!isCheckCurrentUserDirSelected);
@@ -870,7 +870,7 @@ public class UserOptionsDialog extends JDialog implements ActionListener, ItemLi
 
         String workPath = workField.getText();
         if (checkCurrentUserDir.isSelected()) {
-            workPath = "user.dir";
+            workPath = "user.home";
         }
 
         if ((workPath != null) && (workPath.length() > 0)) {
