@@ -28,3 +28,38 @@ HDFView:
 
 NOTE that the "-jar $INSTALLDIR/lib/jhdfview.jar" section is changed to 
      "-cp <list of jars>" and add the -Dorg.slf4j.simpleLogger.defaultLogLevel
+
+org.slf4j.simpleLogger.defaultLogLevel is the default log level for all instances of SimpleLogger. 
+It must be one of ("trace", "debug", "info", "warn", or "error"). If not specified, defaults to "info".
+ 
+************************************************************************
+* Example use of logging and HDF-JAVA Library                          *
+************************************************************************
+
+public class H5test {
+    /**
+     * Add logger for this class
+     */
+
+    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H5test.class);
+    
+    ...
+    public int H5function (int arg)
+    {
+        log.info("H5function called with {}", arg);
+        if (arg < 0) {
+            log.warn("H5function with negative argument");
+            return 0;
+        }
+        try {
+            some_function();
+        }
+        catch (Exception ex) {
+            log.debug("some_function failed: ", ex);
+        }
+
+        log.trace("H5function finished");
+
+        return (arg * 3);
+    }
+    

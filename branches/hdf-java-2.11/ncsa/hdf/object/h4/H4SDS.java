@@ -566,6 +566,11 @@ public class H4SDS extends ScalarDS
    // To do: implementing DataFormat
     public void removeMetadata(Object info) throws HDFException {;}
 
+    // implementing DataFormat
+    public void updateMetadata(Object info) throws Exception {
+        log.trace("updateMetadata(): disabled");
+    }
+
     // Implementing HObject
     @Override
     public int open()

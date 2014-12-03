@@ -93,6 +93,9 @@ public class H5Link extends HObject {
     public void writeMetadata(Object info) throws Exception {
     }
 
+    public void updateMetadata(Object info) throws Exception {
+    }
+
     public List getMetadata(int... attrPropList) throws Exception {
         return null;
     }

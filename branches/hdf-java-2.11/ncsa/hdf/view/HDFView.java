@@ -1441,6 +1441,7 @@ public class HDFView extends JFrame implements ViewManager, ActionListener, Chan
     public void stateChanged(ChangeEvent e) {
         Object src = e.getSource();
 
+        log.trace("caught change event");
         if (src.equals(infoTabbedPane)) {
             int idx = infoTabbedPane.getSelectedIndex();
             if (idx == 1) {
@@ -1803,6 +1804,7 @@ public class HDFView extends JFrame implements ViewManager, ActionListener, Chan
                 metadata.append(attr.getName());
                 metadata.append(" = ");
                 metadata.append(attr.toString(","));
+                log.trace("showMetaData: append Object[{}]={}", i, attr.getName());
             }
         }
 

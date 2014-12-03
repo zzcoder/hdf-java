@@ -133,6 +133,12 @@ public class NC2Group extends Group {
                 "Unsupported operation for NetCDF.");
     }
 
+    // implementing DataFormat
+    public void updateMetadata(Object info) throws Exception {
+        // not supported
+        throw new UnsupportedOperationException("Unsupported operation for NetCDF.");
+    }
+
     // Implementing DataFormat
     @Override
     public int open() {
