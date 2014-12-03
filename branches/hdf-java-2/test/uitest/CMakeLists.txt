@@ -645,6 +645,27 @@ set_tests_properties (JUnit-gui-test-cutpaste PROPERTIES
 )
 
 add_test (
+    NAME JUnit-gui-test-openas-dataset
+    COMMAND "${CMAKE_COMMAND}"
+        -D "TEST_TESTER=${CMAKE_Java_RUNTIME};${CMAKE_Java_RUNTIME_FLAGS}"
+        -D "TEST_CLASSPATH:STRING=${CMAKE_JAVA_CLASSPATH}"
+        -D "TEST_ARGS:STRING=${CMD_ARGS}-ea;org.junit.runner.JUnitCore"
+        -D "TEST_PROGRAM=test.uitest.TestHDFViewOpenAsDataset"
+        -D "TEST_LIBRARY_DIRECTORY=${CMAKE_TEST_OUTPUT_DIRECTORY}"
+        -D "TEST_FOLDER=${PROJECT_BINARY_DIR}"
+        -D "TEST_OUTPUT=JUnit-gui-test-openas-dataset.out"
+        -D "TEST_EXPECT=0"
+        -D "TEST_MASK_FILE=TRUE"
+        -D "TEST_ERRREF=JUnit-gui-test-openas-dataset.err"
+        -D "TEST_REFERENCE=JUnit-gui-test-openas-dataset.txt"
+        -P "${HDF_RESOURCES_DIR}/runTest.cmake"
+)
+
+set_tests_properties (JUnit-gui-test-openas-dataset PROPERTIES
+    DEPENDS JUnit-gui-test-cutpaste
+)
+
+add_test (
     NAME JUnit-gui-test-links
     COMMAND "${CMAKE_COMMAND}"
         -D "TEST_TESTER=${CMAKE_Java_RUNTIME};${CMAKE_Java_RUNTIME_FLAGS}"
@@ -662,7 +683,7 @@ add_test (
 )
 
 set_tests_properties (JUnit-gui-test-links PROPERTIES
-    DEPENDS JUnit-gui-test-cutpaste
+    DEPENDS JUnit-gui-test-openas-dataset
 )
 
 add_test (
@@ -684,27 +705,6 @@ add_test (
 
 set_tests_properties (JUnit-gui-test-dataobject-operations PROPERTIES
     DEPENDS JUnit-gui-test-links
-)
-
-add_test (
-    NAME JUnit-gui-test-openas-dataset
-    COMMAND "${CMAKE_COMMAND}"
-        -D "TEST_TESTER=${CMAKE_Java_RUNTIME};${CMAKE_Java_RUNTIME_FLAGS}"
-        -D "TEST_CLASSPATH:STRING=${CMAKE_JAVA_CLASSPATH}"
-        -D "TEST_ARGS:STRING=${CMD_ARGS}-ea;org.junit.runner.JUnitCore"
-        -D "TEST_PROGRAM=test.uitest.TestHDFViewOpenAsDataset"
-        -D "TEST_LIBRARY_DIRECTORY=${CMAKE_TEST_OUTPUT_DIRECTORY}"
-        -D "TEST_FOLDER=${PROJECT_BINARY_DIR}"
-        -D "TEST_OUTPUT=JUnit-gui-test-openas-dataset.out"
-        -D "TEST_EXPECT=0"
-        -D "TEST_MASK_FILE=TRUE"
-        -D "TEST_ERRREF=JUnit-gui-test-openas-dataset.err"
-        -D "TEST_REFERENCE=JUnit-gui-test-openas-dataset.txt"
-        -P "${HDF_RESOURCES_DIR}/runTest.cmake"
-)
-
-set_tests_properties (JUnit-gui-test-openas-dataset PROPERTIES
-    DEPENDS JUnit-gui-test-dataobject-operations
 )
    
 #add_test (
