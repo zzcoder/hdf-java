@@ -248,7 +248,7 @@ public class HDFView extends JFrame implements ViewManager, ActionListener, Chan
         // recentFiles = ViewProperties.getMRF();
         currentDir = ViewProperties.getWorkDir();
         if (currentDir == null) {
-            currentDir = System.getProperty("user.dir");
+            currentDir = System.getProperty("user.home");
         }
         log.info("CurrentDir is {}", currentDir);
 

@@ -124,7 +124,7 @@ public class ViewProperties extends Properties {
     private static String           rootDir;
 
     /** default starting file directory */
-    private static String           workDir                = "user.dir";
+    private static String           workDir                = "user.home";
 
     /** default HDF4 file extension */
     private static String           fileExt                = "hdf, h4, hdf4, h5, hdf5, he2, he5";
@@ -1391,8 +1391,8 @@ public class ViewProperties extends Properties {
 
     /** returns the default work directory, where the open file starts. */
     public static String getWorkDir() {
-        if (workDir.equals("user.dir")) {
-            workDir = System.getProperty("user.dir");
+        if (workDir.equals("user.home")) {
+            workDir = System.getProperty("user.home");
         }
 
         return workDir;
