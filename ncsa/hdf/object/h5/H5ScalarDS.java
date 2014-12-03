@@ -351,6 +351,7 @@ public class H5ScalarDS extends ScalarDS {
     public boolean hasAttribute() {
         obj_info.num_attrs = nAttributes;
 
+        log.trace("hasAttribute start: nAttributes = {}", nAttributes);
         if (obj_info.num_attrs < 0) {
             int did = open();
             if (did >= 0) {
@@ -367,6 +368,7 @@ public class H5ScalarDS extends ScalarDS {
                     isText = (tclass == HDF5Constants.H5T_STRING);
                     isVLEN = ((tclass == HDF5Constants.H5T_VLEN) || H5.H5Tis_variable_str(tid));
                     isEnum = (tclass == HDF5Constants.H5T_ENUM);
+                    log.trace("hasAttribute: obj_info.num_attrs={} with tclass type: isText={},isVLEN={},isEnum={}", nAttributes, isText, isVLEN, isEnum);
                 }
                 catch (Exception ex) {
                     obj_info.num_attrs = 0;
@@ -382,6 +384,7 @@ public class H5ScalarDS extends ScalarDS {
                 if (avalue != null) {
                     try {
                         isImageDisplay = isImage = "IMAGE".equalsIgnoreCase(new String((byte[]) avalue).trim());
+                        log.trace("hasAttribute: isImageDisplay dataset: {} with value = {}", isImageDisplay, avalue);
                     }
                     catch (Throwable err) {
                         log.debug("check image:", err);
@@ -419,6 +422,7 @@ public class H5ScalarDS extends ScalarDS {
                 log.debug("could not open dataset");
             }
         }
+        log.trace("hasAttribute exit");
 
         return (obj_info.num_attrs > 0);
     }
@@ -886,6 +890,7 @@ public class H5ScalarDS extends ScalarDS {
         }
 
         if (attributeList != null) {
+            log.trace("getMetadata: attributeList != null");
             return attributeList;
         }
 
@@ -1097,6 +1102,7 @@ public class H5ScalarDS extends ScalarDS {
 
         boolean attrExisted = false;
         Attribute attr = (Attribute) info;
+        log.trace("writeMetadata: {}", attr.getName());
 
         if (attributeList == null) {
             this.getMetadata();
@@ -1125,6 +1131,7 @@ public class H5ScalarDS extends ScalarDS {
         }
 
         Attribute attr = (Attribute) info;
+        log.trace("removeMetadata: {}", attr.getName());
         int did = open();
         if (did >= 0) {
             try {
@@ -1137,6 +1144,23 @@ public class H5ScalarDS extends ScalarDS {
                 close(did);
             }
         }
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ncsa.hdf.object.DataFormat#updateMetadata(java.lang.Object)
+     */
+    public void updateMetadata(Object info) throws HDF5Exception {
+        // only attribute metadata is supported.
+        if (!(info instanceof Attribute)) {
+            return;
+        }
+        log.trace("updateMetadata");
+
+        Attribute attr = (Attribute) info;
+        log.trace("updateMetadata: {}", attr.getName());
+        nAttributes = -1;
     }
 
     /*
@@ -1525,8 +1549,10 @@ public class H5ScalarDS extends ScalarDS {
 
                 // retrieve the attribute value
                 long lsize = 1;
-                for (int j = 0; j < adims.length; j++) {
-                    lsize *= adims[j];
+                if (adims != null) {
+                    for (int j = 0; j < adims.length; j++) {
+                        lsize *= adims[j];
+                    }
                 }
                 log.trace("getAttrValue: lsize={}", lsize);
                 avalue = H5Datatype.allocateArray(atid, (int) lsize);

@@ -601,4 +601,13 @@ public abstract class Datatype extends HObject {
     public void removeMetadata(Object info) throws Exception {
         ;
     }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ncsa.hdf.object.DataFormat#updateMetadata(java.lang.Object)
+     */
+    public void updateMetadata(Object info) throws Exception {
+        ;
+    }
 }

@@ -204,6 +204,15 @@ public class FitsDataset extends ScalarDS
 
     /*
      * (non-Javadoc)
+     * @see ncsa.hdf.object.DataFormat#updateMetadata(java.lang.Object)
+     */
+    public void updateMetadata(Object info) throws Exception {
+        // not supported
+        throw new UnsupportedOperationException("Unsupported operation for NetCDF.");
+    }
+
+    /*
+     * (non-Javadoc)
      * @see ncsa.hdf.object.HObject#open()
      */
     @Override

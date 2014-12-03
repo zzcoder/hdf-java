@@ -611,22 +611,21 @@ public class H5File extends FileFormat {
             throw new HDF5Exception("The selectionFlag is invalid.");
         }
 
-        long[] attrDims = { 1 };
         String attrName = "CLASS";
         String[] classValue = { "IMAGE" };
         Datatype attrType = new H5Datatype(Datatype.CLASS_STRING, classValue[0].length() + 1, -1, -1);
-        Attribute attr = new Attribute(attrName, attrType, attrDims);
+        Attribute attr = new Attribute(attrName, attrType, null);
         attr.setValue(classValue);
         dataset.writeMetadata(attr);
 
         attrName = "IMAGE_VERSION";
         String[] versionValue = { "1.2" };
         attrType = new H5Datatype(Datatype.CLASS_STRING, versionValue[0].length() + 1, -1, -1);
-        attr = new Attribute(attrName, attrType, attrDims);
+        attr = new Attribute(attrName, attrType, null);
         attr.setValue(versionValue);
         dataset.writeMetadata(attr);
 
-        attrDims[0] = 2;
+        long[] attrDims = { 2 };
         attrName = "IMAGE_MINMAXRANGE";
         byte[] attrValueInt = { 0, (byte) 255 };
         attrType = new H5Datatype(Datatype.CLASS_CHAR, 1, Datatype.NATIVE, Datatype.SIGN_NONE);
@@ -634,11 +633,10 @@ public class H5File extends FileFormat {
         attr.setValue(attrValueInt);
         dataset.writeMetadata(attr);
 
-        attrDims[0] = 1;
         attrName = "IMAGE_SUBCLASS";
         String[] subclassValue = { subclass };
         attrType = new H5Datatype(Datatype.CLASS_STRING, subclassValue[0].length() + 1, -1, -1);
-        attr = new Attribute(attrName, attrType, attrDims);
+        attr = new Attribute(attrName, attrType, null);
         attr.setValue(subclassValue);
         dataset.writeMetadata(attr);
 
@@ -646,7 +644,7 @@ public class H5File extends FileFormat {
             attrName = "INTERLACE_MODE";
             String[] interlaceValue = { interlaceMode };
             attrType = new H5Datatype(Datatype.CLASS_STRING, interlaceValue[0].length() + 1, -1, -1);
-            attr = new Attribute(attrName, attrType, attrDims);
+            attr = new Attribute(attrName, attrType, null);
             attr.setValue(interlaceValue);
             dataset.writeMetadata(attr);
         }
@@ -654,7 +652,7 @@ public class H5File extends FileFormat {
             attrName = "PALETTE";
             long[] palRef = { 0 }; // set ref to null
             attrType = new H5Datatype(Datatype.CLASS_REFERENCE, 1, Datatype.NATIVE, Datatype.SIGN_NONE);
-            attr = new Attribute(attrName, attrType, attrDims);
+            attr = new Attribute(attrName, attrType, null);
             attr.setValue(palRef);
             dataset.writeMetadata(attr);
         }
@@ -1742,7 +1740,10 @@ public class H5File extends FileFormat {
         if ((tid = attr.getType().toNative()) >= 0) {
             log.trace("{} writeAttribute tid from native", name);
             try {
-                sid = H5.H5Screate_simple(attr.getRank(), attr.getDataDims(), null);
+                if (attr.isScalar())
+                    sid = H5.H5Screate(HDF5Constants.H5S_SCALAR);
+                else
+                    sid = H5.H5Screate_simple(attr.getRank(), attr.getDataDims(), null);
 
                 if (attrExisted) {
                     aid = H5.H5Aopen_by_name(objID, obj_name, name, HDF5Constants.H5P_DEFAULT,
@@ -2880,6 +2881,7 @@ public class H5File extends FileFormat {
      * @throws HDF5Exception
      */
     public void renameAttribute(HObject obj, String oldAttrName, String newAttrName) throws Exception {
+        log.trace("renameAttribute {} to {}", oldAttrName, newAttrName);
         if (!attrFlag) {
             attrFlag = true;
             H5.H5Arename_by_name(obj.getFID(), obj.getName(), oldAttrName, newAttrName, HDF5Constants.H5P_DEFAULT);
