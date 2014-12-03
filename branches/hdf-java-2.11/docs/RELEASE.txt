@@ -39,6 +39,9 @@ Major Enhancements
 
 Major Bug Fixes
 ============================================================================== 
+    * JAVA-1840: Issues with bit mask selection and usage.
+    * JAVA-1837: Fixed support for scalar images and attributes.
+    * JAVA-1844: Add slf4j logging document with example.
     * JAVA-1840, JAVA-1854, JAVA-1862: Issues with bit mask selection and usage.
     * JAVA-1847: Notification added to display fields that couldn't be read in 
     			 datasets.
