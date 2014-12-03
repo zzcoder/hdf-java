@@ -405,11 +405,14 @@ endif (HDFJAVA_PACK_SAMPLES)
 
 if (NOT ${HDFJAVA_USERSGUIDE_COMPRESSED} STREQUAL "")
   if (EXISTS "${HDFJAVA_USERSGUIDE_COMPRESSED_DIR}/${HDFJAVA_USERSGUIDE_COMPRESSED}")
+    execute_process(
+        COMMAND ${CMAKE_COMMAND} -E tar xzf ${HDFJAVA_USERSGUIDE_COMPRESSED_DIR}/${HDFJAVA_USERSGUIDE_COMPRESSED}
+    )
     install (
-        FILES
-            ${HDFJAVA_USERSGUIDE_COMPRESSED_DIR}/${HDFJAVA_USERSGUIDE_COMPRESSED}
-        DESTINATION ${HJAVA_INSTALL_DATA_DIR}
-        COMPONENT docs
+      DIRECTORY ${HDFJAVA_BINARY_DIR}/UsersGuide
+      DESTINATION ${HJAVA_INSTALL_DATA_DIR}
+      USE_SOURCE_PERMISSIONS 
+      COMPONENT docs
     )
   endif (EXISTS "${HDFJAVA_USERSGUIDE_COMPRESSED_DIR}/${HDFJAVA_USERSGUIDE_COMPRESSED}")
 endif (NOT ${HDFJAVA_USERSGUIDE_COMPRESSED} STREQUAL "")
@@ -505,7 +508,7 @@ endif (NOT HDFJAVA_EXTERNALLY_CONFIGURED)
 #-----------------------------------------------------------------------------
 # Option to include jre
 #-----------------------------------------------------------------------------
-option (HDFJAVA_PACK_JRE  "Package a JRE installer file" OFF)
+option (HDFJAVA_PACK_JRE  "Package a JRE installer directory" OFF)
 if (HDFJAVA_PACK_JRE)
   if (WIN32)
     install (
