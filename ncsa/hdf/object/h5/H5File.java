@@ -1017,7 +1017,11 @@ public class H5File extends FileFormat {
         // directory (when hdf-java application started) before the file
         // is closed/opened. Otherwise, relative path, e.g. "./test.h5" may
         // not work
-        H5.H5Dchdir_ext(System.getProperty("user.dir"));
+        String rootPath = System.getProperty("hdfview.root");
+        if (rootPath == null) {
+            rootPath = System.getProperty("user.dir");
+        }
+        H5.H5Dchdir_ext(rootPath);
 
         // clean up unused objects
         if (rootNode != null) {
@@ -1921,7 +1925,11 @@ public class H5File extends FileFormat {
         // The cwd may be changed at Dataset.read() by H5Dchdir_ext()
         // to make it work for external datasets. We need to set it back
         // before the file is closed/opened.
-        H5.H5Dchdir_ext(System.getProperty("user.dir"));
+        String rootPath = System.getProperty("hdfview.root");
+        if (rootPath == null) {
+            rootPath = System.getProperty("user.dir");
+        }
+        H5.H5Dchdir_ext(rootPath);
 
         // check for valid file access permission
         if (flag < 0) {

@@ -26,6 +26,7 @@ pushd %~dp0
 rem Adjust the following two variables to match your environment
 set JAVABIN=@JAVA_PATH@
 set INSTALLDIR=@CMAKE_INSTALL_PREFIX@
+set PATH=%PATH%;%INSTALLDIR%\bin
 
 echo.Setting environment
 if "!%JAVABIN%!\java.exe"=="\java.exe" (
