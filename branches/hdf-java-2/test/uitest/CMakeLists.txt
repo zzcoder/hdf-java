@@ -173,8 +173,9 @@ foreach (CMAKE_INCLUDE_PATH ${CMAKE_JAVA_INCLUDE_PATH})
 endforeach (CMAKE_INCLUDE_PATH)
 set (CMAKE_JAVA_CLASSPATH "${CMAKE_JAVA_CLASSPATH}${CMAKE_JAVA_INCLUDE_FLAG_SEP}${${HDFJAVA_TEST_UITEST_TARGET}_JAR_FILE}")
 
+set (CMD_ARGS "-Dhdfview.workdir=${PROJECT_BINARY_DIR};")
 if (CMAKE_BUILD_TYPE MATCHES Debug)
-  set (CMD_ARGS "-Dncsa.hdf.hdf5lib.H5.loadLibraryName=jhdf5_debug;")
+  set (CMD_ARGS "${CMD_ARGS}-Dncsa.hdf.hdf5lib.H5.loadLibraryName=jhdf5_debug;")
 endif(CMAKE_BUILD_TYPE MATCHES Debug)
 
 add_test (
@@ -287,6 +288,7 @@ add_test (
         -D "TEST_PROGRAM=test.uitest.TestTreeViewNewMenu"
         -D "TEST_LIBRARY_DIRECTORY=${CMAKE_TEST_OUTPUT_DIRECTORY}"
         -D "TEST_FOLDER=${PROJECT_BINARY_DIR}"
+#        -D "TEST_LOG_LEVEL=trace"
         -D "TEST_OUTPUT=JUnit-gui-treeview-newmenu.out"
         -D "TEST_EXPECT=0"
         -D "TEST_MASK_FILE=TRUE"
