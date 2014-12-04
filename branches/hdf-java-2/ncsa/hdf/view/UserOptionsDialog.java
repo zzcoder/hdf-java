@@ -663,7 +663,7 @@ public class UserOptionsDialog extends JDialog implements ActionListener, ItemLi
             UGField.setText(fname);
         }
         else if (cmd.equals("Browse current dir")) {
-            final JFileChooser fchooser = new JFileChooser(rootDir);
+            final JFileChooser fchooser = new JFileChooser(workDir);
             fchooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
             int returnVal = fchooser.showDialog(this, "Select");
 
@@ -986,14 +986,14 @@ public class UserOptionsDialog extends JDialog implements ActionListener, ItemLi
         return isWorkDirChanged;
     }
 
-	@Override
-	public void itemStateChanged(ItemEvent e) {
-    	Object source = e.getSource();
+    @Override
+    public void itemStateChanged(ItemEvent e) {
+        Object source = e.getSource();
 
-    	if (source.equals(checkReadAll)) {
-          	startMemberField.setEnabled(!checkReadAll.isSelected());
-           	maxMemberField.setEnabled(!checkReadAll.isSelected());
+        if (source.equals(checkReadAll)) {
+            startMemberField.setEnabled(!checkReadAll.isSelected());
+            maxMemberField.setEnabled(!checkReadAll.isSelected());
 
-    	}
-	}
+        }
+    }
 }
