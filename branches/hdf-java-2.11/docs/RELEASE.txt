@@ -52,6 +52,9 @@ Major Bug Fixes
                  and not displaying the last row/column.
     * JAVA-1863: If attribute is of Integer class, set the correct type and size.
     * Improved internal management of compound datatypes, limitations still apply.
+    * Improved usage of user.dir and user.home properties as defaults to hdfview.root
+                 and new property hdfview.workdir properties. This also fixed
+                 issues with the location for the open file dialog.
 
 
 Limitations / Known Problems
