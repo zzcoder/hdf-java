@@ -173,8 +173,9 @@ foreach (CMAKE_INCLUDE_PATH ${CMAKE_JAVA_INCLUDE_PATH})
 endforeach (CMAKE_INCLUDE_PATH)
 set (CMAKE_JAVA_CLASSPATH "${CMAKE_JAVA_CLASSPATH}${CMAKE_JAVA_INCLUDE_FLAG_SEP}${${HDFJAVA_TEST_UITEST_TARGET}_JAR_FILE}")
 
+set (CMD_ARGS "-Dhdfview.workdir=${PROJECT_BINARY_DIR};")
 if (CMAKE_BUILD_TYPE MATCHES Debug)
-  set (CMD_ARGS "-Dncsa.hdf.hdf5lib.H5.loadLibraryName=jhdf5_debug;")
+  set (CMD_ARGS "${CMD_ARGS}-Dncsa.hdf.hdf5lib.H5.loadLibraryName=jhdf5_debug;")
 endif(CMAKE_BUILD_TYPE MATCHES Debug)
 
 add_test (

@@ -93,8 +93,11 @@ public class ViewProperties extends Properties {
         AND, EXTRACT
     }
 
+    /** the root directory of the HDFView */
+    private static String           rootDir                = System.getProperty("user.dir");
+
     /** user's guide */
-    private static String           usersGuide             = System.getProperty("user.dir") + "/UsersGuide/index.html";
+    private static String           usersGuide             = rootDir + "/UsersGuide/index.html";
 
     /** the font size */
     private static int              fontSize               = 12;
@@ -120,11 +123,8 @@ public class ViewProperties extends Properties {
     /** a list of most recent files */
     private static Vector<String>   mrf;
 
-    /** the root directory of the HDFView */
-    private static String           rootDir;
-
     /** default starting file directory */
-    private static String           workDir                = "user.dir";
+    private static String           workDir                = "user.home";
 
     /** default HDF4 file extension */
     private static String           fileExt                = "hdf, h4, hdf4, h5, hdf5, he2, he5";
@@ -272,9 +272,10 @@ public class ViewProperties extends Properties {
 
         String rootPath = System.getProperty("hdfview.root");
         if (rootPath == null) {
-            rootPath = System.getProperty("user.dir");
-            log.debug("loadExtClass: user.dir rootPath is {}", rootPath);
+            rootPath = rootDir;
+            log.debug("loadExtClass: rootDir rootPath is {}", rootPath);
         }
+        log.debug("loadExtClass: rootPath is {}", rootPath);
 
         String dirname = rootPath + File.separator + "lib" + File.separator + "ext" + File.separator;
         String[] jars = null;
@@ -1391,11 +1392,14 @@ public class ViewProperties extends Properties {
 
     /** returns the default work directory, where the open file starts. */
     public static String getWorkDir() {
-        if (workDir.equals("user.dir")) {
-            workDir = System.getProperty("user.dir");
+        String workPath = System.getProperty("hdfview.workdir");
+        if (workPath == null) {
+            if (workDir.equals("user.home")) {
+                workPath = System.getProperty("user.home");
+            }
         }
 
-        return workDir;
+        return workPath;
     }
 
     /** returns the maximum number of the most recent file */
