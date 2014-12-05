@@ -248,7 +248,7 @@ public class HDFView extends JFrame implements ViewManager, ActionListener, Chan
         // recentFiles = ViewProperties.getMRF();
         currentDir = ViewProperties.getWorkDir();
         if (currentDir == null) {
-            currentDir = System.getProperty("user.dir");
+            currentDir = System.getProperty("user.home");
         }
         log.info("CurrentDir is {}", currentDir);
 
@@ -2125,7 +2125,10 @@ public class HDFView extends JFrame implements ViewManager, ActionListener, Chan
      * </pre>
      */
     public static void main(String args[]) {
-        String rootDir = System.getProperty("user.dir");
+        String rootDir = System.getProperty("hdfview.root");
+        if (rootDir == null) {
+            rootDir = System.getProperty("user.dir");
+        }
         File tmpFile = null;
         int i = 0;
         int j = args.length;
