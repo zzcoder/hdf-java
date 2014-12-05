@@ -228,7 +228,7 @@ public class HDFLibrary implements java.io.Serializable
 
     private final static Logger log = LoggerFactory.getLogger(HDFLibrary.class);
 
-    private final static String JHI_VERSION= "2.99";
+    private final static String JHI_VERSION= "2.10";
     private static boolean isLibraryLoaded = false;
 
     static { loadH4Lib(); }
