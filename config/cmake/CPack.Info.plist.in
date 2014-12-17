@@ -10,9 +10,7 @@
     <key>CFBundleExecutable</key>
     <string>@CPACK_PACKAGE_FILE_NAME@</string>
     <key>CFBundleIconFile</key>
-    <string>@CPACK_BUNDLE_ICON@</string>
-    <key>CFBundleTypeIconFile</key>
-    <string>@CPACK_BUNDLE_ICON@</string>
+    <string>HDFView.icns</string>
     <key>CFBundleIdentifier</key>
     <string>org.@CPACK_PACKAGE_VENDOR@.@CPACK_PACKAGE_NAME@@CPACK_MODULE_VERSION_SUFFIX@</string>
     <key>CFBundleName</key>
@@ -32,18 +30,48 @@
         <dict>
         <key>CFBundleTypeExtensions</key>
         <array>
-          <string>hdf</string>
-          <string>h4</string>
-          <string>hdf4</string>
-          <string>h5</string>
-          <string>hdf5</string>
+            <string>hdf</string>
+            <string>h4</string>
+            <string>hdf4</string>
+            <string>h5</string>
+            <string>hdf5</string>
         </array>
+        <key>CFBundleTypeIconFile</key>
+        <string>HDFView.icns</string>
         <key>CFBundleTypeName</key>
         <string>HDF Files</string>
         <key>CFBundleTypeRole</key>
         <string>Editor</string>
         </dict>
     </array>
+    <key>UTExportedTypeDeclarations</key>
+    <dict>
+        <key>UTTypeIdentifier</key>
+        <string>org.@CPACK_PACKAGE_VENDOR@.@CPACK_PACKAGE_NAME@@CPACK_MODULE_VERSION_SUFFIX@</string>
+        <key>UTTypeReferenceURL</key>
+        <string>@HDFJAVA_PACKAGE_URL@</string>
+    <key>UTTypeDescription</key>
+    <string>HDF Files</string>
+        <key>UTTypeIconFile</key>
+            <array>
+                <string>HDFView.icns</string>
+            </array>
+        <key>UTTypeConformsTo</key>
+            <array>
+                <string>com.apple.package</string>
+            </array>
+        <key>UTTypeTagSpecification</key>
+        <dict>
+            <key>public.filename-extension</key>
+            <array>
+                <string>hdf</string>
+                <string>h4</string>
+                <string>hdf4</string>
+                <string>h5</string>
+                <string>hdf5</string>
+            </array>
+        </dict>
+    </dict>
 <!--
     <key>JVMRuntime</key>
     <string>jre7</string>
