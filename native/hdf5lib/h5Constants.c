@@ -62,7 +62,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5C_1decr_1threshold(
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5C_1decr_1age_1out(JNIEnv *env, jclass cls) { return H5C_decr__age_out; }
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5C_1decr_1age_1out_1with_1threshold(JNIEnv *env, jclass cls) { return H5C_decr__age_out_with_threshold; }
 
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5D_1CHUNK_1BTREE(JNIEnv *env, jclass cls) { return H5D_CHUNK_BTREE; }
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5D_1CHUNK_1BTREE(JNIEnv *env, jclass cls) { return H5D_CHUNK_IDX_BTREE; }
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5D_1ALLOC_1TIME_1DEFAULT(JNIEnv *env, jclass cls) { return H5D_ALLOC_TIME_DEFAULT; }
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5D_1ALLOC_1TIME_1EARLY(JNIEnv *env, jclass cls) { return H5D_ALLOC_TIME_EARLY; }
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5D_1ALLOC_1TIME_1ERROR(JNIEnv *env, jclass cls) { return H5D_ALLOC_TIME_ERROR; }
