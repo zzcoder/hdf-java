@@ -370,7 +370,6 @@ if (CMAKE_COMPILER_IS_GNUCXX)
 endif (CMAKE_COMPILER_IS_GNUCXX)
 
 include (ExternalProject)
-#option (HDF_ALLOW_EXTERNAL_SUPPORT "Allow External Library Building" "NO")
 set (HDF_ALLOW_EXTERNAL_SUPPORT "NO" CACHE STRING "Allow External Library Building (NO SVN TGZ)")
 set_property (CACHE HDF_ALLOW_EXTERNAL_SUPPORT PROPERTY STRINGS NO SVN TGZ)
 option (HDF4_USE_EXTERNAL "Use External Library Building for HDF4" 0)
