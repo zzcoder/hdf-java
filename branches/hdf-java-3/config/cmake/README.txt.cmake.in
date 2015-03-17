@@ -1,0 +1,30 @@
+@HDFJAVA_PACKAGE_NAME@ with @HDFJAVA_PACKAGE@ version @HDFJAVA_PACKAGE_VERSION_STRING@
+------------------------------------------------------------------------------
+
+This directory contains the binary (release) distribution of 
+@HDFJAVA_PACKAGE_NAME@ @HDFJAVA_PACKAGE_VERSION_MAJOR@.@HDFJAVA_PACKAGE_VERSION_MINOR@ that was compiled on;
+    @BINARY_PLATFORM@. 
+
+It was built with the following options: 
+    -- @LIB_TYPE@ HDF @HDF4_VERSION_STRING@
+    -- @LIB_TYPE@ HDF5 @HDF5_VERSION_STRING@
+
+The contents of this directory are:
+
+    COPYING                 - Copyright notice
+    README.txt              - This file
+    @HDFJAVA_PACKAGE_NAME@-@HDFJAVA_PACKAGE_VERSION@-@BINARY_SYSTEM_NAME@.@BINARY_INSTALL_ENDING@  - HDFJAVA Install Package
+
+Installation
+===========================================================================
+1. Execute @HDFJAVA_PACKAGE_NAME@-@HDFJAVA_PACKAGE_VERSION@-@BINARY_SYSTEM_NAME@.@BINARY_INSTALL_ENDING@
+2. Follow prompts
+===========================================================================
+
+Documentation for this release can be found at the following URL:
+    http://www.hdfgroup.org/products/java/hdf-java-html/hdfjava/.
+
+See the HDF-JAVA home page for further details:
+    http://hdfgroup.org/products/java/hdf-java-html/
+
+Bugs should be reported to help@hdfgroup.org.
