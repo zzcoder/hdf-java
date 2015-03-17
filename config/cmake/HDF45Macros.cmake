@@ -65,33 +65,70 @@ MACRO (EXTERNAL_HDF4_LIBRARY compress_type libtype)
   endif (${compress_type} MATCHES "TGZ")
   externalproject_get_property (HDF4 BINARY_DIR SOURCE_DIR) 
 
-  # Create imported target hdf4
-  add_library (hdf ${libtype} IMPORTED)
-  HDF_IMPORT_SET_LIB_OPTIONS (hdf "hdf" ${libtype} "")
-  add_library (mfhdf ${libtype} IMPORTED)
-  HDF_IMPORT_SET_LIB_OPTIONS (mfhdf "mfhdf" ${libtype} "")
-  add_dependencies (HDF4 hdf mfhdf)
-  set (MFHDF_IMPORTED_LINK_INTERFACE_LIBRARIES "hdf")
-  if (HDF45_BUILD_XDR_LIB)
-    add_library (xdr ${libtype} IMPORTED)
-    HDF_IMPORT_SET_LIB_OPTIONS (xdr "xdr" ${libtype} "")
-    add_dependencies (HDF4 xdr)
-    set (MFHDF_IMPORTED_LINK_INTERFACE_LIBRARIES "xdr;${MFHDF_IMPORTED_LINK_INTERFACE_LIBRARIES}")
-  endif (HDF45_BUILD_XDR_LIB)
-  if (HDF_ENABLE_JPEG_LIB_SUPPORT)
-    add_library (jpeg ${libtype} IMPORTED)
-    HDF_IMPORT_SET_LIB_OPTIONS (jpeg "jpeg" ${libtype} "")
-    add_dependencies (HDF4 jpeg)
-  endif (HDF_ENABLE_JPEG_LIB_SUPPORT)
-  if (HDF_ENABLE_Z_LIB_SUPPORT)
-    if (NOT ZLIB_LIBRARY)
-      add_library (zlib ${libtype} IMPORTED)
+  if (${CMAKE_BUILD_TYPE} MATCHES "DEBUG")
+    if (WIN32)
+      set (HDF_LIB_NAME "hdf_D")
+      set (MFHDF_LIB_NAME "hdf_D")
+      set (XDR_LIB_NAME "xdr_D")
+      if (HDF_ENABLE_JPEG_LIB_SUPPORT)
+        set (JPEG_LIB_NAME "jpeg_D")
+      endif (HDF_ENABLE_JPEG_LIB_SUPPORT)
+      if (HDF_ENABLE_Z_LIB_SUPPORT)
+        set (ZLIB_LIB_NAME "zlib_D")
+      endif (HDF_ENABLE_Z_LIB_SUPPORT)
+      if (HDF_ENABLE_SZIP_SUPPORT)
+        set (SZIP_LIB_NAME "szip_D")
+      endif (HDF_ENABLE_SZIP_SUPPORT)
+    else (WIN32)
+      set (HDF_LIB_NAME "hdf_debug")
+      set (MFHDF_LIB_NAME "mfhdf_debug")
+      set (XDR_LIB_NAME "xdr_debug")
+      if (HDF_ENABLE_JPEG_LIB_SUPPORT)
+        set (JPEG_LIB_NAME "jpeg_debug")
+      endif (HDF_ENABLE_JPEG_LIB_SUPPORT)
+      if (HDF_ENABLE_Z_LIB_SUPPORT)
+        set (ZLIB_LIB_NAME "z_debug")
+      endif (HDF_ENABLE_Z_LIB_SUPPORT)
+      if (HDF_ENABLE_SZIP_SUPPORT)
+        set (SZIP_LIB_NAME "szip_debug")
+      endif (HDF_ENABLE_SZIP_SUPPORT)
+    endif (WIN32)
+  else (${CMAKE_BUILD_TYPE} MATCHES "DEBUG")
+    set (HDF_LIB_NAME "hdf")
+    set (MFHDF_LIB_NAME "mfhdf")
+    set (XDR_LIB_NAME "xdr")
+    if (HDF_ENABLE_JPEG_LIB_SUPPORT)
+      set (JPEG_LIB_NAME "jpeg")
+    endif (HDF_ENABLE_JPEG_LIB_SUPPORT)
+    if (HDF_ENABLE_Z_LIB_SUPPORT)
       if (WIN32)
         set (ZLIB_LIB_NAME "zlib")
       else (WIN32)
         set (ZLIB_LIB_NAME "z")
       endif (WIN32)
-      HDF_IMPORT_SET_LIB_OPTIONS (zlib ${ZLIB_LIB_NAME} ${libtype} "")
+    endif (HDF_ENABLE_Z_LIB_SUPPORT)
+    if (HDF_ENABLE_SZIP_SUPPORT)
+      set (SZIP_LIB_NAME "szip")
+    endif (HDF_ENABLE_SZIP_SUPPORT)
+  endif (${CMAKE_BUILD_TYPE} MATCHES "DEBUG")
+
+  # Create imported target hdf4
+  add_library (hdf ${libtype} IMPORTED)
+  add_library (mfhdf ${libtype} IMPORTED)
+  add_dependencies (HDF4 hdf mfhdf)
+  set (MFHDF_IMPORTED_LINK_INTERFACE_LIBRARIES "hdf")
+  if (HDF45_BUILD_XDR_LIB)
+    add_library (xdr ${libtype} IMPORTED)
+    add_dependencies (HDF4 xdr)
+    set (MFHDF_IMPORTED_LINK_INTERFACE_LIBRARIES "xdr;${MFHDF_IMPORTED_LINK_INTERFACE_LIBRARIES}")
+  endif (HDF45_BUILD_XDR_LIB)
+  if (HDF_ENABLE_JPEG_LIB_SUPPORT)
+    add_library (jpeg ${libtype} IMPORTED)
+    add_dependencies (HDF4 jpeg)
+  endif (HDF_ENABLE_JPEG_LIB_SUPPORT)
+  if (HDF_ENABLE_Z_LIB_SUPPORT)
+    if (NOT ZLIB_LIBRARY)
+      add_library (zlib ${libtype} IMPORTED)
       set (HDF4_ZLIB "TRUE")
     endif (NOT ZLIB_LIBRARY)
     add_dependencies (HDF4 zlib)
@@ -99,48 +136,198 @@ MACRO (EXTERNAL_HDF4_LIBRARY compress_type libtype)
   if (HDF_ENABLE_SZIP_SUPPORT)
     if (NOT SZIP_LIBRARY)
       add_library (szip ${libtype} IMPORTED)
-      HDF_IMPORT_SET_LIB_OPTIONS (szip "szip" ${libtype} "")
       set (HDF4_SZIP "TRUE")
     endif (NOT SZIP_LIBRARY)
     add_dependencies (HDF4 szip)
   endif (HDF_ENABLE_SZIP_SUPPORT)
 
   if (${libtype} MATCHES "SHARED")
-    set_target_properties (hdf PROPERTIES
-        IMPORTED_LINK_INTERFACE_LIBRARIES "jpeg;zlib;szip"
-    )
-    set_target_properties (mfhdf PROPERTIES
-        IMPORTED_LINK_INTERFACE_LIBRARIES "${MFHDF_IMPORTED_LINK_INTERFACE_LIBRARIES}"
-    )
+    if (WIN32)
+      if (MINGW)
+        set_target_properties (hdf PROPERTIES
+            IMPORTED_IMPLIB "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${HDF_LIB_NAME}.lib"
+            IMPORTED_LOCATION "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${HDF_LIB_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX}"
+            IMPORTED_LINK_INTERFACE_LIBRARIES "jpeg;zlib;szip"
+          )
+        set_target_properties (mfhdf PROPERTIES
+            IMPORTED_IMPLIB "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${MFHDF_LIB_NAME}.lib"
+            IMPORTED_LOCATION "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${MFHDF_LIB_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX}"
+            IMPORTED_LINK_INTERFACE_LIBRARIES "${MFHDF_IMPORTED_LINK_INTERFACE_LIBRARIES}"
+          )
+        if (HDF45_BUILD_XDR_LIB)
+          set_target_properties (xdr PROPERTIES
+              IMPORTED_IMPLIB "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${XDR_LIB_NAME}.lib"
+              IMPORTED_LOCATION "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${XDR_LIB_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX}"
+          )
+        endif (HDF45_BUILD_XDR_LIB)
+        if (HDF_ENABLE_JPEG_LIB_SUPPORT)
+          set_target_properties (jpeg PROPERTIES
+              IMPORTED_IMPLIB "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${JPEG_LIB_NAME}.lib"
+              IMPORTED_LOCATION "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${JPEG_LIB_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX}"
+          )
+        endif (HDF_ENABLE_JPEG_LIB_SUPPORT)
+        if (HDF_ENABLE_Z_LIB_SUPPORT)
+         set_target_properties (zlib PROPERTIES
+              IMPORTED_IMPLIB "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${ZLIB_LIB_NAME}.lib"
+              IMPORTED_LOCATION "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${ZLIB_LIB_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX}"
+          )
+        endif (HDF_ENABLE_Z_LIB_SUPPORT)
+        if (HDF_ENABLE_SZIP_SUPPORT)
+          set_target_properties (szip PROPERTIES
+              IMPORTED_IMPLIB "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${SZIP_LIB_NAME}.lib"
+              IMPORTED_LOCATION "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${SZIP_LIB_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX}"
+          )
+        endif (HDF_ENABLE_SZIP_SUPPORT)
+      else (MINGW)
+        set_target_properties (hdf PROPERTIES
+            IMPORTED_IMPLIB "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE}/${CMAKE_IMPORT_LIBRARY_PREFIX}${HDF_LIB_NAME}${CMAKE_IMPORT_LIBRARY_SUFFIX}"
+            IMPORTED_LOCATION "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE}/${CMAKE_IMPORT_LIBRARY_PREFIX}${HDF_LIB_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX}"
+            IMPORTED_LINK_INTERFACE_LIBRARIES "jpeg;zlib;szip"
+          )
+        set_target_properties (mfhdf PROPERTIES
+            IMPORTED_IMPLIB "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE}/${CMAKE_IMPORT_LIBRARY_PREFIX}${MFHDF_LIB_NAME}${CMAKE_IMPORT_LIBRARY_SUFFIX}"
+            IMPORTED_LOCATION "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE}/${CMAKE_IMPORT_LIBRARY_PREFIX}${MFHDF_LIB_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX}"
+            IMPORTED_LINK_INTERFACE_LIBRARIES "${MFHDF_IMPORTED_LINK_INTERFACE_LIBRARIES}"
+          )
+        if (HDF45_BUILD_XDR_LIB)
+          set_target_properties (xdr PROPERTIES
+              IMPORTED_IMPLIB "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE}/${CMAKE_IMPORT_LIBRARY_PREFIX}${XDR_LIB_NAME}${CMAKE_IMPORT_LIBRARY_SUFFIX}"
+              IMPORTED_LOCATION "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE}/${CMAKE_IMPORT_LIBRARY_PREFIX}${XDR_LIB_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX}"
+          )
+        endif (HDF45_BUILD_XDR_LIB)
+        if (HDF_ENABLE_JPEG_LIB_SUPPORT)
+          set_target_properties (jpeg PROPERTIES
+              IMPORTED_IMPLIB "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE}/${CMAKE_IMPORT_LIBRARY_PREFIX}${JPEG_LIB_NAME}${CMAKE_IMPORT_LIBRARY_SUFFIX}"
+              IMPORTED_LOCATION "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE}/${CMAKE_IMPORT_LIBRARY_PREFIX}${JPEG_LIB_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX}"
+          )
+        endif (HDF_ENABLE_JPEG_LIB_SUPPORT)
+        if (HDF_ENABLE_Z_LIB_SUPPORT)
+         set_target_properties (zlib PROPERTIES
+              IMPORTED_IMPLIB "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE}/${CMAKE_IMPORT_LIBRARY_PREFIX}${ZLIB_LIB_NAME}${CMAKE_IMPORT_LIBRARY_SUFFIX}"
+              IMPORTED_LOCATION "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE}/${CMAKE_IMPORT_LIBRARY_PREFIX}${ZLIB_LIB_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX}"
+          )
+        endif (HDF_ENABLE_Z_LIB_SUPPORT)
+        if (HDF_ENABLE_SZIP_SUPPORT)
+          set_target_properties (szip PROPERTIES
+              IMPORTED_IMPLIB "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE}/${CMAKE_IMPORT_LIBRARY_PREFIX}${SZIP_LIB_NAME}${CMAKE_IMPORT_LIBRARY_SUFFIX}"
+              IMPORTED_LOCATION "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE}/${CMAKE_IMPORT_LIBRARY_PREFIX}${SZIP_LIB_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX}"
+          )
+        endif (HDF_ENABLE_SZIP_SUPPORT)
+      endif (MINGW)
+    else (WIN32)
+      set_target_properties (hdf PROPERTIES
+          IMPORTED_LOCATION "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${CMAKE_SHARED_LIBRARY_PREFIX}${HDF_LIB_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX}"
+          IMPORTED_LINK_INTERFACE_LIBRARIES "jpeg;zlib;szip"
+          IMPORTED_SONAME "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${CMAKE_SHARED_LIBRARY_PREFIX}${HDF_LIB_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX}.${HDF4_VERSION_STRING}"
+          SOVERSION "${HDF4_VERSION_STRING}"
+      )
+      set_target_properties (mfhdf PROPERTIES
+          IMPORTED_LOCATION "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${CMAKE_SHARED_LIBRARY_PREFIX}${MFHDF_LIB_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX}"
+          IMPORTED_LINK_INTERFACE_LIBRARIES "${MFHDF_IMPORTED_LINK_INTERFACE_LIBRARIES}"
+          IMPORTED_SONAME "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${CMAKE_SHARED_LIBRARY_PREFIX}${MFHDF_LIB_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX}.${HDF4_VERSION_STRING}"
+          SOVERSION "${HDF4_VERSION_STRING}"
+      )
+      if (HDF45_BUILD_XDR_LIB)
+        set_target_properties (xdr PROPERTIES
+            IMPORTED_LOCATION "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${CMAKE_SHARED_LIBRARY_PREFIX}${XDR_LIB_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX}"
+            IMPORTED_SONAME "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${CMAKE_SHARED_LIBRARY_PREFIX}${XDR_LIB_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX}.${HDF4_VERSION_STRING}"
+            SOVERSION "${HDF4_VERSION_STRING}"
+        )
+      endif (HDF45_BUILD_XDR_LIB)
+      if (HDF_ENABLE_JPEG_LIB_SUPPORT)
+        set_target_properties (jpeg PROPERTIES
+            IMPORTED_LOCATION "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${CMAKE_SHARED_LIBRARY_PREFIX}${JPEG_LIB_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX}"
+            IMPORTED_SONAME "${CMAKE_SHARED_LIBRARY_PREFIX}${JPEG_LIB_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX}.${JPEG_VERSION_STRING}"
+            SOVERSION "${JPEG_VERSION_STRING}"
+        )
+      endif (HDF_ENABLE_JPEG_LIB_SUPPORT)
+      if (HDF_ENABLE_Z_LIB_SUPPORT)
+        set_target_properties (zlib PROPERTIES
+            IMPORTED_LOCATION "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${CMAKE_SHARED_LIBRARY_PREFIX}${ZLIB_LIB_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX}"
+            IMPORTED_SONAME "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${CMAKE_SHARED_LIBRARY_PREFIX}${ZLIB_LIB_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX}.${ZLIB_VERSION_STRING}"
+            SOVERSION "${ZLIB_VERSION_STRING}"
+        )
+      endif (HDF_ENABLE_Z_LIB_SUPPORT)
+      if (HDF_ENABLE_SZIP_SUPPORT)
+        set_target_properties (szip PROPERTIES
+            IMPORTED_LOCATION "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${CMAKE_SHARED_LIBRARY_PREFIX}${SZIP_LIB_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX}"
+            IMPORTED_SONAME "${CMAKE_SHARED_LIBRARY_PREFIX}${SZIP_LIB_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX}.${SZIP_VERSION_STRING}"
+            SOVERSION "${SZIP_VERSION_STRING}"
+        )
+      endif (HDF_ENABLE_SZIP_SUPPORT)
+    endif (WIN32)
   else (${libtype} MATCHES "SHARED")
-    set_target_properties (hdf PROPERTIES
-        IMPORTED_LINK_INTERFACE_LIBRARIES "jpeg;zlib;szip"
-        IMPORTED_LINK_INTERFACE_LANGUAGES "C"
-    )
-    set_target_properties (mfhdf PROPERTIES
-        IMPORTED_LINK_INTERFACE_LIBRARIES "${MFHDF_IMPORTED_LINK_INTERFACE_LIBRARIES}"
-        IMPORTED_LINK_INTERFACE_LANGUAGES "C"
-    )
-    if (HDF45_BUILD_XDR_LIB)
-      set_target_properties (xdr PROPERTIES
-          IMPORTED_LINK_INTERFACE_LANGUAGES "C"
-    )
-    endif (HDF45_BUILD_XDR_LIB)
-    if (HDF_ENABLE_JPEG_LIB_SUPPORT)
-      set_target_properties (jpeg PROPERTIES
+    if (WIN32 AND NOT MINGW)
+      set_target_properties (hdf PROPERTIES
+          IMPORTED_LOCATION "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE}/lib${HDF_LIB_NAME}${CMAKE_STATIC_LIBRARY_SUFFIX}"
+          IMPORTED_LINK_INTERFACE_LIBRARIES "jpeg;zlib;szip"
           IMPORTED_LINK_INTERFACE_LANGUAGES "C"
       )
-    endif (HDF_ENABLE_JPEG_LIB_SUPPORT)
-    if (HDF_ENABLE_Z_LIB_SUPPORT)
-      set_target_properties (zlib PROPERTIES
+      set_target_properties (mfhdf PROPERTIES
+          IMPORTED_LOCATION "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE}/lib${MFHDF_LIB_NAME}${CMAKE_STATIC_LIBRARY_SUFFIX}"
+          IMPORTED_LINK_INTERFACE_LIBRARIES "${MFHDF_IMPORTED_LINK_INTERFACE_LIBRARIES}"
           IMPORTED_LINK_INTERFACE_LANGUAGES "C"
       )
-    endif (HDF_ENABLE_Z_LIB_SUPPORT)
-    if (HDF_ENABLE_SZIP_SUPPORT)
-      set_target_properties (szip PROPERTIES
+      if (HDF45_BUILD_XDR_LIB)
+        set_target_properties (xdr PROPERTIES
+            IMPORTED_LOCATION "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE}/lib${XDR_LIB_NAME}${CMAKE_STATIC_LIBRARY_SUFFIX}"
+            IMPORTED_LINK_INTERFACE_LANGUAGES "C"
+      )
+      endif (HDF45_BUILD_XDR_LIB)
+      if (HDF_ENABLE_JPEG_LIB_SUPPORT)
+        set_target_properties (jpeg PROPERTIES
+            IMPORTED_LOCATION "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE}/lib${JPEG_LIB_NAME}${CMAKE_STATIC_LIBRARY_SUFFIX}"
+            IMPORTED_LINK_INTERFACE_LANGUAGES "C"
+        )
+      endif (HDF_ENABLE_JPEG_LIB_SUPPORT)
+      if (HDF_ENABLE_Z_LIB_SUPPORT)
+        set_target_properties (zlib PROPERTIES
+            IMPORTED_LOCATION "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE}/lib${ZLIB_LIB_NAME}${CMAKE_STATIC_LIBRARY_SUFFIX}"
+            IMPORTED_LINK_INTERFACE_LANGUAGES "C"
+        )
+      endif (HDF_ENABLE_Z_LIB_SUPPORT)
+      if (HDF_ENABLE_SZIP_SUPPORT)
+        set_target_properties (szip PROPERTIES
+            IMPORTED_LOCATION "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE}/lib${SZIP_LIB_NAME}${CMAKE_STATIC_LIBRARY_SUFFIX}"
+            IMPORTED_LINK_INTERFACE_LANGUAGES "C"
+        )
+      endif (HDF_ENABLE_SZIP_SUPPORT)
+    else (WIN32 AND NOT MINGW)
+      set_target_properties (hdf PROPERTIES
+          IMPORTED_LOCATION "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/lib${HDF_LIB_NAME}${CMAKE_STATIC_LIBRARY_SUFFIX}"
+          IMPORTED_LINK_INTERFACE_LIBRARIES "jpeg;zlib;szip"
           IMPORTED_LINK_INTERFACE_LANGUAGES "C"
       )
-    endif (HDF_ENABLE_SZIP_SUPPORT)
+      set_target_properties (mfhdf PROPERTIES
+          IMPORTED_LOCATION "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/lib${MFHDF_LIB_NAME}${CMAKE_STATIC_LIBRARY_SUFFIX}"
+          IMPORTED_LINK_INTERFACE_LIBRARIES "${MFHDF_IMPORTED_LINK_INTERFACE_LIBRARIES}"
+          IMPORTED_LINK_INTERFACE_LANGUAGES "C"
+      )
+      if (HDF45_BUILD_XDR_LIB)
+        set_target_properties (xdr PROPERTIES
+            IMPORTED_LOCATION "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/lib${XDR_LIB_NAME}${CMAKE_STATIC_LIBRARY_SUFFIX}"
+            IMPORTED_LINK_INTERFACE_LANGUAGES "C"
+      )
+      endif (HDF45_BUILD_XDR_LIB)
+      if (HDF_ENABLE_JPEG_LIB_SUPPORT)
+        set_target_properties (jpeg PROPERTIES
+            IMPORTED_LOCATION "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/lib${JPEG_LIB_NAME}${CMAKE_STATIC_LIBRARY_SUFFIX}"
+            IMPORTED_LINK_INTERFACE_LANGUAGES "C"
+        )
+      endif (HDF_ENABLE_JPEG_LIB_SUPPORT)
+      if (HDF_ENABLE_Z_LIB_SUPPORT)
+        set_target_properties (zlib PROPERTIES
+            IMPORTED_LOCATION "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/lib${ZLIB_LIB_NAME}${CMAKE_STATIC_LIBRARY_SUFFIX}"
+            IMPORTED_LINK_INTERFACE_LANGUAGES "C"
+        )
+      endif (HDF_ENABLE_Z_LIB_SUPPORT)
+      if (HDF_ENABLE_SZIP_SUPPORT)
+        set_target_properties (szip PROPERTIES
+            IMPORTED_LOCATION "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/lib${SZIP_LIB_NAME}${CMAKE_STATIC_LIBRARY_SUFFIX}"
+            IMPORTED_LINK_INTERFACE_LANGUAGES "C"
+        )
+      endif (HDF_ENABLE_SZIP_SUPPORT)
+    endif (WIN32 AND NOT MINGW)
   endif (${libtype} MATCHES "SHARED")
   set (HDF4_LIBRARY "hdf;mfhdf")
   if (HDF45_BUILD_XDR_LIB)
@@ -150,38 +337,38 @@ MACRO (EXTERNAL_HDF4_LIBRARY compress_type libtype)
     set (HDF4_LIBRARY "${HDF4_LIBRARY};jpeg")
     set (JPEG_LIBRARY "jpeg")
     set (JPEG_INCLUDE_DIR "${BINARY_DIR}/JPEG-prefix/src/JPEG/src")
-    set (JPEG_INCLUDE_DIR_GEN "${BINARY_DIR}/JPEG-prefix/src/JPEG-build" PARENT_SCOPE)
+    set (JPEG_INCLUDE_DIR_GEN "${BINARY_DIR}/JPEG-prefix/src/JPEG-build")
     set (H425_HAVE_JPEGLIB_H 1)
     set (H425_HAVE_LIBJPEG 1)
     set (H425_JPEGLIB_HEADER "jpeglib.h")
     set (JPEG_LIBRARIES ${JPEG_LIBRARY})
     set (JPEG_INCLUDE_DIRS ${JPEG_INCLUDE_DIR_GEN} ${JPEG_INCLUDE_DIR})
-    set (JPEG_FOUND 1 PARENT_SCOPE)
+    set (JPEG_FOUND 1)
   endif (HDF_ENABLE_JPEG_LIB_SUPPORT)
   if (HDF_ENABLE_Z_LIB_SUPPORT AND HDF4_ZLIB)
     set (HDF4_LIBRARY "${HDF4_LIBRARY};zlib")
     set (ZLIB_LIBRARY "zlib")
     set (ZLIB_INCLUDE_DIR "${BINARY_DIR}/ZLIB-prefix/src/ZLIB/src")
-    set (ZLIB_INCLUDE_DIR_GEN "${BINARY_DIR}/ZLIB-prefix/src/ZLIB-build" PARENT_SCOPE)
+    set (ZLIB_INCLUDE_DIR_GEN "${BINARY_DIR}/ZLIB-prefix/src/ZLIB-build")
     set (H425_HAVE_FILTER_DEFLATE 1)
     set (H425_HAVE_ZLIB_H 1)
     set (H425_HAVE_LIBZ 1)
     set (H425_ZLIB_HEADER "zlib.h")
     set (ZLIB_LIBRARIES ${ZLIB_LIBRARY})
     set (ZLIB_INCLUDE_DIRS ${ZLIB_INCLUDE_DIR_GEN} ${ZLIB_INCLUDE_DIR})
-    set (ZLIB_FOUND 1 PARENT_SCOPE)
+    set (ZLIB_FOUND 1)
   endif (HDF_ENABLE_Z_LIB_SUPPORT AND HDF4_ZLIB)
   if (HDF_ENABLE_SZIP_SUPPORT AND HDF4_SZIP)
     set (HDF4_LIBRARY "${HDF4_LIBRARY};szip")
     set (SZIP_LIBRARY "szip")
     set (SZIP_INCLUDE_DIR "${BINARY_DIR}/SZIP-prefix/src/SZIP/src")
-    set (SZIP_INCLUDE_DIR_GEN "${BINARY_DIR}/SZIP-prefix/src/SZIP-build" PARENT_SCOPE)
+    set (SZIP_INCLUDE_DIR_GEN "${BINARY_DIR}/SZIP-prefix/src/SZIP-build")
     set (H425_HAVE_FILTER_SZIP 1)
     set (H425_HAVE_SZLIB_H 1)
     set (H425_HAVE_LIBSZ 1)
     set (SZIP_LIBRARIES ${SZIP_LIBRARY})
     set (SZIP_INCLUDE_DIRS ${SZIP_INCLUDE_DIR_GEN} ${SZIP_INCLUDE_DIR})
-    set (SZIP_FOUND 1 PARENT_SCOPE)
+    set (SZIP_FOUND 1)
   endif (HDF_ENABLE_SZIP_SUPPORT AND HDF4_SZIP)
 #  file (READ ${BINARY_DIR}/h4config.h _h4config_h_contents)
 #  string (REGEX REPLACE ".*#define[ \t]+H4_VERSION[ \t]+\"([0-9A-Za-z.]+)\".*" "\\1" HDF4_VERSION_STRING ${_h4config_h_contents})
@@ -205,6 +392,21 @@ MACRO (PACKAGE_HDF4_LIBRARY compress_type libtype)
   if (${compress_type} MATCHES "SVN" OR ${compress_type} MATCHES "TGZ")
     add_dependencies (HDF4-GenHeader-Copy HDF4)
   endif (${compress_type} MATCHES "SVN" OR ${compress_type} MATCHES "TGZ")
+  if (WIN32)
+    if (${libtype} MATCHES "SHARED")
+      foreach (HDF4_LIB ${HDF4_LIBRARY})
+        get_property (HDF4_DLL TARGET ${HDF4_LIB} PROPERTY LOCATION_${CMAKE_BUILD_TYPE})
+        get_filename_component (HDF4_DLL_NAME ${HDF4_DLL} NAME)
+        if (BUILD_TESTING)
+          add_custom_target (${HDF4_DLL_NAME}-Test-Copy ALL
+              COMMAND ${CMAKE_COMMAND} -E copy_if_different ${HDF4_DLL} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${HDF4_DLL_NAME}
+              COMMENT "Copying ${HDF4_DLL} to ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/"
+          )
+          add_dependencies (${HDF4_DLL_NAME}-Test-Copy HDF4)
+        endif (BUILD_TESTING)
+      endforeach (HDF4_LIB {HDF4_LIBRARY})
+    endif (${libtype} MATCHES "SHARED")
+  endif (WIN32)
 ENDMACRO (PACKAGE_HDF4_LIBRARY)
 
 #-------------------------------------------------------------------------------
@@ -262,14 +464,22 @@ MACRO (EXTERNAL_HDF5_LIBRARY compress_type libtype)
   endif (${compress_type} MATCHES "TGZ")
   externalproject_get_property (HDF5 BINARY_DIR SOURCE_DIR) 
 
+  if (${CMAKE_BUILD_TYPE} MATCHES "DEBUG")
+    if (WIN32)
+      set (HDF5_LIB_NAME "hdf5_D")
+    else (WIN32)
+      set (HDF5_LIB_NAME "hdf5_debug")
+    endif (WIN32)
+  else (${CMAKE_BUILD_TYPE} MATCHES "DEBUG")
+    set (HDF5_LIB_NAME "hdf5")
+  endif (${CMAKE_BUILD_TYPE} MATCHES "DEBUG")
+
   # Create imported target hdf5
   add_library (hdf5 ${libtype} IMPORTED)
-  HDF_IMPORT_SET_LIB_OPTIONS (hdf5 "hdf5" ${libtype} "")
   add_dependencies (HDF5 hdf5)
   if (HDF_ENABLE_Z_LIB_SUPPORT)
     if (NOT ZLIB_LIBRARY)
       add_library (zlib ${libtype} IMPORTED)
-  HDF_IMPORT_SET_LIB_OPTIONS (zlib "zlib" ${libtype} "")
       set (HDF5_ZLIB "TRUE")
     endif (NOT ZLIB_LIBRARY)
     add_dependencies (HDF5 zlib)
@@ -277,7 +487,6 @@ MACRO (EXTERNAL_HDF5_LIBRARY compress_type libtype)
   if (HDF_ENABLE_SZIP_SUPPORT)
     if (NOT SZIP_LIBRARY)
       add_library (szip ${libtype} IMPORTED)
-      HDF_IMPORT_SET_LIB_OPTIONS (szip "szip" ${libtype} "")
       set (HDF5_SZIP "TRUE")
     endif (NOT SZIP_LIBRARY)
     add_dependencies (HDF5 szip)
@@ -285,19 +494,41 @@ MACRO (EXTERNAL_HDF5_LIBRARY compress_type libtype)
 
   if (${libtype} MATCHES "SHARED")
     if (WIN32)
-      set_target_properties (hdf5 PROPERTIES
-          IMPORTED_LINK_INTERFACE_LIBRARIES "zlib;szip"
-      )
+      if (MINGW)
+        set_target_properties (hdf5 PROPERTIES
+            IMPORTED_IMPLIB "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${HDF5_LIB_NAME}.lib"
+            IMPORTED_LOCATION "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${HDF5_LIB_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX}"
+            IMPORTED_LINK_INTERFACE_LIBRARIES "zlib;szip"
+        )
+      else (MINGW)
+        set_target_properties (hdf5 PROPERTIES
+            IMPORTED_IMPLIB "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE}/${CMAKE_IMPORT_LIBRARY_PREFIX}${HDF5_LIB_NAME}${CMAKE_IMPORT_LIBRARY_SUFFIX}"
+            IMPORTED_LOCATION "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE}/${CMAKE_IMPORT_LIBRARY_PREFIX}${HDF5_LIB_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX}"
+            IMPORTED_LINK_INTERFACE_LIBRARIES "zlib;szip"
+        )
+      endif (MINGW)
     else (WIN32)
       set_target_properties (hdf5 PROPERTIES
+          IMPORTED_LOCATION "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${CMAKE_SHARED_LIBRARY_PREFIX}${HDF5_LIB_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX}"
           IMPORTED_LINK_INTERFACE_LIBRARIES "dl;zlib;szip"
+          IMPORTED_SONAME "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${CMAKE_SHARED_LIBRARY_PREFIX}${HDF5_LIB_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX}.${HDF5_VERSION_STRING}"
+          SOVERSION "${HDF5_VERSION_STRING}"
       )
     endif (WIN32)
   else (${libtype} MATCHES "SHARED")
-    set_target_properties (hdf5 PROPERTIES
-        IMPORTED_LINK_INTERFACE_LIBRARIES "zlib;szip"
-        IMPORTED_LINK_INTERFACE_LANGUAGES "C"
-    )
+    if (WIN32 AND NOT MINGW)
+      set_target_properties (hdf5 PROPERTIES
+          IMPORTED_LOCATION "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE}/lib${HDF5_LIB_NAME}${CMAKE_STATIC_LIBRARY_SUFFIX}"
+          IMPORTED_LINK_INTERFACE_LIBRARIES "zlib;szip"
+          IMPORTED_LINK_INTERFACE_LANGUAGES "C"
+      )
+    else (WIN32 AND NOT MINGW)
+      set_target_properties (hdf5 PROPERTIES
+          IMPORTED_LOCATION "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/lib${HDF5_LIB_NAME}${CMAKE_STATIC_LIBRARY_SUFFIX}"
+          IMPORTED_LINK_INTERFACE_LIBRARIES "zlib;szip"
+          IMPORTED_LINK_INTERFACE_LANGUAGES "C"
+      )
+    endif (WIN32 AND NOT MINGW)
   endif (${libtype} MATCHES "SHARED")
   set (HDF5_LIBRARY "hdf5")
   if (HDF_ENABLE_Z_LIB_SUPPORT AND HDF5_ZLIB)
@@ -329,7 +560,6 @@ MACRO (EXTERNAL_HDF5_LIBRARY compress_type libtype)
   set (HDF5_INCLUDE_DIR_GEN "${BINARY_DIR}")
   set (HDF5_INCLUDE_DIR "${SOURCE_DIR}/src")
   set (HDF5_FOUND 1)
-  message ("HDF5_LIBRARY is ${HDF5_LIBRARY}\n")
   set (HDF5_LIBRARIES ${HDF5_LIBRARY})
   set (HDF5_INCLUDE_DIRS ${HDF5_INCLUDE_DIR_GEN} ${HDF5_INCLUDE_DIR})
 ENDMACRO (EXTERNAL_HDF5_LIBRARY)
@@ -344,4 +574,19 @@ MACRO (PACKAGE_HDF5_LIBRARY compress_type libtype)
   if (${compress_type} MATCHES "SVN" OR ${compress_type} MATCHES "TGZ")
     add_dependencies (HDF5-GenHeader-Copy HDF5)
   endif (${compress_type} MATCHES "SVN" OR ${compress_type} MATCHES "TGZ")
+  if (WIN32)
+    if (${libtype} MATCHES "SHARED")
+      foreach (HDF5_LIB ${HDF5_LIBRARY})
+        get_property (HDF5_DLL TARGET ${HDF5_LIB} PROPERTY LOCATION_${CMAKE_BUILD_TYPE})
+        get_filename_component (HDF5_DLL_NAME ${HDF5_DLL} NAME)
+        if (BUILD_TESTING)
+          add_custom_target (${HDF5_DLL_NAME}-Test-Copy ALL
+              COMMAND ${CMAKE_COMMAND} -E copy_if_different ${HDF5_DLL} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${HDF5_DLL_NAME}
+              COMMENT "Copying ${HDF5_DLL} to ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/"
+          )
+          add_dependencies (${HDF5_DLL_NAME}-Test-Copy HDF5)
+        endif (BUILD_TESTING)
+      endforeach (HDF5_LIB {HDF5_LIBRARY})
+    endif (${libtype} MATCHES "SHARED")
+  endif (WIN32)
 ENDMACRO (PACKAGE_HDF5_LIBRARY)

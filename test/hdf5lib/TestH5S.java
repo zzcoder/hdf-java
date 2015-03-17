@@ -14,13 +14,10 @@ import ncsa.hdf.hdf5lib.exceptions.HDF5LibraryException;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestName;
 
 public class TestH5S {
-    @Rule public TestName testname = new TestName();
-    long H5sid = -1;
+    int H5sid = -1;
     int H5rank = 2;
     long H5dims[] = {5, 5};
     long H5maxdims[] = {10, 10};
@@ -29,7 +26,6 @@ public class TestH5S {
     public void createH5file()
             throws NullPointerException, HDF5Exception {
         assertTrue("H5 open ids is 0", H5.getOpenIDCount()==0);
-        System.out.print(testname.getMethodName());
 
         H5sid = H5.H5Screate_simple(H5rank, H5dims, H5maxdims);
         assertTrue("H5.H5Screate_simple_extent", H5sid > 0);
@@ -40,7 +36,6 @@ public class TestH5S {
         if (H5sid > 0) {
             try {H5.H5Sclose(H5sid);} catch (Exception ex) {}
         }
-        System.out.println();
     }
 
     @Test
@@ -171,7 +166,7 @@ public class TestH5S {
 
     @Test
     public void testH5Scopy() {
-        long sid = -1;
+        int sid = -1;
         int read_rank = -1;
 
         try {
@@ -191,7 +186,7 @@ public class TestH5S {
 
     @Test
     public void testH5Sextent_copy() {
-        long sid = -1;
+        int sid = -1;
         int class_type = -1;
         
         try {
@@ -212,7 +207,7 @@ public class TestH5S {
 
     @Test
     public void testH5Sextent_equal() {
-        long sid = -1;
+        int sid = -1;
         boolean result = false;
         
         try {
@@ -242,8 +237,8 @@ public class TestH5S {
 
     @Test
     public void testH5Sencode_decode_null_dataspace() {
-        long sid = -1;
-        long decoded_sid = -1;
+        int sid = -1;
+        int decoded_sid = -1;
         byte[] null_sbuf = null;
         boolean result = false;
         
@@ -289,8 +284,8 @@ public class TestH5S {
 
     @Test
     public void testH5Sencode_decode_scalar_dataspace() {
-        long sid = -1;
-        long decoded_sid = -1;
+        int sid = -1;
+        int decoded_sid = -1;
         byte[] scalar_sbuf = null;
         boolean result = false;
         int iresult = -1;
@@ -460,7 +455,7 @@ public class TestH5S {
 
     @Test
     public void testH5Sget_select_hyper() {
-        long space1 = -1;
+        int space1 = -1;
         long start[] = {0,0}; 
         long stride[] = {1,1}; 
         long count[] = {1,1}; 
@@ -498,7 +493,7 @@ public class TestH5S {
 
     @Test
     public void testH5Sget_select_valid() {
-        long space1 = -1;
+        int space1 = -1;
         long start[] = {1,0}; 
         long stride[] = {1,1}; 
         long count[] = {2,3}; 

@@ -17,24 +17,20 @@ import ncsa.hdf.hdf5lib.structs.H5L_info_t;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestName;
 
 public class TestH5Lcreate {
-    @Rule public TestName testname = new TestName();
     private static final String H5_EXTFILE = "test/hdf5lib/h5ex_g_iterate.hdf";
     private static final String H5_FILE = "test.h5";
     private static final int DIM_X = 4;
     private static final int DIM_Y = 6;
-    long H5fcpl = -1;
-    long H5fid = -1;
-    long H5dsid = -1;
-    long H5did1 = -1;
-    long H5did2 = -1;
-    long H5gcpl = -1;
-    long H5gid = -1;
+    int H5fcpl = -1;
+    int H5fid = -1;
+    int H5dsid = -1;
+    int H5did1 = -1;
+    int H5did2 = -1;
+    int H5gcpl = -1;
+    int H5gid = -1;
     long[] H5dims = { DIM_X, DIM_Y };
 
     private final void _deleteFile(String filename) {
@@ -50,8 +46,8 @@ public class TestH5Lcreate {
         }
     }
 
-    private final long _createDataset(long fid, long dsid, String name, long dapl) {
-        long did = -1;
+    private final int _createDataset(int fid, int dsid, String name, int dapl) {
+        int did = -1;
         try {
             did = H5.H5Dcreate(fid, name,
                         HDF5Constants.H5T_STD_I32BE, dsid,
@@ -66,8 +62,8 @@ public class TestH5Lcreate {
         return did;
     }
 
-    private final long _createGroup(long fid, String name) {
-        long gid = -1;
+    private final int _createGroup(int fid, String name) {
+        int gid = -1;
         try {
             H5gcpl = HDF5Constants.H5P_DEFAULT;
             gid = H5.H5Gcreate(fid, name, HDF5Constants.H5P_DEFAULT,
@@ -82,7 +78,7 @@ public class TestH5Lcreate {
         return gid;
     }
 
-    private final void _createHardLink(long fid, long cid, String curname, long did, String dstname, long lcpl, long lapl) {
+    private final void _createHardLink(int fid, int cid, String curname, int did, String dstname, int lcpl, int lapl) {
         boolean link_exists = false;
         try {
             H5.H5Lcreate_hard(cid, curname, did, dstname, lcpl, lapl);
@@ -96,7 +92,7 @@ public class TestH5Lcreate {
         assertTrue("TestH5L._createHardLink ", link_exists);
     }
 
-    private final void _createSoftLink(long fid, String curname, long did, String dstname, long lcpl, long lapl) {
+    private final void _createSoftLink(int fid, String curname, int did, String dstname, int lcpl, int lapl) {
         boolean link_exists = false;
         try {
             H5.H5Lcreate_soft(curname, did, dstname, lcpl, lapl);
@@ -110,7 +106,7 @@ public class TestH5Lcreate {
         assertTrue("TestH5L._createSoftLink ", link_exists);
     }
 
-    private final void _createExternalLink(long fid, String ext_filename, String curname, long did, String dstname, long lcpl, long lapl) {
+    private final void _createExternalLink(int fid, String ext_filename, String curname, int did, String dstname, int lcpl, int lapl) {
         boolean link_exists = false;
         try {
             H5.H5Lcreate_external(ext_filename, curname, did, dstname, lcpl, lapl);
@@ -128,7 +124,6 @@ public class TestH5Lcreate {
     public void createH5file()
             throws NullPointerException, HDF5Exception {
         assertTrue("H5 open ids is 0",H5.getOpenIDCount()==0);
-        System.out.print(testname.getMethodName());
         try {
             H5fcpl = H5.H5Pcreate(HDF5Constants.H5P_FILE_CREATE);
             H5.H5Pset_link_creation_order(H5fcpl, HDF5Constants.H5P_CRT_ORDER_TRACKED+HDF5Constants.H5P_CRT_ORDER_INDEXED);
@@ -168,7 +163,6 @@ public class TestH5Lcreate {
             try {H5.H5Pclose(H5fcpl);} catch (Exception ex) {}
 
         _deleteFile(H5_FILE);
-        System.out.println();
     }
 
     @Test
@@ -726,7 +720,7 @@ public class TestH5Lcreate {
         }
         H5L_iterate_t iter_data = new H5L_iter_data();
         class H5L_iter_callback implements H5L_iterate_cb {
-            public int callback(long group, String name, H5L_info_t info, H5L_iterate_t op_data) {
+            public int callback(int group, String name, H5L_info_t info, H5L_iterate_t op_data) {
                 idata id = new idata(name, info.type);
                 ((H5L_iter_data)op_data).iterdata.add(id);
                 return 0;
@@ -778,7 +772,7 @@ public class TestH5Lcreate {
         }
         H5L_iterate_t iter_data = new H5L_iter_data();
         class H5L_iter_callback implements H5L_iterate_cb {
-            public int callback(long group, String name, H5L_info_t info, H5L_iterate_t op_data) {
+            public int callback(int group, String name, H5L_info_t info, H5L_iterate_t op_data) {
                 idata id = new idata(name, info.type);
                 ((H5L_iter_data)op_data).iterdata.add(id);
                 return 0;
@@ -786,7 +780,7 @@ public class TestH5Lcreate {
         }
         H5L_iterate_cb iter_cb = new H5L_iter_callback();
         try {
-            H5.H5Literate(H5fid, HDF5Constants.H5_INDEX_CRT_ORDER, HDF5Constants.H5_ITER_INC, 0, iter_cb, iter_data);
+            H5.H5Literate(H5fid, HDF5Constants.H5_INDEX_CRT_ORDER, HDF5Constants.H5_ITER_INC, 0L, iter_cb, iter_data);
         }
         catch (Throwable err) {
             err.printStackTrace();

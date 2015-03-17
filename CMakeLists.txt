@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.10)
+cmake_minimum_required(VERSION 3.1.0)
 PROJECT ( HDFJAVA C Java )
 
 #-----------------------------------------------------------------------------
@@ -42,15 +42,7 @@ set (HDFJAVA_JNI_HDF_LIB_CORENAME          "jhdf")
 set (HDFJAVA_JNI_HDF5_LIB_CORENAME         "jhdf5")
 set (HDFJAVA_NCSA_HDF_LIB_CORENAME         "jarhdf")
 set (HDFJAVA_NCSA_HDF5_LIB_CORENAME        "jarhdf5")
-set (HDFJAVA_NCSA_OBJECT_LIB_CORENAME      "jarhdfobj")
-set (HDFJAVA_NCSA_FITS_LIB_CORENAME        "jarfitsobj")
-set (HDFJAVA_NCSA_H4_LIB_CORENAME          "jarh4obj")
-set (HDFJAVA_NCSA_H5_LIB_CORENAME          "jarh5obj")
-set (HDFJAVA_NCSA_NC2_LIB_CORENAME         "jarnc2obj")
 set (HDFJAVA_TEST_HDF5_LIB_CORENAME        "jartest5")
-set (HDFJAVA_TEST_OBJECT_LIB_CORENAME      "jartestobj")
-set (HDFJAVA_TEST_UITEST_CORENAME          "jaruitest")
-set (HDFJAVA_NCSA_VIEW_LIB_CORENAME        "jhdfview")
 
 #-----------------------------------------------------------------------------
 # Set the true names of all the libraries if customized by external project
@@ -59,15 +51,7 @@ set (HDFJAVA_JNI_HDF_LIB_NAME      "${HDFJAVA_EXTERNAL_LIB_PREFIX}${HDFJAVA_JNI_
 set (HDFJAVA_JNI_HDF5_LIB_NAME     "${HDFJAVA_EXTERNAL_LIB_PREFIX}${HDFJAVA_JNI_HDF5_LIB_CORENAME}")
 set (HDFJAVA_NCSA_HDF_LIB_NAME     "${HDFJAVA_EXTERNAL_LIB_PREFIX}${HDFJAVA_NCSA_HDF_LIB_CORENAME}")
 set (HDFJAVA_NCSA_HDF5_LIB_NAME    "${HDFJAVA_EXTERNAL_LIB_PREFIX}${HDFJAVA_NCSA_HDF5_LIB_CORENAME}")
-set (HDFJAVA_NCSA_OBJECT_LIB_NAME  "${HDFJAVA_EXTERNAL_LIB_PREFIX}${HDFJAVA_NCSA_OBJECT_LIB_CORENAME}")
-set (HDFJAVA_NCSA_FITS_LIB_NAME    "${HDFJAVA_EXTERNAL_LIB_PREFIX}${HDFJAVA_NCSA_FITS_LIB_CORENAME}")
-set (HDFJAVA_NCSA_H4_LIB_NAME      "${HDFJAVA_EXTERNAL_LIB_PREFIX}${HDFJAVA_NCSA_H4_LIB_CORENAME}")
-set (HDFJAVA_NCSA_H5_LIB_NAME      "${HDFJAVA_EXTERNAL_LIB_PREFIX}${HDFJAVA_NCSA_H5_LIB_CORENAME}")
-set (HDFJAVA_NCSA_NC2_LIB_NAME     "${HDFJAVA_EXTERNAL_LIB_PREFIX}${HDFJAVA_NCSA_NC2_LIB_CORENAME}")
 set (HDFJAVA_TEST_HDF5_LIB_NAME    "${HDFJAVA_EXTERNAL_LIB_PREFIX}${HDFJAVA_TEST_HDF5_LIB_CORENAME}")
-set (HDFJAVA_TEST_OBJECT_LIB_NAME  "${HDFJAVA_EXTERNAL_LIB_PREFIX}${HDFJAVA_TEST_OBJECT_LIB_CORENAME}")
-set (HDFJAVA_TEST_UITEST_NAME      "${HDFJAVA_EXTERNAL_LIB_PREFIX}${HDFJAVA_TEST_UITEST_CORENAME}")
-set (HDFJAVA_NCSA_VIEW_LIB_NAME    "${HDFJAVA_EXTERNAL_LIB_PREFIX}${HDFJAVA_NCSA_VIEW_LIB_CORENAME}")
 
 #-----------------------------------------------------------------------------
 # Set the target names of all the libraries
@@ -76,29 +60,16 @@ set (HDFJAVA_JNI_HDF_LIB_TARGET       ${HDFJAVA_JNI_HDF_LIB_CORENAME})
 set (HDFJAVA_JNI_HDF5_LIB_TARGET      ${HDFJAVA_JNI_HDF5_LIB_CORENAME})
 set (HDFJAVA_NCSA_HDF_LIB_TARGET      ${HDFJAVA_NCSA_HDF_LIB_CORENAME})
 set (HDFJAVA_NCSA_HDF5_LIB_TARGET     ${HDFJAVA_NCSA_HDF5_LIB_CORENAME})
-set (HDFJAVA_NCSA_OBJECT_LIB_TARGET   ${HDFJAVA_NCSA_OBJECT_LIB_CORENAME})
-set (HDFJAVA_NCSA_FITS_LIB_TARGET     ${HDFJAVA_NCSA_FITS_LIB_CORENAME})
-set (HDFJAVA_NCSA_H4_LIB_TARGET       ${HDFJAVA_NCSA_H4_LIB_CORENAME})
-set (HDFJAVA_NCSA_H5_LIB_TARGET       ${HDFJAVA_NCSA_H5_LIB_CORENAME})
-set (HDFJAVA_NCSA_NC2_LIB_TARGET      ${HDFJAVA_NCSA_NC2_LIB_CORENAME})
 set (HDFJAVA_TEST_HDF5_LIB_TARGET     ${HDFJAVA_TEST_HDF5_LIB_CORENAME})
-set (HDFJAVA_TEST_OBJECT_LIB_TARGET   ${HDFJAVA_TEST_OBJECT_LIB_CORENAME})
-set (HDFJAVA_TEST_UITEST_TARGET       ${HDFJAVA_TEST_UITEST_CORENAME})
-set (HDFJAVA_NCSA_VIEW_LIB_TARGET     ${HDFJAVA_NCSA_VIEW_LIB_CORENAME})
 
 #-----------------------------------------------------------------------------
 # Define some CMake variables for use later in the project
 #-----------------------------------------------------------------------------
 set (HDF_RESOURCES_DIR           ${HDFJAVA_SOURCE_DIR}/config/cmake)
 set (HDF_RESOURCES_EXT_DIR       ${HDFJAVA_SOURCE_DIR}/config/cmake_ext_mod)
-set (HDFJAVA_JNI_SRC_DIR         ${HDFJAVA_SOURCE_DIR}/native)
 set (HDFJAVA_JAVA_SRC_DIR        ${HDFJAVA_SOURCE_DIR}/ncsa/hdf)
-set (HDFJAVA_JAVA_OBJECT_SRC_DIR ${HDFJAVA_SOURCE_DIR}/ncsa/hdf/object)
 set (HDFJAVA_TEST_SRC_DIR        ${HDFJAVA_SOURCE_DIR}/test)
-set (HDFJAVA_EXAMPLES_SOURCE_DIR ${HDFJAVA_SOURCE_DIR}/examples)
 set (HDFJAVA_LIB_DIR             ${HDFJAVA_SOURCE_DIR}/lib)
-set (HDFJAVA_FITS_JAR            ${HDFJAVA_SOURCE_DIR}/lib/fits.jar)
-set (HDFJAVA_NETCDF_JAR          ${HDFJAVA_SOURCE_DIR}/lib/netcdf.jar)
 set (HDFJAVA_LOGGING_JAR         ${HDFJAVA_SOURCE_DIR}/lib/slf4j-api-1.7.5.jar)
 set (HDFJAVA_LOGGING_NOP_JAR     ${HDFJAVA_SOURCE_DIR}/lib/ext/slf4j-nop-1.7.5.jar)
 set (HDFJAVA_LOGGING_SIMPLE_JAR  ${HDFJAVA_SOURCE_DIR}/lib/ext/slf4j-simple-1.7.5.jar)
@@ -110,7 +81,12 @@ if (NOT HJAVA_INSTALL_LIB_DIR)
   if (APPLE)
     option (HDFJAVA_PACK_MACOSX_BUNDLE "Create a Mac OSX Application Bundle" OFF)
     if (HDFJAVA_PACK_MACOSX_BUNDLE)
-      set (HJAVA_INSTALL_JAR_DIR ../Java)
+      option (HDFJAVA_PACK_MACOSX_16_BUNDLE "Create a Mac OSX Application Bundle with Apple Java 1.6" OFF)
+      if (HDFJAVA_PACK_MACOSX_16_BUNDLE)
+        set (HJAVA_INSTALL_JAR_DIR Java)
+      else (HDFJAVA_PACK_MACOSX_16_BUNDLE)
+        set (HJAVA_INSTALL_JAR_DIR ../Java)
+      endif (HDFJAVA_PACK_MACOSX_16_BUNDLE)
     else (HDFJAVA_PACK_MACOSX_BUNDLE)
       set (HJAVA_INSTALL_JAR_DIR lib)
     endif (HDFJAVA_PACK_MACOSX_BUNDLE)
@@ -167,7 +143,7 @@ message (STATUS "VERSION RELEASE: ${HJAVA_VERS_RELEASE}")
 # Basic HDFJAVA stuff here
 #-----------------------------------------------------------------------------
 set (HDFJAVA_PACKAGE "hdf-java")
-set (HDFJAVA_PACKAGE_NAME "HDFView")
+set (HDFJAVA_PACKAGE_NAME "HDFJAVA")
 set (HDFJAVA_PACKAGE_VERSION "${HJAVA_VERS_MAJOR}.${HJAVA_VERS_MINOR}.${HJAVA_VERS_RELEASE}")
 set (HDFJAVA_PACKAGE_VERSION_STRING "${HDFJAVA_PACKAGE_VERSION}")
 set (HDFJAVA_PACKAGE_VERSION_MAJOR "${HJAVA_VERS_MAJOR}")
@@ -177,7 +153,7 @@ set (HDFJAVA_PACKAGE_TARNAME "hdf-java")
 set (HDFJAVA_PACKAGE_URL "http://www.hdfgroup.org/hdfjava")
 set (HDFJAVA_PACKAGE_BUGREPORT "help@hdfgroup.org")
 
-set (CMAKE_MODULE_PATH "${HDF_RESOURCES_DIR};${HDF_RESOURCES_EXT_DIR}")
+set (CMAKE_MODULE_PATH "${HDF_RESOURCES_DIR};${HDF_RESOURCES_EXT_DIR};${CMAKE_ROOT}/Modules")
 find_package (Java)
 #-----------------------------------------------------------------------------
 # Include some macros for reusable code
@@ -204,11 +180,7 @@ if (NOT HDFJAVA_EXTERNALLY_CONFIGURED)
   set (CMAKE_JAVA_TARGET_OUTPUT_DIR 
       ${PROJECT_BINARY_DIR}/bin CACHE PATH "Single Directory for all java jars."
   )
-  if (WIN32)
-    set (CMAKE_TEST_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE})
-  else (WIN32)
-    set (CMAKE_TEST_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
-  endif (WIN32)
+  
 else (NOT HDFJAVA_EXTERNALLY_CONFIGURED)
   # if we are externally configured, but the project uses old cmake scripts
   # this may not be set and utilities like Hdetect will fail
@@ -231,8 +203,6 @@ endif (NOT HDFJAVA_EXPORTED_TARGETS)
 # which include HDFJAVA as a sub-project within their build tree
 #-----------------------------------------------------------------------------
 SET_GLOBAL_VARIABLE (HDFJAVA_LIBRARIES_TO_EXPORT "")
-SET_GLOBAL_VARIABLE (HDFJAVA_JARS_TO_EXPORT "")
-SET_GLOBAL_VARIABLE (HDFJAVA_HDFVIEWJAR_TO_EXPORT "${HDFJAVA_LOGGING_JAR}")
 SET_GLOBAL_VARIABLE (HDFJAVA_SOURCE_PACKAGES "")
 SET_GLOBAL_VARIABLE (HDFJAVA_OBJECT_JARS "")
 
@@ -255,15 +225,14 @@ include (UserMacros.cmake)
 # Include the main src and config directories
 #-----------------------------------------------------------------------------
 set (HDFJAVA_INCLUDE_DIRECTORIES
-    ${HDFJAVA_JNI_SRC_DIR}/hdflib 
-    ${HDFJAVA_JNI_SRC_DIR}/hdf5lib
+    hdflib 
+    hdf5lib
     ${HDFJAVA_BINARY_DIR}
     ${JAVA_INCLUDE_PATH}
     ${JAVA_INCLUDE_PATH2}
 )
 INCLUDE_DIRECTORIES (${HDFJAVA_INCLUDE_DIRECTORIES})
 set (CMAKE_JAVA_INCLUDE_PATH "")
-set (HDFVIEW_OPTIONS_INCLUDE_PATH "")
 
 set (MAKE_SYSTEM)
 if (CMAKE_BUILD_TOOL MATCHES "make")
@@ -293,20 +262,309 @@ endif (BUILD_TESTING)
 #-----------------------------------------------------------------------------
 # Add the HDFJAVA Library Target to the build
 #-----------------------------------------------------------------------------
-add_subdirectory (${HDFJAVA_SOURCE_DIR}/native    native)
+
+message (STATUS "JAVA: JAVA_HOME=$ENV{JAVA_HOME} JAVA_ROOT=$ENV{JAVA_ROOT}")
+find_package (JNI)
+
+INCLUDE_DIRECTORIES ( ${JNI_INCLUDE_DIRS} )
+
+#-----------------------------------------------------------------------------
+# Option to Build Shared/Static libs, default is static
+#-----------------------------------------------------------------------------
+option (BUILD_SHARED_LIBS "Build Shared Libraries" OFF)
+set (LIB_TYPE STATIC)
+if (BUILD_SHARED_LIBS)
+  set (LIB_TYPE SHARED)
+  add_definitions (-DHDFJAVA_BUILT_AS_DYNAMIC_LIB)
+else (BUILD_SHARED_LIBS)
+  add_definitions (-DHDFJAVA_BUILT_AS_STATIC_LIB)
+  set (CMAKE_POSITION_INDEPENDENT_CODE ON)
+endif (BUILD_SHARED_LIBS)
+set (LIB_TYPE ${LIB_TYPE})
+
+#-----------------------------------------------------------------------------
+# When building utility executables that generate other (source) files :
+# we make use of the following variables defined in the root CMakeLists.
+# Certain systems may add /Debug or /Release to output paths
+# and we need to call the executable from inside the CMake configuration
+#-----------------------------------------------------------------------------
+set (EXE_EXT "")
+if (WIN32)
+  set (EXE_EXT ".exe")
+  if (NOT CYGWIN)
+    add_definitions (-D_BIND_TO_CURRENT_VCLIBS_VERSION=1)
+    add_definitions (-D_CRT_SECURE_NO_WARNINGS)
+  endif (NOT CYGWIN)
+endif (WIN32)
+
+if (MSVC)
+  set (CMAKE_MFC_FLAG 0)
+endif (MSVC)
+
+#-----------------------------------------------------------------------------
+# Add some definitions for Debug Builds
+#-----------------------------------------------------------------------------
+if (CMAKE_BUILD_TYPE MATCHES Debug)
+  add_definitions (-DDEBUG)
+  #-- NMake Makefiles will overwhelm the console with warnings if -Wall is used.
+  if (NOT WIN32)
+    add_definitions (-Wall)
+  endif (NOT WIN32)
+else (CMAKE_BUILD_TYPE MATCHES Debug)
+  add_definitions (-UH4_DEBUG_API -DNDEBUG)
+endif (CMAKE_BUILD_TYPE MATCHES Debug)
+
+#-----------------------------------------------------------------------------
+# Compiler specific flags : Shouldn't there be compiler tests for these
+#-----------------------------------------------------------------------------
+if (CMAKE_COMPILER_IS_GNUCC)
+  set (CMAKE_C_FLAGS "${CMAKE_ANSI_CFLAGS} ${CMAKE_C_FLAGS} -std=c99 -fomit-frame-pointer -finline-functions -fno-common")
+endif (CMAKE_COMPILER_IS_GNUCC)
+if (CMAKE_COMPILER_IS_GNUCXX)
+  set (CMAKE_CXX_FLAGS "${CMAKE_ANSI_CFLAGS} ${CMAKE_CXX_FLAGS} -fomit-frame-pointer -finline-functions -fno-common")
+endif (CMAKE_COMPILER_IS_GNUCXX)
+
+#-----------------------------------------------------------------------------
+# Option to allow the user to disable compiler warnings
+#-----------------------------------------------------------------------------
+option (HDF_DISABLE_COMPILER_WARNINGS "Disable compiler warnings" OFF)
+if (HDF_DISABLE_COMPILER_WARNINGS)
+  # MSVC uses /w to suppress warnings.  It also complains if another
+  # warning level is given, so remove it.
+  if (MSVC)
+    set (HDF_WARNINGS_BLOCKED 1)
+    string (REGEX REPLACE "(^| )([/-])W[0-9]( |$)" " " CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
+    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /w")
+    string (REGEX REPLACE "(^| )([/-])W[0-9]( |$)" " " CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /w")
+  endif (MSVC)
+  if (WIN32)
+    add_definitions (-D_CRT_SECURE_NO_WARNINGS)
+  endif (WIN32)
+  # Borland uses -w- to suppress warnings.
+  if (BORLAND)
+    set (HDF_WARNINGS_BLOCKED 1)
+    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -w-")
+  endif (BORLAND)
+
+  # Most compilers use -w to suppress warnings.
+  if (NOT HDF_WARNINGS_BLOCKED)
+    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -w")
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w")
+  endif (NOT HDF_WARNINGS_BLOCKED)
+endif (HDF_DISABLE_COMPILER_WARNINGS)
+
+set (EXTERNAL_HEADER_LIST "")
+set (EXTERNAL_LIBRARY_LIST "")
+set (EXTERNAL_LIBRARYDLL_LIST "")
+
+#-----------------------------------------------------------------------------
+# This is in here to help some of the GCC based IDES like Eclipse
+# and code blocks parse the compiler errors and warnings better.
+#-----------------------------------------------------------------------------
+if (CMAKE_COMPILER_IS_GNUCC)
+  set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fmessage-length=0")
+endif (CMAKE_COMPILER_IS_GNUCC)
+if (CMAKE_COMPILER_IS_GNUCXX)
+  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fmessage-length=0")
+endif (CMAKE_COMPILER_IS_GNUCXX)
+
+include (ExternalProject)
+#option (HDF_ALLOW_EXTERNAL_SUPPORT "Allow External Library Building" "NO")
+set (HDF_ALLOW_EXTERNAL_SUPPORT "NO" CACHE STRING "Allow External Library Building (NO SVN TGZ)")
+set_property (CACHE HDF_ALLOW_EXTERNAL_SUPPORT PROPERTY STRINGS NO SVN TGZ)
+option (HDF4_USE_EXTERNAL "Use External Library Building for HDF4" 0)
+option (HDF5_USE_EXTERNAL "Use External Library Building for HDF5" 0)
+if (HDF_ALLOW_EXTERNAL_SUPPORT MATCHES "SVN" OR HDF_ALLOW_EXTERNAL_SUPPORT MATCHES "TGZ")
+  set (HDF4_USE_EXTERNAL 1 CACHE BOOL "Use External Library Building for HDF4" FORCE)
+  set (HDF5_USE_EXTERNAL 1 CACHE BOOL "Use External Library Building for HDF5" FORCE)
+  if (HDF_ALLOW_EXTERNAL_SUPPORT MATCHES "SVN")
+    set (HDF4_URL ${HDF4_SVN_URL})
+    set (HDF5_URL ${HDF5_SVN_URL})
+  elseif (HDF_ALLOW_EXTERNAL_SUPPORT MATCHES "TGZ")
+    if (NOT TGZPATH)
+      set (TGZPATH ${HDFJAVA_SOURCE_DIR})
+    endif (NOT TGZPATH)
+    set (HDF4_URL ${TGZPATH}/${HDF4_TGZ_NAME})
+    set (HDF5_URL ${TGZPATH}/${HDF5_TGZ_NAME})
+  endif (HDF_ALLOW_EXTERNAL_SUPPORT MATCHES "SVN")
+endif (HDF_ALLOW_EXTERNAL_SUPPORT MATCHES "SVN" OR HDF_ALLOW_EXTERNAL_SUPPORT MATCHES "TGZ")
+
+set (HDF4_LINK_LIBS ${LINK_LIBS})
+set (HDF5_LINK_LIBS ${LINK_LIBS})
+
+#-----------------------------------------------------------------------------
+# HDF4 support
+#-----------------------------------------------------------------------------
+if (NOT BUILD_SHARED_LIBS)
+  set (HDF4_USE_STATIC_LIBRARIES 1)
+endif (NOT BUILD_SHARED_LIBS)
+
+if (NOT HJAVA_HDF4_HEADER)
+  if (NOT HDF4_USE_EXTERNAL)
+    find_package (HDF4 NAMES ${HDF4_PACKAGE_NAME}${HDF_PACKAGE_EXT})
+    if (NOT HDF4_FOUND)
+      find_package (HDF4) # Legacy find
+    endif (NOT HDF4_FOUND)
+  endif (NOT HDF4_USE_EXTERNAL)
+  if (HDF4_FOUND)
+    message (STATUS "HDF4 found: INC=${HDF4_INCLUDE_DIR} TOOLS=${HDF4_TOOLS_DIR}")
+    if ((NOT USE_SHARED_LIBS AND HDF4_BUILD_SHARED_LIBS) OR (USE_SHARED_LIBS AND NOT HDF4_BUILD_SHARED_LIBS))
+      message (STATUS "HDF4 build type does match requested type")
+    endif ((NOT USE_SHARED_LIBS AND HDF4_BUILD_SHARED_LIBS) OR (USE_SHARED_LIBS AND NOT HDF4_BUILD_SHARED_LIBS))
+    if (HDF4_BUILD_SHARED_LIBS)
+      add_definitions (-DH4_BUILT_AS_DYNAMIC_LIB)
+    else (HDF4_BUILD_SHARED_LIBS)
+      add_definitions (-DH4_BUILT_AS_STATIC_LIB)
+    endif (HDF4_BUILD_SHARED_LIBS)
+    set (HJAVA_HAVE_HDF_H 1)
+    set (HJAVA_HAVE_HDF4 1)
+    set (HJAVA_HDF4_HEADER "hdf.h")
+    set (HDF4_INCLUDE_DIR_GEN ${HDF4_INCLUDE_DIR})
+    set (HDF4_INCLUDE_DIRS ${HDF4_INCLUDE_DIR})
+  else (HDF4_FOUND)
+    if (HDF_ALLOW_EXTERNAL_SUPPORT MATCHES "SVN" OR HDF_ALLOW_EXTERNAL_SUPPORT MATCHES "TGZ")
+      # May need to build JPEG with PIC on x64 machines with gcc
+      # Need to use CMAKE_ANSI_CFLAGS define so that compiler test works
+      if (NOT CMAKE_ANSI_CFLAGS)
+        set (CMAKE_ANSI_CFLAGS " ")
+      endif (NOT CMAKE_ANSI_CFLAGS)
+      if (BUILD_JPEG_WITH_PIC)
+        set (CMAKE_ANSI_CFLAGS "${CMAKE_ANSI_CFLAGS} -fPIC")
+      endif (BUILD_JPEG_WITH_PIC)
+        
+      EXTERNAL_HDF4_LIBRARY (${HDF_ALLOW_EXTERNAL_SUPPORT} ${LIB_TYPE})
+      set (HJAVA_HAVE_HDF_H 1)
+      set (HJAVA_HAVE_HDF4 1)
+      set (HJAVA_HDF4_HEADER "hdf.h")
+      message (STATUS "HDF4 is built")
+      if (BUILD_SHARED_LIBS)
+        add_definitions (-DH4_BUILT_AS_DYNAMIC_LIB)
+      else (BUILD_SHARED_LIBS)
+        add_definitions (-DH4_BUILT_AS_STATIC_LIB)
+      endif (BUILD_SHARED_LIBS)
+    else (HDF_ALLOW_EXTERNAL_SUPPORT MATCHES "SVN" OR HDF_ALLOW_EXTERNAL_SUPPORT MATCHES "TGZ")
+      message (FATAL_ERROR " HDF4 is Required for  HDFJAVA")
+    endif (HDF_ALLOW_EXTERNAL_SUPPORT MATCHES "SVN" OR HDF_ALLOW_EXTERNAL_SUPPORT MATCHES "TGZ")
+  endif (HDF4_FOUND)
+else (NOT HJAVA_HDF4_HEADER)
+  # This project is being called from within another and HDF4 is already configured
+  set (HJAVA_HAVE_HDF_H 1)
+  set (HJAVA_HAVE_HDF4 1)
+endif (NOT HJAVA_HDF4_HEADER)
+if (NOT HDF4_LIBRARY)
+  set (HDF4_LIBRARY ${HDF4_LIBRARIES})
+endif (NOT HDF4_LIBRARY)
+set (HDF4_LINK_LIBS ${HDF4_LINK_LIBS} ${HDF4_LIBRARIES})
+INCLUDE_DIRECTORIES (${HDF4_INCLUDE_DIRS})
+set (HDF4_FOUND 1)
+set (HDF4_INCLUDE_DIR_GEN ${HDF4_INCLUDE_DIR_GEN})
+set (HDF4_VERSION_STRING ${HDF4_VERSION_STRING})
+
+#-----------------------------------------------------------------------------
+# HDF5 support
+#-----------------------------------------------------------------------------
+if (NOT BUILD_SHARED_LIBS)
+  set (HDF5_USE_STATIC_LIBRARIES 1)
+endif (NOT BUILD_SHARED_LIBS)
+
+if (NOT HJAVA_HDF5_HEADER)
+  if (NOT HDF5_USE_EXTERNAL)
+    find_package (HDF5 NAMES ${HDF5_PACKAGE_NAME}${HDF_PACKAGE_EXT})
+    if (NOT HDF5_FOUND)
+      find_package (HDF5) # Legacy find
+    endif (NOT HDF5_FOUND)
+  endif (NOT HDF5_USE_EXTERNAL)
+  if (HDF5_FOUND)
+    message (STATUS "HDF5 found: INC=${HDF5_INCLUDE_DIR} TOOLS=${HDF5_TOOLS_DIR}")
+    if ((NOT USE_SHARED_LIBS AND HDF5_BUILD_SHARED_LIBS) OR (USE_SHARED_LIBS AND NOT HDF5_BUILD_SHARED_LIBS))
+      message (STATUS "HDF5 build type does match requested type")
+    endif ((NOT USE_SHARED_LIBS AND HDF5_BUILD_SHARED_LIBS) OR (USE_SHARED_LIBS AND NOT HDF5_BUILD_SHARED_LIBS))
+    if (HDF5_BUILD_SHARED_LIBS)
+      add_definitions (-DH5_BUILT_AS_DYNAMIC_LIB)
+    else (HDF5_BUILD_SHARED_LIBS)
+      add_definitions (-DH5_BUILT_AS_STATIC_LIB)
+    endif (HDF5_BUILD_SHARED_LIBS)
+    set (HJAVA_HAVE_H5PUBCONF_H 1)
+    set (HJAVA_HAVE_HDF5 1)
+    set (HJAVA_HDF5_HEADER "h5pubconf.h")
+    set (HDF5_INCLUDE_DIR_GEN ${HDF5_INCLUDE_DIR})
+    set (HDF5_INCLUDE_DIRS ${HDF5_INCLUDE_DIR})
+  else (HDF5_FOUND)
+    if (HDF_ALLOW_EXTERNAL_SUPPORT MATCHES "SVN" OR HDF_ALLOW_EXTERNAL_SUPPORT MATCHES "TGZ")
+      EXTERNAL_HDF5_LIBRARY (${HDF_ALLOW_EXTERNAL_SUPPORT} ${LIB_TYPE})
+      set (HJAVA_HAVE_H5PUBCONF_H 1)
+      set (HJAVA_HAVE_HDF5 1)
+      set (HJAVA_HDF5_HEADER "h5pubconf.h")
+      message (STATUS "HDF5 is built")
+      if (BUILD_SHARED_LIBS)
+        add_definitions (-DH5_BUILT_AS_DYNAMIC_LIB)
+      else (BUILD_SHARED_LIBS)
+        add_definitions (-DH5_BUILT_AS_STATIC_LIB)
+      endif (BUILD_SHARED_LIBS)
+    else (HDF_ALLOW_EXTERNAL_SUPPORT MATCHES "SVN" OR HDF_ALLOW_EXTERNAL_SUPPORT MATCHES "TGZ")
+      message (FATAL_ERROR " HDF5 is Required for  HDFJAVA")
+    endif (HDF_ALLOW_EXTERNAL_SUPPORT MATCHES "SVN" OR HDF_ALLOW_EXTERNAL_SUPPORT MATCHES "TGZ")
+  endif (HDF5_FOUND)
+else (NOT HJAVA_HDF5_HEADER)
+  # This project is being called from within another and HDF5 is already configured
+  set (HJAVA_HAVE_H5PUBCONF_H 1)
+  set (HJAVA_HAVE_HDF5 1)
+endif (NOT HJAVA_HDF5_HEADER)
+if (NOT HDF5_LIBRARY)
+  set (HDF5_LIBRARY ${HDF5_LIBRARIES})
+endif (NOT HDF5_LIBRARY)
+set (HDF5_LINK_LIBS ${HDF5_LINK_LIBS} ${HDF5_LIBRARIES})
+INCLUDE_DIRECTORIES (${HDF5_INCLUDE_DIRS})
+set (HDF5_FOUND 1)
+set (HDF5_INCLUDE_DIR_GEN ${HDF5_INCLUDE_DIR_GEN})
+set (HDF5_VERSION_STRING ${HDF5_VERSION_STRING})
+
+add_subdirectory (${HDFJAVA_SOURCE_DIR}/hdflib      hdflib)
+add_subdirectory (${HDFJAVA_SOURCE_DIR}/hdf5lib     hdf5lib)
+
+if (HDF_ALLOW_EXTERNAL_SUPPORT MATCHES "SVN" OR HDF_ALLOW_EXTERNAL_SUPPORT MATCHES "TGZ")
+  if (JPEG_FOUND)
+    add_dependencies (${HDFJAVA_JNI_HDF_LIB_TARGET} JPEG)
+    if (HDF4_FOUND AND HDF4_USE_EXTERNAL)
+      add_dependencies (HDF4 JPEG)
+    endif (HDF4_FOUND AND HDF4_USE_EXTERNAL)
+  endif (JPEG_FOUND)
+  if (ZLIB_FOUND)
+    add_dependencies (${HDFJAVA_JNI_HDF_LIB_TARGET} ZLIB)
+    if (HDF4_FOUND AND HDF4_USE_EXTERNAL)
+      add_dependencies (HDF4 ZLIB)
+    endif (HDF4_FOUND AND HDF4_USE_EXTERNAL)
+    if (HDF5_FOUND AND HDF5_USE_EXTERNAL)
+      add_dependencies (HDF5 ZLIB)
+    endif (HDF5_FOUND AND HDF5_USE_EXTERNAL)
+  endif (ZLIB_FOUND)
+  if (SZIP_FOUND)
+    add_dependencies (${HDFJAVA_JNI_HDF_LIB_TARGET} SZIP)
+    if (HDF4_FOUND AND HDF4_USE_EXTERNAL)
+      add_dependencies (HDF4 SZIP)
+    endif (HDF4_FOUND AND HDF4_USE_EXTERNAL)
+    if (HDF5_FOUND AND HDF5_USE_EXTERNAL)
+      add_dependencies (HDF5 SZIP)
+    endif (HDF5_FOUND AND HDF5_USE_EXTERNAL)
+  endif (SZIP_FOUND)
+  if (HDF4_FOUND AND HDF4_USE_EXTERNAL)
+    add_dependencies (${HDFJAVA_JNI_HDF_LIB_TARGET} HDF4)
+  endif (HDF4_FOUND AND HDF4_USE_EXTERNAL)
+  if (HDF5_FOUND AND HDF5_USE_EXTERNAL)
+    add_dependencies (${HDFJAVA_JNI_HDF5_LIB_TARGET} HDF5)
+  endif (HDF5_FOUND AND HDF5_USE_EXTERNAL)
+endif (HDF_ALLOW_EXTERNAL_SUPPORT MATCHES "SVN" OR HDF_ALLOW_EXTERNAL_SUPPORT MATCHES "TGZ")
+
+#-----------------------------------------------------------------------------
+# Add the HDFJAVA Library Target to the build
+#-----------------------------------------------------------------------------
 add_subdirectory (${HDFJAVA_SOURCE_DIR}/ncsa      ncsa)
 if (BUILD_TESTING)
   if (NOT HDFJAVA_EXTERNALLY_CONFIGURED)
     add_subdirectory (${HDFJAVA_SOURCE_DIR}/test ${PROJECT_BINARY_DIR}/test)
   endif (NOT HDFJAVA_EXTERNALLY_CONFIGURED)
 endif (BUILD_TESTING)
-
-#-----------------------------------------------------------------------------
-# Option to build HDFJAVA Examples
-#-----------------------------------------------------------------------------
-if (HDF_BUILD_EXAMPLES)
-  add_subdirectory (${HDFJAVA_SOURCE_DIR}/examples    examples)
-endif (HDF_BUILD_EXAMPLES)
 
 #-----------------------------------------------------------------------------
 # Option for external libraries
@@ -321,110 +579,6 @@ if (HDF_PACKAGE_EXTLIBS)
     PACKAGE_HDF5_LIBRARY (${HDF_ALLOW_EXTERNAL_SUPPORT} ${LIB_TYPE})
   endif (HDF5_FOUND)
 endif (HDF_PACKAGE_EXTLIBS)
-
-#-----------------------------------------------------------------------------
-# Add Required Jar(s)
-#-----------------------------------------------------------------------------
-install (
-    FILES
-        ${HDFJAVA_FITS_JAR}
-        ${HDFJAVA_NETCDF_JAR}
-        ${HDFJAVA_LOGGING_JAR}
-        ${HDFJAVA_LOGGING_NOP_JAR}
-    DESTINATION ${HJAVA_INSTALL_JAR_DIR}
-    COMPONENT libraries
-)
-
-#-----------------------------------------------------------------------------
-# Configure the HDFJAVA_Examples.cmake file and the examples
-#-----------------------------------------------------------------------------
-option (HDFJAVA_PACK_EXAMPLES  "Package the HDFJAVA Library Examples Compressed File" OFF)
-if (HDFJAVA_PACK_EXAMPLES)
-  configure_file (
-      ${HDF_RESOURCES_DIR}/HDFJAVA_Examples.cmake.in 
-      ${HDFJAVA_BINARY_DIR}/HDFJAVA_Examples.cmake @ONLY
-  )
-  install (
-      FILES ${HDFJAVA_BINARY_DIR}/HDFJAVA_Examples.cmake
-      DESTINATION ${HJAVA_INSTALL_EXTRA_DIR}
-      COMPONENT docs
-  )
-  if (NOT ${HDFJAVA_EXAMPLES_COMPRESSED} STREQUAL "")
-    if (EXISTS "${HDFJAVA_EXAMPLES_COMPRESSED_DIR}/${HDFJAVA_EXAMPLES_COMPRESSED}")
-      install (
-          FILES
-              ${HDFJAVA_EXAMPLES_COMPRESSED_DIR}/${HDFJAVA_EXAMPLES_COMPRESSED}
-              ${HDF_RESOURCES_DIR}/USING_CMake_Examples.txt
-          DESTINATION ${HJAVA_INSTALL_EXTRA_DIR}
-          COMPONENT docs
-      )
-    endif (EXISTS "${HDFJAVA_EXAMPLES_COMPRESSED_DIR}/${HDFJAVA_EXAMPLES_COMPRESSED}")
-  endif (NOT ${HDFJAVA_EXAMPLES_COMPRESSED} STREQUAL "")
-endif (HDFJAVA_PACK_EXAMPLES)
-
-#set (CREATE_JAVADOCS "TRUE")
-#-----------------------------------------------------------------------------
-# Add Required JavaDocs
-#-----------------------------------------------------------------------------
-if (CREATE_JAVADOCS)
-  set (HDFVIEW_TEST_CLASSPATH "${${HDFJAVA_NCSA_VIEW_LIB_TARGET}_JAR_FILE}${CMAKE_JAVA_INCLUDE_FLAG_SEP}${HDFJAVA_LOGGING_SIMPLE_JAR}${CMAKE_JAVA_INCLUDE_FLAG_SEP}${HDFJAVA_LOGGING_JAR}${CMAKE_JAVA_INCLUDE_FLAG_SEP}${HDFJAVA_LIB_DIR}")
-  CREATE_JAVADOC (hdf_java_doc
-      PACKAGES ${HDFJAVA_SOURCE_PACKAGES}
-      SOURCEPATH "${CMAKE_CURRENT_SOURCE_DIR}"
-      CLASSPATH ${HDFVIEW_TEST_CLASSPATH}
-      INSTALLPATH ${HJAVA_INSTALL_DATA_DIR}
-      WINDOWTITLE "HDFJava 2.99"
-      DOCTITLE "<h1>HDFJava 2.99</h1>"
-      AUTHOR TRUE
-      USE TRUE
-      VERSION TRUE
-  )
-else (CREATE_JAVADOCS)
-  install (
-      DIRECTORY ${HDFJAVA_SOURCE_DIR}/docs/javadocs
-      DESTINATION ${HJAVA_INSTALL_DATA_DIR}
-      USE_SOURCE_PERMISSIONS 
-      COMPONENT docs
-      PATTERN ".svn" EXCLUDE
-  )
-endif (CREATE_JAVADOCS)
-
-#-----------------------------------------------------------------------------
-# Add Required Document(s)
-#-----------------------------------------------------------------------------
-option (HDFJAVA_PACK_SAMPLES  "Package the HDFJAVA File Samples" OFF)
-if (HDFJAVA_PACK_SAMPLES)
-  install (
-      DIRECTORY ${HDFJAVA_SOURCE_DIR}/docs/samples
-      DESTINATION ${HJAVA_INSTALL_EXTRA_DIR}
-      USE_SOURCE_PERMISSIONS 
-      COMPONENT docs
-      PATTERN ".svn" EXCLUDE
-  )
-endif (HDFJAVA_PACK_SAMPLES)
-
-if (NOT ${HDFJAVA_USERSGUIDE_COMPRESSED} STREQUAL "")
-  if (EXISTS "${HDFJAVA_USERSGUIDE_COMPRESSED_DIR}/${HDFJAVA_USERSGUIDE_COMPRESSED}")
-    install (
-        FILES
-            ${HDFJAVA_USERSGUIDE_COMPRESSED_DIR}/${HDFJAVA_USERSGUIDE_COMPRESSED}
-        DESTINATION ${HJAVA_INSTALL_DATA_DIR}
-        COMPONENT docs
-    )
-  endif (EXISTS "${HDFJAVA_USERSGUIDE_COMPRESSED_DIR}/${HDFJAVA_USERSGUIDE_COMPRESSED}")
-endif (NOT ${HDFJAVA_USERSGUIDE_COMPRESSED} STREQUAL "")
-
-#-----------------------------------------------------------------------------
-# Check for Installation Utilities
-#-----------------------------------------------------------------------------
-if (WIN32)
-  set (PF_ENV_EXT "(x86)")
-  find_program (NSIS_EXECUTABLE NSIS.exe PATHS "$ENV{ProgramFiles}\\NSIS" "$ENV{ProgramFiles${PF_ENV_EXT}}\\NSIS")
-  if(NOT CPACK_WIX_ROOT)
-    file(TO_CMAKE_PATH "$ENV{WIX}" CPACK_WIX_ROOT)
-  endif()
-  find_program (WIX_EXECUTABLE candle  PATHS "${CPACK_WIX_ROOT}/bin")
-endif (WIN32)
 
 #-----------------------------------------------------------------------------
 # Add Target(s) to CMake Install for import into other projects
@@ -451,8 +605,6 @@ endif (NOT HDFJAVA_EXTERNALLY_CONFIGURED)
 # Configure the HDFJAVA-config.cmake file for the build directory
 #-----------------------------------------------------------------------------
 set (HDFJAVA_INCLUDES_BUILD_TIME
-    ${HDFJAVA_JNI_SRC_DIR}
-    ${HDFJAVA_JAVA_SRC_DIR}
     ${HDFJAVA_BINARY_DIR}
 )
 
@@ -504,26 +656,6 @@ if (NOT HDFJAVA_EXTERNALLY_CONFIGURED)
 endif (NOT HDFJAVA_EXTERNALLY_CONFIGURED)
 
 #-----------------------------------------------------------------------------
-# Option to include jre
-#-----------------------------------------------------------------------------
-option (HDFJAVA_PACK_JRE  "Package a JRE installer file" OFF)
-if (HDFJAVA_PACK_JRE)
-  if (WIN32)
-    install (
-        DIRECTORY "C:/Program Files/Java/jre7"
-        DESTINATION ${HJAVA_INSTALL_BIN_DIR}
-        USE_SOURCE_PERMISSIONS
-    )
-  else (WIN32)
-    install (
-        DIRECTORY "/usr/lib/jvm/jre"
-        DESTINATION ${HJAVA_INSTALL_BIN_DIR}
-        USE_SOURCE_PERMISSIONS
-    )
-  endif (WIN32)
-endif (HDFJAVA_PACK_JRE)
-
-#-----------------------------------------------------------------------------
 # Configure the README.txt file for the binary package
 #-----------------------------------------------------------------------------
 set (BINARY_SYSTEM_NAME ${CMAKE_SYSTEM_NAME})
@@ -550,8 +682,6 @@ if (WIN32)
     set (BINARY_PLATFORM "${BINARY_PLATFORM}, using VISUAL STUDIO 2012")
   elseif (${CMAKE_C_COMPILER_VERSION} MATCHES "18.*")
     set (BINARY_PLATFORM "${BINARY_PLATFORM}, using VISUAL STUDIO 2013")
-  elseif (${CMAKE_C_COMPILER_VERSION} MATCHES "19.*")
-    set (BINARY_PLATFORM "${BINARY_PLATFORM}, using VISUAL STUDIO 2014")
   else (${CMAKE_C_COMPILER_VERSION} MATCHES "16.*")
     set (BINARY_PLATFORM "${BINARY_PLATFORM}, using VISUAL STUDIO ${CMAKE_C_COMPILER_VERSION}")
   endif (${CMAKE_C_COMPILER_VERSION} MATCHES "16.*")
@@ -577,13 +707,6 @@ configure_file (
 )
 
 #-----------------------------------------------------------------------------
-# Configure the COPYING.txt file for the windows binary package
-#-----------------------------------------------------------------------------
-if (WIN32)
-  configure_file (${HDFJAVA_SOURCE_DIR}/COPYING ${HDFJAVA_BINARY_DIR}/COPYING.txt @ONLY)
-endif (WIN32)
-
-#-----------------------------------------------------------------------------
 # Set the cpack variables
 #-----------------------------------------------------------------------------
 set (CPACK_PACKAGE_VENDOR "HDF_Group")
@@ -606,11 +729,7 @@ set (CPACK_PACKAGE_ICON "${HDF_RESOURCES_EXT_DIR}/hdf.bmp")
 
 set (CPACK_GENERATOR "TGZ") 
 if (WIN32)
-    set (CPACK_GENERATOR "ZIP") 
-
-    if (NSIS_EXECUTABLE)    
-      list (APPEND CPACK_GENERATOR "NSIS") 
-    endif (NSIS_EXECUTABLE)    
+  list (APPEND CPACK_GENERATOR "NSIS") 
   # Installers for 32- vs. 64-bit CMake:
   #  - Root install directory (displayed to end user at installer-run time)
   #  - "NSIS package/display name" (text used in the installer GUI)
@@ -634,85 +753,11 @@ if (WIN32)
   set (CPACK_MONOLITHIC_INSTALL ON)
   set (CPACK_NSIS_CONTACT "${HDFJAVA_PACKAGE_BUGREPORT}")
   set (CPACK_NSIS_MODIFY_PATH ON)
-    if (WIX_EXECUTABLE)    
-      list (APPEND CPACK_GENERATOR "WIX") 
-    endif (WIX_EXECUTABLE)    
-#WiX variables
-    set (CPACK_WIX_UNINSTALL "1")
-# .. variable:: CPACK_WIX_LICENSE_RTF
-#  RTF License File
-#
-#  If CPACK_RESOURCE_FILE_LICENSE has an .rtf extension it is used as-is.
-#
-#  If CPACK_RESOURCE_FILE_LICENSE has an .txt extension it is implicitly
-#  converted to RTF by the WiX Generator.
-#  The expected encoding of the .txt file is UTF-8.
-#
-#  With CPACK_WIX_LICENSE_RTF you can override the license file used by the
-#  WiX Generator in case CPACK_RESOURCE_FILE_LICENSE is in an unsupported
-#  format or the .txt -> .rtf conversion does not work as expected.
-    set (CPACK_RESOURCE_FILE_LICENSE "${HDFJAVA_BINARY_DIR}/COPYING.txt")
-# .. variable:: CPACK_WIX_PRODUCT_ICON
-#  The Icon shown next to the program name in Add/Remove programs.
-    set(CPACK_WIX_PRODUCT_ICON "${HDF_RESOURCES_EXT_DIR}\\\\hdf.ico")
-#
-# .. variable:: CPACK_WIX_UI_BANNER
-#
-#  The bitmap will appear at the top of all installer pages other than the
-#  welcome and completion dialogs.
-#
-#  If set, this image will replace the default banner image.
-#
-#  This image must be 493 by 58 pixels.
-#
-# .. variable:: CPACK_WIX_UI_DIALOG
-#
-#  Background bitmap used on the welcome and completion dialogs.
-#
-#  If this variable is set, the installer will replace the default dialog
-#  image.
-#
-#  This image must be 493 by 312 pixels.
-#
 elseif (APPLE)
 #  list (APPEND CPACK_GENERATOR "DragNDrop") 
   set (CPACK_COMPONENTS_ALL_IN_ONE_PACKAGE ON)
   set (CPACK_PACKAGING_INSTALL_PREFIX "/${CPACK_PACKAGE_INSTALL_DIRECTORY}")
   set (CPACK_PACKAGE_ICON "${HDF_RESOURCES_EXT_DIR}/hdf.icns")
-    
-  if (HDFJAVA_PACK_MACOSX_BUNDLE)
-    list (APPEND CPACK_GENERATOR "Bundle")
-    set (CPACK_BUNDLE_NAME "${HDFJAVA_PACKAGE_STRING}")
-    set (CPACK_BUNDLE_LOCATION "/")    # make sure CMAKE_INSTALL_PREFIX ends in "/"
-#    set (CMAKE_INSTALL_PREFIX "/${CPACK_BUNDLE_NAME}.app/Contents/Resources")
-    set (CPACK_BUNDLE_ICON "${HDF_RESOURCES_EXT_DIR}/hdf.icns")
-    set (CPACK_BUNDLE_PLIST "${HDFJAVA_BINARY_DIR}/CMakeFiles/Info.plist")
-    set (CPACK_BUNDLE_STARTUP_COMMAND "${HDF_RESOURCES_DIR}/JavaAppLauncher")
-    set (CPACK_APPLE_GUI_BUNDLE_NAME "HDFView")
-    set (CPACK_APPLE_GUI_COPYRIGHT "Copyright © 2006-2014 by The HDF Group. All rights reserved.")
-    set (CPACK_APPLE_GUI_VERSION_STRING "${CPACK_PACKAGE_VERSION}")
-    set (CPACK_APPLE_GUI_SHORT_VERSION_STRING "${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}")
-    #-----------------------------------------------------------------------------
-    # Configure the Info.plist file for the install bundle
-    #-----------------------------------------------------------------------------
-    configure_file (
-        ${HDF_RESOURCES_DIR}/CPack.Info.plist.in
-        ${HDFJAVA_BINARY_DIR}/CMakeFiles/Info.plist @ONLY
-    )
-    configure_file (
-        ${HDF_RESOURCES_DIR}/PkgInfo.in
-        ${HDFJAVA_BINARY_DIR}/CMakeFiles/PkgInfo @ONLY
-    )
-    configure_file (
-        ${HDF_RESOURCES_EXT_DIR}/version.plist.in
-        ${HDFJAVA_BINARY_DIR}/CMakeFiles/version.plist @ONLY
-    )
-    install (
-        FILES ${HDFJAVA_BINARY_DIR}/CMakeFiles/PkgInfo
-              ${HDFJAVA_BINARY_DIR}/CMakeFiles/version.plist
-        DESTINATION ..
-    )
-  endif (HDFJAVA_PACK_MACOSX_BUNDLE)
 else (WIN32)
   list (APPEND CPACK_GENERATOR "STGZ") 
   set (CPACK_PACKAGING_INSTALL_PREFIX "/${CPACK_PACKAGE_VENDOR}/${CPACK_PACKAGE_NAME}/${CPACK_PACKAGE_VERSION}")
@@ -727,7 +772,7 @@ else (WIN32)
   set (CPACK_RPM_PACKAGE_LICENSE "BSD-style")
   set (CPACK_RPM_PACKAGE_URL "${HDFJAVA_PACKAGE_URL}")
   
-  set (CPACK_STRIP_FILES "${HDFJAVA_LIBRARIES_TO_EXPORT};${HDFJAVA_JARS_TO_EXPORT};${HDFJAVA_HDFVIEWJAR_TO_EXPORT};${HDFJAVA_LOGGING_NOP_JAR};${EXTERNAL_LIBRARY_LIST}")
+  set (CPACK_STRIP_FILES "${HDFJAVA_LIBRARIES_TO_EXPORT};${EXTERNAL_LIBRARY_LIST}")
 endif (WIN32)
 
 set (CPACK_NSIS_MUI_FINISHPAGE_RUN ${HDFVIEW_SCRIPT})
@@ -764,11 +809,6 @@ include (CPack)
 #-----------------------------------------------------------------------------
 # Now list the cpack commands
 #-----------------------------------------------------------------------------
-cpack_add_component (apps 
-    DISPLAY_NAME "HDFJAVA Applications" 
-    DEPENDS libraries
-    GROUP Applications
-)
 cpack_add_component (libraries 
     DISPLAY_NAME "HDFJAVA Libraries"
     GROUP Runtime

@@ -34,5 +34,5 @@
 #xxx    $(MAKE) all
 #xxx
 
-SUBDIRS = native ncsa test examples
-DIST_SUBDIRS = native ncsa test examples
+SUBDIRS = hdflib hdf5lib ncsa test
+DIST_SUBDIRS = hdflib hdf5lib ncsa test

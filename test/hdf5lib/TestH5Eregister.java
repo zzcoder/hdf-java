@@ -4,23 +4,14 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import ncsa.hdf.hdf5lib.H5;
 
-import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestName;
 
 public class TestH5Eregister {
-    @Rule public TestName testname = new TestName();
 
     @Before
     public void checkOpenIDs() {
         assertTrue("H5 open ids is 0",H5.getOpenIDCount()==0);
-        System.out.print(testname.getMethodName());
-    }
-    @After
-    public void nextTestName() {
-        System.out.println();
     }
 
     @Test(expected = NullPointerException.class)
@@ -45,7 +36,7 @@ public class TestH5Eregister {
 
     @Test
     public void testH5Eregister_class() {
-        long hdf_java_classid = -1;
+        int hdf_java_classid = -1;
         try {
             hdf_java_classid = H5.H5Eregister_class("HDF-Java-Error",
                     "hdf-java", "2.5");

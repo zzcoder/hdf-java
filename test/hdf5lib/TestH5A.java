@@ -16,23 +16,19 @@ import ncsa.hdf.hdf5lib.structs.H5A_info_t;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestName;
 
 public class TestH5A {
-    @Rule public TestName testname = new TestName();
     private static final String H5_FILE = "test.h5";
     private static final int DIM_X = 4;
     private static final int DIM_Y = 6;
-    long H5fid = -1;
-    long H5dsid = -1;
-    long H5did = -1;
+    int H5fid = -1;
+    int H5dsid = -1;
+    int H5did = -1;
     long[] H5dims = { DIM_X, DIM_Y };
-    long type_id = -1;
-    long space_id = -1;
-    long lapl_id = -1;
+    int type_id = -1;
+    int space_id = -1;
+    int lapl_id = -1;
 
     private final void _deleteFile(String filename) {
         File file = new File(filename);
@@ -42,8 +38,8 @@ public class TestH5A {
         }
     }
 
-    private final long _createDataset(long fid, long dsid, String name, long dapl) {
-        long did = -1;
+    private final int _createDataset(int fid, int dsid, String name, int dapl) {
+        int did = -1;
         try {
             did = H5.H5Dcreate(fid, name, HDF5Constants.H5T_STD_I32BE, dsid,
                     HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, dapl);
@@ -60,7 +56,6 @@ public class TestH5A {
     @Before
     public void createH5file() throws NullPointerException, HDF5Exception {
         assertTrue("H5 open ids is 0", H5.getOpenIDCount() == 0);
-        System.out.print(testname.getMethodName());
             
         try {
             H5fid = H5.H5Fcreate(H5_FILE, HDF5Constants.H5F_ACC_TRUNC,
@@ -105,13 +100,11 @@ public class TestH5A {
             try {H5.H5Sclose(space_id);} catch (Exception ex) {}
         if (lapl_id > 0)
             try {H5.H5Pclose(lapl_id);} catch (Exception ex) {}
-        System.out.println();
     }
-    
     
     @Test
     public void testH5Acreate2() {
-        long attr_id = -1;
+        int attr_id = -1;
         try {
             attr_id = H5.H5Acreate(H5did, "dset", type_id, space_id, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
             assertTrue("testH5Acreate2", attr_id >= 0);
@@ -126,24 +119,21 @@ public class TestH5A {
         }
     }
     
-    
     @Test(expected = HDF5LibraryException.class)
     public void testH5Acreate2_invalidobject() throws Throwable {
         H5.H5Acreate(H5dsid, "dset", type_id, space_id, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
     }
-    
     
     @Test(expected = NullPointerException.class)
     public void testH5Acreate2_nullname() throws Throwable {
         H5.H5Acreate(H5did, null, type_id, space_id, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
     }
 
-    
     @Test
     public void testH5Aopen() {
         String attr_name = "dset";
-        long attribute_id = -1;
-        long attr_id = -1;
+        int attribute_id = -1;
+        int attr_id = -1;
 
         try {
             attr_id = H5.H5Acreate(H5did, attr_name, type_id, space_id,
@@ -167,23 +157,21 @@ public class TestH5A {
         }
     }
     
-    
     @Test(expected = HDF5LibraryException.class)
     public void testH5Aopen_invalidname() throws Throwable {
         H5.H5Aopen(H5did, "attr_name", HDF5Constants.H5P_DEFAULT);
     }
 
-    
     @Test
     public void testH5Aopen_by_idx() {
-        long loc_id = H5did;
+        int loc_id = H5did;
         String obj_name = ".";
         int idx_type = HDF5Constants.H5_INDEX_CRT_ORDER;
         int order = HDF5Constants.H5_ITER_INC;
         long n = 0;
-        long attr_id = -1;
-        long attribute_id = -1;
-        long aapl_id = HDF5Constants.H5P_DEFAULT;
+        int attr_id = -1;
+        int attribute_id = -1;
+        int aapl_id = HDF5Constants.H5P_DEFAULT;
 
         try {
             attr_id = H5.H5Acreate(H5did, "file", type_id, space_id,
@@ -237,12 +225,11 @@ public class TestH5A {
         }
     }
     
-    
     @Test
     public void testH5Acreate_by_name() {
         String obj_name = ".";
         String attr_name = "DATASET";
-        long attribute_id = -1;
+        int attribute_id = -1;
         boolean bool_val = false;
 
         try {
@@ -269,13 +256,12 @@ public class TestH5A {
         }
     }
     
-    
     @Test
     public void testH5Arename() throws Throwable, HDF5LibraryException, NullPointerException {
-        long loc_id = H5fid;
+        int loc_id = H5fid;
         String old_attr_name = "old";
         String new_attr_name = "new";
-        long attr_id = -1;
+        int attr_id = -1;
         int ret_val = -1;
         boolean bool_val = false;
 
@@ -307,14 +293,13 @@ public class TestH5A {
         }
     }
     
-    
     @Test
     public void testH5Arename_by_name() {
-        long loc_id = H5fid;
+        int loc_id = H5fid;
         String obj_name = ".";
         String old_attr_name = "old";
         String new_attr_name = "new";
-        long attr_id = -1;
+        int attr_id = -1;
         int ret_val = -1;
         boolean bool_val = false;
 
@@ -352,42 +337,16 @@ public class TestH5A {
     }
     
     @Test
-    public void testH5Aget_name() {
-        String obj_name = ".";
-        String attr_name = "DATASET1";
-        String[] ret_name = new String[1];
-        long attribute_id = -1;
-
-        try {
-            attribute_id = H5.H5Acreate_by_name(H5fid, obj_name, attr_name,
-                    type_id, space_id, HDF5Constants.H5P_DEFAULT,
-                    HDF5Constants.H5P_DEFAULT, lapl_id);
-            assertTrue("testH5Aget_name: H5Acreate_by_name ", attribute_id > 0);
-            long attr_name_size = H5.H5Aget_name(attribute_id, ret_name);
-            assertTrue("testH5Aget_name: testH5Aget_name", attr_name_size >= 0);
-        } 
-        catch (Throwable err) {
-            err.printStackTrace();
-            fail("testH5Aget_name " + err);
-        } 
-        finally {
-            if (attribute_id > 0)
-                try {H5.H5Aclose(attribute_id);} catch (Exception ex) {}
-        }
-    }
-    
-    
-    @Test
     public void testH5Aget_name_by_idx() {
-        long loc_id = H5fid;
+        int loc_id = H5fid;
         String obj_name = ".";
         String attr_name = "DATASET1", attr2_name = "DATASET2";
         String ret_name = null;
         int idx_type = HDF5Constants.H5_INDEX_NAME;
         int order = HDF5Constants.H5_ITER_INC;
         int n = 0;
-        long attr1_id = -1;
-        long attr2_id = -1;
+        int attr1_id = -1;
+        int attr2_id = -1;
 
         try {
             attr1_id = H5.H5Acreate_by_name(loc_id, obj_name, attr_name,
@@ -422,10 +381,9 @@ public class TestH5A {
         }
     }
 
-    
     @Test
     public void testH5Aget_storage_size() {
-        long attr_id = -1;
+        int attr_id = -1;
         long attr_size = -1;
 
         try {
@@ -445,12 +403,11 @@ public class TestH5A {
         }
     }
     
-    
     @Test
     public void testH5Aget_info() {
         H5A_info_t attr_info = null;
-        long attribute_id = -1;
-        long attr_id = -1;
+        int attribute_id = -1;
+        int attr_id = -1;
 
         try {
             attr_id = H5.H5Acreate(H5did, "dset", type_id, space_id,
@@ -478,12 +435,11 @@ public class TestH5A {
         }
     }
     
-    
     @Test
     public void testH5Aget_info1() {
         H5A_info_t attr_info = null;
-        long attribute_id = -1;
-        long attr_id = -1;
+        int attribute_id = -1;
+        int attr_id = -1;
         int order = HDF5Constants.H5_ITER_INC;
 
         try {
@@ -516,11 +472,10 @@ public class TestH5A {
         }
     }
     
-    
     @Test
     public void testH5Aget_info_by_idx() {
-        long attr_id = -1;
-        long attr2_id = -1;;
+        int attr_id = -1;
+        int attr2_id = -1;;
         H5A_info_t attr_info = null;
 
         try {
@@ -573,10 +528,9 @@ public class TestH5A {
         }
     }
 
-    
     @Test
     public void testH5Aget_info_by_name() {
-        long attr_id = -1;
+        int attr_id = -1;
         H5A_info_t attr_info = null;
         String obj_name = ".";
         String attr_name = "DATASET";
@@ -599,10 +553,9 @@ public class TestH5A {
         }
     }
     
-    
     @Test
     public void testH5Adelete_by_name() {
-        long attr_id = -1;
+        int attr_id = -1;
         int ret_val = -1;
         boolean bool_val = false;
         boolean exists = false;
@@ -642,12 +595,11 @@ public class TestH5A {
         }
     }
     
-    
     @Test
     public void testH5Aexists() {
         boolean exists = false;
-        long attr_id = -1;
-        long attribute_id = -1;
+        int attr_id = -1;
+        int attribute_id = -1;
 
         try {
             exists = H5.H5Aexists(H5fid, "None");
@@ -682,14 +634,13 @@ public class TestH5A {
         }
     }
     
-    
     @Test
     public void testH5Adelete_by_idx_order() {
         boolean exists = false;
-        long attr1_id = -1;
-        long attr2_id = -1;
-        long attr3_id = -1;
-        long attr4_id = -1;
+        int attr1_id = -1;
+        int attr2_id = -1;
+        int attr3_id = -1;
+        int attr4_id = -1;
         
         try {
             attr1_id = H5.H5Acreate_by_name(H5fid, ".", "attribute1",
@@ -725,13 +676,12 @@ public class TestH5A {
         }
     }
     
-    
     @Test
     public void testH5Adelete_by_idx_name1() {
         boolean exists = false;
-        long attr1_id = -1;
-        long attr2_id = -1;
-        long attr3_id = -1;
+        int attr1_id = -1;
+        int attr2_id = -1;
+        int attr3_id = -1;
         
         try {
             attr1_id = H5.H5Acreate_by_name(H5fid, ".", "attribute1",
@@ -761,14 +711,13 @@ public class TestH5A {
         }
     }
     
-    
     @Test
     public void testH5Adelete_by_idx_name2() {
         boolean exists = false;
-        long attr1_id = -1;
-        long attr2_id = -1;
-        long attr3_id = -1;
-        long attr4_id = -1;
+        int attr1_id = -1;
+        int attr2_id = -1;
+        int attr3_id = -1;
+        int attr4_id = -1;
         
         try {
             attr1_id = H5.H5Acreate_by_name(H5fid, ".", "attribute1",
@@ -804,27 +753,24 @@ public class TestH5A {
         }
     }
     
-    
     @Test(expected = NullPointerException.class)
     public void testH5Adelete_by_idx_null() throws Throwable {
         H5.H5Adelete_by_idx(H5fid, null, HDF5Constants.H5_INDEX_CRT_ORDER,
                 HDF5Constants.H5_ITER_INC, 0, lapl_id);
     }
 
-    
     @Test(expected = HDF5LibraryException.class)
     public void testH5Adelete_by_idx_invalidobject() throws Throwable {
         H5.H5Adelete_by_idx(H5fid, "invalid", HDF5Constants.H5_INDEX_CRT_ORDER,
                 HDF5Constants.H5_ITER_INC, 0, lapl_id);
     }
     
-    
     @Test
     public void testH5Aopen_by_name() {
         String obj_name = ".";
         String attr_name = "DATASET";
-        long attribute_id = -1;
-        long aid = -1;
+        int attribute_id = -1;
+        int aid = -1;
 
         try {
             attribute_id = H5.H5Acreate_by_name(H5fid, obj_name, attr_name,
@@ -855,30 +801,26 @@ public class TestH5A {
         }
     }
 
-    
     @Test
     public void testH5Awrite_readVL() {
         String attr_name = "VLdata";
-        long attr_id = -1;
-        long atype_id = -1;
-        long aspace_id = -1;
+        int attr_id = -1;
+        int atype_id = -1;
+        int aspace_id = -1;
         String[] str_data = { "Parting", "is such", "sweet", "sorrow." };
         long[] dims = { str_data.length };
         long lsize = 1;
 
         try {
             atype_id = H5.H5Tcopy(HDF5Constants.H5T_C_S1);
-            assertTrue("testH5Awrite_readVL.H5Tcopy: ", atype_id >= 0);
+            assertTrue("testH5Awrite_readVL: ", atype_id >= 0);
             H5.H5Tset_size(atype_id, HDF5Constants.H5T_VARIABLE);
-            assertTrue("testH5Awrite_readVL.H5Tis_variable_str", H5.H5Tis_variable_str(atype_id));
         }
         catch (Exception err) {
-            if (atype_id > 0)
-                try {H5.H5Tclose(atype_id);} catch (Exception ex) {}
             err.printStackTrace();
             fail("H5.testH5Awrite_readVL: " + err);
         }
- 
+
         try {
             aspace_id = H5.H5Screate_simple(1, dims, null);
             assertTrue(aspace_id > 0);

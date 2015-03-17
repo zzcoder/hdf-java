@@ -13,15 +13,12 @@ import ncsa.hdf.hdf5lib.exceptions.HDF5LibraryException;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestName;
 
 public class TestH5Fbasic {
-    @Rule public TestName testname = new TestName();
     private static final String H5_FILE = "test.h5";
     private static final String TXT_FILE = "test.txt";
-    long H5fid = -1;
+    int H5fid = -1;
 
     private final void _deleteFile(String filename) {
         File file = new File(filename);
@@ -34,7 +31,6 @@ public class TestH5Fbasic {
     @Before
     public void createH5file() throws HDF5LibraryException, NullPointerException {
         assertTrue("H5 open ids is 0",H5.getOpenIDCount()==0);
-        System.out.print(testname.getMethodName());
 
         H5fid = H5.H5Fcreate(H5_FILE, HDF5Constants.H5F_ACC_TRUNC,
                 HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
@@ -47,7 +43,6 @@ public class TestH5Fbasic {
             try {H5.H5Fclose(H5fid);} catch (Exception ex) {}
         }
         _deleteFile(H5_FILE);
-        System.out.println();
     }
 
     @Test
@@ -76,7 +71,7 @@ public class TestH5Fbasic {
 
     @Test(expected = HDF5LibraryException.class)
     public void testH5Fopen_read_only() throws Throwable {
-        long fid = -1;
+        int fid = -1;
 
         try {
             fid = H5.H5Fopen(H5_FILE, HDF5Constants.H5F_ACC_RDWR,
@@ -111,8 +106,8 @@ public class TestH5Fbasic {
 
     @Test(expected = HDF5LibraryException.class)
     public void testH5Freopen_closed() throws Throwable {
-        long fid = -1;
-        long fid2 = -1;
+        int fid = -1;
+        int fid2 = -1;
 
         try {
             fid = H5.H5Fopen(H5_FILE, HDF5Constants.H5F_ACC_RDWR,
@@ -134,8 +129,8 @@ public class TestH5Fbasic {
 
     @Test
     public void testH5Freopen() {
-        long fid = -1;
-        long fid2 = -1;
+        int fid = -1;
+        int fid2 = -1;
 
         try {
             fid = H5.H5Fopen(H5_FILE, HDF5Constants.H5F_ACC_RDWR,
@@ -168,7 +163,7 @@ public class TestH5Fbasic {
 
     @Test
     public void testH5Fclose() {
-        long fid = -1;
+        int fid = -1;
 
         try {
             fid = H5.H5Fopen(H5_FILE, HDF5Constants.H5F_ACC_RDWR,
@@ -188,7 +183,7 @@ public class TestH5Fbasic {
 
     @Test(expected = HDF5LibraryException.class)
     public void testH5Fclose_twice() throws Throwable {
-        long fid = -1;
+        int fid = -1;
 
         try {
             fid = H5.H5Fopen(H5_FILE, HDF5Constants.H5F_ACC_RDWR,

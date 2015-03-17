@@ -16,22 +16,19 @@ import ncsa.hdf.hdf5lib.exceptions.HDF5LibraryException;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestName;
 
 public class TestH5D {
-    @Rule public TestName testname = new TestName();
     private static final String H5_FILE = "test.h5";
     private static final int DIM_X = 4;
     private static final int DIM_Y = 6;
     private static final int RANK = 2;
-    long H5fid = -1;
-    long H5dsid = -1;
-    long H5dtid = -1;
-    long H5did = -1;
-    long H5did0 = -1;
-    long H5dcpl_id = -1;
+    int H5fid = -1;
+    int H5dsid = -1;
+    int H5dtid = -1;
+    int H5did = -1;
+    int H5did0 = -1;
+    int H5dcpl_id = -1;
     long[] H5dims = { DIM_X, DIM_Y };
 
     // Values for the status of space allocation
@@ -59,7 +56,7 @@ public class TestH5D {
         }
     }
 
-    private final void _createPDataset(long fid, long dsid, String name, long dcpl_val) {
+    private final void _createPDataset(int fid, int dsid, String name, int dcpl_val) {
         
         try {
             H5dcpl_id = H5.H5Pcreate(dcpl_val);
@@ -68,7 +65,7 @@ public class TestH5D {
             err.printStackTrace();
             fail("H5.H5Pcreate: " + err);
         }
-        assertTrue("testH5D._createPDataset: H5.H5Pcreate: ", H5dcpl_id >= 0);
+        assertTrue("testH5D._createPDataset: H5.H5Pcreate: ", H5dcpl_id > 0);
 
         // Set the allocation time to "early". This way we can be sure
         // that reading from the dataset immediately after creation will
@@ -89,10 +86,10 @@ public class TestH5D {
             err.printStackTrace();
             fail("H5.H5Dcreate: " + err);
         }
-        assertTrue("TestH5D._createPDataset.H5Dcreate: ", H5did0 >= 0);
+        assertTrue("TestH5D._createPDataset: ", H5did0 > 0);
     }
 
-    private final void _createDataset(long fid, long dsid, String name, long dapl) {
+    private final void _createDataset(int fid, int dsid, String name, int dapl) {
         try {
             H5did = H5.H5Dcreate(fid, name,
                         HDF5Constants.H5T_STD_I32BE, dsid,
@@ -102,26 +99,19 @@ public class TestH5D {
             err.printStackTrace();
             fail("H5.H5Dcreate: " + err);
         }
-        assertTrue("TestH5D._createDataset.H5Dcreate: ", H5did >= 0);
+        assertTrue("TestH5D._createDataset: ", H5did > 0);
     }
 
-    private final void _createVLDataset(long fid, long dsid, String name, long dapl) {
+    private final void _createVLDataset(int fid, int dsid, String name, int dapl) {
         try {
             H5dtid = H5.H5Tcopy(HDF5Constants.H5T_C_S1);
+            H5.H5Tset_size(H5dtid, HDF5Constants.H5T_VARIABLE);
         }
         catch (Throwable err) {
             err.printStackTrace();
             fail("H5.H5Tcopy: " + err);
         }
-        assertTrue("TestH5D._createVLDataset.H5Tcopy: ", H5dtid >= 0);
-        try {
-            H5.H5Tset_size(H5dtid, HDF5Constants.H5T_VARIABLE);
-            assertTrue("TestH5D._createVLDataset.H5Tis_variable_str", H5.H5Tis_variable_str(H5dtid));
-        }
-        catch (Throwable err) {
-            err.printStackTrace();
-            fail("H5.H5Tset_size: " + err);
-        }
+        assertTrue("TestH5D._createVLDataset: ", H5dtid > 0);
         try {
             H5did = H5.H5Dcreate(fid, name, H5dtid, dsid,
                         HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, dapl);
@@ -130,7 +120,7 @@ public class TestH5D {
             err.printStackTrace();
             fail("H5.H5Dcreate: " + err);
         }
-        assertTrue("TestH5D._createVLDataset.H5Dcreate: ", H5did >= 0);
+        assertTrue("TestH5D._createVLDataset: ", H5did > 0);
     }
     
     private final void _closeH5file() throws HDF5LibraryException {
@@ -148,31 +138,18 @@ public class TestH5D {
             try {H5.H5Fclose(H5fid);} catch (Exception ex) {}
     }
 
-    private final void _openH5file(String name, long dapl) {
+    private final void _openH5file(String name, int dapl) {
        try {
            H5fid = H5.H5Fopen(H5_FILE,
-                   HDF5Constants.H5F_ACC_RDWR, HDF5Constants.H5P_DEFAULT);
-       }
-       catch (Throwable err) {
-           err.printStackTrace();
-           fail("TestH5D._openH5file: " + err);
-       }
-       assertTrue("TestH5D._openH5file: H5.H5Fopen: ",H5fid >= 0);
-       try {
+                   HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
            H5did = H5.H5Dopen(H5fid, name, dapl);
-       }
-       catch (Throwable err) {
-           err.printStackTrace();
-           fail("TestH5D._openH5file: " + err);
-       }
-       assertTrue("TestH5D._openH5file: H5.H5Dopen: ",H5did >= 0);
-       try {
            H5dsid = H5.H5Dget_space(H5did);
        }
        catch (Throwable err) {
            err.printStackTrace();
            fail("TestH5D._openH5file: " + err);
        }
+       assertTrue("TestH5D._openH5file: H5.H5Fopen: ",H5fid > 0);
        assertTrue("TestH5D._openH5file: H5.H5Screate_simple: ",H5dsid > 0);
     }
 
@@ -180,7 +157,6 @@ public class TestH5D {
     public void createH5file()
             throws NullPointerException, HDF5Exception {
        assertTrue("H5 open ids is 0",H5.getOpenIDCount()==0);
-       System.out.print(testname.getMethodName());
 
         try {
             H5fid = H5.H5Fcreate(H5_FILE, HDF5Constants.H5F_ACC_TRUNC,
@@ -191,8 +167,8 @@ public class TestH5D {
             err.printStackTrace();
             fail("TestH5D.createH5file: " + err);
         }
-        assertTrue("TestH5D.createH5file: H5.H5Fcreate: ",H5fid >= 0);
-        assertTrue("TestH5D.createH5file: H5.H5Screate_simple: ",H5dsid >= 0);
+        assertTrue("TestH5D.createH5file: H5.H5Fcreate: ",H5fid > 0);
+        assertTrue("TestH5D.createH5file: H5.H5Screate_simple: ",H5dsid > 0);
 
         H5.H5Fflush(H5fid, HDF5Constants.H5F_SCOPE_LOCAL);
     }
@@ -213,12 +189,11 @@ public class TestH5D {
             try {H5.H5Fclose(H5fid);} catch (Exception ex) {}
 
         _deleteFile(H5_FILE);
-        System.out.println();
     }
 
     @Test
     public void testH5Dcreate() {
-        long dataset_id = -1;
+        int dataset_id = -1;
         try {
             dataset_id = H5.H5Dcreate(H5fid, "dset",
                 HDF5Constants.H5T_STD_I32BE, H5dsid,
@@ -228,7 +203,7 @@ public class TestH5D {
             err.printStackTrace();
             fail("testH5Dcreate: " + err);
         }
-        assertTrue(dataset_id >= 0);
+        assertTrue(dataset_id > 0);
 
         // End access to the dataset and release resources used by it.
         try {
@@ -242,7 +217,7 @@ public class TestH5D {
 
     @Test
     public void testH5Dcreate_anon() {
-        long dataset_id = -1;
+        int dataset_id = -1;
         try {
             dataset_id = H5.H5Dcreate_anon(H5fid, HDF5Constants.H5T_STD_I32BE, 
                     H5dsid, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
@@ -251,7 +226,7 @@ public class TestH5D {
             err.printStackTrace();
             fail("testH5Dcreate_anon: " + err);
         }
-        assertTrue(dataset_id >= 0);
+        assertTrue(dataset_id > 0);
 
         // End access to the dataset and release resources used by it.
         try {
@@ -265,7 +240,7 @@ public class TestH5D {
 
     @Test
     public void testH5Dopen() {
-        long dataset_id = -1;
+        int dataset_id = -1;
         _createDataset(H5fid, H5dsid, "dset", HDF5Constants.H5P_DEFAULT);
         
         try {
@@ -277,7 +252,7 @@ public class TestH5D {
             err.printStackTrace();
             fail("testH5Dopen: " + err);
         }
-        assertTrue("testH5Dopen: ", dataset_id >= 0);
+        assertTrue("testH5Dopen: ", dataset_id > 0);
 
         // End access to the dataset and release resources used by it.
         try {
@@ -338,9 +313,9 @@ public class TestH5D {
 
     @Test
     public void testH5Dget_access_plist() {
-        long dapl_id = -1;
+        int dapl_id = -1;
         int pequal = -1;
-        long test_dapl_id = -1;
+        int test_dapl_id = -1;
         
         try {
             test_dapl_id = H5.H5Pcreate(HDF5Constants.H5P_DATASET_ACCESS);
@@ -349,13 +324,13 @@ public class TestH5D {
             err.printStackTrace();
             fail("testH5Dget_access_plist: H5.H5Pcreate: " + err);
         }
-        assertTrue("testH5Dget_access_plist: test_dapl_id: ", test_dapl_id >= 0);
+        assertTrue("testH5Dget_access_plist: test_dapl_id: ", test_dapl_id > 0);
        
         _createDataset(H5fid, H5dsid, "dset", test_dapl_id);
         
         try {
             dapl_id = H5.H5Dget_access_plist(H5did);
-            assertTrue("testH5Dget_access_plist: dapl_id: ", dapl_id >= 0);
+            assertTrue("testH5Dget_access_plist: dapl_id: ", dapl_id > 0);
             pequal = H5.H5Pequal(dapl_id, test_dapl_id);
         }
         catch (Exception err) {
@@ -435,7 +410,7 @@ public class TestH5D {
 
     @Test(expected = HDF5LibraryException.class)
     public void testH5Dget_space_closed() throws Throwable {
-        long dataset_id = -1;
+        int dataset_id = -1;
         try {
             dataset_id = H5.H5Dcreate(H5fid, "dset",
                         HDF5Constants.H5T_STD_I32BE, H5dsid,
@@ -445,7 +420,7 @@ public class TestH5D {
             err.printStackTrace();
             fail("H5.H5Dcreate: " + err);
         }
-        assertTrue("TestH5D.testH5Dget_space_closed: ", dataset_id >= 0);
+        assertTrue("TestH5D.testH5Dget_space_closed: ", dataset_id > 0);
         H5.H5Dclose(dataset_id);
         
         H5.H5Dget_space(dataset_id);
@@ -453,7 +428,7 @@ public class TestH5D {
 
     @Test
     public void testH5Dget_space() {
-        long dataspace_id = -1;
+        int dataspace_id = -1;
         _createDataset(H5fid, H5dsid, "dset", HDF5Constants.H5P_DEFAULT);
         
         try {
@@ -463,7 +438,7 @@ public class TestH5D {
             err.printStackTrace();
             fail("H5.H5Dget_space: " + err);
         }
-        assertTrue("TestH5D.testH5Dget_space: ", dataspace_id >= 0);
+        assertTrue("TestH5D.testH5Dget_space: ", dataspace_id > 0);
 
         // End access to the dataspace and release resources used by it.
         try {
@@ -477,7 +452,7 @@ public class TestH5D {
 
     @Test(expected = HDF5LibraryException.class)
     public void testH5Dget_type_closed() throws Throwable {
-        long dataset_id = -1;
+        int dataset_id = -1;
         try {
             dataset_id = H5.H5Dcreate(H5fid, "dset",
                         HDF5Constants.H5T_STD_I32BE, H5dsid,
@@ -487,7 +462,7 @@ public class TestH5D {
             err.printStackTrace();
             fail("H5.H5Dcreate: " + err);
         }
-        assertTrue("TestH5D.testH5Dget_type_closed: ", dataset_id >= 0);
+        assertTrue("TestH5D.testH5Dget_type_closed: ", dataset_id > 0);
         H5.H5Dclose(dataset_id);
         
         H5.H5Dget_type(dataset_id);
@@ -495,7 +470,7 @@ public class TestH5D {
 
     @Test
     public void testH5Dget_type() {
-        long datatype_id = -1;
+        int datatype_id = -1;
         _createDataset(H5fid, H5dsid, "dset", HDF5Constants.H5P_DEFAULT);
         
         try {
@@ -505,7 +480,7 @@ public class TestH5D {
             err.printStackTrace();
             fail("H5.H5Dget_type: " + err);
         }
-        assertTrue("TestH5D.testH5Dget_type: ", datatype_id >= 0);
+        assertTrue("TestH5D.testH5Dget_type: ", datatype_id > 0);
 
         // End access to the datatype and release resources used by it.
         try {
@@ -553,7 +528,7 @@ public class TestH5D {
             fail("H5.H5Dget_offset: " + err);
         }
         
-        assertTrue("TestH5D.testH5Dget_offset: ", dset_address >= 0);
+        assertTrue("TestH5D.testH5Dget_offset: ", dset_address > 0);
     }
 
     @Test
@@ -625,7 +600,7 @@ public class TestH5D {
         H5D_iterate_t iter_data = new H5D_iter_data();
 
         class H5D_iter_callback implements H5D_iterate_cb {
-            public int callback(byte[] elem_buf, long elem_id, int ndim, long[] point, H5D_iterate_t op_data) {
+            public int callback(byte[] elem_buf, int elem_id, int ndim, long[] point, H5D_iterate_t op_data) {
                 //Check value in current buffer location
                 int element = HDFNativeData.byteToInt(elem_buf, 0);
                 if(element != ((H5D_iter_data)op_data).fill_value)
@@ -704,7 +679,7 @@ public class TestH5D {
         H5D_iterate_t iter_data = new H5D_iter_data();
 
         class H5D_iter_callback implements H5D_iterate_cb {
-            public int callback(byte[] elem_buf, long elem_id, int ndim, long[] point, H5D_iterate_t op_data) {
+            public int callback(byte[] elem_buf, int elem_id, int ndim, long[] point, H5D_iterate_t op_data) {
                 //Check value in current buffer location
                 int element = HDFNativeData.byteToInt(elem_buf, 0);
                 if(element != ((H5D_iter_data)op_data).fill_value)

@@ -7,19 +7,14 @@ import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 import ncsa.hdf.hdf5lib.exceptions.HDF5LibraryException;
 
-import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestName;
 
 public class TestH5Edefault {
-    @Rule public TestName testname = new TestName();
 
     @Before
     public void H5Eset_default_stack() {
         assertTrue("H5 open ids is 0",H5.getOpenIDCount()==0);
-        System.out.print(testname.getMethodName());
 
         try {
             // Clear any active stack messages
@@ -29,10 +24,6 @@ public class TestH5Edefault {
             err.printStackTrace();
             fail("H5Eset_default_stack: " + err);
         }
-    }
-    @After
-    public void nextTestName() {
-        System.out.println();
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -60,8 +51,8 @@ public class TestH5Edefault {
     public void testH5Eget_current_stack() {
         long num_msg = -1;
         long num_msg_default = -1;
-        long stack_id = -1;
-        long stack_id_default = HDF5Constants.H5E_DEFAULT;
+        int stack_id = -1;
+        int stack_id_default = HDF5Constants.H5E_DEFAULT;
         try {
             H5.H5Fopen("test", 0, 1); 
         }
@@ -129,7 +120,7 @@ public class TestH5Edefault {
     public void testH5Eget_current_stack_pop() {
         long num_msg = -1;
         long num_msg_default = -1;
-        long stack_id = -1;
+        int stack_id = -1;
         try {
             H5.H5Fopen("test", 0, 1);
         }
@@ -259,7 +250,7 @@ public class TestH5Edefault {
     @Test
     public void testH5Ecreate_stack() {
         try {
-            long stack_id = H5.H5Ecreate_stack();
+            int stack_id = H5.H5Ecreate_stack();
             assertTrue("H5.H5Ecreate_stack", stack_id > 0);
             H5.H5Eclose_stack(stack_id);
         }
@@ -277,7 +268,7 @@ public class TestH5Edefault {
     @Test
     public void testH5Eset_current_stack() {
         long num_msg = -1;
-        long stack_id = -1;
+        int stack_id = -1;
         try {
             H5.H5Fopen("test", 0, 1);
         }

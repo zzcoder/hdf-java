@@ -14,20 +14,17 @@ import ncsa.hdf.hdf5lib.exceptions.HDF5LibraryException;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestName;
 
 public class TestH5R {
-    @Rule public TestName testname = new TestName();
     private static final String H5_FILE = "testH5R.h5";
     private static final int DIM_X = 4;
     private static final int DIM_Y = 6;
-    long H5fid = -1;
-    long H5dsid = -1;
-    long H5did = -1;
-    long H5gid = -1;
-    long H5did2 = -1;
+    int H5fid = -1;
+    int H5dsid = -1;
+    int H5did = -1;
+    int H5gid = -1;
+    int H5did2 = -1;
     long[] H5dims = { DIM_X, DIM_Y };
 
     private final void _deleteFile(String filename) {
@@ -42,8 +39,8 @@ public class TestH5R {
         }
     }
 
-    private final long _createDataset(long fid, long dsid, String name, long dapl) {
-        long did = -1;
+    private final int _createDataset(int fid, int dsid, String name, int dapl) {
+        int did = -1;
         try {
             did = H5.H5Dcreate(fid, name,
                         HDF5Constants.H5T_STD_I32BE, dsid,
@@ -58,8 +55,8 @@ public class TestH5R {
         return did;
     }
     
-    private final long _createGroup(long fid, String name) {
-        long gid = -1;
+    private final int _createGroup(int fid, String name) {
+        int gid = -1;
         try {
             gid = H5.H5Gcreate(fid, name, HDF5Constants.H5P_DEFAULT,
                     HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
@@ -77,7 +74,6 @@ public class TestH5R {
     public void createH5file()
             throws NullPointerException, HDF5Exception {
         assertTrue("H5 open ids is 0",H5.getOpenIDCount()==0);
-        System.out.print(testname.getMethodName());
 
         try {
             H5fid = H5.H5Fcreate(H5_FILE, HDF5Constants.H5F_ACC_TRUNC,
@@ -113,12 +109,11 @@ public class TestH5R {
             try {H5.H5Dclose(H5did2);} catch (Exception ex) {}
  
         _deleteFile(H5_FILE);
-        System.out.println();
     }
 
     @Test
     public void testH5Rget_name() {
-        long loc_id=H5fid;
+        int loc_id=H5fid;
         int ref_type=HDF5Constants.H5R_OBJECT;
         long ret_val=-1;
         byte[] ref=null;
@@ -202,16 +197,16 @@ public class TestH5R {
     public void testH5Rdereference() {
         byte[] ref1 = null;
         byte[] ref2 = null;
-        long dataset_id = -1;
-        long group_id = -1;
+        int dataset_id = -1;
+        int group_id = -1;
         try {
             //Create reference on dataset 
             ref1 = H5.H5Rcreate(H5fid, "/dset", HDF5Constants.H5R_DATASET_REGION, H5dsid);
-            dataset_id= H5.H5Rdereference(H5fid, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5R_DATASET_REGION, ref1);
+            dataset_id= H5.H5Rdereference(H5fid, HDF5Constants.H5R_DATASET_REGION, ref1);
             
             //Create reference on group
             ref2 = H5.H5Rcreate(H5gid, "/Group1", HDF5Constants.H5R_OBJECT, -1);           
-            group_id= H5.H5Rdereference(H5gid, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5R_OBJECT, ref2);
+            group_id= H5.H5Rdereference(H5gid, HDF5Constants.H5R_OBJECT, ref2);
             assertNotNull(ref1);
             assertNotNull(ref2);
             assertTrue(dataset_id>=0);
@@ -230,7 +225,7 @@ public class TestH5R {
     @Test
     public void testH5Rget_region() {
         byte[] ref = null;
-        long dsid = -1;
+        int dsid = -1;
         try {
             ref = H5.H5Rcreate(H5fid, "/dset", HDF5Constants.H5R_DATASET_REGION, H5dsid);
             dsid = H5.H5Rget_region(H5fid, HDF5Constants.H5R_DATASET_REGION, ref);
@@ -307,7 +302,7 @@ public class TestH5R {
     @Test(expected = NullPointerException.class)
     public void testH5Rdereference_Nullreference() throws Throwable {
         byte[] ref = null;
-        H5.H5Rdereference(H5did2, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5R_OBJECT, ref);
+        H5.H5Rdereference(H5did2, HDF5Constants.H5R_OBJECT, ref);
     }
     
     @Test(expected = IllegalArgumentException.class)
@@ -316,7 +311,7 @@ public class TestH5R {
         byte[] ref2 = null;
         ref1 = H5.H5Rcreate(H5fid, "/dset", HDF5Constants.H5R_DATASET_REGION, H5dsid);
         ref2 = H5.H5Rcreate(H5gid, "/Group1", HDF5Constants.H5R_OBJECT, -1);
-        H5.H5Rdereference(H5gid, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5R_OBJECT, ref1);
+        H5.H5Rdereference(H5gid, HDF5Constants.H5R_OBJECT, ref1);
     }
   
 }

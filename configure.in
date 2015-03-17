@@ -414,66 +414,6 @@ fi
 ac_cv_lib_HDF5=$HDF5LIB
 ac_cv_lib_HDF5INC=$HDF5INC
 
-
-dnl check for libh4toh5  == if with-h4toh5 is not set, then can
-dnl only build hdf and hdf5 separately.
-dnl
-dnl  This code need to be updated to check all the dependencies,
-dnl  as for H4 and H5 libs above.
-
-AC_MSG_CHECKING([HDF4to5 library])
-USEH45="no"
-withval="";
-AC_SUBST(LIBH45) LIBH45=""
-AC_ARG_WITH(h4toh5,[  --with-h4toh5=INC,LIB     Path to the HDF 4 to 5 library (optional feature, if selected then path required is not in default path)],,)
-case "$withval" in
-  yes)
-  USEH45="no"
-    ;;
-  no)
-  H45LIB=""
-  H45INC=""
-  USEH45="suppressed"
-    ;;
-  *)
-    if test -n "$withval"; then
-        hdf45_inc="`echo $withval |cut -f1 -d,`"
-        if test -n "$hdf45_inc"; then
-          HDF45INC="$hdf45_inc"
-          saved_CPPFLAGS="$CPPFLAGS"
-          CPPFLAGS="$CPPFLAGS -I$hdf45_inc"
-        fi
-    
-        AC_CHECK_HEADERS(h4toh5.h,,
-                         CPPFLAGS="$saved_CPPFLAGS"
-                         AC_MSG_ERROR(cannot find HDF45 header files!))
-    
-        hdf45_lib="`echo $withval | cut -f2 -d, -s`"
-    
-        if test -n "$hdf45_lib"; then
-          HDF45LIB="$hdf45_lib"
-          saved_LDFLAGS="$LDFLAGS"
-          LDFLAGS="$LDFLAGS -L$hdf45_lib"
-          AC_CHECK_LIB(h4toh5, H4toh5open,, LDFLAGS="$saved_LDFLAGS"
-                     AC_MSG_ERROR(cannot find HDF45 library.))
-        else
-       AC_MSG_ERROR(cannot find HDF45 library path.)
-        fi
-  USEH45="yes"
-    fi
-    ;;
-esac
-
-AC_MSG_RESULT([$USEH45])
-if test -n "$H45LIB"; then
-  AC_MSG_RESULT([h4toh5 library found at: $HDF45LIB])
-fi
-H45LIB=$HDF45LIB
-H45INC=$HDF45INC
-
-ac_cv_lib_HDF45=$HDF45LIB
-ac_cv_lib_HDF45INC=$HDF45INC
-
 dnl  find java stuff:  use -with-jdk
 
 withval="";
@@ -580,7 +520,7 @@ AC_PATH_PROG(JAR,jar,,$JAVABIN,)
 dnl  optional find the jhdf wrappers 
 
 withval="";
-AC_ARG_WITH(jhdf4,[  --with-jhdf4=LIB     Path to the jhdf4,jar (optional override, used only by H4 to H5) ],,)
+AC_ARG_WITH(jhdf4,[  --with-jhdf4=LIB     Path to the jhdf4,jar ],,)
 case "$withval" in
   yes)
     AC_MSG_ERROR(jhdf4 path needed for compilation.)
@@ -597,7 +537,7 @@ case "$withval" in
 esac
 
 withval="";
-AC_ARG_WITH(jhdf5,[  --with-jhdf5=LIB     Path to the jhdf45.jar (optional override, used only by the H4 to H5 library) ],,)
+AC_ARG_WITH(jhdf5,[  --with-jhdf5=LIB     Path to the jhdf5.jar  ],,)
 case "$withval" in
   yes)
     AC_MSG_ERROR( jhdf5 path needed for compilation.)
@@ -618,46 +558,6 @@ case "$withval" in
 esac
 
 ac_cv_lib_JAVAINC=$JAVAINC
-
-
-if test "$prefix" != "NONE" ; then
-  JH45INST="$prefix"
-else
-  JH45INST=""
-fi
-
-JH45INST_FOUND=1
-if test -z "$JH45INST" ; then
-AC_CACHE_CHECK("JH45 install directory",ac_cv_lib_JH45INST,JH45INST_FOUND=0)
-fi
-if test $JH45INST_FOUND -eq 1; then
-  if test -z "$JH45INST" ; then
-    JH45INST=$ac_cv_lib_JH45INST;
-  fi
-  if test \( ! -d "$JH45INST" \); then
-    JH45INST_FOUND=0
-  fi
-  if test \( ! -w "$JH45INST" \); then
-    AC_MSG_ERROR( [ $JH45INST : not writable ])
-    JH45INST_FOUND=0
-  fi
-fi
-until test $JH45INST_FOUND -eq 1; do
-  echo "Please type the directory in which to install the JH45"
-  read JH45INST
-  JH45INST_FOUND=1
-  if test \( ! -d "$JH45INST" \); then
-    JH45INST_FOUND=0
-  fi
-  if test \( ! -w "$JH45INST" \); then
-    AC_MSG_ERROR( [ $JH45INST : not writable ])
-    JH45INST_FOUND=0
-  fi
-done
-
-ac_cv_lib_JH45INST=$JH45INST
-JHVINST=$JH45INST
-JH5INST=$JH45INST
 
 case $target in
 alpha-dec-osf*.*)
@@ -801,26 +701,22 @@ AC_SUBST(VERSSTRING)
 ## Select one of the following, depending on what is being distributed.
 ##
 
-OUTPUT_FILES="Makefile native/Makefile native/hdflib/Makefile native/hdf5lib/Makefile ncsa/Makefile ncsa/hdf/Makefile ncsa/hdf/hdflib/Makefile ncsa/hdf/hdf5lib/Makefile ncsa/hdf/hdf5lib/exceptions/Makefile ncsa/hdf/hdf5lib/callbacks/Makefile ncsa/hdf/hdf5lib/structs/Makefile ncsa/hdf/object/Makefile ncsa/hdf/object/fits/Makefile ncsa/hdf/object/h4/Makefile ncsa/hdf/object/h5/Makefile ncsa/hdf/object/nc2/Makefile ncsa/hdf/view/Makefile bin/hdfview.sh"
+OUTPUT_FILES="Makefile hdflib/Makefile hdf5lib/Makefile ncsa/Makefile ncsa/hdf/Makefile ncsa/hdf/hdflib/Makefile ncsa/hdf/hdf5lib/Makefile ncsa/hdf/hdf5lib/exceptions/Makefile ncsa/hdf/hdf5lib/callbacks/Makefile ncsa/hdf/hdf5lib/structs/Makefile"
 if test "$USEH45" = "yes"; then
-##  want H4toH5 configured
 if test -d "./test"; then
 ##
 ##  Everything
 ##
-# OUTPUT_FILES="$OUTPUT_FILES test/Makefile test/object/misc/testh4file.sh test/object/misc/testh5file.sh test/object/misc/Makefile test/object/misc/runtests.sh test/hdf5lib/junit.sh test/hdf5lib/Makefile test/uitest/junit.sh test/uitest/Makefile examples/Makefile examples/intro/Makefile examples/datasets/Makefile examples/datatypes/Makefile examples/groups/Makefile"
-OUTPUT_FILES="$OUTPUT_FILES test/Makefile test/object/misc/testh4file.sh test/object/misc/testh5file.sh test/object/misc/Makefile test/object/misc/runtests.sh test/hdf5lib/junit.sh test/hdf5lib/Makefile examples/Makefile examples/intro/Makefile examples/datasets/Makefile examples/datatypes/Makefile examples/groups/Makefile"
+OUTPUT_FILES="$OUTPUT_FILES test/Makefile test/hdf5lib/junit.sh test/hdf5lib/Makefile"
 else
 ##
 ##  H4, H5, H45, but NO tests
 ##
-OUTPUT_FILES="Makefile native/Makefile native/hdflib/Makefile native/hdf5lib/Makefile ncsa/Makefile ncsa/hdf/Makefile ncsa/hdf/hdflib/Makefile ncsa/hdf/hdf5lib/Makefile ncsa/hdf/hdf5lib/exceptions/Makefile ncsa/hdf/hdf5lib/callbacks/Makefile ncsa/hdf/hdf5lib/structs/Makefile ncsa/hdf/object/Makefile ncsa/hdf/object/fits/Makefile ncsa/hdf/object/h4/Makefile ncsa/hdf/object/h5/Makefile ncsa/hdf/object/nc2/Makefile ncsa/hdf/view/Makefile"
+OUTPUT_FILES="Makefile hdflib/Makefile hdf5lib/Makefile ncsa/Makefile ncsa/hdf/Makefile ncsa/hdf/hdflib/Makefile ncsa/hdf/hdf5lib/Makefile ncsa/hdf/hdf5lib/exceptions/Makefile ncsa/hdf/hdf5lib/callbacks/Makefile ncsa/hdf/hdf5lib/structs/Makefile"
 fi
 else
 if test -d "./test"; then
-##  Don't use H4toH5 (but do include some tests)
-#OUTPUT_FILES="$OUTPUT_FILES test/Makefile test/object/misc/Makefile test/object/misc/testh4file.sh test/object/misc/testh5file.sh test/object/misc/runtests.sh test/object/misc/TestH5Object.sh test/object/misc/TestH5Table.sh test/object/misc/TestH5MemoryLeak.sh test/object/Makefile test/object/unittests.sh test/hdf5lib/junit.sh test/hdf5lib/Makefile test/uitest/junit.sh test/uitest/Makefile examples/Makefile examples/intro/Makefile examples/datasets/Makefile examples/datatypes/Makefile examples/groups/Makefile examples/runExample.sh"
-OUTPUT_FILES="$OUTPUT_FILES test/Makefile test/object/misc/Makefile test/object/misc/testh4file.sh test/object/misc/testh5file.sh test/object/misc/runtests.sh test/object/misc/TestH5Object.sh test/object/misc/TestH5Table.sh test/object/misc/TestH5MemoryLeak.sh test/object/Makefile test/object/unittests.sh test/hdf5lib/junit.sh test/hdf5lib/Makefile examples/Makefile examples/intro/Makefile examples/datasets/Makefile examples/datatypes/Makefile examples/groups/Makefile examples/runExample.sh"
+OUTPUT_FILES="$OUTPUT_FILES test/Makefile test/hdf5lib/junit.sh test/hdf5lib/Makefile examples/Makefile"
 else
 ##  Don't use H4toH5 (no tests)
 OUTPUT_FILES="$OUTPUT_FILES"
@@ -830,10 +726,6 @@ fi
 AC_OUTPUT($OUTPUT_FILES)
 
 if test -d "./test"; then
-chmod +x test/object/misc/TestH5Object.sh
-chmod +x test/object/misc/TestH5Table.sh
-chmod +x test/object/misc/TestH5MemoryLeak.sh
-chmod +x test/object/unittests.sh
 chmod +x test/hdf5lib/junit.sh
 fi
 

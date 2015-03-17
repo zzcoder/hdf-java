@@ -49,7 +49,7 @@ FIND_PATH (HDFJAVA_ROOT_DIR "@HDFJAVA_PACKAGE@@HDF_PACKAGE_EXT@-config.cmake"
         share/cmake/@HDFJAVA_PACKAGE@
 )
 
-FIND_PATH (HDFJAVA_LIBRARY "jhdfview.jar"
+FIND_PATH (HDFJAVA_LIBRARY "jarhdf5-@HDFJAVA_PACKAGE_VERSION@.jar"
     HINTS ${_HDFJAVA_HINTS}
     PATHS ${_HDFJAVA_PATHS}
     PATH_SUFFIXES
@@ -63,15 +63,6 @@ if (HDFJAVA_ROOT_DIR)
   set (HDFJAVA_INCLUDE_DIRS 
         ${HDFJAVA_LIBRARY}/jarhdf-@HDFJAVA_PACKAGE_VERSION@.jar
         ${HDFJAVA_LIBRARY}/jarhdf5-@HDFJAVA_PACKAGE_VERSION@.jar
-        ${HDFJAVA_LIBRARY}/jarhdfobj.jar
-        ${HDFJAVA_LIBRARY}/jarfitsobj.jar
-        ${HDFJAVA_LIBRARY}/jarh4obj.jar
-        ${HDFJAVA_LIBRARY}/jarh5obj.jar
-        ${HDFJAVA_LIBRARY}/jarnc2obj.jar
-        ${HDFJAVA_LIBRARY}/fits.jar
-        ${HDFJAVA_LIBRARY}/netcdf.jar
-        ${HDFJAVA_LIBRARY}/slf4j-api-1.7.5.jar
-        ${HDFJAVA_LIBRARY}/slf4j-nop-1.7.5.jar
   )
   
 endif (HDFJAVA_ROOT_DIR)

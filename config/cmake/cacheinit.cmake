@@ -12,8 +12,6 @@ set (BUILD_TESTING ON CACHE BOOL "Build HDFJAVA Unit Testing" FORCE)
 
 set (HDF_PACKAGE_EXT "" CACHE STRING "Name of HDF package extension" FORCE)
 
-set (HDF_BUILD_EXAMPLES ON CACHE BOOL "Build HDFJAVA Library Examples" FORCE)
-
 set (HDF_ENABLE_JPEG_LIB_SUPPORT ON CACHE BOOL "Use Jpeg library" FORCE)
 
 set (HDF_ENABLE_Z_LIB_SUPPORT ON CACHE BOOL "Enable Zlib Filters" FORCE)
@@ -28,8 +26,6 @@ set (HDF_ENABLE_PARALLEL OFF CACHE BOOL "Enable parallel build (requires MPI)" F
 
 set (HDF_ENABLE_COVERAGE OFF CACHE BOOL "Enable code coverage for Libraries and Programs" FORCE)
 
-set (HDF_SKIP_GUI_TESTS OFF CACHE BOOL "Skip testing of GUI" FORCE)
-
 set (HDF_PACKAGE_EXTLIBS OFF CACHE BOOL "(WINDOWS)CPACK - include external libraries" FORCE)
 
 set (HDF_ALLOW_EXTERNAL_SUPPORT "NO" CACHE STRING "Allow External Library Building (NO SVN TGZ)" FORCE)
@@ -43,7 +39,7 @@ set (JPEG_SVN_URL "http://svn.hdfgroup.uiuc.edu/jpeg/branches/jpeg8b" CACHE STRI
 
 set (HDF4_SVN_URL "http://svn.hdfgroup.uiuc.edu/hdf4/trunk" CACHE STRING "Use HDF4 from HDF repository" FORCE)
 
-set (HDF5_SVN_URL "http://svn.hdfgroup.uiuc.edu/hdf5/trunk" CACHE STRING "Use HDF5 from HDF repository" FORCE)
+set (HDF5_SVN_URL "http://svn.hdfgroup.uiuc.edu/hdf5/branches/hdf5_1_8" CACHE STRING "Use HDF5 from HDF repository" FORCE)
 
 set (ZLIB_TGZ_NAME "ZLib.tar.gz" CACHE STRING "Use ZLib from compressed file" FORCE)
 

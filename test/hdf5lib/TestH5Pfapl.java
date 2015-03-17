@@ -16,12 +16,9 @@ import ncsa.hdf.hdf5lib.structs.H5AC_cache_config_t;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestName;
 
 public class TestH5Pfapl {
-    @Rule public TestName testname = new TestName();
     
     private static final String H5_FILE = "test.h5";
     private static final String H5_LOG_FILE = "test.log";
@@ -32,17 +29,17 @@ public class TestH5Pfapl {
     private static final int DIM_Y = 6;
     private static final int DIMF_X = 12;
     private static final int DIMF_Y = 18;
-    long H5fid = -1;
-    long H5dsid = -1;
-    long H5did = -1;
-    long H5Fdsid = -1;
-    long H5Fdid = -1;
+    int H5fid = -1;
+    int H5dsid = -1;
+    int H5did = -1;
+    int H5Fdsid = -1;
+    int H5Fdid = -1;
     long[] H5dims = { DIM_X, DIM_Y };
-    long fapl_id = -1;
-    long plapl_id = -1;
-    long dapl_id = -1;
-    long plist_id = -1;
-    long btplist_id = -1;
+    int fapl_id = -1;
+    int plapl_id = -1;
+    int dapl_id = -1;
+    int plist_id = -1;
+    int btplist_id = -1;
     long[] H5Fdims = { DIMF_X, DIMF_Y };
     double windchillF[][] =
     {{36.0, 31.0, 25.0, 19.0, 13.0, 7.0, 1.0, -5.0, -11.0, -16.0, -22.0, -28.0, -34.0, -40.0, -46.0, -52.0, -57.0, -63.0},
@@ -114,13 +111,12 @@ public class TestH5Pfapl {
         }
     }
 
-    private final long _createDataset(long fid, long dsid, String name, long dapl) {
-        long did = -1;
+    private final int _createDataset(int fid, int dsid, String name, int dapl) {
+        int did = -1;
         try {
             did = H5.H5Dcreate(fid, name, HDF5Constants.H5T_STD_I32BE, dsid,
                     HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, dapl);
-        } 
-        catch (Throwable err) {
+        } catch (Throwable err) {
             err.printStackTrace();
             fail("H5.H5Dcreate: " + err);
         }
@@ -134,8 +130,7 @@ public class TestH5Pfapl {
             H5Fdsid = H5.H5Screate_simple(2, H5Fdims, null);
             H5Fdid = H5.H5Dcreate(H5fid, "dsfloat", HDF5Constants.H5T_NATIVE_FLOAT, H5Fdsid,
                     HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
-        } 
-        catch (Throwable err) {
+        } catch (Throwable err) {
             err.printStackTrace();
             fail("H5.H5Dcreate: " + err);
         }
@@ -167,7 +162,7 @@ public class TestH5Pfapl {
         }
     }
 
-    private final void _createH5File(long fapl) {
+    private final void _createH5File(int fapl) {
         try {
             H5fid = H5.H5Fcreate(H5_FILE, HDF5Constants.H5F_ACC_TRUNC,
                     HDF5Constants.H5P_DEFAULT, fapl);
@@ -190,7 +185,7 @@ public class TestH5Pfapl {
         }
     }
 
-    private final void _createH5familyFile(long fapl) {
+    private final void _createH5familyFile(int fapl) {
         try {
             H5fid = H5.H5Fcreate(H5_FAMILY_FILE+".h5", HDF5Constants.H5F_ACC_TRUNC,
                     HDF5Constants.H5P_DEFAULT, fapl);
@@ -213,7 +208,7 @@ public class TestH5Pfapl {
         }
     }
 
-    private final void _createH5multiFile(long fapl) {
+    private final void _createH5multiFile(int fapl) {
         try {
             H5fid = H5.H5Fcreate(H5_MULTI_FILE, HDF5Constants.H5F_ACC_TRUNC,
                     HDF5Constants.H5P_DEFAULT, fapl);
@@ -250,7 +245,6 @@ public class TestH5Pfapl {
     public void createFileAccess()
             throws NullPointerException, HDF5Exception {
         assertTrue("H5 open ids is 0",H5.getOpenIDCount()==0);
-        System.out.print(testname.getMethodName());
 
         try {
             fapl_id = H5.H5Pcreate(HDF5Constants.H5P_FILE_ACCESS);
@@ -305,7 +299,6 @@ public class TestH5Pfapl {
             try {H5.H5Dclose(H5did);} catch (Exception ex) {}
         if (H5fid > 0) 
             try {H5.H5Fclose(H5fid);} catch (Exception ex) {}
-        System.out.println();
     }
     
     @Test
@@ -370,7 +363,7 @@ public class TestH5Pfapl {
     
     @Test
     public void testH5Pget_elink_fapl() {
-        long ret_val_id = -1;
+        int ret_val_id = -1;
         try {
             ret_val_id = H5.H5Pget_elink_fapl(plapl_id);
             assertTrue("H5Pget_elink_fapl", ret_val_id >= 0);
@@ -388,7 +381,7 @@ public class TestH5Pfapl {
     
     @Test
     public void testH5P_elink_fapl() {
-        long ret_val_id = -1;
+        int ret_val_id = -1;
         try {
             H5.H5Pset_elink_fapl(plapl_id, fapl_id );
             ret_val_id = H5.H5Pget_elink_fapl(plapl_id);
@@ -406,7 +399,7 @@ public class TestH5Pfapl {
     
     @Test
     public void testH5P_elink_file_cache_size() {
-        long elink_fapl_id = -1;
+        int elink_fapl_id = -1;
         int efc_size = 0;
         try {
             H5.H5Pset_elink_fapl(plapl_id, fapl_id );
@@ -766,7 +759,7 @@ public class TestH5Pfapl {
         }
         try {
             long[] member_size = {0};
-            long[] member_fapl = {-1};
+            int[] member_fapl = {-1};
             H5.H5Pget_fapl_family(fapl_id, member_size, member_fapl);
             assertTrue("H5Pget_fapl_family: member_size="+member_size[0], member_size[0]==1024);
             assertTrue("H5Pget_fapl_family: member_fapl ", H5.H5P_equal(member_fapl[0], HDF5Constants.H5P_FILE_ACCESS_DEFAULT));
@@ -871,7 +864,7 @@ public class TestH5Pfapl {
             return;
         
         int[] member_map = null;
-        long[] member_fapl = null;
+        int[] member_fapl = null;
         String[] member_name = null;
         long[] member_addr = null;
         
@@ -900,18 +893,9 @@ public class TestH5Pfapl {
     public void testH5P_fapl_muti_defaults() {
         if (HDF5Constants.H5FD_MULTI < 0)
             return;
-        int H5FD_MEM_NTYPES = HDF5Constants.H5FD_MEM_NTYPES; // 7
-        
-        long sH5FD_MEM_DEFAULT_HADDR = HDF5Constants.H5FD_DEFAULT_HADDR_SIZE;
-        long sH5FD_MEM_HADDR = HDF5Constants.H5FD_MEM_DEFAULT_SIZE;
-        long sH5FD_MEM_SUPER_HADDR = HDF5Constants.H5FD_MEM_DEFAULT_SUPER_SIZE;
-        long sH5FD_MEM_BTREE_HADDR = HDF5Constants.H5FD_MEM_DEFAULT_BTREE_SIZE;
-        long sH5FD_MEM_DRAW_HADDR = HDF5Constants.H5FD_MEM_DEFAULT_DRAW_SIZE;
-        long sH5FD_MEM_GHEAP_HADDR = HDF5Constants.H5FD_MEM_DEFAULT_GHEAP_SIZE;
-        long sH5FD_MEM_LHEAP_HADDR = HDF5Constants.H5FD_MEM_DEFAULT_LHEAP_SIZE;
-        long sH5FD_MEM_OHDR_HADDR = HDF5Constants.H5FD_MEM_DEFAULT_OHDR_SIZE;        
+        long HADDRMAX = HDF5Constants.H5FD_DEFAULT_HADDR_SIZE;
         int[] member_map = null;
-        long[] member_fapl = null;
+        int[] member_fapl = null;
         String[] member_name = null;
         long[] member_addr = null;
         
@@ -926,7 +910,7 @@ public class TestH5Pfapl {
         }
         try {
             member_map = new int[HDF5Constants.H5FD_MEM_NTYPES];
-            member_fapl = new long[HDF5Constants.H5FD_MEM_NTYPES];
+            member_fapl = new int[HDF5Constants.H5FD_MEM_NTYPES];
             member_name = new String[HDF5Constants.H5FD_MEM_NTYPES];
             member_addr = new long[HDF5Constants.H5FD_MEM_NTYPES];
             boolean relax = H5.H5Pget_fapl_multi(fapl_id, member_map, member_fapl, member_name, member_addr);
@@ -937,13 +921,13 @@ public class TestH5Pfapl {
             assertTrue("H5Pget_fapl_muti: member_name="+member_name[HDF5Constants.H5FD_MEM_SUPER], member_name[HDF5Constants.H5FD_MEM_SUPER].compareTo("%s-s.h5")==0);
             assertTrue("H5Pget_fapl_muti: member_name="+member_name[HDF5Constants.H5FD_MEM_BTREE], member_name[HDF5Constants.H5FD_MEM_BTREE].compareTo("%s-b.h5")==0);
             assertTrue("H5Pget_fapl_muti: member_name="+member_name[HDF5Constants.H5FD_MEM_DRAW], member_name[HDF5Constants.H5FD_MEM_DRAW].compareTo("%s-r.h5")==0);
-            assertTrue("H5Pget_fapl_muti: member_addr="+member_addr[HDF5Constants.H5FD_MEM_DEFAULT], member_addr[HDF5Constants.H5FD_MEM_DEFAULT] == sH5FD_MEM_HADDR);
-            assertTrue("H5Pget_fapl_muti: member_addr="+member_addr[HDF5Constants.H5FD_MEM_SUPER], member_addr[HDF5Constants.H5FD_MEM_SUPER] == sH5FD_MEM_SUPER_HADDR);
-            assertTrue("H5Pget_fapl_muti: member_addr="+member_addr[HDF5Constants.H5FD_MEM_BTREE], member_addr[HDF5Constants.H5FD_MEM_BTREE] == sH5FD_MEM_BTREE_HADDR);
-            assertTrue("H5Pget_fapl_muti: member_addr="+member_addr[HDF5Constants.H5FD_MEM_DRAW], member_addr[HDF5Constants.H5FD_MEM_DRAW] == sH5FD_MEM_DRAW_HADDR);
-            assertTrue("H5Pget_fapl_muti: member_addr="+member_addr[HDF5Constants.H5FD_MEM_GHEAP], member_addr[HDF5Constants.H5FD_MEM_GHEAP] == sH5FD_MEM_GHEAP_HADDR);
-            assertTrue("H5Pget_fapl_muti: member_addr="+member_addr[HDF5Constants.H5FD_MEM_LHEAP], member_addr[HDF5Constants.H5FD_MEM_LHEAP] == sH5FD_MEM_LHEAP_HADDR);
-            assertTrue("H5Pget_fapl_muti: member_addr="+member_addr[HDF5Constants.H5FD_MEM_OHDR], member_addr[HDF5Constants.H5FD_MEM_OHDR] == sH5FD_MEM_OHDR_HADDR);
+            assertTrue("H5Pget_fapl_muti: member_addr="+member_addr[HDF5Constants.H5FD_MEM_DEFAULT], member_addr[HDF5Constants.H5FD_MEM_DEFAULT] == 0);
+            assertTrue("H5Pget_fapl_muti: member_addr="+member_addr[HDF5Constants.H5FD_MEM_SUPER], member_addr[HDF5Constants.H5FD_MEM_SUPER] == 0);
+            assertTrue("H5Pget_fapl_muti: member_addr="+member_addr[HDF5Constants.H5FD_MEM_BTREE]+"<>"+HADDRMAX, member_addr[HDF5Constants.H5FD_MEM_BTREE] == HADDRMAX);
+            assertTrue("H5Pget_fapl_muti: member_addr="+member_addr[HDF5Constants.H5FD_MEM_DRAW], member_addr[HDF5Constants.H5FD_MEM_DRAW] == (HADDRMAX-1));
+            assertTrue("H5Pget_fapl_muti: member_addr="+member_addr[HDF5Constants.H5FD_MEM_GHEAP], member_addr[HDF5Constants.H5FD_MEM_GHEAP] == (HADDRMAX-1));
+            assertTrue("H5Pget_fapl_muti: member_addr="+member_addr[HDF5Constants.H5FD_MEM_LHEAP], member_addr[HDF5Constants.H5FD_MEM_LHEAP] == (HADDRMAX-1));
+            assertTrue("H5Pget_fapl_muti: member_addr="+member_addr[HDF5Constants.H5FD_MEM_OHDR], member_addr[HDF5Constants.H5FD_MEM_OHDR] == (HADDRMAX-2));
         }
         catch (Throwable err) {
             err.printStackTrace();
@@ -958,9 +942,10 @@ public class TestH5Pfapl {
     public void testH5P_fapl_muti() {
         if (HDF5Constants.H5FD_MULTI < 0)
             return;
-        long HADDR_DEFAULT_SIZE = HDF5Constants.H5FD_DEFAULT_HADDR_SIZE;
+        long HADDRMAX = HDF5Constants.H5FD_DEFAULT_HADDR_SIZE;
+        
         int[] member_map = new int[HDF5Constants.H5FD_MEM_NTYPES];
-        long[] member_fapl = new long[HDF5Constants.H5FD_MEM_NTYPES];
+        int[] member_fapl = new int[HDF5Constants.H5FD_MEM_NTYPES];
         String[] member_name = new String[HDF5Constants.H5FD_MEM_NTYPES];
         long[] member_addr = new long[HDF5Constants.H5FD_MEM_NTYPES];
 
@@ -976,13 +961,13 @@ public class TestH5Pfapl {
         member_addr[HDF5Constants.H5FD_MEM_SUPER] = 0;
 
         member_name[HDF5Constants.H5FD_MEM_BTREE] = new String("%s-btree.h5");
-        member_addr[HDF5Constants.H5FD_MEM_BTREE] = HADDR_DEFAULT_SIZE/4;
+        member_addr[HDF5Constants.H5FD_MEM_BTREE] = HADDRMAX/4;
 
         member_name[HDF5Constants.H5FD_MEM_DRAW] = new String("%s-draw.h5");
-        member_addr[HDF5Constants.H5FD_MEM_DRAW] = HADDR_DEFAULT_SIZE/2;
+        member_addr[HDF5Constants.H5FD_MEM_DRAW] = HADDRMAX/2;
 
         member_name[HDF5Constants.H5FD_MEM_GHEAP] = new String("%s-gheap.h5");
-        member_addr[HDF5Constants.H5FD_MEM_GHEAP] = (HADDR_DEFAULT_SIZE/4)*3;
+        member_addr[HDF5Constants.H5FD_MEM_GHEAP] = (HADDRMAX/4)*3;
         
         try {
             H5.H5Pset_fapl_multi(fapl_id, member_map, member_fapl, member_name, member_addr, true);
@@ -1006,13 +991,13 @@ public class TestH5Pfapl {
             assertTrue("H5Pget_fapl_muti: member_name="+member_name[HDF5Constants.H5FD_MEM_SUPER], member_name[HDF5Constants.H5FD_MEM_SUPER].compareTo("%s-super.h5")==0);
 
             assertTrue("H5Pget_fapl_muti: member_name="+member_name[HDF5Constants.H5FD_MEM_BTREE], member_name[HDF5Constants.H5FD_MEM_BTREE].compareTo("%s-btree.h5")==0);
-            assertTrue("H5Pget_fapl_muti: member_addr="+member_addr[HDF5Constants.H5FD_MEM_BTREE], member_addr[HDF5Constants.H5FD_MEM_BTREE] == HADDR_DEFAULT_SIZE/4);
+            assertTrue("H5Pget_fapl_muti: member_addr="+member_addr[HDF5Constants.H5FD_MEM_BTREE], member_addr[HDF5Constants.H5FD_MEM_BTREE] == HADDRMAX/4);
 
             assertTrue("H5Pget_fapl_muti: member_name="+member_name[HDF5Constants.H5FD_MEM_DRAW], member_name[HDF5Constants.H5FD_MEM_DRAW].compareTo("%s-draw.h5")==0);
-            assertTrue("H5Pget_fapl_muti: member_addr="+member_addr[HDF5Constants.H5FD_MEM_DRAW], member_addr[HDF5Constants.H5FD_MEM_DRAW] == HADDR_DEFAULT_SIZE/2);
+            assertTrue("H5Pget_fapl_muti: member_addr="+member_addr[HDF5Constants.H5FD_MEM_DRAW], member_addr[HDF5Constants.H5FD_MEM_DRAW] == HADDRMAX/2);
 
             assertTrue("H5Pget_fapl_muti: member_name="+member_name[HDF5Constants.H5FD_MEM_GHEAP], member_name[HDF5Constants.H5FD_MEM_GHEAP].compareTo("%s-gheap.h5")==0);
-            assertTrue("H5Pget_fapl_muti: member_addr="+member_addr[HDF5Constants.H5FD_MEM_GHEAP], member_addr[HDF5Constants.H5FD_MEM_GHEAP] == (HADDR_DEFAULT_SIZE/4)*3);
+            assertTrue("H5Pget_fapl_muti: member_addr="+member_addr[HDF5Constants.H5FD_MEM_GHEAP], member_addr[HDF5Constants.H5FD_MEM_GHEAP] == (HADDRMAX/4)*3);
         }
         catch (Throwable err) {
             err.printStackTrace();
@@ -1021,7 +1006,7 @@ public class TestH5Pfapl {
         _createH5multiFile(fapl_id);
         try {
             long file_size = H5.H5Fget_filesize(H5fid);
-            assertTrue("H5Pget_fapl_muti: file_size ", file_size >= HADDR_DEFAULT_SIZE/4 || file_size <= HADDR_DEFAULT_SIZE/2);
+            assertTrue("H5Pget_fapl_muti: file_size ", file_size >= HADDRMAX/4 || file_size <= HADDRMAX/2);
         }
         catch (Throwable err) {
             err.printStackTrace();
@@ -1083,7 +1068,7 @@ public class TestH5Pfapl {
         }
         try {
             int[] member_map = new int[HDF5Constants.H5FD_MEM_NTYPES];
-            long[] member_fapl = new long[HDF5Constants.H5FD_MEM_NTYPES];
+            int[] member_fapl = new int[HDF5Constants.H5FD_MEM_NTYPES];
             String[] member_name = new String[HDF5Constants.H5FD_MEM_NTYPES];
             long[] member_addr = new long[HDF5Constants.H5FD_MEM_NTYPES];
             boolean relax = H5.H5Pget_fapl_multi(fapl_id, member_map, member_fapl, member_name, member_addr);
@@ -1173,7 +1158,7 @@ public class TestH5Pfapl {
         long HADDRMAX = HDF5Constants.H5FD_DEFAULT_HADDR_SIZE;
 
         int[] member_map = new int[HDF5Constants.H5FD_MEM_NTYPES];
-        long[] member_fapl = new long[HDF5Constants.H5FD_MEM_NTYPES];
+        int[] member_fapl = new int[HDF5Constants.H5FD_MEM_NTYPES];
         String[] member_name = new String[HDF5Constants.H5FD_MEM_NTYPES];
         long[] member_addr = new long[HDF5Constants.H5FD_MEM_NTYPES];
 

@@ -10,17 +10,14 @@ import ncsa.hdf.hdf5lib.structs.H5G_info_t;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestName;
 
 public class TestH5Giterate {
-    @Rule public TestName testname = new TestName();
     private static final String H5_FILE = "test/hdf5lib/h5ex_g_iterate.hdf";
-    long H5fid = -1;
+    int H5fid = -1;
 
-    private final long _openGroup(long fid, String name) {
-        long gid = -1;
+    private final int _openGroup(int fid, String name) {
+        int gid = -1;
         try {
             gid = H5.H5Gopen(fid, name, HDF5Constants.H5P_DEFAULT);
         }
@@ -37,7 +34,6 @@ public class TestH5Giterate {
     public void openH5file()
             throws HDF5LibraryException, NullPointerException {
         assertTrue("H5 open ids is 0",H5.getOpenIDCount()==0);
-        System.out.print(testname.getMethodName());
 
         try {
             H5fid = H5.H5Fopen(H5_FILE, HDF5Constants.H5F_ACC_RDONLY,
@@ -54,14 +50,13 @@ public class TestH5Giterate {
         if (H5fid > 0) {
             try {H5.H5Fclose(H5fid);} catch (Exception ex) {}
         }
-        System.out.println();
     }
 
     @Test
     public void testH5Gget_obj_info_all() {
         H5G_info_t info = null;
 
-        long gid = _openGroup(H5fid, "/");
+        int gid = _openGroup(H5fid, "/");
 
         try {
             info = H5.H5Gget_info(gid);
